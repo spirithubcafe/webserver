@@ -223,36 +223,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Recommended Products -->
-                    <div class="mt-8 bg-white rounded-2xl shadow-xl overflow-hidden">
-                        <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                            <h3 class="text-lg font-semibold text-gray-900">You might also like</h3>
-                        </div>
-                        <div class="p-6 space-y-4">
-                            @foreach (var product in recommendedProducts.Take(3))
-                            {
-                                <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <div class="w-12 h-12 bg-gradient-to-br from-orange-100 to-orange-200 rounded-lg flex-shrink-0">
-                                        @if (!string.IsNullOrEmpty(product.ImageUrl))
-                                        {
-                                            <img src="@product.ImageUrl" alt="@product.Name" class="w-full h-full object-cover rounded-lg">
-                                        }
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-medium text-gray-900 truncate">@product.Name</p>
-                                        <p class="text-sm text-orange-600 font-semibold">@product.Price.ToString("F3") OMR</p>
-                                    </div>
-                                    <button @onclick="() => AddToCart(product.Id)" 
-                                            class="text-orange-600 hover:text-orange-800 transition-colors">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            }
-                        </div>
-                    </div>
                 </div>
             </div>
         }
@@ -261,12 +231,10 @@
 
 @code {
     private List<CartItemModel> cartItems = new();
-    private List<ProductModel> recommendedProducts = new();
 
     protected override async Task OnInitializedAsync()
     {
         await LoadCartItems();
-        await LoadRecommendedProducts();
     }
 
     private async Task LoadCartItems()
@@ -277,17 +245,6 @@
             new() { Id = 1, Name = "Ethiopian Yirgacheffe", Sku = "ETH001", Price = 4.900m, Quantity = 2, ImageUrl = "/images/coffee1.jpg" },
             new() { Id = 2, Name = "Colombian Supremo", Sku = "COL001", Price = 5.200m, Quantity = 1, ImageUrl = "/images/coffee2.jpg" },
             new() { Id = 3, Name = "Brazilian Santos", Sku = "BRA001", Price = 3.800m, Quantity = 3, ImageUrl = "/images/coffee3.jpg" }
-        };
-    }
-
-    private async Task LoadRecommendedProducts()
-    {
-        // Simulate loading recommended products
-        recommendedProducts = new List<ProductModel>
-        {
-            new() { Id = 4, Name = "Guatemalan Antigua", Price = 5.500m, ImageUrl = "/images/coffee4.jpg" },
-            new() { Id = 5, Name = "Costa Rican Tarrazú", Price = 6.200m, ImageUrl = "/images/coffee5.jpg" },
-            new() { Id = 6, Name = "Jamaican Blue Mountain", Price = 12.800m, ImageUrl = "/images/coffee6.jpg" }
         };
     }
 
@@ -321,32 +278,6 @@
     {
         cartItems.Clear();
         StateHasChanged();
-    }
-
-    private async Task AddToCart(int productId)
-    {
-        var product = recommendedProducts.FirstOrDefault(x => x.Id == productId);
-        if (product != null)
-        {
-            var existingItem = cartItems.FirstOrDefault(x => x.Name == product.Name);
-            if (existingItem != null)
-            {
-                existingItem.Quantity++;
-            }
-            else
-            {
-                cartItems.Add(new CartItemModel 
-                { 
-                    Id = cartItems.Count + 1, 
-                    Name = product.Name, 
-                    Sku = $"SKU{product.Id:000}", 
-                    Price = product.Price, 
-                    Quantity = 1, 
-                    ImageUrl = product.ImageUrl 
-                });
-            }
-            StateHasChanged();
-        }
     }
 
     private async Task ProceedToCheckout()

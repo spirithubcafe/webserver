@@ -8,26 +8,147 @@
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<Disable2fa> Logger
 
-<PageTitle>Disable two-factor authentication (2FA)</PageTitle>
+<PageTitle>Disable Two-Factor Authentication - SpirithubCofe</PageTitle>
 
-<StatusMessage />
-<h3>Disable two-factor authentication (2FA)</h3>
+<div class="max-w-3xl mx-auto p-6 space-y-8">
+    <!-- Page Header -->
+    <div class="bg-orange-600 rounded-2xl p-8 text-white">
+        <div class="flex items-center space-x-3">
+            <div class="p-3 bg-white/20 rounded-xl">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m0 0v2m0-2h2m-2 0h-2m9-7a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold">Disable Two-Factor Authentication</h1>
+                <p class="text-orange-100 mt-1">Turn off 2FA protection for your account</p>
+            </div>
+        </div>
+    </div>
 
-<div class="alert alert-warning" role="alert">
-    <p>
-        <strong>This action only disables 2FA.</strong>
-    </p>
-    <p>
-        Disabling 2FA does not change the keys used in authenticator apps. If you wish to change the key
-        used in an authenticator app you should <a href="Account/Manage/ResetAuthenticator">reset your authenticator keys.</a>
-    </p>
-</div>
+    <StatusMessage />
 
-<div>
-    <form @formname="disable-2fa" @onsubmit="OnSubmitAsync" method="post">
-        <AntiforgeryToken />
-        <button class="btn btn-danger" type="submit">Disable 2FA</button>
-    </form>
+    <!-- Warning Section -->
+    <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                </svg>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-lg font-medium text-yellow-800 mb-3">⚠️ Important Information</h3>
+                <div class="text-yellow-700 space-y-2">
+                    <p class="font-semibold">
+                        This action only disables 2FA - it doesn't affect your authenticator apps.
+                    </p>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li>Your authenticator app keys will remain the same</li>
+                        <li>You can re-enable 2FA at any time using the same authenticator app</li>
+                        <li>To change authenticator keys, you need to <a href="Account/Manage/ResetAuthenticator" class="text-yellow-600 hover:text-yellow-800 underline font-medium">reset your authenticator keys</a></li>
+                        <li>Your recovery codes will still be valid</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Impact -->
+    <div class="bg-red-50 border border-red-200 rounded-xl p-6">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.031 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-lg font-medium text-red-800 mb-3">Security Impact</h3>
+                <div class="text-red-700 space-y-2">
+                    <p>Disabling 2FA will reduce your account security:</p>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li>Your account will only be protected by your password</li>
+                        <li>Login will no longer require a second verification step</li>
+                        <li>Your account may be more vulnerable to unauthorized access</li>
+                        <li>We recommend keeping 2FA enabled for maximum security</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Disable Action -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Disable Two-Factor Authentication</h2>
+        
+        <div class="space-y-4">
+            <p class="text-gray-600">
+                Are you sure you want to disable two-factor authentication? This will make your account less secure.
+            </p>
+            
+            <div class="bg-gray-50 rounded-xl p-4">
+                <div class="space-y-3">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
+                        <span class="text-gray-700">2FA will be turned off immediately</span>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <div class="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
+                        <span class="text-gray-700">You can re-enable it anytime from security settings</span>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                        <span class="text-gray-700">Your authenticator app settings will be preserved</span>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                        <span class="text-gray-700">Recovery codes remain valid</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="pt-6 border-t border-gray-200">
+                <form @formname="disable-2fa" @onsubmit="OnSubmitAsync" method="post">
+                    <AntiforgeryToken />
+                    
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-sm text-gray-600 mb-2">
+                                This action will reduce your account security. Consider the risks before proceeding.
+                            </p>
+                        </div>
+                        <div class="flex space-x-3">
+                            <a href="/Account/Manage/TwoFactorAuthentication" 
+                               class="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-300">
+                                Cancel
+                            </a>
+                            <button type="submit" 
+                                    class="px-6 py-3 bg-orange-600 text-white font-semibold rounded-xl hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all duration-300">
+                                Disable 2FA
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Re-enable Information -->
+    <div class="bg-blue-50 rounded-xl border border-blue-200 p-6">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-medium text-blue-800 mb-2">Re-enabling 2FA</h3>
+                <p class="text-sm text-blue-700">
+                    You can re-enable two-factor authentication at any time from your security settings. 
+                    Your existing authenticator app setup will work without needing to scan a new QR code.
+                </p>
+            </div>
+        </div>
+    </div>
 </div>
 
 @code {
