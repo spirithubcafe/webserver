@@ -1,0 +1,511 @@
+@page "/checkout"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@layout PublicLayout
+
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Checkout</h1>
+            <p class="mt-2 text-gray-600">Complete your coffee order</p>
+        </div>
+
+        <!-- Progress Steps -->
+        <nav aria-label="Progress" class="mb-8">
+            <ol role="list" class="flex items-center">
+                <li class="relative @(currentStep >= 1 ? "pr-8 sm:pr-20" : "")">
+                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                        @if (currentStep > 1)
+                        {
+                            <div class="h-0.5 w-full bg-orange-600"></div>
+                        }
+                        else
+                        {
+                            <div class="h-0.5 w-full bg-gray-200"></div>
+                        }
+                    </div>
+                    <div class="relative w-8 h-8 flex items-center justify-center @(currentStep >= 1 ? "bg-orange-600" : "bg-white border-2 border-gray-300") rounded-full">
+                        @if (currentStep > 1)
+                        {
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        }
+                        else if (currentStep == 1)
+                        {
+                            <span class="h-2.5 w-2.5 bg-orange-600 rounded-full"></span>
+                        }
+                        else
+                        {
+                            <span class="h-2.5 w-2.5 bg-transparent rounded-full border-2 border-gray-300"></span>
+                        }
+                    </div>
+                    <span class="absolute top-10 left-1/2 transform -translate-x-1/2 w-max text-xs font-medium @(currentStep >= 1 ? "text-orange-600" : "text-gray-500")">
+                        Shipping
+                    </span>
+                </li>
+
+                <li class="relative @(currentStep >= 2 ? "pr-8 sm:pr-20" : "")">
+                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                        @if (currentStep > 2)
+                        {
+                            <div class="h-0.5 w-full bg-orange-600"></div>
+                        }
+                        else
+                        {
+                            <div class="h-0.5 w-full bg-gray-200"></div>
+                        }
+                    </div>
+                    <div class="relative w-8 h-8 flex items-center justify-center @(currentStep >= 2 ? "bg-orange-600" : "bg-white border-2 border-gray-300") rounded-full">
+                        @if (currentStep > 2)
+                        {
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        }
+                        else if (currentStep == 2)
+                        {
+                            <span class="h-2.5 w-2.5 bg-orange-600 rounded-full"></span>
+                        }
+                        else
+                        {
+                            <span class="h-2.5 w-2.5 bg-transparent rounded-full border-2 border-gray-300"></span>
+                        }
+                    </div>
+                    <span class="absolute top-10 left-1/2 transform -translate-x-1/2 w-max text-xs font-medium @(currentStep >= 2 ? "text-orange-600" : "text-gray-500")">
+                        Payment
+                    </span>
+                </li>
+
+                <li class="relative">
+                    <div class="relative w-8 h-8 flex items-center justify-center @(currentStep >= 3 ? "bg-orange-600" : "bg-white border-2 border-gray-300") rounded-full">
+                        @if (currentStep >= 3)
+                        {
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        }
+                        else
+                        {
+                            <span class="h-2.5 w-2.5 bg-transparent rounded-full border-2 border-gray-300"></span>
+                        }
+                    </div>
+                    <span class="absolute top-10 left-1/2 transform -translate-x-1/2 w-max text-xs font-medium @(currentStep >= 3 ? "text-orange-600" : "text-gray-500")">
+                        Review
+                    </span>
+                </li>
+            </ol>
+        </nav>
+
+        <div class="lg:grid lg:grid-cols-12 lg:gap-x-12 lg:items-start xl:gap-x-16">
+            <!-- Main Content -->
+            <div class="lg:col-span-7">
+                @if (currentStep == 1)
+                {
+                    <!-- Shipping Information -->
+                    <div class="bg-white shadow rounded-lg">
+                        <div class="px-6 py-8">
+                            <h2 class="text-lg font-medium text-gray-900 mb-6">Shipping Information</h2>
+
+                            @if (savedAddresses.Any())
+                            {
+                                <div class="mb-6">
+                                    <label class="text-base font-medium text-gray-900">Choose a saved address</label>
+                                    <div class="mt-4 space-y-4">
+                                        @foreach (var address in savedAddresses)
+                                        {
+                                            <div class="flex items-start">
+                                                <div class="flex items-center h-5">
+                                                    <input @onchange="() => SelectSavedAddress(address)" id="address-@address.Id" name="saved-address" type="radio" class="focus:ring-orange-500 h-4 w-4 text-orange-600 border-gray-300">
+                                                </div>
+                                                <div class="ml-3 text-sm">
+                                                    <label for="address-@address.Id" class="font-medium text-gray-700">@address.FullName</label>
+                                                    <p class="text-gray-500">@address.AddressLine1, @address.City, @address.State @address.PostalCode</p>
+                                                </div>
+                                            </div>
+                                        }
+                                        <div class="flex items-start">
+                                            <div class="flex items-center h-5">
+                                                <input @onchange="UseNewAddress" id="new-address" name="saved-address" type="radio" class="focus:ring-orange-500 h-4 w-4 text-orange-600 border-gray-300">
+                                            </div>
+                                            <div class="ml-3 text-sm">
+                                                <label for="new-address" class="font-medium text-gray-700">Use a new address</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr class="my-6">
+                            }
+
+                            <form @onsubmit="ProceedToPayment" @onsubmit:preventDefault="true">
+                                <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
+                                    <div>
+                                        <label for="first-name" class="block text-sm font-medium text-gray-700">First name</label>
+                                        <input @bind="shippingAddress.FirstName" type="text" id="first-name" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500 sm:text-sm">
+                                    </div>
+
+                                    <div>
+                                        <label for="last-name" class="block text-sm font-medium text-gray-700">Last name</label>
+                                        <input @bind="shippingAddress.LastName" type="text" id="last-name" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500 sm:text-sm">
+                                    </div>
+
+                                    <div class="sm:col-span-2">
+                                        <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
+                                        <input @bind="shippingAddress.AddressLine1" type="text" id="address" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500 sm:text-sm">
+                                    </div>
+
+                                    <div class="sm:col-span-2">
+                                        <label for="apartment" class="block text-sm font-medium text-gray-700">Apartment, suite, etc.</label>
+                                        <input @bind="shippingAddress.AddressLine2" type="text" id="apartment" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500 sm:text-sm">
+                                    </div>
+
+                                    <div>
+                                        <label for="city" class="block text-sm font-medium text-gray-700">City</label>
+                                        <input @bind="shippingAddress.City" type="text" id="city" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500 sm:text-sm">
+                                    </div>
+
+                                    <div>
+                                        <label for="state" class="block text-sm font-medium text-gray-700">State / Province</label>
+                                        <select @bind="shippingAddress.State" id="state" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500 sm:text-sm">
+                                            <option value="">Select a state</option>
+                                            <option value="Muscat">Muscat Governorate</option>
+                                            <option value="Dhofar">Dhofar Governorate</option>
+                                            <option value="Al Batinah North">Al Batinah North Governorate</option>
+                                            <option value="Al Batinah South">Al Batinah South Governorate</option>
+                                            <option value="Ad Dakhiliyah">Ad Dakhiliyah Governorate</option>
+                                            <option value="Al Wusta">Al Wusta Governorate</option>
+                                            <option value="Ash Sharqiyah North">Ash Sharqiyah North Governorate</option>
+                                            <option value="Ash Sharqiyah South">Ash Sharqiyah South Governorate</option>
+                                            <option value="Al Buraymi">Al Buraymi Governorate</option>
+                                            <option value="Ad Dhahirah">Ad Dhahirah Governorate</option>
+                                            <option value="Musandam">Musandam Governorate</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label for="postal-code" class="block text-sm font-medium text-gray-700">Postal code</label>
+                                        <input @bind="shippingAddress.PostalCode" type="text" id="postal-code" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500 sm:text-sm">
+                                    </div>
+
+                                    <div>
+                                        <label for="phone" class="block text-sm font-medium text-gray-700">Phone</label>
+                                        <input @bind="shippingAddress.PhoneNumber" type="tel" id="phone" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500 sm:text-sm">
+                                    </div>
+                                </div>
+
+                                <div class="mt-6 flex items-center">
+                                    <input @bind="saveAddress" id="save-address" type="checkbox" class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded">
+                                    <label for="save-address" class="ml-2 block text-sm text-gray-900">
+                                        Save this information for next time
+                                    </label>
+                                </div>
+
+                                <div class="mt-6">
+                                    <button @onclick="ProceedToPayment" type="submit" class="w-full bg-orange-600 border border-transparent rounded-md shadow-sm py-3 px-4 text-base font-medium text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                                        Continue to Payment
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                }
+                else if (currentStep == 2)
+                {
+                    <!-- Payment Information -->
+                    <div class="bg-white shadow rounded-lg">
+                        <div class="px-6 py-8">
+                            <h2 class="text-lg font-medium text-gray-900 mb-6">Payment Information</h2>
+
+                            <div class="space-y-6">
+                                <!-- Payment Methods -->
+                                <div>
+                                    <label class="text-base font-medium text-gray-900">Payment method</label>
+                                    <div class="mt-4 space-y-4">
+                                        <div class="flex items-center">
+                                            <input @bind="paymentMethod" id="bank-muscat" name="payment-method" type="radio" class="focus:ring-orange-500 h-4 w-4 text-orange-600 border-gray-300">
+                                            <label for="bank-muscat" class="ml-3 block text-sm font-medium text-gray-700">
+                                                <div class="flex items-center">
+                                                    <span>Bank Muscat Online Payment</span>
+                                                    <img class="ml-2 h-6" src="https://via.placeholder.com/60x24/0066cc/ffffff?text=BM" alt="Bank Muscat">
+                                                </div>
+                                            </label>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <input @bind="paymentMethod" id="cash-on-delivery" name="payment-method" type="radio" class="focus:ring-orange-500 h-4 w-4 text-orange-600 border-gray-300">
+                                            <label for="cash-on-delivery" class="ml-3 block text-sm font-medium text-gray-700">Cash on Delivery</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @if (paymentMethod == "bank-muscat")
+                                {
+                                    <div class="bg-blue-50 border border-blue-200 rounded-md p-4">
+                                        <div class="flex">
+                                            <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            <div class="ml-3">
+                                                <h3 class="text-sm font-medium text-blue-800">Secure Bank Payment</h3>
+                                                <div class="mt-2 text-sm text-blue-700">
+                                                    <p>You will be redirected to Bank Muscat's secure payment gateway to complete your transaction.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else if (paymentMethod == "cash-on-delivery")
+                                {
+                                    <div class="bg-green-50 border border-green-200 rounded-md p-4">
+                                        <div class="flex">
+                                            <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            <div class="ml-3">
+                                                <h3 class="text-sm font-medium text-green-800">Cash on Delivery</h3>
+                                                <div class="mt-2 text-sm text-green-700">
+                                                    <p>Pay with cash when your order is delivered. Additional delivery fee may apply.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+
+                                <div class="flex space-x-4">
+                                    <button @onclick="BackToShipping" class="flex-1 bg-white border border-gray-300 rounded-md shadow-sm py-3 px-4 text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                                        Back to Shipping
+                                    </button>
+                                    <button @onclick="ProceedToReview" class="flex-1 bg-orange-600 border border-transparent rounded-md shadow-sm py-3 px-4 text-base font-medium text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                                        Review Order
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else if (currentStep == 3)
+                {
+                    <!-- Order Review -->
+                    <div class="bg-white shadow rounded-lg">
+                        <div class="px-6 py-8">
+                            <h2 class="text-lg font-medium text-gray-900 mb-6">Review Your Order</h2>
+
+                            <!-- Shipping Address -->
+                            <div class="mb-6">
+                                <h3 class="text-sm font-medium text-gray-900">Shipping Address</h3>
+                                <div class="mt-2 text-sm text-gray-600">
+                                    <p>@shippingAddress.FirstName @shippingAddress.LastName</p>
+                                    <p>@shippingAddress.AddressLine1</p>
+                                    @if (!string.IsNullOrEmpty(shippingAddress.AddressLine2))
+                                    {
+                                        <p>@shippingAddress.AddressLine2</p>
+                                    }
+                                    <p>@shippingAddress.City, @shippingAddress.State @shippingAddress.PostalCode</p>
+                                    <p>@shippingAddress.PhoneNumber</p>
+                                </div>
+                                <button @onclick="BackToShipping" class="mt-2 text-sm font-medium text-orange-600 hover:text-orange-500">
+                                    Edit
+                                </button>
+                            </div>
+
+                            <!-- Payment Method -->
+                            <div class="mb-6">
+                                <h3 class="text-sm font-medium text-gray-900">Payment Method</h3>
+                                <div class="mt-2 text-sm text-gray-600">
+                                    <p>@(paymentMethod == "bank-muscat" ? "Bank Muscat Online Payment" : "Cash on Delivery")</p>
+                                </div>
+                                <button @onclick="BackToPayment" class="mt-2 text-sm font-medium text-orange-600 hover:text-orange-500">
+                                    Edit
+                                </button>
+                            </div>
+
+                            <div class="flex space-x-4">
+                                <button @onclick="BackToPayment" class="flex-1 bg-white border border-gray-300 rounded-md shadow-sm py-3 px-4 text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                                    Back to Payment
+                                </button>
+                                <button @onclick="PlaceOrder" class="flex-1 bg-orange-600 border border-transparent rounded-md shadow-sm py-3 px-4 text-base font-medium text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                                    Place Order
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Order Summary -->
+            <section aria-labelledby="summary-heading" class="mt-16 bg-gray-50 rounded-lg px-4 py-6 sm:p-6 lg:p-8 lg:mt-0 lg:col-span-5">
+                <h2 id="summary-heading" class="text-lg font-medium text-gray-900">Order summary</h2>
+
+                <ul role="list" class="mt-6 divide-y divide-gray-200">
+                    @foreach (var item in cartItems)
+                    {
+                        <li class="py-6 flex">
+                            <div class="flex-shrink-0 w-24 h-24 border border-gray-200 rounded-md overflow-hidden">
+                                <img src="@item.ImageUrl" alt="@item.Name" class="w-full h-full object-center object-cover">
+                            </div>
+
+                            <div class="ml-4 flex-1 flex flex-col">
+                                <div>
+                                    <div class="flex justify-between text-base font-medium text-gray-900">
+                                        <h3>@item.Name</h3>
+                                        <p class="ml-4">@((item.Price * item.Quantity).ToString("C", new System.Globalization.CultureInfo("ar-OM")))</p>
+                                    </div>
+                                    <p class="mt-1 text-sm text-gray-500">@item.Category</p>
+                                </div>
+                                <div class="flex-1 flex items-end justify-between text-sm">
+                                    <p class="text-gray-500">Qty @item.Quantity</p>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+
+                <dl class="mt-6 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <dt class="text-sm text-gray-600">Subtotal</dt>
+                        <dd class="text-sm font-medium text-gray-900">@subtotal.ToString("C", new System.Globalization.CultureInfo("ar-OM"))</dd>
+                    </div>
+                    <div class="border-t border-gray-200 pt-4 flex items-center justify-between">
+                        <dt class="flex items-center text-sm text-gray-600">
+                            <span>Shipping</span>
+                        </dt>
+                        <dd class="text-sm font-medium text-gray-900">@shippingCost.ToString("C", new System.Globalization.CultureInfo("ar-OM"))</dd>
+                    </div>
+                    <div class="border-t border-gray-200 pt-4 flex items-center justify-between">
+                        <dt class="flex text-sm text-gray-600">
+                            <span>Tax</span>
+                        </dt>
+                        <dd class="text-sm font-medium text-gray-900">@taxAmount.ToString("C", new System.Globalization.CultureInfo("ar-OM"))</dd>
+                    </div>
+                    <div class="border-t border-gray-200 pt-4 flex items-center justify-between">
+                        <dt class="text-base font-medium text-gray-900">Order total</dt>
+                        <dd class="text-base font-medium text-gray-900">@total.ToString("C", new System.Globalization.CultureInfo("ar-OM"))</dd>
+                    </div>
+                </dl>
+            </section>
+        </div>
+    </div>
+</div>
+
+@code {
+    private int currentStep = 1;
+    private List<CartItem> cartItems = new();
+    private List<SavedAddress> savedAddresses = new();
+    private ShippingAddress shippingAddress = new();
+    private string paymentMethod = "";
+    private bool saveAddress = false;
+
+    private decimal subtotal = 0;
+    private decimal shippingCost = 2.500m;
+    private decimal taxAmount = 0;
+    private decimal total = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCartItems();
+        await LoadSavedAddresses();
+        CalculateTotals();
+    }
+
+    private async Task LoadCartItems()
+    {
+        // TODO: Load from actual cart service/API
+        cartItems = new List<CartItem>
+        {
+            new CartItem { Id = 1, Name = "Ethiopian Yirgacheffe", Category = "Coffee Beans", Price = 4.900m, Quantity = 2, ImageUrl = "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&h=400&fit=crop&crop=center" },
+            new CartItem { Id = 2, Name = "Colombian Supremo", Category = "Coffee Beans", Price = 5.200m, Quantity = 1, ImageUrl = "https://images.unsplash.com/photo-1587734195503-904fca47e0df?w=400&h=400&fit=crop&crop=center" }
+        };
+    }
+
+    private async Task LoadSavedAddresses()
+    {
+        // TODO: Load from actual address service/API
+        savedAddresses = new List<SavedAddress>
+        {
+            new SavedAddress { Id = 1, FullName = "Ahmed Al-Rashid", AddressLine1 = "Building 123, Way 456", City = "Muscat", State = "Muscat", PostalCode = "112" },
+            new SavedAddress { Id = 2, FullName = "Ahmed Al-Rashid", AddressLine1 = "Office Address", City = "Salalah", State = "Dhofar", PostalCode = "211" }
+        };
+    }
+
+    private void CalculateTotals()
+    {
+        subtotal = cartItems.Sum(item => item.Price * item.Quantity);
+        taxAmount = subtotal * 0.05m; // 5% tax
+        total = subtotal + shippingCost + taxAmount;
+    }
+
+    private void SelectSavedAddress(SavedAddress address)
+    {
+        shippingAddress.FirstName = address.FullName.Split(' ')[0];
+        shippingAddress.LastName = string.Join(" ", address.FullName.Split(' ').Skip(1));
+        shippingAddress.AddressLine1 = address.AddressLine1;
+        shippingAddress.City = address.City;
+        shippingAddress.State = address.State;
+        shippingAddress.PostalCode = address.PostalCode;
+    }
+
+    private void UseNewAddress()
+    {
+        shippingAddress = new ShippingAddress();
+    }
+
+    private async Task ProceedToPayment()
+    {
+        // TODO: Validate shipping address
+        currentStep = 2;
+    }
+
+    private async Task BackToShipping()
+    {
+        currentStep = 1;
+    }
+
+    private async Task ProceedToReview()
+    {
+        // TODO: Validate payment method
+        currentStep = 3;
+    }
+
+    private async Task BackToPayment()
+    {
+        currentStep = 2;
+    }
+
+    private async Task PlaceOrder()
+    {
+        // TODO: Process order and payment
+        // Navigate to order confirmation page
+    }
+
+    public class CartItem
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = "";
+        public string Category { get; set; } = "";
+        public decimal Price { get; set; }
+        public int Quantity { get; set; }
+        public string ImageUrl { get; set; } = "";
+    }
+
+    public class SavedAddress
+    {
+        public int Id { get; set; }
+        public string FullName { get; set; } = "";
+        public string AddressLine1 { get; set; } = "";
+        public string City { get; set; } = "";
+        public string State { get; set; } = "";
+        public string PostalCode { get; set; } = "";
+    }
+
+    public class ShippingAddress
+    {
+        public string FirstName { get; set; } = "";
+        public string LastName { get; set; } = "";
+        public string AddressLine1 { get; set; } = "";
+        public string? AddressLine2 { get; set; }
+        public string City { get; set; } = "";
+        public string State { get; set; } = "";
+        public string PostalCode { get; set; } = "";
+        public string PhoneNumber { get; set; } = "";
+    }
+}

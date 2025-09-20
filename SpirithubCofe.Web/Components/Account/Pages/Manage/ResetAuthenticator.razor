@@ -9,25 +9,124 @@
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<ResetAuthenticator> Logger
 
-<PageTitle>Reset authenticator key</PageTitle>
+<PageTitle>Reset Authenticator Key - SpirithubCofe</PageTitle>
 
-<StatusMessage />
-<h3>Reset authenticator key</h3>
-<div class="alert alert-warning" role="alert">
-    <p>
-        <span class="glyphicon glyphicon-warning-sign"></span>
-        <strong>If you reset your authenticator key your authenticator app will not work until you reconfigure it.</strong>
-    </p>
-    <p>
-        This process disables 2FA until you verify your authenticator app.
-        If you do not complete your authenticator app configuration you may lose access to your account.
-    </p>
-</div>
-<div>
-    <form @formname="reset-authenticator" @onsubmit="OnSubmitAsync" method="post">
-        <AntiforgeryToken />
-        <button class="btn btn-danger" type="submit">Reset authenticator key</button>
-    </form>
+<div class="max-w-3xl mx-auto p-6 space-y-8">
+    <!-- Page Header -->
+    <div class="bg-red-600 rounded-2xl p-8 text-white">
+        <div class="flex items-center space-x-3">
+            <div class="p-3 bg-white/20 rounded-xl">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold">Reset Authenticator Key</h1>
+                <p class="text-red-100 mt-1">Reset your two-factor authentication setup</p>
+            </div>
+        </div>
+    </div>
+
+    <StatusMessage />
+
+    <!-- Warning Section -->
+    <div class="bg-red-50 border border-red-200 rounded-xl p-6">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                </svg>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-lg font-medium text-red-800 mb-3">⚠️ Important Security Warning</h3>
+                <div class="text-red-700 space-y-2">
+                    <p class="font-semibold">
+                        If you reset your authenticator key, your authenticator app will not work until you reconfigure it.
+                    </p>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li>This process will disable 2FA until you verify your authenticator app</li>
+                        <li>If you do not complete your authenticator app configuration, you may lose access to your account</li>
+                        <li>You will need to scan a new QR code or enter a new key in your authenticator app</li>
+                        <li>All existing recovery codes will remain valid</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset Action -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Reset Process</h2>
+        
+        <div class="space-y-4">
+            <p class="text-gray-600">
+                Resetting your authenticator key will:
+            </p>
+            
+            <div class="bg-gray-50 rounded-xl p-4">
+                <div class="space-y-3">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-2 h-2 bg-red-500 rounded-full mt-2"></div>
+                        <span class="text-gray-700">Immediately disable two-factor authentication</span>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <div class="w-2 h-2 bg-red-500 rounded-full mt-2"></div>
+                        <span class="text-gray-700">Generate a new authenticator key</span>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <div class="w-2 h-2 bg-red-500 rounded-full mt-2"></div>
+                        <span class="text-gray-700">Require you to set up your authenticator app again</span>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                        <span class="text-gray-700">Keep your existing recovery codes valid</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="pt-6 border-t border-gray-200">
+                <form @formname="reset-authenticator" @onsubmit="OnSubmitAsync" method="post">
+                    <AntiforgeryToken />
+                    
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-sm text-gray-600 mb-2">
+                                Only proceed if you understand the consequences and want to reset your authenticator key.
+                            </p>
+                        </div>
+                        <div class="flex space-x-3">
+                            <a href="/Account/Manage/TwoFactorAuthentication" 
+                               class="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-300">
+                                Cancel
+                            </a>
+                            <button type="submit" 
+                                    class="px-6 py-3 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-300">
+                                Reset Authenticator Key
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Next Steps Info -->
+    <div class="bg-blue-50 rounded-xl border border-blue-200 p-6">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-medium text-blue-800 mb-2">After Reset</h3>
+                <p class="text-sm text-blue-700">
+                    After resetting, you'll be redirected to set up your authenticator app with a new QR code and key. 
+                    Make sure to have your authenticator app ready before proceeding.
+                </p>
+            </div>
+        </div>
+    </div>
 </div>
 
 @code {

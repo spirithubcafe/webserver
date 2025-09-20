@@ -1,0 +1,390 @@
+@page "/cart"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@layout PublicLayout
+
+<div class="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50">
+    <!-- Header Section -->
+    <div class="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold">Shopping Cart</h1>
+                    <p class="mt-2 text-orange-100">@cartItems.Count item@(cartItems.Count != 1 ? "s" : "") in your cart</p>
+                </div>
+                <div class="hidden md:flex items-center space-x-4">
+                    <div class="bg-white/20 rounded-lg px-4 py-2">
+                        <span class="text-sm font-medium">Subtotal</span>
+                        <div class="text-xl font-bold">@GetSubtotal().ToString("F3") OMR</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        @if (!cartItems.Any())
+        {
+            <!-- Empty Cart State -->
+            <div class="text-center py-16">
+                <div class="max-w-md mx-auto">
+                    <div class="w-32 h-32 mx-auto mb-8 bg-gradient-to-br from-orange-100 to-orange-200 rounded-full flex items-center justify-center">
+                        <svg class="w-16 h-16 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5-6m0 0h14.5M17 21a2 2 0 100-4 2 2 0 000 4zM9 21a2 2 0 100-4 2 2 0 000 4z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Your cart is empty</h3>
+                    <p class="text-gray-600 mb-8">Looks like you haven't added any items to your cart yet. Start shopping to fill it up!</p>
+                    <a href="/" class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-orange-600 to-orange-700 text-white font-semibold rounded-xl hover:from-orange-700 hover:to-orange-800 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                        Continue Shopping
+                    </a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <!-- Cart Items Grid -->
+            <div class="lg:grid lg:grid-cols-12 lg:gap-8">
+                <!-- Cart Items -->
+                <div class="lg:col-span-8">
+                    <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+                        <div class="px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
+                            <h2 class="text-xl font-bold text-gray-900">Cart Items</h2>
+                        </div>
+                        
+                        <div class="divide-y divide-gray-100">
+                            @foreach (var item in cartItems)
+                            {
+                                <div class="p-6 hover:bg-gray-50 transition-colors duration-200">
+                                    <div class="flex items-center space-x-6">
+                                        <!-- Product Image -->
+                                        <div class="flex-shrink-0 w-24 h-24 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl overflow-hidden shadow-md">
+                                            @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                            {
+                                                <img src="@item.ImageUrl" alt="@item.Name" class="w-full h-full object-cover">
+                                            }
+                                            else
+                                            {
+                                                <div class="w-full h-full flex items-center justify-center">
+                                                    <svg class="w-8 h-8 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                    </svg>
+                                                </div>
+                                            }
+                                        </div>
+
+                                        <!-- Product Details -->
+                                        <div class="flex-1 min-w-0">
+                                            <h3 class="text-lg font-semibold text-gray-900 truncate">@item.Name</h3>
+                                            <p class="text-sm text-gray-500 mt-1">SKU: @item.Sku</p>
+                                            <div class="mt-2">
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                    In Stock
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Quantity Controls -->
+                                        <div class="flex items-center space-x-3">
+                                            <div class="flex items-center bg-gray-100 rounded-xl">
+                                                <button @onclick="() => DecreaseQuantity(item.Id)" 
+                                                        class="p-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-l-xl transition-colors">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
+                                                    </svg>
+                                                </button>
+                                                <div class="px-4 py-2 text-center min-w-[3rem] font-semibold text-gray-900">
+                                                    @item.Quantity
+                                                </div>
+                                                <button @onclick="() => IncreaseQuantity(item.Id)" 
+                                                        class="p-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-r-xl transition-colors">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Price & Actions -->
+                                        <div class="text-right">
+                                            <div class="text-lg font-bold text-gray-900">
+                                                @((item.Price * item.Quantity).ToString("F3")) OMR
+                                            </div>
+                                            <div class="text-sm text-gray-500 mt-1">
+                                                @item.Price.ToString("F3") OMR each
+                                            </div>
+                                            <button @onclick="() => RemoveFromCart(item.Id)" 
+                                                    class="mt-3 inline-flex items-center text-sm text-red-600 hover:text-red-800 font-medium transition-colors">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                </svg>
+                                                Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Shopping Actions -->
+                    <div class="mt-6 flex flex-col sm:flex-row gap-4">
+                        <a href="/" class="flex-1 inline-flex items-center justify-center px-6 py-3 border-2 border-orange-200 text-orange-700 font-semibold rounded-xl hover:bg-orange-50 transition-all duration-300">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                            </svg>
+                            Continue Shopping
+                        </a>
+                        <button @onclick="ClearCart" class="flex-1 inline-flex items-center justify-center px-6 py-3 border-2 border-red-200 text-red-700 font-semibold rounded-xl hover:bg-red-50 transition-all duration-300">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                            Clear Cart
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="lg:col-span-4 mt-8 lg:mt-0">
+                    <div class="bg-white rounded-2xl shadow-xl overflow-hidden sticky top-8">
+                        <div class="px-6 py-4 bg-gradient-to-r from-orange-600 to-orange-700 text-white">
+                            <h2 class="text-xl font-bold">Order Summary</h2>
+                        </div>
+                        
+                        <div class="p-6 space-y-4">
+                            <!-- Items Summary -->
+                            <div class="space-y-3">
+                                @foreach (var item in cartItems)
+                                {
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">@item.Name × @item.Quantity</span>
+                                        <span class="font-medium">@((item.Price * item.Quantity).ToString("F3")) OMR</span>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="border-t border-gray-200 pt-4 space-y-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Subtotal</span>
+                                    <span class="font-medium">@GetSubtotal().ToString("F3") OMR</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Shipping</span>
+                                    <span class="font-medium text-green-600">Free</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Tax</span>
+                                    <span class="font-medium">@GetTax().ToString("F3") OMR</span>
+                                </div>
+                                
+                                <div class="border-t border-gray-200 pt-3">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-lg font-bold text-gray-900">Total</span>
+                                        <span class="text-2xl font-bold text-orange-600">@GetTotal().ToString("F3") OMR</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Checkout Button -->
+                            <div class="pt-4">
+                                <button @onclick="ProceedToCheckout" 
+                                        class="w-full bg-gradient-to-r from-orange-600 to-orange-700 text-white font-bold py-4 px-6 rounded-xl hover:from-orange-700 hover:to-orange-800 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                    <div class="flex items-center justify-center">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                        </svg>
+                                        Secure Checkout
+                                    </div>
+                                </button>
+                            </div>
+
+                            <!-- Security Badges -->
+                            <div class="pt-4 border-t border-gray-200">
+                                <div class="flex items-center justify-center space-x-4 text-xs text-gray-500">
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-1 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        Secure Payment
+                                    </div>
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-1 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/>
+                                        </svg>
+                                        Free Delivery
+                                    </div>
+                                </div>
+                                <div class="text-center mt-2">
+                                    <span class="text-xs text-gray-400">Protected by Bank Muscat SSL</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recommended Products -->
+                    <div class="mt-8 bg-white rounded-2xl shadow-xl overflow-hidden">
+                        <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-900">You might also like</h3>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            @foreach (var product in recommendedProducts.Take(3))
+                            {
+                                <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-orange-100 to-orange-200 rounded-lg flex-shrink-0">
+                                        @if (!string.IsNullOrEmpty(product.ImageUrl))
+                                        {
+                                            <img src="@product.ImageUrl" alt="@product.Name" class="w-full h-full object-cover rounded-lg">
+                                        }
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-gray-900 truncate">@product.Name</p>
+                                        <p class="text-sm text-orange-600 font-semibold">@product.Price.ToString("F3") OMR</p>
+                                    </div>
+                                    <button @onclick="() => AddToCart(product.Id)" 
+                                            class="text-orange-600 hover:text-orange-800 transition-colors">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<CartItemModel> cartItems = new();
+    private List<ProductModel> recommendedProducts = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCartItems();
+        await LoadRecommendedProducts();
+    }
+
+    private async Task LoadCartItems()
+    {
+        // Simulate loading cart items - replace with actual data service
+        cartItems = new List<CartItemModel>
+        {
+            new() { Id = 1, Name = "Ethiopian Yirgacheffe", Sku = "ETH001", Price = 4.900m, Quantity = 2, ImageUrl = "/images/coffee1.jpg" },
+            new() { Id = 2, Name = "Colombian Supremo", Sku = "COL001", Price = 5.200m, Quantity = 1, ImageUrl = "/images/coffee2.jpg" },
+            new() { Id = 3, Name = "Brazilian Santos", Sku = "BRA001", Price = 3.800m, Quantity = 3, ImageUrl = "/images/coffee3.jpg" }
+        };
+    }
+
+    private async Task LoadRecommendedProducts()
+    {
+        // Simulate loading recommended products
+        recommendedProducts = new List<ProductModel>
+        {
+            new() { Id = 4, Name = "Guatemalan Antigua", Price = 5.500m, ImageUrl = "/images/coffee4.jpg" },
+            new() { Id = 5, Name = "Costa Rican Tarrazú", Price = 6.200m, ImageUrl = "/images/coffee5.jpg" },
+            new() { Id = 6, Name = "Jamaican Blue Mountain", Price = 12.800m, ImageUrl = "/images/coffee6.jpg" }
+        };
+    }
+
+    private async Task IncreaseQuantity(int itemId)
+    {
+        var item = cartItems.FirstOrDefault(x => x.Id == itemId);
+        if (item != null)
+        {
+            item.Quantity++;
+            StateHasChanged();
+        }
+    }
+
+    private async Task DecreaseQuantity(int itemId)
+    {
+        var item = cartItems.FirstOrDefault(x => x.Id == itemId);
+        if (item != null && item.Quantity > 1)
+        {
+            item.Quantity--;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RemoveFromCart(int itemId)
+    {
+        cartItems.RemoveAll(x => x.Id == itemId);
+        StateHasChanged();
+    }
+
+    private async Task ClearCart()
+    {
+        cartItems.Clear();
+        StateHasChanged();
+    }
+
+    private async Task AddToCart(int productId)
+    {
+        var product = recommendedProducts.FirstOrDefault(x => x.Id == productId);
+        if (product != null)
+        {
+            var existingItem = cartItems.FirstOrDefault(x => x.Name == product.Name);
+            if (existingItem != null)
+            {
+                existingItem.Quantity++;
+            }
+            else
+            {
+                cartItems.Add(new CartItemModel 
+                { 
+                    Id = cartItems.Count + 1, 
+                    Name = product.Name, 
+                    Sku = $"SKU{product.Id:000}", 
+                    Price = product.Price, 
+                    Quantity = 1, 
+                    ImageUrl = product.ImageUrl 
+                });
+            }
+            StateHasChanged();
+        }
+    }
+
+    private async Task ProceedToCheckout()
+    {
+        // Navigate to checkout page
+        // NavigationManager.NavigateTo("/checkout");
+    }
+
+    private decimal GetSubtotal()
+    {
+        return cartItems.Sum(x => x.Price * x.Quantity);
+    }
+
+    private decimal GetTax()
+    {
+        return GetSubtotal() * 0.05m; // 5% tax
+    }
+
+    private decimal GetTotal()
+    {
+        return GetSubtotal() + GetTax();
+    }
+
+    public class CartItemModel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = "";
+        public string Sku { get; set; } = "";
+        public decimal Price { get; set; }
+        public int Quantity { get; set; }
+        public string? ImageUrl { get; set; }
+    }
+
+    public class ProductModel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = "";
+        public decimal Price { get; set; }
+        public string? ImageUrl { get; set; }
+    }
+}

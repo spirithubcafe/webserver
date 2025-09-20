@@ -5,7 +5,10 @@
 @using System.Text
 @using System.Text.Encodings.Web
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
 @using SpirithubCofe.Web.Data
+@using SpirithubCofe.Web.Components.Account.Shared
 
 @inject UserManager<ApplicationUser> UserManager
 @inject IdentityUserAccessor UserAccessor
@@ -13,7 +16,7 @@
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<EnableAuthenticator> Logger
 
-<PageTitle>Configure authenticator app</PageTitle>
+<PageTitle>Configure Authenticator App - SpirithubCofe</PageTitle>
 
 @if (recoveryCodes is not null)
 {
@@ -21,48 +24,181 @@
 }
 else
 {
-    <StatusMessage Message="@message" />
-    <h3>Configure authenticator app</h3>
-    <div>
-        <p>To use an authenticator app go through the following steps:</p>
-        <ol class="list">
-            <li>
-                <p>
-                    Download a two-factor authenticator app like Microsoft Authenticator for
-                    <a href="https://go.microsoft.com/fwlink/?Linkid=825072">Android</a> and
-                    <a href="https://go.microsoft.com/fwlink/?Linkid=825073">iOS</a> or
-                    Google Authenticator for
-                    <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en">Android</a> and
-                    <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8">iOS</a>.
-                </p>
-            </li>
-            <li>
-                <p>Scan the QR Code or enter this key <kbd>@sharedKey</kbd> into your two factor authenticator app. Spaces and casing do not matter.</p>
-                <div class="alert alert-info">Learn how to <a href="https://go.microsoft.com/fwlink/?Linkid=852423">enable QR code generation</a>.</div>
-                <div></div>
-                <div data-url="@authenticatorUri"></div>
-            </li>
-            <li>
-                <p>
-                    Once you have scanned the QR code or input the key above, your two factor authentication app will provide you
-                    with a unique code. Enter the code in the confirmation box below.
-                </p>
-                <div class="row">
-                    <div class="col-xl-6">
-                        <EditForm Model="Input" FormName="send-code" OnValidSubmit="OnValidSubmitAsync" method="post">
-                            <DataAnnotationsValidator />
-                            <div class="form-floating mb-3">
-                                <InputText @bind-Value="Input.Code" id="Input.Code" class="form-control" autocomplete="off" placeholder="Enter the code" />
-                                <label for="Input.Code" class="control-label form-label">Verification Code</label>
-                                <ValidationMessage For="() => Input.Code" class="text-danger" />
+    <div class="max-w-4xl mx-auto p-6 space-y-8">
+        <!-- Page Header -->
+        <div class="bg-green-600 rounded-2xl p-8 text-white">
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="p-3 bg-white/20 rounded-xl">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold">Configure Authenticator App</h1>
+                    <p class="text-green-100 mt-1">Set up your authenticator app for enhanced security</p>
+                </div>
+            </div>
+        </div>
+
+        <StatusMessage Message="@message" />
+
+        <!-- Setup Instructions -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-6">Setup Instructions</h2>
+            
+            <div class="space-y-6">
+                <!-- Step 1: Download App -->
+                <div class="flex space-x-4">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">
+                            1
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-medium text-gray-900 mb-3">Download an Authenticator App</h3>
+                        <p class="text-gray-600 mb-4">Choose one of these recommended authenticator apps:</p>
+                        
+                        <!-- App Options -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="border border-gray-200 rounded-xl p-4">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                                        <span class="text-white font-bold text-sm">M</span>
+                                    </div>
+                                    <h4 class="font-semibold text-gray-900">Microsoft Authenticator</h4>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <a href="https://go.microsoft.com/fwlink/?Linkid=825072" 
+                                       class="text-blue-600 hover:text-blue-800 text-sm font-medium">Android</a>
+                                    <span class="text-gray-400">|</span>
+                                    <a href="https://go.microsoft.com/fwlink/?Linkid=825073" 
+                                       class="text-blue-600 hover:text-blue-800 text-sm font-medium">iOS</a>
+                                </div>
                             </div>
-                            <button type="submit" class="w-100 btn btn-lg btn-primary">Verify</button>
-                            <ValidationSummary class="text-danger" role="alert" />
-                        </EditForm>
+                            
+                            <div class="border border-gray-200 rounded-xl p-4">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center">
+                                        <span class="text-white font-bold text-sm">G</span>
+                                    </div>
+                                    <h4 class="font-semibold text-gray-900">Google Authenticator</h4>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en" 
+                                       class="text-blue-600 hover:text-blue-800 text-sm font-medium">Android</a>
+                                    <span class="text-gray-400">|</span>
+                                    <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8" 
+                                       class="text-blue-600 hover:text-blue-800 text-sm font-medium">iOS</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </li>
-        </ol>
+
+                <!-- Step 2: Scan QR Code -->
+                <div class="flex space-x-4">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">
+                            2
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-medium text-gray-900 mb-3">Scan QR Code or Enter Key</h3>
+                        
+                        <div class="bg-gray-50 rounded-xl p-6 mb-4">
+                            <div class="text-center">
+                                <div class="bg-white rounded-lg p-4 inline-block mb-4">
+                                    <div data-url="@authenticatorUri" class="w-48 h-48 bg-gray-200 rounded-lg flex items-center justify-center">
+                                        <span class="text-gray-500">QR Code</span>
+                                    </div>
+                                </div>
+                                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                                    <p class="text-sm text-blue-800 mb-2">
+                                        <strong>Learn how to</strong> 
+                                        <a href="https://go.microsoft.com/fwlink/?Linkid=852423" 
+                                           class="text-blue-600 hover:text-blue-800 underline">enable QR code generation</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+                            <h4 class="font-medium text-yellow-800 mb-2">Manual Entry Key:</h4>
+                            <div class="bg-white rounded-lg p-3 font-mono text-lg tracking-wider text-center border">
+                                @sharedKey
+                            </div>
+                            <p class="text-sm text-yellow-700 mt-2">
+                                Spaces and casing do not matter when entering this key manually.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Verify -->
+                <div class="flex space-x-4">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">
+                            3
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-medium text-gray-900 mb-3">Verify Your Setup</h3>
+                        <p class="text-gray-600 mb-4">
+                            Once you have scanned the QR code or entered the key above, your authenticator app will provide you
+                            with a unique code. Enter the code in the verification box below.
+                        </p>
+                        
+                        <div class="bg-white border border-gray-200 rounded-xl p-6">
+                            <EditForm Model="Input" FormName="send-code" OnValidSubmit="OnValidSubmitAsync" method="post">
+                                <DataAnnotationsValidator />
+                                
+                                <div class="space-y-4">
+                                    <div>
+                                        <label for="Input.Code" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Verification Code
+                                        </label>
+                                        <InputText @bind-Value="Input.Code" 
+                                                   id="Input.Code" 
+                                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-center text-lg font-mono tracking-wider" 
+                                                   autocomplete="off" 
+                                                   placeholder="Enter 6-digit code" 
+                                                   maxlength="7" />
+                                        <ValidationMessage For="() => Input.Code" class="text-red-600 text-sm mt-1" />
+                                    </div>
+                                    
+                                    <ValidationSummary class="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700" role="alert" />
+                                    
+                                    <button type="submit" 
+                                            class="w-full py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-300">
+                                        Verify and Enable 2FA
+                                    </button>
+                                </div>
+                            </EditForm>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Tips -->
+        <div class="bg-blue-50 rounded-xl border border-blue-200 p-6">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-blue-800 mb-2">Security Tips</h3>
+                    <ul class="text-sm text-blue-700 space-y-1">
+                        <li>• Keep your authenticator app secure and up to date</li>
+                        <li>• Save your recovery codes in a safe place</li>
+                        <li>• Consider setting up multiple authenticator apps for backup</li>
+                        <li>• Never share your authenticator codes with anyone</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 }
 
