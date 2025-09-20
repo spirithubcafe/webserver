@@ -1,0 +1,181 @@
+@inherits LayoutComponentBase
+
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-50">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link rel="stylesheet" href="dist.css" />
+    <link rel="stylesheet" href="@Assets["SpirithubCofe.Web.styles.css"]" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <PageTitle>Admin - SpirithubCofe</PageTitle>
+</head>
+<body class="h-full">
+    <div class="flex h-full">
+        <!-- Sidebar -->
+        <div class="fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 text-white">
+            <!-- Logo -->
+            <div class="flex items-center justify-center h-16 bg-gray-800">
+                <h1 class="text-xl font-bold text-amber-400">SpirithubCofe Admin</h1>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="mt-8 px-4 space-y-2">
+                <!-- Dashboard -->
+                <a href="/admin" class="flex items-center px-4 py-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors">
+                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"></path>
+                    </svg>
+                    Dashboard
+                </a>
+
+                <!-- Products -->
+                <div class="space-y-1">
+                    <div class="flex items-center px-4 py-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors cursor-pointer" onclick="toggleSubmenu('products')">
+                        <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 2L3 7v11a2 2 0 002 2h10a2 2 0 002-2V7l-7-5zM8 15a1 1 0 002 0v-3a1 1 0 00-2 0v3z" clip-rule="evenodd"></path>
+                        </svg>
+                        Products
+                        <svg class="w-4 h-4 ml-auto transition-transform" fill="currentColor" viewBox="0 0 20 20" id="products-arrow">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <div class="hidden ml-8 space-y-1" id="products-submenu">
+                        <a href="/admin/products" class="block px-4 py-2 text-sm text-gray-400 rounded hover:bg-gray-700 hover:text-white transition-colors">All Products</a>
+                        <a href="/admin/products/create" class="block px-4 py-2 text-sm text-gray-400 rounded hover:bg-gray-700 hover:text-white transition-colors">Add Product</a>
+                        <a href="/admin/categories" class="block px-4 py-2 text-sm text-gray-400 rounded hover:bg-gray-700 hover:text-white transition-colors">Categories</a>
+                    </div>
+                </div>
+
+                <!-- Orders -->
+                <a href="/admin/orders" class="flex items-center px-4 py-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors">
+                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"></path>
+                    </svg>
+                    Orders
+                </a>
+
+                <!-- Users -->
+                <a href="/admin/users" class="flex items-center px-4 py-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors">
+                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 12a5 5 0 100-10 5 5 0 000 10zm0-8a3 3 0 110 6 3 3 0 010-6zm7 12a7 7 0 11-14 0h14z"></path>
+                    </svg>
+                    Users
+                </a>
+
+                <!-- Reports -->
+                <a href="/admin/reports" class="flex items-center px-4 py-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors">
+                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"></path>
+                    </svg>
+                    Reports
+                </a>
+
+                <!-- Settings -->
+                <a href="/admin/settings" class="flex items-center px-4 py-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors">
+                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path>
+                    </svg>
+                    Settings
+                </a>
+            </nav>
+
+            <!-- User Info -->
+            <div class="absolute bottom-0 left-0 right-0 p-4 bg-gray-800">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center">
+                            <span class="text-sm font-medium text-white">A</span>
+                        </div>
+                    </div>
+                    <div class="ml-3 flex-1 min-w-0">
+                        <AuthorizeView>
+                            <Authorized>
+                                <p class="text-sm font-medium text-white truncate">@context.User.Identity?.Name</p>
+                                <p class="text-xs text-gray-400 truncate">Administrator</p>
+                            </Authorized>
+                        </AuthorizeView>
+                    </div>
+                    <form action="Account/Logout" method="post" class="ml-3">
+                        <AntiforgeryToken />
+                        <input type="hidden" name="ReturnUrl" value="/" />
+                        <button type="submit" class="text-gray-400 hover:text-white">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 ml-64">
+            <!-- Top Bar -->
+            <header class="bg-white shadow-sm border-b border-gray-200">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <div>
+                        <h1 class="text-2xl font-semibold text-gray-900">Dashboard</h1>
+                        <p class="text-sm text-gray-500">Manage your coffee shop</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <!-- Back to Website -->
+                        <a href="/" class="text-gray-500 hover:text-gray-700 text-sm">
+                            <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M7.707 14.707a1 1 0 01-1.414 0L2.586 11H12a1 1 0 110 2H2.586l3.707 3.707a1 1 0 01-1.414 1.414l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L2.586 9H12a1 1 0 110 2H7.707z" clip-rule="evenodd"></path>
+                            </svg>
+                            Back to Website
+                        </a>
+                        
+                        <!-- Notifications -->
+                        <button class="text-gray-400 hover:text-gray-500 relative">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5-5V9a6 6 0 10-12 0v3l-5 5h5a6 6 0 0012 0z"></path>
+                            </svg>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">3</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <main class="p-6">
+                @Body
+            </main>
+        </div>
+    </div>
+
+    <!-- Error UI -->
+    <div id="blazor-error-ui" data-nosnippet 
+         class="fixed top-4 right-4 z-50 bg-red-600 text-white p-4 rounded-lg shadow-lg max-w-md hidden">
+        <div class="flex items-center justify-between">
+            <span>An unhandled error has occurred.</span>
+            <div class="ml-4 flex space-x-2">
+                <a href="." class="underline hover:no-underline">Reload</a>
+                <button class="dismiss text-xl font-bold hover:text-gray-200">&times;</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="_framework/blazor.web.js"></script>
+    <script>
+        function toggleSubmenu(submenuId) {
+            const submenu = document.getElementById(submenuId + '-submenu');
+            const arrow = document.getElementById(submenuId + '-arrow');
+            
+            if (submenu.classList.contains('hidden')) {
+                submenu.classList.remove('hidden');
+                arrow.classList.add('rotate-180');
+            } else {
+                submenu.classList.add('hidden');
+                arrow.classList.remove('rotate-180');
+            }
+        }
+    </script>
+</body>
+</html>
+
+@code {
+    [Inject] public NavigationManager NavigationManager { get; set; } = default!;
+}

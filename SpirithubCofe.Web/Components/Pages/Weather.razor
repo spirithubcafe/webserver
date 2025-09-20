@@ -1,0 +1,161 @@
+﻿@page "/weather"
+@attribute [StreamRendering]
+
+<PageTitle>Weather - SpirithubCofe</PageTitle>
+
+<!-- Page Header -->
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Weather Forecast</h1>
+    <p class="text-gray-600">Sample weather data demonstrating data loading and display patterns.</p>
+</div>
+
+@if (forecasts == null)
+{
+    <!-- Loading State -->
+    <div class="bg-white rounded-lg shadow-md p-8 text-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p class="text-gray-500">Loading weather data...</p>
+    </div>
+}
+else
+{
+    <!-- Weather Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-8">
+        @foreach (var forecast in forecasts)
+        {
+            <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow">
+                <!-- Date -->
+                <div class="text-center mb-4">
+                    <div class="text-lg font-semibold text-gray-900">
+                        @forecast.Date.ToString("MMM dd")
+                    </div>
+                    <div class="text-sm text-gray-500">
+                        @forecast.Date.ToString("yyyy")
+                    </div>
+                </div>
+
+                <!-- Weather Icon & Summary -->
+                <div class="text-center mb-4">
+                    <div class="w-16 h-16 mx-auto mb-2 bg-gradient-to-br @GetWeatherGradient(forecast.Summary) rounded-full flex items-center justify-center">
+                        <span class="text-2xl">@GetWeatherIcon(forecast.Summary)</span>
+                    </div>
+                    <div class="text-sm font-medium text-gray-700">@forecast.Summary</div>
+                </div>
+
+                <!-- Temperature -->
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-gray-900 mb-1">
+                        @forecast.TemperatureC°
+                    </div>
+                    <div class="text-sm text-gray-500">
+                        @forecast.TemperatureF°F
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Data Table (Alternative View) -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900">Detailed Forecast</h3>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Temperature (°C)</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Temperature (°F)</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Conditions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach (var forecast in forecasts)
+                    {
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                @forecast.Date.ToShortDateString()
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium @GetTempColorClass(forecast.TemperatureC)">
+                                    @forecast.TemperatureC°C
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                @forecast.TemperatureF°F
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    @forecast.Summary
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@code {
+    private WeatherForecast[]? forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simulate asynchronous loading to demonstrate streaming rendering
+        await Task.Delay(500);
+
+        var startDate = DateOnly.FromDateTime(DateTime.Now);
+        var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
+        forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
+        {
+            Date = startDate.AddDays(index),
+            TemperatureC = Random.Shared.Next(-20, 55),
+            Summary = summaries[Random.Shared.Next(summaries.Length)]
+        }).ToArray();
+    }
+
+    private string GetWeatherIcon(string? summary) => summary switch
+    {
+        "Freezing" => "❄️",
+        "Bracing" or "Chilly" => "🌨️",
+        "Cool" => "⛅",
+        "Mild" or "Warm" => "☀️",
+        "Balmy" => "🌤️",
+        "Hot" or "Sweltering" => "🔥",
+        "Scorching" => "🌡️",
+        _ => "🌤️"
+    };
+
+    private string GetWeatherGradient(string? summary) => summary switch
+    {
+        "Freezing" => "from-blue-400 to-blue-600",
+        "Bracing" or "Chilly" => "from-blue-300 to-blue-500",
+        "Cool" => "from-gray-300 to-gray-500",
+        "Mild" => "from-yellow-300 to-yellow-500",
+        "Warm" or "Balmy" => "from-orange-300 to-orange-500",
+        "Hot" => "from-red-400 to-red-600",
+        "Sweltering" or "Scorching" => "from-red-500 to-red-700",
+        _ => "from-gray-300 to-gray-500"
+    };
+
+    private string GetTempColorClass(int temp)
+    {
+        if (temp < 0) return "bg-blue-100 text-blue-800";
+        if (temp < 10) return "bg-blue-50 text-blue-700";
+        if (temp < 20) return "bg-green-100 text-green-800";
+        if (temp < 30) return "bg-yellow-100 text-yellow-800";
+        if (temp < 40) return "bg-orange-100 text-orange-800";
+        return "bg-red-100 text-red-800";
+    }
+
+    private class WeatherForecast
+    {
+        public DateOnly Date { get; set; }
+        public int TemperatureC { get; set; }
+        public string? Summary { get; set; }
+        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    }
+}

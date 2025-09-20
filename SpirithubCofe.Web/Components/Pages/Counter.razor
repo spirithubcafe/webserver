@@ -1,0 +1,79 @@
+﻿@page "/counter"
+@rendermode InteractiveServer
+
+<PageTitle>Counter - SpirithubCofe</PageTitle>
+
+<!-- Page Header -->
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Interactive Counter</h1>
+    <p class="text-gray-600">A simple interactive component to demonstrate Blazor's capabilities.</p>
+</div>
+
+<!-- Counter Card -->
+<div class="max-w-md mx-auto">
+    <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-8 text-center">
+        <!-- Counter Display -->
+        <div class="mb-6">
+            <div class="text-6xl font-bold text-blue-600 mb-2">@currentCount</div>
+            <p class="text-gray-500">Current Count</p>
+        </div>
+
+        <!-- Counter Controls -->
+        <div class="space-y-4">
+            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+                    @onclick="IncrementCount">
+                <svg class="w-5 h-5 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path>
+                </svg>
+                Click to Increment
+            </button>
+            
+            <button class="w-full bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+                    @onclick="ResetCount">
+                <svg class="w-5 h-5 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"></path>
+                </svg>
+                Reset Counter
+            </button>
+        </div>
+
+        <!-- Counter Stats -->
+        <div class="mt-6 pt-6 border-t border-gray-200">
+            <div class="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                    <div class="text-2xl font-bold text-green-600">@totalClicks</div>
+                    <div class="text-gray-500">Total Clicks</div>
+                </div>
+                <div>
+                    <div class="text-2xl font-bold text-purple-600">@(currentCount > 0 ? "Active" : "Idle")</div>
+                    <div class="text-gray-500">Status</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Info Section -->
+<div class="mt-8 bg-blue-50 rounded-lg p-6">
+    <h3 class="text-lg font-semibold text-blue-900 mb-2">About This Component</h3>
+    <p class="text-blue-700">
+        This counter demonstrates Blazor Server's real-time interactivity. 
+        Each click is processed on the server and the UI updates automatically using SignalR.
+    </p>
+</div>
+
+@code {
+    private int currentCount = 0;
+    private int totalClicks = 0;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+        totalClicks++;
+    }
+
+    private void ResetCount()
+    {
+        currentCount = 0;
+    }
+}

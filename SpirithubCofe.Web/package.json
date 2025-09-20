@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.13",
+    "tailwindcss": "^4.1.13"
+  },
+  "scripts": {
+    "start": "dotnet run --project .",
+    "build:css": "npx @tailwindcss/cli -i wwwroot/app.css -o wwwroot/dist.css",
+    "watch:css": "npx @tailwindcss/cli -i wwwroot/app.css -o wwwroot/dist.css --watch"
+  }
+}

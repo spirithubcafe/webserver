@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+/* Custom TailwindCSS utilities for Blazor */
+.blazor-error-boundary {
+    @apply bg-red-600 text-white p-4 rounded-lg border-l-4 border-red-800;
+}
+
+.blazor-error-boundary::after {
+    content: "An error has occurred.";
+}
+
+/* Form validation styles with TailwindCSS */
+.valid.modified:not([type=checkbox]) {
+    @apply border-green-500 focus:ring-green-200;
+}
+
+.invalid {
+    @apply border-red-500 focus:ring-red-200;
+}
+
+.validation-message {
+    @apply text-red-500 text-sm mt-1;
+}
+
+*:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}

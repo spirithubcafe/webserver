@@ -1,0 +1,458 @@
+@page "/products"
+@page "/products/{category?}"
+@layout SpirithubCofe.Web.Components.Layout.PublicLayout
+
+<PageTitle>Products - SpirithubCofe</PageTitle>
+
+<!-- Hero Section -->
+<section class="relative bg-gradient-to-br from-amber-50 to-amber-100 py-16">
+    <div class="absolute inset-0 bg-black bg-opacity-5"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                Premium <span class="text-amber-600">Coffee</span> Collection
+            </h1>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                Discover our carefully curated selection of single-origin beans and signature blends from around the world.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Filters and Search -->
+<section class="py-8 bg-white border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+            <!-- Search Bar -->
+            <div class="flex-1 max-w-md">
+                <div class="relative">
+                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <input
+                        type="text"
+                        @bind="searchQuery"
+                        @oninput="OnSearchInput"
+                        placeholder="Search coffee..."
+                        class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors duration-200"
+                    />
+                </div>
+            </div>
+            
+            <!-- Category Filter -->
+            <div class="flex items-center space-x-4">
+                <label class="text-sm font-medium text-gray-700">Category:</label>
+                <select @bind="selectedCategory" class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 min-w-48">
+                    <option value="">All Categories</option>
+                    @foreach (var cat in categories)
+                    {
+                        <option value="@cat.Name">@cat.Name</option>
+                    }
+                </select>
+            </div>
+            
+            <!-- Sort Options -->
+            <div class="flex items-center space-x-4">
+                <label class="text-sm font-medium text-gray-700">Sort by:</label>
+                <select @bind="sortOption" class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                    <option value="name">Name A-Z</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="popular">Most Popular</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Active Filters -->
+        @if (!string.IsNullOrEmpty(selectedCategory) || !string.IsNullOrEmpty(searchQuery))
+        {
+            <div class="mt-4 flex flex-wrap items-center gap-2">
+                <span class="text-sm text-gray-600">Active filters:</span>
+                @if (!string.IsNullOrEmpty(selectedCategory))
+                {
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-amber-100 text-amber-800">
+                        Category: @selectedCategory
+                        <button @onclick="() => ClearCategoryFilter()" class="ml-2 hover:text-amber-900">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </span>
+                }
+                @if (!string.IsNullOrEmpty(searchQuery))
+                {
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-amber-100 text-amber-800">
+                        Search: "@searchQuery"
+                        <button @onclick="ClearSearch" class="ml-2 hover:text-amber-900">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </span>
+                }
+                <button @onclick="ClearAllFilters" class="text-sm text-amber-600 hover:text-amber-700 font-medium">Clear all</button>
+            </div>
+        }
+    </div>
+</section>
+
+<!-- Products Grid -->
+<section class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        @if (filteredProducts.Any())
+        {
+            <!-- Results Count -->
+            <div class="mb-8">
+                <p class="text-gray-600">
+                    Showing @filteredProducts.Count() of @allProducts.Count() products
+                </p>
+            </div>
+            
+            <!-- Products Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                @foreach (var product in filteredProducts)
+                {
+                    <div class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group">
+                        <!-- Product Image -->
+                        <div class="aspect-w-1 aspect-h-1 bg-gray-200 relative overflow-hidden">
+                            @if (!string.IsNullOrEmpty(product.ImageUrl))
+                            {
+                                <img src="@product.ImageUrl" alt="@product.Name" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300" />
+                            }
+                            else
+                            {
+                                <div class="w-full h-64 bg-gradient-to-br from-amber-200 to-amber-300 flex items-center justify-center">
+                                    <svg class="w-20 h-20 text-amber-600 opacity-60" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M18.5 3H6c-1.1 0-2 .9-2 2v5.71c0 3.83 2.95 7.18 6.78 7.29 3.96.12 7.22-3.06 7.22-7v-1h.5c1.93 0 3.5-1.57 3.5-3.5S20.43 3 18.5 3zM16 5v3h1.5c.83 0 1.5-.67 1.5-1.5S17.83 5 17 5h-1zM6 5h8v8.58c0 2.4-1.9 4.42-4.29 4.42S5.42 15.98 5.42 13.58V5z"/>
+                                    </svg>
+                                </div>
+                            }
+                            
+                            <!-- Quick Add to Cart -->
+                            <div class="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                <button class="bg-white text-gray-900 px-6 py-2 rounded-lg font-medium hover:bg-gray-100 transition-colors duration-200 transform scale-95 group-hover:scale-100">
+                                    Quick Add
+                                </button>
+                            </div>
+                            
+                            <!-- Category Badge -->
+                            <div class="absolute top-4 left-4">
+                                <span class="bg-white bg-opacity-90 text-gray-700 px-3 py-1 rounded-full text-sm font-medium">
+                                    @product.CategoryName
+                                </span>
+                            </div>
+                            
+                            <!-- Price Badge -->
+                            <div class="absolute top-4 right-4">
+                                <span class="bg-amber-600 text-white px-3 py-1 rounded-full text-sm font-bold">
+                                    @product.Price.ToString("F3") OMR
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Product Info -->
+                        <div class="p-6">
+                            <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">@product.Name</h3>
+                            
+                            @if (!string.IsNullOrEmpty(product.Description))
+                            {
+                                <p class="text-gray-600 text-sm mb-4 line-clamp-3">@product.Description</p>
+                            }
+                            
+                            <!-- Product Features -->
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                @if (product.IsOrganic)
+                                {
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">Organic</span>
+                                }
+                                @if (product.IsFairTrade)
+                                {
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium">Fair Trade</span>
+                                }
+                                @if (product.RoastLevel != null)
+                                {
+                                    <span class="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full font-medium">@product.RoastLevel Roast</span>
+                                }
+                            </div>
+                            
+                            <!-- Actions -->
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <!-- Quantity Selector -->
+                                    <div class="flex items-center border border-gray-300 rounded-lg">
+                                        <button @onclick="() => DecreaseQuantity(product.Id)" class="px-3 py-1 hover:bg-gray-100 transition-colors duration-200">-</button>
+                                        <span class="px-3 py-1 border-x border-gray-300">@GetQuantity(product.Id)</span>
+                                        <button @onclick="() => IncreaseQuantity(product.Id)" class="px-3 py-1 hover:bg-gray-100 transition-colors duration-200">+</button>
+                                    </div>
+                                </div>
+                                
+                                <button @onclick="() => AddToCart(product.Id)" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5H8m7 0a2 2 0 104 0 2 2 0 00-4 0zm-7 0a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                    </svg>
+                                    <span>Add</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <!-- No Products Found -->
+            <div class="text-center py-16">
+                <svg class="w-24 h-24 text-gray-300 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">No products found</h3>
+                <p class="text-gray-600 mb-6">
+                    @if (!string.IsNullOrEmpty(searchQuery))
+                    {
+                        <span>We couldn't find any products matching "@searchQuery".</span>
+                    }
+                    else if (!string.IsNullOrEmpty(selectedCategory))
+                    {
+                        <span>No products found in the "@selectedCategory" category.</span>
+                    }
+                    else
+                    {
+                        <span>Try adjusting your search or browse our categories.</span>
+                    }
+                </p>
+                <button @onclick="ClearAllFilters" class="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200">
+                    Clear Filters
+                </button>
+            </div>
+        }
+    </div>
+</section>
+
+<!-- Featured Categories -->
+@if (string.IsNullOrEmpty(selectedCategory) && string.IsNullOrEmpty(searchQuery))
+{
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Shop by Category</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Explore our carefully curated categories to find your perfect coffee match.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                @foreach (var category in categories.Take(6))
+                {
+                    <div @onclick="() => SetCategoryFilter(category.Name)" class="group cursor-pointer">
+                        <div class="relative bg-gradient-to-br from-amber-100 to-amber-200 rounded-2xl p-8 hover:from-amber-200 hover:to-amber-300 transition-all duration-300 transform hover:scale-105">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-amber-700 transition-colors duration-300">
+                                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M18.5 3H6c-1.1 0-2 .9-2 2v5.71c0 3.83 2.95 7.18 6.78 7.29 3.96.12 7.22-3.06 7.22-7v-1h.5c1.93 0 3.5-1.57 3.5-3.5S20.43 3 18.5 3zM16 5v3h1.5c.83 0 1.5-.67 1.5-1.5S17.83 5 17 5h-1zM6 5h8v8.58c0 2.4-1.9 4.42-4.29 4.42S5.42 15.98 5.42 13.58V5z"/>
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">@category.Name</h3>
+                                <p class="text-gray-600 text-sm mb-4">@category.Description</p>
+                                <span class="text-amber-600 font-medium text-sm">@category.ProductCount products →</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+@code {
+    [Parameter] public string? Category { get; set; }
+    
+    private string selectedCategory = string.Empty;
+    private string searchQuery = string.Empty;
+    private string sortOption = "name";
+    private System.Timers.Timer? searchTimer;
+    
+    // Dictionary to track quantities for each product
+    private Dictionary<int, int> productQuantities = new();
+    
+    private List<CategoryViewModel> categories = new()
+    {
+        new() { Name = "Single Origin", Description = "Premium beans from specific regions", ProductCount = 12 },
+        new() { Name = "Blends", Description = "Carefully crafted coffee blends", ProductCount = 8 },
+        new() { Name = "Espresso", Description = "Perfect for espresso brewing", ProductCount = 6 },
+        new() { Name = "Light Roast", Description = "Bright and acidic flavors", ProductCount = 10 },
+        new() { Name = "Medium Roast", Description = "Balanced flavor profile", ProductCount = 15 },
+        new() { Name = "Dark Roast", Description = "Rich and bold taste", ProductCount = 9 },
+        new() { Name = "Decaf", Description = "All the flavor, no caffeine", ProductCount = 5 },
+        new() { Name = "Organic", Description = "Certified organic coffee", ProductCount = 11 }
+    };
+    
+    private List<ProductViewModel> allProducts = new()
+    {
+        new() { Id = 1, Name = "Ethiopian Yirgacheffe", CategoryName = "Single Origin", Price = 8.500m, Description = "Bright, floral, and wine-like with citrus notes", RoastLevel = "Light", IsOrganic = true, IsFairTrade = true, ImageUrl = "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&h=400&fit=crop&crop=center" },
+        new() { Id = 2, Name = "Colombian Supremo", CategoryName = "Single Origin", Price = 7.200m, Description = "Full-bodied with caramel sweetness and nutty undertones", RoastLevel = "Medium", IsOrganic = false, IsFairTrade = true, ImageUrl = "https://images.unsplash.com/photo-1610889556528-9a770e32642f?w=400&h=400&fit=crop&crop=center" },
+        new() { Id = 3, Name = "Brazil Santos", CategoryName = "Single Origin", Price = 6.800m, Description = "Smooth, mild, and well-balanced with chocolate notes", RoastLevel = "Medium", IsOrganic = false, IsFairTrade = false, ImageUrl = "https://images.unsplash.com/photo-1587734195503-904fca47e0d9?w=400&h=400&fit=crop&crop=center" },
+        new() { Id = 4, Name = "Guatemalan Antigua", CategoryName = "Single Origin", Price = 9.200m, Description = "Full-bodied with spicy, smoky, and complex flavors", RoastLevel = "Dark", IsOrganic = true, IsFairTrade = true, ImageUrl = "https://images.unsplash.com/photo-1511537190424-bbbab87ac5eb?w=400&h=400&fit=crop&crop=center" },
+        new() { Id = 5, Name = "House Blend", CategoryName = "Blends", Price = 6.500m, Description = "Our signature blend perfect for everyday drinking", RoastLevel = "Medium", IsOrganic = false, IsFairTrade = false, ImageUrl = "https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=400&h=400&fit=crop&crop=center" },
+        new() { Id = 6, Name = "Espresso Romano", CategoryName = "Espresso", Price = 8.900m, Description = "Rich, intense flavor perfect for espresso and cappuccino", RoastLevel = "Dark", IsOrganic = false, IsFairTrade = false, ImageUrl = "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=400&fit=crop&crop=center" },
+        new() { Id = 7, Name = "Organic French Roast", CategoryName = "Organic", Price = 8.200m, Description = "Bold, smoky flavor with low acidity", RoastLevel = "Dark", IsOrganic = true, IsFairTrade = true, ImageUrl = "https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=400&h=400&fit=crop&crop=center" },
+        new() { Id = 8, Name = "Decaf Colombian", CategoryName = "Decaf", Price = 7.500m, Description = "All the Colombian flavor without the caffeine", RoastLevel = "Medium", IsOrganic = false, IsFairTrade = true, ImageUrl = "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=400&fit=crop&crop=center" },
+        new() { Id = 9, Name = "Kenya AA", CategoryName = "Single Origin", Price = 9.800m, Description = "Wine-like acidity with black currant and citrus notes", RoastLevel = "Light", IsOrganic = true, IsFairTrade = true, ImageUrl = "https://images.unsplash.com/photo-1606787620819-8bdf0c44c293?w=400&h=400&fit=crop&crop=center" },
+        new() { Id = 10, Name = "Italian Roast", CategoryName = "Dark Roast", Price = 7.800m, Description = "Very dark roast with bold, intense flavor", RoastLevel = "Dark", IsOrganic = false, IsFairTrade = false, ImageUrl = "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=400&h=400&fit=crop&crop=center" },
+        new() { Id = 11, Name = "Costa Rican Tarrazú", CategoryName = "Single Origin", Price = 8.700m, Description = "Bright acidity with chocolate and citrus notes", RoastLevel = "Medium", IsOrganic = true, IsFairTrade = true, ImageUrl = "https://images.unsplash.com/photo-1594631661960-69a8827895d2?w=400&h=400&fit=crop&crop=center" },
+        new() { Id = 12, Name = "Breakfast Blend", CategoryName = "Blends", Price = 6.200m, Description = "Light and smooth, perfect way to start your day", RoastLevel = "Light", IsOrganic = false, IsFairTrade = false, ImageUrl = "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&h=400&fit=crop&crop=center" }
+    };
+    
+    private IEnumerable<ProductViewModel> filteredProducts => GetFilteredProducts();
+    
+    protected override void OnInitialized()
+    {
+        selectedCategory = Category ?? string.Empty;
+        
+        // Initialize quantities for all products
+        foreach (var product in allProducts)
+        {
+            productQuantities[product.Id] = 1;
+        }
+        
+        // Initialize search timer
+        searchTimer = new System.Timers.Timer(500); // 500ms delay
+        searchTimer.Elapsed += async (sender, e) => await InvokeAsync(StateHasChanged);
+        searchTimer.AutoReset = false;
+    }
+    
+    private int GetQuantity(int productId)
+    {
+        return productQuantities.GetValueOrDefault(productId, 1);
+    }
+    
+    private void IncreaseQuantity(int productId)
+    {
+        if (productQuantities.ContainsKey(productId))
+        {
+            if (productQuantities[productId] < 99) // Set max limit
+            {
+                productQuantities[productId]++;
+            }
+        }
+        else
+        {
+            productQuantities[productId] = 2;
+        }
+        StateHasChanged();
+    }
+    
+    private void DecreaseQuantity(int productId)
+    {
+        if (productQuantities.ContainsKey(productId))
+        {
+            if (productQuantities[productId] > 1)
+            {
+                productQuantities[productId]--;
+            }
+        }
+        StateHasChanged();
+    }
+    
+    private void AddToCart(int productId)
+    {
+        var product = allProducts.FirstOrDefault(p => p.Id == productId);
+        var quantity = GetQuantity(productId);
+        
+        // Here you would typically call a service to add to cart
+        // For now, just show an alert (you can implement cart service later)
+        Console.WriteLine($"Added {quantity} x {product?.Name} to cart");
+        
+        // Reset quantity to 1 after adding to cart
+        productQuantities[productId] = 1;
+        StateHasChanged();
+    }
+    
+    private IEnumerable<ProductViewModel> GetFilteredProducts()
+    {
+        var products = allProducts.AsEnumerable();
+        
+        // Filter by category
+        if (!string.IsNullOrEmpty(selectedCategory))
+        {
+            products = products.Where(p => p.CategoryName.Equals(selectedCategory, StringComparison.OrdinalIgnoreCase));
+        }
+        
+        // Filter by search query
+        if (!string.IsNullOrEmpty(searchQuery))
+        {
+            products = products.Where(p => 
+                p.Name.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                p.Description.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                p.CategoryName.Contains(searchQuery, StringComparison.OrdinalIgnoreCase));
+        }
+        
+        // Sort products
+        return sortOption switch
+        {
+            "name" => products.OrderBy(p => p.Name),
+            "price-low" => products.OrderBy(p => p.Price),
+            "price-high" => products.OrderByDescending(p => p.Price),
+            "popular" => products.OrderByDescending(p => p.Id), // Mock popularity by ID
+            _ => products.OrderBy(p => p.Name)
+        };
+    }
+    
+    private void SetCategoryFilter(string categoryName)
+    {
+        selectedCategory = categoryName;
+        StateHasChanged();
+    }
+    
+    private void ClearCategoryFilter()
+    {
+        selectedCategory = string.Empty;
+        StateHasChanged();
+    }
+    
+    private void OnSearchInput(ChangeEventArgs e)
+    {
+        searchQuery = e.Value?.ToString() ?? string.Empty;
+        
+        // Reset and start timer for debounced search
+        searchTimer?.Stop();
+        searchTimer?.Start();
+    }
+    
+    private void ClearSearch()
+    {
+        searchQuery = string.Empty;
+        StateHasChanged();
+    }
+    
+    private void ClearAllFilters()
+    {
+        selectedCategory = string.Empty;
+        searchQuery = string.Empty;
+        StateHasChanged();
+    }
+    
+    public void Dispose()
+    {
+        searchTimer?.Dispose();
+    }
+    
+    public class CategoryViewModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public int ProductCount { get; set; }
+    }
+    
+    public class ProductViewModel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string CategoryName { get; set; } = string.Empty;
+        public decimal Price { get; set; }
+        public string Description { get; set; } = string.Empty;
+        public string? RoastLevel { get; set; }
+        public bool IsOrganic { get; set; }
+        public bool IsFairTrade { get; set; }
+        public string? ImageUrl { get; set; }
+    }
+}

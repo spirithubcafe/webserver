@@ -1,0 +1,433 @@
+@inherits LayoutComponentBase
+
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-50">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link rel="stylesheet" href="dist.css" />
+    <link rel="stylesheet" href="@Assets["SpirithubCofe.Web.styles.css"]" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <PageTitle>SpirithubCofe - Premium Coffee from Oman</PageTitle>
+</head>
+<body class="h-full">
+    <div class="min-h-full">
+        <!-- Top Navigation -->
+        <nav class="bg-white shadow-lg border-b border-gray-100 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-20">
+                    <!-- Logo and Brand -->
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0 flex items-center">
+                            <!-- Coffee Bean Logo -->
+                            <div class="w-10 h-10 bg-gradient-to-br from-amber-500 to-amber-600 rounded-full flex items-center justify-center mr-3 shadow-md">
+                                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M18.5 3H6c-1.1 0-2 .9-2 2v5.71c0 3.83 2.95 7.18 6.78 7.29 3.96.12 7.22-3.06 7.22-7v-1h.5c1.93 0 3.5-1.57 3.5-3.5S20.43 3 18.5 3zM16 5v3h1.5c.83 0 1.5-.67 1.5-1.5S17.83 5 17 5h-1zM6 5h8v8.58c0 2.4-1.9 4.42-4.29 4.42S5.42 15.98 5.42 13.58V5z"/>
+                                </svg>
+                            </div>
+                            <div class="flex flex-col">
+                                <a href="/" class="text-2xl font-bold text-gray-900 hover:text-amber-600 transition-colors">SpirithubCofe</a>
+                                <span class="text-xs text-gray-500 font-medium">Premium Coffee from Oman</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Navigation - Desktop -->
+                    <div class="hidden lg:flex items-center space-x-1">
+                        <a href="/" class="flex items-center px-4 py-2 text-sm font-medium text-gray-900 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200 group">
+                            <svg class="w-4 h-4 mr-2 text-gray-400 group-hover:text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                            </svg>
+                            Home
+                        </a>
+                        <div class="relative group">
+                            <button class="flex items-center px-4 py-2 text-sm font-medium text-gray-600 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200">
+                                <svg class="w-4 h-4 mr-2 text-gray-400 group-hover:text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 2L3 7v11a2 2 0 002 2h10a2 2 0 002-2V7l-7-5zM6 18V9h8v9H6z" clip-rule="evenodd"></path>
+                                </svg>
+                                Products
+                                <svg class="w-4 h-4 ml-1 text-gray-400 group-hover:text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                            <!-- Dropdown Menu -->
+                            <div class="absolute left-0 mt-2 w-56 bg-white border border-gray-100 rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                                <div class="py-2">
+                                    <a href="/products" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:text-amber-600 hover:bg-amber-50 border-b border-gray-100">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-amber-100 to-amber-200 rounded-lg flex items-center justify-center mr-3">
+                                            <svg class="w-4 h-4 text-amber-600" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium">All Products</div>
+                                            <div class="text-xs text-gray-500">Browse everything</div>
+                                        </div>
+                                    </a>
+                                    <a href="/products/Single%20Origin" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:text-amber-600 hover:bg-amber-50">
+                                        <div class="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center mr-3">
+                                            <svg class="w-4 h-4 text-amber-600" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M18.5 3H6c-1.1 0-2 .9-2 2v5.71c0 3.83 2.95 7.18 6.78 7.29 3.96.12 7.22-3.06 7.22-7v-1h.5c1.93 0 3.5-1.57 3.5-3.5S20.43 3 18.5 3z"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium">Single Origin</div>
+                                            <div class="text-xs text-gray-500">Premium single farms</div>
+                                        </div>
+                                    </a>
+                                    <a href="/products/Blends" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:text-amber-600 hover:bg-amber-50">
+                                        <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                                            <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium">Blends</div>
+                                            <div class="text-xs text-gray-500">Crafted blends</div>
+                                        </div>
+                                    </a>
+                                    <a href="/products/Organic" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:text-amber-600 hover:bg-amber-50">
+                                        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                                            <svg class="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium">Organic</div>
+                                            <div class="text-xs text-gray-500">Certified organic</div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="/about" class="flex items-center px-4 py-2 text-sm font-medium text-gray-600 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200 group">
+                            <svg class="w-4 h-4 mr-2 text-gray-400 group-hover:text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                            </svg>
+                            About
+                        </a>
+                        <a href="/contact" class="flex items-center px-4 py-2 text-sm font-medium text-gray-600 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200 group">
+                            <svg class="w-4 h-4 mr-2 text-gray-400 group-hover:text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                            </svg>
+                            Contact
+                        </a>
+                    </div>
+
+                    <!-- Right Side Actions -->
+                    <div class="flex items-center space-x-4">
+                        <AuthorizeView>
+                            <Authorized>
+                                <!-- Search Button -->
+                                <button class="hidden sm:flex items-center justify-center w-10 h-10 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                </button>
+
+                                <!-- Cart Button -->
+                                <a href="/cart" class="relative flex items-center justify-center w-10 h-10 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200 group">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5 6m0 0h9M17 13v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6"></path>
+                                    </svg>
+                                    <span class="absolute -top-1 -right-1 bg-amber-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium shadow-sm">0</span>
+                                </a>
+
+                                <!-- User Menu -->
+                                <div class="relative group">
+                                    <button class="flex items-center space-x-3 p-2 text-sm rounded-lg hover:bg-gray-50 transition-all duration-200">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-amber-400 to-amber-500 rounded-full flex items-center justify-center text-white font-medium text-sm">
+                                            @(context.User.Identity?.Name?.Substring(0, 1).ToUpper() ?? "U")
+                                        </div>
+                                        <div class="hidden sm:block text-left">
+                                            <div class="text-sm font-medium text-gray-900">@context.User.Identity?.Name</div>
+                                            <div class="text-xs text-gray-500">Customer</div>
+                                        </div>
+                                        <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </button>
+                                    <!-- User Dropdown -->
+                                    <div class="absolute right-0 mt-2 w-56 bg-white border border-gray-100 rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                                        <div class="py-2">
+                                            <a href="/Account/Manage" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:text-amber-600 hover:bg-amber-50">
+                                                <svg class="w-4 h-4 mr-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                                </svg>
+                                                My Profile
+                                            </a>
+                                            <a href="/orders" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:text-amber-600 hover:bg-amber-50">
+                                                <svg class="w-4 h-4 mr-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                                                </svg>
+                                                My Orders
+                                            </a>
+                                            <a href="/favorites" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:text-amber-600 hover:bg-amber-50">
+                                                <svg class="w-4 h-4 mr-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                                                </svg>
+                                                Favorites
+                                            </a>
+                                            
+                                            <!-- Admin Panel - Only show for Admin users -->
+                                            @if (context.User.IsInRole("Admin"))
+                                            {
+                                                <hr class="my-2 border-gray-100">
+                                                <a href="/admin/dashboard" class="flex items-center px-4 py-3 text-sm text-purple-600 hover:text-purple-700 hover:bg-purple-50 font-medium">
+                                                    <svg class="w-4 h-4 mr-3 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 01-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15.586 13H14a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                    Admin Panel
+                                                </a>
+                                            }
+                                            
+                                            <hr class="my-2 border-gray-100">
+                                            <form action="Account/Logout" method="post" class="inline-block w-full">
+                                                <AntiforgeryToken />
+                                                <input type="hidden" name="ReturnUrl" value="@NavigationManager.Uri" />
+                                                <button type="submit" class="flex items-center w-full px-4 py-3 text-sm text-red-600 hover:text-red-700 hover:bg-red-50">
+                                                    <svg class="w-4 h-4 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                    Sign Out
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Authorized>
+                            <NotAuthorized>
+                                <!-- Search for guests -->
+                                <button class="hidden sm:flex items-center justify-center w-10 h-10 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                </button>
+                                
+                                <div class="flex items-center space-x-3">
+                                    <a href="/Account/Login" class="flex items-center px-4 py-2 text-sm font-medium text-gray-600 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200">
+                                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Login
+                                    </a>
+                                    <a href="/Account/Register" class="flex items-center px-6 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white text-sm font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
+                                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"></path>
+                                        </svg>
+                                        Sign Up
+                                    </a>
+                                </div>
+                            </NotAuthorized>
+                        </AuthorizeView>
+
+                        <!-- Mobile menu button -->
+                        <button type="button" class="lg:hidden flex items-center justify-center w-10 h-10 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200" id="mobile-menu-toggle">
+                            <svg class="w-6 h-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile menu -->
+            <div class="lg:hidden hidden" id="mobile-menu">
+                <div class="px-4 pt-4 pb-6 space-y-3 bg-white border-t border-gray-100 shadow-lg">
+                    <!-- Mobile Navigation Links -->
+                    <a href="/" class="flex items-center px-4 py-3 text-base font-medium text-gray-900 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200">
+                        <svg class="w-5 h-5 mr-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                        </svg>
+                        Home
+                    </a>
+                    
+                    <!-- Mobile Products Submenu -->
+                    <div class="space-y-1">
+                        <div class="flex items-center px-4 py-3 text-base font-medium text-gray-700">
+                            <svg class="w-5 h-5 mr-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 2L3 7v11a2 2 0 002 2h10a2 2 0 002-2V7l-7-5zM6 18V9h8v9H6z" clip-rule="evenodd"></path>
+                            </svg>
+                            Products
+                        </div>
+                        <div class="ml-8 space-y-1">
+                            <a href="/products/coffee-beans" class="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-amber-600 hover:bg-amber-50 rounded-lg">
+                                Coffee Beans
+                            </a>
+                            <a href="/products/ground-coffee" class="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-amber-600 hover:bg-amber-50 rounded-lg">
+                                Ground Coffee
+                            </a>
+                            <a href="/products/accessories" class="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-amber-600 hover:bg-amber-50 rounded-lg">
+                                Accessories
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <a href="/about" class="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200">
+                        <svg class="w-5 h-5 mr-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        About
+                    </a>
+                    
+                    <a href="/contact" class="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200">
+                        <svg class="w-5 h-5 mr-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                        </svg>
+                        Contact
+                    </a>
+
+                    <hr class="my-4 border-gray-200">
+
+                    <!-- Mobile Auth Section -->
+                    <AuthorizeView>
+                        <Authorized>
+                            <div class="space-y-3">
+                                <a href="/cart" class="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg">
+                                    <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5 6m0 0h9M17 13v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6"></path>
+                                    </svg>
+                                    My Cart
+                                    <span class="ml-auto bg-amber-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                                </a>
+                                <a href="/Account/Manage" class="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg">
+                                    <svg class="w-5 h-5 mr-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    My Profile
+                                </a>
+                                <a href="/orders" class="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg">
+                                    <svg class="w-5 h-5 mr-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    My Orders
+                                </a>
+                                <form action="Account/Logout" method="post" class="inline-block w-full">
+                                    <AntiforgeryToken />
+                                    <input type="hidden" name="ReturnUrl" value="@NavigationManager.Uri" />
+                                    <button type="submit" class="flex items-center w-full px-4 py-3 text-base font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg">
+                                        <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Sign Out
+                                    </button>
+                                </form>
+                            </div>
+                        </Authorized>
+                        <NotAuthorized>
+                            <div class="space-y-3">
+                                <a href="/Account/Login" class="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg">
+                                    <svg class="w-5 h-5 mr-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Login
+                                </a>
+                                <a href="/Account/Register" class="flex items-center px-4 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-medium rounded-lg shadow-sm">
+                                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"></path>
+                                    </svg>
+                                    Sign Up
+                                </a>
+                            </div>
+                        </NotAuthorized>
+                    </AuthorizeView>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="flex-1">
+            @Body
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-900 text-white">
+            <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <div class="col-span-1 md:col-span-2">
+                        <h3 class="text-2xl font-bold text-amber-400 mb-4">SpirithubCofe</h3>
+                        <p class="text-gray-300 max-w-md">
+                            Premium coffee experience from Oman. We source the finest beans and deliver the perfect cup to your doorstep.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                        <ul class="space-y-2 text-gray-300">
+                            <li><a href="/products" class="hover:text-amber-400 transition-colors">Products</a></li>
+                            <li><a href="/about" class="hover:text-amber-400 transition-colors">About Us</a></li>
+                            <li><a href="/contact" class="hover:text-amber-400 transition-colors">Contact</a></li>
+                            <li><a href="/shipping" class="hover:text-amber-400 transition-colors">Shipping Info</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Contact Info</h4>
+                        <ul class="space-y-2 text-gray-300">
+                            <li>Muscat, Oman</li>
+                            <li>+968 XXXX XXXX</li>
+                            <li>info@spirithubcafe.com</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mt-8 pt-8 border-t border-gray-700 text-center text-gray-400">
+                    <p>&copy; 2025 SpirithubCofe. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Error UI -->
+    <div id="blazor-error-ui" data-nosnippet 
+         class="fixed top-4 right-4 z-50 bg-red-600 text-white p-4 rounded-lg shadow-lg max-w-md hidden">
+        <div class="flex items-center justify-between">
+            <span>An unhandled error has occurred.</span>
+            <div class="ml-4 flex space-x-2">
+                <a href="." class="underline hover:no-underline">Reload</a>
+                <button class="dismiss text-xl font-bold hover:text-gray-200">&times;</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="_framework/blazor.web.js"></script>
+    <script>
+        // Mobile menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuToggle && mobileMenu) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', function(event) {
+                if (mobileMenu && !mobileMenu.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
+@code {
+    [Inject] public NavigationManager NavigationManager { get; set; } = default!;
+}
