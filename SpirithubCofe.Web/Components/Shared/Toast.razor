@@ -1,0 +1,107 @@
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
+
+<!-- Android-style Toast Container - Center Bottom -->
+<div id="toast-container" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-[9999] flex flex-col items-center space-y-3">
+    <!-- Toasts will be dynamically added here -->
+</div>
+
+<script>
+    window.showToast = (message, type = 'info', duration = 3500) => {
+        const container = document.getElementById('toast-container');
+        const toastId = 'toast-' + Date.now();
+        
+        // Android-style color schemes - more vibrant and modern
+        const typeClasses = {
+            'success': 'bg-gradient-to-r from-emerald-500 to-green-500 text-white',
+            'error': 'bg-gradient-to-r from-red-500 to-rose-500 text-white',
+            'warning': 'bg-gradient-to-r from-amber-500 to-orange-500 text-white',
+            'info': 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white'
+        };
+        
+        // Larger, more prominent icons
+        const iconSvgs = {
+            'success': '<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>',
+            'error': '<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>',
+            'warning': '<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>',
+            'info': '<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>'
+        };
+        
+        const toast = document.createElement('div');
+        toast.id = toastId;
+        toast.className = `
+            transform transition-all duration-500 ease-out translate-y-full opacity-0 scale-95
+            ${typeClasses[type] || typeClasses['info']} 
+            rounded-2xl shadow-2xl px-6 py-4 pointer-events-auto
+            min-w-[280px] max-w-[400px] mx-4
+            backdrop-blur-sm border border-white/20
+            hover:scale-105 cursor-pointer
+        `;
+        
+        toast.innerHTML = `
+            <div class="flex items-center justify-center space-x-3">
+                <div class="flex-shrink-0 opacity-90">
+                    ${iconSvgs[type] || iconSvgs['info']}
+                </div>
+                <div class="flex-1 text-center">
+                    <p class="text-base font-semibold leading-tight">${message}</p>
+                </div>
+            </div>
+        `;
+        
+        // Add click to dismiss
+        toast.addEventListener('click', () => removeToast(toastId));
+        
+        container.appendChild(toast);
+        
+        // Android-style slide up animation
+        setTimeout(() => {
+            toast.className = toast.className.replace('translate-y-full opacity-0 scale-95', 'translate-y-0 opacity-100 scale-100');
+        }, 50);
+        
+        // Auto remove after duration with fade out
+        setTimeout(() => {
+            removeToast(toastId);
+        }, duration);
+    };
+    
+    window.removeToast = (toastId) => {
+        const toast = document.getElementById(toastId);
+        if (toast) {
+            // Android-style fade and slide down
+            toast.className = toast.className.replace('translate-y-0 opacity-100 scale-100', 'translate-y-full opacity-0 scale-95');
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 500);
+        }
+    };
+    
+    window.showSuccessToast = (message) => showToast(message, 'success');
+    window.showErrorToast = (message) => showToast(message, 'error');
+    window.showWarningToast = (message) => showToast(message, 'warning');
+    window.showInfoToast = (message) => showToast(message, 'info');
+</script>
+
+@code {
+    public static async Task ShowSuccess(IJSRuntime jsRuntime, string message)
+    {
+        await jsRuntime.InvokeVoidAsync("showSuccessToast", message);
+    }
+    
+    public static async Task ShowError(IJSRuntime jsRuntime, string message)
+    {
+        await jsRuntime.InvokeVoidAsync("showErrorToast", message);
+    }
+    
+    public static async Task ShowWarning(IJSRuntime jsRuntime, string message)
+    {
+        await jsRuntime.InvokeVoidAsync("showWarningToast", message);
+    }
+    
+    public static async Task ShowInfo(IJSRuntime jsRuntime, string message)
+    {
+        await jsRuntime.InvokeVoidAsync("showInfoToast", message);
+    }
+}

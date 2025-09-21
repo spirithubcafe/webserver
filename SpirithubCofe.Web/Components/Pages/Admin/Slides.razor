@@ -12,6 +12,8 @@
 
 <PageTitle>Slide Management - SpirithubCofe Admin</PageTitle>
 
+<Toast />
+
 <div class="min-h-screen bg-gray-50 py-6">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
@@ -393,7 +395,7 @@
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("alert", $"Error loading slides: {ex.Message}");
+            await Toast.ShowError(JSRuntime, $"Error loading slides: {ex.Message}");
         }
         
         StateHasChanged();
@@ -472,13 +474,13 @@
                 var result = await SlideService.UpdateSlideAsync(updateDto);
                 if (result.Success)
                 {
-                    await JSRuntime.InvokeVoidAsync("alert", "Slide updated successfully!");
+                    await Toast.ShowSuccess(JSRuntime, "Slide updated successfully!");
                     CancelForm();
                     await LoadSlides();
                 }
                 else
                 {
-                    await JSRuntime.InvokeVoidAsync("alert", $"Error updating slide: {result.Message}");
+                    await Toast.ShowError(JSRuntime, $"Error updating slide: {result.Message}");
                 }
             }
             else
@@ -503,19 +505,19 @@
                 var result = await SlideService.CreateSlideAsync(createDto);
                 if (result.Success)
                 {
-                    await JSRuntime.InvokeVoidAsync("alert", "Slide created successfully!");
+                    await Toast.ShowSuccess(JSRuntime, "Slide created successfully!");
                     CancelForm();
                     await LoadSlides();
                 }
                 else
                 {
-                    await JSRuntime.InvokeVoidAsync("alert", $"Error creating slide: {result.Message}");
+                    await Toast.ShowError(JSRuntime, $"Error creating slide: {result.Message}");
                 }
             }
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("alert", $"Error saving slide: {ex.Message}");
+            await Toast.ShowError(JSRuntime, $"Error saving slide: {ex.Message}");
         }
         finally
         {
@@ -531,16 +533,16 @@
             if (result.Success)
             {
                 await LoadSlides();
-                await JSRuntime.InvokeVoidAsync("alert", "Slide status updated successfully!");
+                await Toast.ShowSuccess(JSRuntime, "Slide status updated successfully!");
             }
             else
             {
-                await JSRuntime.InvokeVoidAsync("alert", $"Error updating slide status: {result.Message}");
+                await Toast.ShowError(JSRuntime, $"Error updating slide status: {result.Message}");
             }
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("alert", $"Error updating slide status: {ex.Message}");
+            await Toast.ShowError(JSRuntime, $"Error updating slide status: {ex.Message}");
         }
     }
 
@@ -555,16 +557,16 @@
                 if (success)
                 {
                     await LoadSlides();
-                    await JSRuntime.InvokeVoidAsync("alert", "Slide deleted successfully!");
+                    await Toast.ShowSuccess(JSRuntime, "Slide deleted successfully!");
                 }
                 else
                 {
-                    await JSRuntime.InvokeVoidAsync("alert", "Error deleting slide. Please try again.");
+                    await Toast.ShowError(JSRuntime, "Error deleting slide. Please try again.");
                 }
             }
             catch (Exception ex)
             {
-                await JSRuntime.InvokeVoidAsync("alert", $"Error deleting slide: {ex.Message}");
+                await Toast.ShowError(JSRuntime, $"Error deleting slide: {ex.Message}");
             }
         }
     }
