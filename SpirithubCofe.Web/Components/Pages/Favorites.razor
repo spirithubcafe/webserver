@@ -168,12 +168,12 @@
 @code {
     private List<FavoriteItem> favoriteItems = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        await LoadFavorites();
+        LoadFavorites();
     }
 
-    private async Task LoadFavorites()
+    private void LoadFavorites()
     {
         // TODO: Load from actual favorites service/API
         favoriteItems = new List<FavoriteItem>
@@ -230,26 +230,26 @@
         };
     }
 
-    private async Task RemoveFromFavorites(int favoriteId)
+    private void RemoveFromFavorites(int favoriteId)
     {
         favoriteItems.RemoveAll(item => item.Id == favoriteId);
         // TODO: Remove from database/service
         StateHasChanged();
     }
 
-    private async Task AddToCart(int productId)
+    private void AddToCart(int productId)
     {
         // TODO: Add product to cart
         // Show success notification
     }
 
-    private async Task NotifyWhenAvailable(int productId)
+    private void NotifyWhenAvailable(int productId)
     {
         // TODO: Set up notification for when product is back in stock
         // Show confirmation message
     }
 
-    private async Task ShareProduct(int productId)
+    private void ShareProduct(int productId)
     {
         // TODO: Implement product sharing (social media, email, etc.)
         // Or copy link to clipboard

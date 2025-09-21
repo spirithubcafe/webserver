@@ -4,12 +4,42 @@ using Microsoft.EntityFrameworkCore;
 using SpirithubCofe.Web.Components;
 using SpirithubCofe.Web.Components.Account;
 using SpirithubCofe.Web.Data;
+using SpirithubCofe.Web.Services;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+// Add MVC controllers for culture switching
+builder.Services.AddControllers();
+
+// Add localization services
+builder.Services.AddLocalization();
+builder.Services.AddSingleton<IStringLocalizer<SpirithubCofe.Langs.Resources>, StringLocalizer<SpirithubCofe.Langs.Resources>>();
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var supportedCultures = new[]
+    {
+        new CultureInfo("en"),
+        new CultureInfo("ar")
+    };
+
+    options.DefaultRequestCulture = new RequestCulture("en");
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+    
+    // Add cookie provider as the first provider
+    options.RequestCultureProviders.Insert(0, new CookieRequestCultureProvider
+    {
+        CookieName = "SpirithubCofe.Culture"
+    });
+});
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
@@ -36,6 +66,9 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
+// Register localization service
+builder.Services.AddScoped<ILocalizationService, LocalizationService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -52,10 +85,22 @@ else
 
 app.UseHttpsRedirection();
 
+// Add localization middleware
+var localizationOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>();
+app.UseRequestLocalization(localizationOptions.Value);
 
 app.UseAntiforgery();
 
 app.MapStaticAssets();
+
+// Map controllers for culture switching FIRST
+app.MapControllerRoute(
+    name: "culture",
+    pattern: "Culture/{action=Index}/{id?}",
+    defaults: new { controller = "Culture" });
+
+app.MapControllers();
+
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 

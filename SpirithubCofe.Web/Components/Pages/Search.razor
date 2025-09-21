@@ -326,13 +326,13 @@
     private decimal? maxPrice = null;
     private int totalProducts = 0;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        await LoadData();
+        LoadData();
         ApplyFilters();
     }
 
-    private async Task LoadData()
+    private void LoadData()
     {
         // TODO: Load from actual services/APIs
         categories = new List<ProductCategory>
@@ -362,7 +362,7 @@
         totalProducts = allProducts.Count;
     }
 
-    private async Task OnSearchInput(ChangeEventArgs e)
+    private void OnSearchInput(ChangeEventArgs e)
     {
         searchQuery = e.Value?.ToString() ?? "";
         ApplyFilters();
@@ -450,7 +450,7 @@
         ApplyFilters();
     }
 
-    private async Task ToggleFavorite(int productId)
+    private void ToggleFavorite(int productId)
     {
         var product = filteredProducts.FirstOrDefault(p => p.Id == productId);
         if (product != null)
@@ -460,17 +460,17 @@
         }
     }
 
-    private async Task QuickView(int productId)
+    private void QuickView(int productId)
     {
         // TODO: Open quick view modal
     }
 
-    private async Task AddToCart(int productId)
+    private void AddToCart(int productId)
     {
         // TODO: Add to cart via API
     }
 
-    private async Task NotifyWhenAvailable(int productId)
+    private void NotifyWhenAvailable(int productId)
     {
         // TODO: Set up notification for product availability
     }

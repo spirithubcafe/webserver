@@ -18,6 +18,10 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.9" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SpirithubCofe.Langs\SpirithubCofe.Langs.csproj" />
+  </ItemGroup>
+
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="npm run build:css" />
   </Target>

@@ -183,12 +183,12 @@
 @code {
     private List<Order> orders = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        await LoadOrders();
+        LoadOrders();
     }
 
-    private async Task LoadOrders()
+    private void LoadOrders()
     {
         // TODO: Load from actual orders service/API
         orders = new List<Order>
@@ -249,13 +249,13 @@
         };
     }
 
-    private async Task ViewOrderDetails(int orderId)
+    private void ViewOrderDetails(int orderId)
     {
         // TODO: Navigate to order details page
         // NavigationManager.NavigateTo($"/order-details/{orderId}");
     }
 
-    private async Task ReorderItems(int orderId)
+    private void ReorderItems(int orderId)
     {
         // TODO: Add all items from this order to cart
         // then navigate to cart

@@ -400,14 +400,14 @@
     private decimal taxAmount = 0;
     private decimal total = 0;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        await LoadCartItems();
-        await LoadSavedAddresses();
+        LoadCartItems();
+        LoadSavedAddresses();
         CalculateTotals();
     }
 
-    private async Task LoadCartItems()
+    private void LoadCartItems()
     {
         // TODO: Load from actual cart service/API
         cartItems = new List<CartItem>
@@ -417,7 +417,7 @@
         };
     }
 
-    private async Task LoadSavedAddresses()
+    private void LoadSavedAddresses()
     {
         // TODO: Load from actual address service/API
         savedAddresses = new List<SavedAddress>
@@ -449,29 +449,29 @@
         shippingAddress = new ShippingAddress();
     }
 
-    private async Task ProceedToPayment()
+    private void ProceedToPayment()
     {
         // TODO: Validate shipping address
         currentStep = 2;
     }
 
-    private async Task BackToShipping()
+    private void BackToShipping()
     {
         currentStep = 1;
     }
 
-    private async Task ProceedToReview()
+    private void ProceedToReview()
     {
         // TODO: Validate payment method
         currentStep = 3;
     }
 
-    private async Task BackToPayment()
+    private void BackToPayment()
     {
         currentStep = 2;
     }
 
-    private async Task PlaceOrder()
+    private void PlaceOrder()
     {
         // TODO: Process order and payment
         // Navigate to order confirmation page

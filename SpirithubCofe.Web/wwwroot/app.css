@@ -26,3 +26,129 @@
   outline: none !important;
   box-shadow: none !important;
 }
+
+/* RTL Support for Arabic */
+[dir="rtl"] {
+    text-align: right;
+}
+
+[dir="rtl"] .text-left {
+    text-align: right !important;
+}
+
+[dir="rtl"] .text-right {
+    text-align: left !important;
+}
+
+[dir="rtl"] .mr-3 {
+    margin-right: 0 !important;
+    margin-left: 0.75rem !important;
+}
+
+[dir="rtl"] .ml-3 {
+    margin-left: 0 !important;
+    margin-right: 0.75rem !important;
+}
+
+[dir="rtl"] .mr-2 {
+    margin-right: 0 !important;
+    margin-left: 0.5rem !important;
+}
+
+[dir="rtl"] .ml-2 {
+    margin-left: 0 !important;
+    margin-right: 0.5rem !important;
+}
+
+[dir="rtl"] .mr-4 {
+    margin-right: 0 !important;
+    margin-left: 1rem !important;
+}
+
+[dir="rtl"] .ml-4 {
+    margin-left: 0 !important;
+    margin-right: 1rem !important;
+}
+
+[dir="rtl"] .pr-4 {
+    padding-right: 0 !important;
+    padding-left: 1rem !important;
+}
+
+[dir="rtl"] .pl-4 {
+    padding-left: 0 !important;
+    padding-right: 1rem !important;
+}
+
+[dir="rtl"] .border-l-4 {
+    border-left-width: 0 !important;
+    border-right-width: 4px !important;
+}
+
+[dir="rtl"] .border-r-4 {
+    border-right-width: 0 !important;
+    border-left-width: 4px !important;
+}
+
+/* RTL specific navigation styles */
+[dir="rtl"] .nav-menu {
+    text-align: right;
+}
+
+[dir="rtl"] .navbar-brand {
+    margin-left: auto;
+    margin-right: 0;
+}
+
+/* RTL Flex adjustments */
+[dir="rtl"] .flex {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .flex-col {
+    flex-direction: column;
+}
+
+[dir="rtl"] .justify-between {
+    flex-direction: row-reverse;
+}
+
+/* RTL specific for language switcher */
+.language-switcher {
+    @apply text-sm;
+}
+
+.language-switcher select {
+    @apply w-full px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+}
+
+[dir="rtl"] .language-switcher select {
+    text-align: right;
+}
+
+/* Arabic font support */
+[dir="rtl"] {
+    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+}
+
+/* RTL specific card layouts */
+[dir="rtl"] .card {
+    text-align: right;
+}
+
+[dir="rtl"] .btn {
+    text-align: center;
+}
+
+/* Form input RTL support */
+[dir="rtl"] input, 
+[dir="rtl"] textarea, 
+[dir="rtl"] select {
+    text-align: right;
+}
+
+[dir="rtl"] input[type="email"], 
+[dir="rtl"] input[type="url"] {
+    text-align: left;
+}
+

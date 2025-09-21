@@ -232,12 +232,12 @@
 @code {
     private List<CartItemModel> cartItems = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        await LoadCartItems();
+        LoadCartItems();
     }
 
-    private async Task LoadCartItems()
+    private void LoadCartItems()
     {
         // Simulate loading cart items - replace with actual data service
         cartItems = new List<CartItemModel>
@@ -248,7 +248,7 @@
         };
     }
 
-    private async Task IncreaseQuantity(int itemId)
+    private void IncreaseQuantity(int itemId)
     {
         var item = cartItems.FirstOrDefault(x => x.Id == itemId);
         if (item != null)
@@ -258,7 +258,7 @@
         }
     }
 
-    private async Task DecreaseQuantity(int itemId)
+    private void DecreaseQuantity(int itemId)
     {
         var item = cartItems.FirstOrDefault(x => x.Id == itemId);
         if (item != null && item.Quantity > 1)
@@ -268,19 +268,19 @@
         }
     }
 
-    private async Task RemoveFromCart(int itemId)
+    private void RemoveFromCart(int itemId)
     {
         cartItems.RemoveAll(x => x.Id == itemId);
         StateHasChanged();
     }
 
-    private async Task ClearCart()
+    private void ClearCart()
     {
         cartItems.Clear();
         StateHasChanged();
     }
 
-    private async Task ProceedToCheckout()
+    private void ProceedToCheckout()
     {
         // Navigate to checkout page
         // NavigationManager.NavigateTo("/checkout");
