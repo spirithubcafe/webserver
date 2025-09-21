@@ -524,6 +524,9 @@
   <data name="MyProfile" xml:space="preserve">
     <value>ملفي الشخصي</value>
   </data>
+  <data name="Profile" xml:space="preserve">
+    <value>الملف الشخصي</value>
+  </data>
   <data name="AdminPanel" xml:space="preserve">
     <value>لوحة الإدارة</value>
   </data>

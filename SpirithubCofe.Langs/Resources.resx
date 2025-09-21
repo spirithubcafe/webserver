@@ -524,6 +524,9 @@
   <data name="MyProfile" xml:space="preserve">
     <value>My Profile</value>
   </data>
+  <data name="Profile" xml:space="preserve">
+    <value>Profile</value>
+  </data>
   <data name="AdminPanel" xml:space="preserve">
     <value>Admin Panel</value>
   </data>

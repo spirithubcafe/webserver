@@ -97,6 +97,7 @@ app.UseRequestLocalization(localizationOptions.Value);
 
 app.UseAntiforgery();
 
+app.UseStaticFiles(); // Enable static file serving
 app.MapStaticAssets();
 
 // Map controllers for culture switching FIRST
