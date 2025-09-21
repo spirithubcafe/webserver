@@ -66,6 +66,9 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
+// Add HttpClient for API calls
+builder.Services.AddHttpClient();
+
 // Register localization service
 builder.Services.AddScoped<ILocalizationService, LocalizationService>();
 
@@ -75,10 +78,15 @@ builder.Services.AddScoped<CartService>();
 // Register admin services
 builder.Services.AddScoped<UserManagementService>();
 builder.Services.AddScoped<RoleManagementService>();
+builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<CategoryService>();
 
 // Register slide service
 builder.Services.AddScoped<SpirithubCofe.Application.Services.ISlideService, SpirithubCofe.Infrastructure.Services.SlideService>();
 builder.Services.AddScoped<SpirithubCofe.Application.Interfaces.IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>()!);
+
+// Register data seeder service
+builder.Services.AddScoped<DataSeederService>();
 
 var app = builder.Build();
 
@@ -121,6 +129,9 @@ app.MapAdditionalIdentityEndpoints();
 // Seed roles and admin user
 await SeedAdminUser(app);
 
+// Seed sample data for categories and products
+await SeedSampleData(app);
+
 app.Run();
 
 async Task SeedAdminUser(WebApplication app)
@@ -158,4 +169,11 @@ async Task SeedAdminUser(WebApplication app)
             await userManager.AddToRoleAsync(admin, "Admin");
         }
     }
+}
+
+async Task SeedSampleData(WebApplication app)
+{
+    using var scope = app.Services.CreateScope();
+    var seederService = scope.ServiceProvider.GetRequiredService<DataSeederService>();
+    await seederService.SeedSampleDataAsync();
 }

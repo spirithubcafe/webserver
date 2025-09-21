@@ -1,6 +1,10 @@
 @page "/admin/products"
 @layout AdminLayout
 @attribute [Authorize(Roles = "Admin")]
+@using SpirithubCofe.Domain.Entities
+@inject ProductService ProductService
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
 
 <PageTitle>Products Management - SpirithubCofe</PageTitle>
 
@@ -28,21 +32,24 @@
         <div class="px-6 py-4 border-b border-gray-200">
             <div class="flex items-center space-x-4">
                 <div class="flex-1">
-                    <input type="text" placeholder="Search products..." 
+                    <input type="text" placeholder="Search products..." @bind="searchTerm" @onkeyup="OnSearchChanged"
                            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500">
                 </div>
-                <select class="border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500">
-                    <option>All Categories</option>
-                    <option>Coffee Beans</option>
-                    <option>Ground Coffee</option>
-                    <option>Instant Coffee</option>
-                    <option>Accessories</option>
+                <select @bind="selectedCategoryId" class="border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500">
+                    <option value="">All Categories</option>
+                    @if (categories != null)
+                    {
+                        @foreach (var category in categories)
+                        {
+                            <option value="@category.Id">@category.Name</option>
+                        }
+                    }
                 </select>
-                <select class="border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500">
-                    <option>All Status</option>
-                    <option>Active</option>
-                    <option>Inactive</option>
-                    <option>Out of Stock</option>
+                <select @bind="selectedStatus" class="border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500">
+                    <option value="">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="outofstock">Out of Stock</option>
                 </select>
             </div>
         </div>
@@ -50,145 +57,172 @@
 
     <!-- Products Table -->
     <div class="bg-white rounded-lg shadow overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Product
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Category
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Price
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Stock
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Status
-                    </th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Actions
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 h-12 w-12">
-                                <div class="h-12 w-12 rounded-lg bg-amber-100 flex items-center justify-center">
-                                    <svg class="h-6 w-6 text-amber-600" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M18.5 3H6c-1.1 0-2 .9-2 2v5.71c0 3.83 2.95 7.18 6.78 7.29 3.96.12 7.22-3.06 7.22-7v-1h.5c1.93 0 3.5-1.57 3.5-3.5S20.43 3 18.5 3z"/>
-                                    </svg>
+        @if (loading)
+        {
+            <div class="p-8 text-center">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600 mx-auto"></div>
+                <p class="mt-2 text-sm text-gray-500">Loading products...</p>
+            </div>
+        }
+        else if (filteredProducts == null || !filteredProducts.Any())
+        {
+            <div class="p-8 text-center">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2 2v-5m16 0H4m16 0l-2-2m-2 2h4m-4 0l2-2" />
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">No products found</h3>
+                <p class="mt-1 text-sm text-gray-500">Get started by creating your first product.</p>
+            </div>
+        }
+        else
+        {
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Product
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Category
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Price
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Stock
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Rating
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Status
+                        </th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach (var product in filteredProducts)
+                    {
+                        var totalStock = product.Variants.Sum(v => v.StockQuantity);
+                        var minPrice = product.Variants.Where(v => v.IsActive).MinBy(v => v.EffectivePrice)?.EffectivePrice ?? 0;
+                        var stockStatus = GetStockStatus(totalStock);
+                        
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-12 w-12">
+                                        <div class="h-12 w-12 rounded-lg bg-amber-100 flex items-center justify-center">
+                                            <svg class="h-6 w-6 text-amber-600" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M18.5 3H6c-1.1 0-2 .9-2 2v5.71c0 3.83 2.95 7.18 6.78 7.29 3.96.12 7.22-3.06 7.22-7v-1h.5c1.93 0 3.5-1.57 3.5-3.5S20.43 3 18.5 3z"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">@product.Name</div>
+                                        <div class="text-sm text-gray-500">@product.Sku</div>
+                                        @if (!string.IsNullOrEmpty(product.NameAr))
+                                        {
+                                            <div class="text-sm text-gray-500 font-arabic">@product.NameAr</div>
+                                        }
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="ml-4">
-                                <div class="text-sm font-medium text-gray-900">Ethiopian Yirgacheffe</div>
-                                <div class="text-sm text-gray-500">Premium single-origin coffee beans</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                            Coffee Beans
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        OMR 24.50
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        45 units
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                            Active
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                        <button class="text-amber-600 hover:text-amber-900">Edit</button>
-                        <button class="text-red-600 hover:text-red-900">Delete</button>
-                    </td>
-                </tr>
-                
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 h-12 w-12">
-                                <div class="h-12 w-12 rounded-lg bg-amber-100 flex items-center justify-center">
-                                    <svg class="h-6 w-6 text-amber-600" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M18.5 3H6c-1.1 0-2 .9-2 2v5.71c0 3.83 2.95 7.18 6.78 7.29 3.96.12 7.22-3.06 7.22-7v-1h.5c1.93 0 3.5-1.57 3.5-3.5S20.43 3 18.5 3z"/>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="ml-4">
-                                <div class="text-sm font-medium text-gray-900">Brazilian Santos</div>
-                                <div class="text-sm text-gray-500">Smooth and balanced coffee beans</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                            Coffee Beans
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        OMR 18.75
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        23 units
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                            Active
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                        <button class="text-amber-600 hover:text-amber-900">Edit</button>
-                        <button class="text-red-600 hover:text-red-900">Delete</button>
-                    </td>
-                </tr>
-
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 h-12 w-12">
-                                <div class="h-12 w-12 rounded-lg bg-red-100 flex items-center justify-center">
-                                    <svg class="h-6 w-6 text-red-600" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M18.5 3H6c-1.1 0-2 .9-2 2v5.71c0 3.83 2.95 7.18 6.78 7.29 3.96.12 7.22-3.06 7.22-7v-1h.5c1.93 0 3.5-1.57 3.5-3.5S20.43 3 18.5 3z"/>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="ml-4">
-                                <div class="text-sm font-medium text-gray-900">Colombian Supremo</div>
-                                <div class="text-sm text-gray-500">Rich and full-bodied coffee</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                            Coffee Beans
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        OMR 28.00
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        0 units
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
-                            Out of Stock
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                        <button class="text-amber-600 hover:text-amber-900">Edit</button>
-                        <button class="text-red-600 hover:text-red-900">Delete</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                    @product.Category?.Name
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                @if (product.Variants.Any(v => v.HasDiscount))
+                                {
+                                    var discountVariant = product.Variants.Where(v => v.HasDiscount).MinBy(v => v.EffectivePrice);
+                                    <div>
+                                        <span class="text-red-600 font-semibold">OMR @discountVariant.EffectivePrice.ToString("F3")</span>
+                                        <span class="text-gray-400 line-through text-xs ml-1">OMR @discountVariant.Price.ToString("F3")</span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span>OMR @minPrice.ToString("F3")</span>
+                                }
+                                @if (product.Variants.Count() > 1)
+                                {
+                                    <div class="text-xs text-gray-500">@product.Variants.Count() variants</div>
+                                }
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                @totalStock units
+                                @if (totalStock <= 5 && totalStock > 0)
+                                {
+                                    <div class="text-xs text-orange-600">Low stock</div>
+                                }
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                @if (product.ReviewCount > 0)
+                                {
+                                    <div class="flex items-center">
+                                        <div class="flex text-yellow-400">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                @if (i <= Math.Round(product.AverageRating))
+                                                {
+                                                    <svg class="h-3 w-3 fill-current" viewBox="0 0 20 20">
+                                                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                                    </svg>
+                                                }
+                                                else
+                                                {
+                                                    <svg class="h-3 w-3 text-gray-300 fill-current" viewBox="0 0 20 20">
+                                                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                                    </svg>
+                                                }
+                                            }
+                                        </div>
+                                        <span class="ml-1 text-xs text-gray-500">(@product.ReviewCount)</span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="text-xs text-gray-400">No reviews</span>
+                                }
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if (product.IsActive)
+                                {
+                                    @if (totalStock > 0)
+                                    {
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                            Active
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                                            Out of Stock
+                                        </span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                                        Inactive
+                                    </span>
+                                }
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                                <button @onclick="() => EditProduct(product.Id)" class="text-amber-600 hover:text-amber-900">Edit</button>
+                                <button @onclick="() => ToggleProductStatus(product.Id)" class="text-indigo-600 hover:text-indigo-900">
+                                    @(product.IsActive ? "Deactivate" : "Activate")
+                                </button>
+                                <button @onclick="() => DeleteProduct(product.Id)" class="text-red-600 hover:text-red-900">Delete</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
     </div>
 
     <!-- Pagination -->
@@ -204,25 +238,38 @@
         <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
                 <p class="text-sm text-gray-700">
-                    Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of{' '}
-                    <span class="font-medium">156</span> results
+                    Showing <span class="font-medium">@Math.Min((currentPage - 1) * pageSize + 1, totalProducts)</span> to <span class="font-medium">@Math.Min(currentPage * pageSize, totalProducts)</span> of{' '}
+                    <span class="font-medium">@totalProducts</span> results
                 </p>
             </div>
             <div>
                 <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                    <button class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    <button @onclick="() => GoToPage(currentPage - 1)" 
+                            disabled="@(currentPage <= 1)"
+                            class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
                         Previous
                     </button>
-                    <button class="bg-amber-50 border-amber-500 text-amber-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                        1
-                    </button>
-                    <button class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                        2
-                    </button>
-                    <button class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                        3
-                    </button>
-                    <button class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    
+                    @for (int page = Math.Max(1, currentPage - 2); page <= Math.Min(totalPages, currentPage + 2); page++)
+                    {
+                        var pageNumber = page; // Capture for closure
+                        @if (pageNumber == currentPage)
+                        {
+                            <button class="bg-amber-50 border-amber-500 text-amber-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                                @pageNumber
+                            </button>
+                        }
+                        else
+                        {
+                            <button @onclick="() => GoToPage(pageNumber)" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                                @pageNumber
+                            </button>
+                        }
+                    }
+                    
+                    <button @onclick="() => GoToPage(currentPage + 1)" 
+                            disabled="@(currentPage >= totalPages)"
+                            class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
                         Next
                     </button>
                 </nav>
@@ -232,5 +279,201 @@
 </div>
 
 @code {
+    private List<Product> allProducts = new();
+    private List<Product> filteredProducts = new();
+    private List<Category> categories = new();
+    private bool loading = true;
     
+    // Filter properties
+    private string searchTerm = string.Empty;
+    private string _selectedCategoryId = string.Empty;
+    private string _selectedStatus = string.Empty;
+    
+    private string selectedCategoryId
+    {
+        get => _selectedCategoryId;
+        set
+        {
+            if (_selectedCategoryId != value)
+            {
+                _selectedCategoryId = value;
+                _ = ApplyFiltersAsync();
+            }
+        }
+    }
+    
+    private string selectedStatus
+    {
+        get => _selectedStatus;
+        set
+        {
+            if (_selectedStatus != value)
+            {
+                _selectedStatus = value;
+                _ = ApplyFiltersAsync();
+            }
+        }
+    }
+    
+    // Pagination properties
+    private int currentPage = 1;
+    private int pageSize = 10;
+    private int totalProducts = 0;
+    private int totalPages = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        loading = true;
+        try
+        {
+            // Load categories for filter dropdown
+            categories = await ProductService.GetAllCategoriesAsync();
+            
+            // Load all products
+            allProducts = await ProductService.GetAllProductsAsync();
+            
+            // Apply current filters
+            await ApplyFiltersAsync();
+        }
+        catch (Exception ex)
+        {
+            // Handle error - you might want to show a notification
+            Console.WriteLine($"Error loading data: {ex.Message}");
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private async Task ApplyFiltersAsync()
+    {
+        // Parse category ID
+        int? categoryId = null;
+        if (int.TryParse(selectedCategoryId, out int catId))
+        {
+            categoryId = catId;
+        }
+
+        // Get filtered products from service
+        var filtered = await ProductService.GetProductsWithFiltersAsync(
+            categoryId: categoryId,
+            searchTerm: string.IsNullOrWhiteSpace(searchTerm) ? null : searchTerm.Trim(),
+            status: string.IsNullOrWhiteSpace(selectedStatus) ? null : selectedStatus
+        );
+
+        totalProducts = filtered.Count;
+        totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
+        
+        // Reset to first page when filters change
+        currentPage = 1;
+        
+        // Apply pagination
+        filteredProducts = filtered
+            .Skip((currentPage - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+    }
+
+    private async Task OnSearchChanged()
+    {
+        await ApplyFiltersAsync();
+    }
+
+    private async Task GoToPage(int page)
+    {
+        if (page >= 1 && page <= totalPages)
+        {
+            currentPage = page;
+            
+            // Parse category ID
+            int? categoryId = null;
+            if (int.TryParse(selectedCategoryId, out int catId))
+            {
+                categoryId = catId;
+            }
+
+            // Get filtered products for the new page
+            var filtered = await ProductService.GetProductsWithFiltersAsync(
+                categoryId: categoryId,
+                searchTerm: string.IsNullOrWhiteSpace(searchTerm) ? null : searchTerm.Trim(),
+                status: string.IsNullOrWhiteSpace(selectedStatus) ? null : selectedStatus
+            );
+
+            // Apply pagination
+            filteredProducts = filtered
+                .Skip((currentPage - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+        }
+    }
+
+    private async Task EditProduct(int productId)
+    {
+        // TODO: Navigate to edit product page
+        // For now, just show an alert
+        await JSRuntime.InvokeVoidAsync("alert", $"Edit product {productId} - Not implemented yet");
+    }
+
+    private async Task ToggleProductStatus(int productId)
+    {
+        try
+        {
+            loading = true;
+            var success = await ProductService.ToggleProductStatusAsync(productId);
+            if (success)
+            {
+                await LoadDataAsync(); // Reload data to reflect changes
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error toggling product status: {ex.Message}");
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private async Task DeleteProduct(int productId)
+    {
+        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this product? This action cannot be undone.");
+        if (confirmed)
+        {
+            try
+            {
+                loading = true;
+                var success = await ProductService.DeleteProductAsync(productId);
+                if (success)
+                {
+                    await LoadDataAsync(); // Reload data to reflect changes
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("alert", "Failed to delete product.");
+                }
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", $"Error deleting product: {ex.Message}");
+            }
+            finally
+            {
+                loading = false;
+            }
+        }
+    }
+
+    private string GetStockStatus(int totalStock)
+    {
+        if (totalStock == 0) return "out-of-stock";
+        if (totalStock <= 5) return "low-stock";
+        return "in-stock";
+    }
 }

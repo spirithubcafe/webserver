@@ -2,10 +2,10 @@
 
 #nullable disable
 
-namespace SpirithubCofe.Web.Migrations
+namespace SpirithubCofe.Web.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AddSlideEntity : Migration
+    public partial class AddCategoryImagePath : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

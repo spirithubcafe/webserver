@@ -2,9 +2,10 @@
 @layout AdminLayout
 @attribute [Authorize(Roles = "Admin")]
 @using SpirithubCofe.Domain.Entities
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components
 @inject CategoryService CategoryService
 @inject IJSRuntime JSRuntime
-@inject HttpClient HttpClient
 @inject IStringLocalizer<SpirithubCofe.Langs.Resources> Localizer
 @rendermode InteractiveServer
 
@@ -133,22 +134,6 @@
             @foreach (var category in filteredCategories)
             {
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
-                    <!-- Category Image -->
-                    <div class="mb-4">
-                        @if (!string.IsNullOrEmpty(category.ImagePath))
-                        {
-                            <img src="@category.ImagePath" alt="@category.Name" class="w-full h-32 object-cover rounded-lg" />
-                        }
-                        else
-                        {
-                            <div class="w-full h-32 bg-gray-100 rounded-lg flex items-center justify-center">
-                                <svg class="w-12 h-12 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path>
-                                </svg>
-                            </div>
-                        }
-                    </div>
-
                     <div class="flex items-start justify-between mb-4">
                         <div class="flex-1">
                             <h3 class="text-lg font-semibold text-gray-900">@category.Name</h3>
@@ -184,8 +169,8 @@
 
                         <div class="flex items-center justify-between">
                             <span class="text-sm text-gray-500">Homepage</span>
-                            <span class="@(category.IsDisplayedOnHomepage ? "bg-blue-100 text-blue-800" : "bg-gray-100 text-gray-800") px-2 py-1 rounded-full text-xs font-medium">
-                                @(category.IsDisplayedOnHomepage ? "Visible" : "Hidden")
+                            <span class="@(category.ShowOnHomepage ? "bg-blue-100 text-blue-800" : "bg-gray-100 text-gray-800") px-2 py-1 rounded-full text-xs font-medium">
+                                @(category.ShowOnHomepage ? "Visible" : "Hidden")
                             </span>
                         </div>
 
@@ -196,7 +181,7 @@
 
                         <div class="flex items-center justify-between">
                             <span class="text-sm text-gray-500">Products</span>
-                            <span class="text-sm font-medium text-gray-900">@(category.Products?.Count ?? 0)</span>
+                            <span class="text-sm font-medium text-gray-900">@category.Products.Count</span>
                         </div>
 
                         @if (!string.IsNullOrEmpty(category.Description))
@@ -226,56 +211,51 @@
                 </button>
             </div>
 
-            <form @onsubmit:preventDefault="true">
+            <EditForm Model="editingCategory" OnValidSubmit="SaveCategory">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-red-600 mb-4" />
+
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Name (English)</label>
-                        <input type="text" @bind="editingCategory.Name" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" />
+                        <InputText @bind-Value="editingCategory.Name" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" />
+                        <ValidationMessage For="@(() => editingCategory.Name)" class="text-red-600 text-sm mt-1" />
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Name (Arabic)</label>
-                        <input type="text" @bind="editingCategory.NameAr" dir="rtl" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" />
+                        <InputText @bind-Value="editingCategory.NameAr" dir="rtl" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" />
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Slug</label>
-                        <input type="text" @bind="editingCategory.Slug" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 font-mono" />
+                        <InputText @bind-Value="editingCategory.Slug" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 font-mono" />
+                        <ValidationMessage For="@(() => editingCategory.Slug)" class="text-red-600 text-sm mt-1" />
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Description (English)</label>
-                        <textarea @bind="editingCategory.Description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500"></textarea>
+                        <InputTextArea @bind-Value="editingCategory.Description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" />
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Description (Arabic)</label>
-                        <textarea @bind="editingCategory.DescriptionAr" dir="rtl" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500"></textarea>
-                    </div>
-
-                    <!-- Image Upload Section -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Category Image</label>
-                        <FileUpload Folder="categories" 
-                                   FileType="image" 
-                                   Prefix="category"
-                                   @bind-CurrentFileUrl="editingCategory.ImagePath"
-                                   AltText="Category Image" />
+                        <InputTextArea @bind-Value="editingCategory.DescriptionAr" dir="rtl" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" />
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Display Order</label>
-                        <input type="number" @bind="editingCategory.DisplayOrder" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" />
+                        <InputNumber @bind-Value="editingCategory.DisplayOrder" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" />
                     </div>
 
                     <div class="flex items-center space-x-4">
                         <label class="flex items-center">
-                            <input type="checkbox" @bind="editingCategory.IsActive" class="rounded border-gray-300 text-amber-600 focus:ring-amber-500" />
+                            <InputCheckbox @bind-Value="editingCategory.IsActive" class="rounded border-gray-300 text-amber-600 focus:ring-amber-500" />
                             <span class="ml-2 text-sm text-gray-700">Active</span>
                         </label>
 
                         <label class="flex items-center">
-                            <input type="checkbox" @bind="editingCategory.IsDisplayedOnHomepage" class="rounded border-gray-300 text-amber-600 focus:ring-amber-500" />
+                            <InputCheckbox @bind-Value="editingCategory.ShowOnHomepage" class="rounded border-gray-300 text-amber-600 focus:ring-amber-500" />
                             <span class="ml-2 text-sm text-gray-700">Show on Homepage</span>
                         </label>
                     </div>
@@ -285,11 +265,106 @@
                     <button type="button" @onclick="() => showCreateModal = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">
                         Cancel
                     </button>
-                    <button type="button" @onclick="SaveCategory" class="px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg">
+                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg">
                         @(editingCategory?.Id > 0 ? "Update" : "Create")
                     </button>
                 </div>
-            </form>
+            </EditForm>
+        </div>
+    </div>
+}
+
+            <!-- Modal panel -->
+            <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                <div>
+                    <div class="mt-3 text-center sm:text-left">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">
+                            @(editingCategory?.Id > 0 ? "Edit Category" : "Create New Category")
+                        </h3>
+                        <div class="mt-6 space-y-4">
+                            <!-- Name (English) -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Name (English) *</label>
+                                <input type="text" @bind="editingCategory.Name" @onkeyup="OnNameChanged"
+                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500">
+                            </div>
+
+                            <!-- Name (Arabic) -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Name (Arabic)</label>
+                                <input type="text" @bind="editingCategory.NameAr" dir="rtl"
+                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500 font-arabic">
+                            </div>
+
+                            <!-- Slug -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Slug *</label>
+                                <input type="text" @bind="editingCategory.Slug"
+                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500 font-mono text-sm">
+                                <p class="mt-1 text-xs text-gray-500">URL-friendly identifier (auto-generated from name)</p>
+                            </div>
+
+                            <!-- Description (English) -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Description (English)</label>
+                                <textarea @bind="editingCategory.Description" rows="3"
+                                          class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500"></textarea>
+                            </div>
+
+                            <!-- Description (Arabic) -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Description (Arabic)</label>
+                                <textarea @bind="editingCategory.DescriptionAr" rows="3" dir="rtl"
+                                          class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500 font-arabic"></textarea>
+                            </div>
+
+                            <!-- Image Path -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Image Path</label>
+                                <input type="text" @bind="editingCategory.ImagePath" placeholder="/images/categories/category-name.jpg"
+                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500">
+                                <p class="mt-1 text-xs text-gray-500">Path to category image (relative to wwwroot)</p>
+                            </div>
+
+                            <!-- Display Order -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Display Order</label>
+                                <input type="number" @bind="editingCategory.DisplayOrder" min="0"
+                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500">
+                            </div>
+
+                            <!-- Checkboxes -->
+                            <div class="space-y-3">
+                                <div class="flex items-center">
+                                    <input type="checkbox" @bind="editingCategory.IsActive" 
+                                           class="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded">
+                                    <label class="ml-2 block text-sm text-gray-900">Active</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" @bind="editingCategory.IsDisplayedOnHomepage" 
+                                           class="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded">
+                                    <label class="ml-2 block text-sm text-gray-900">Display on Homepage</label>
+                                </div>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(formError))
+                            {
+                                <div class="text-red-600 text-sm">@formError</div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-5 sm:mt-6 sm:flex sm:flex-row-reverse">
+                    <button @onclick="SaveCategory" type="button"
+                            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-amber-600 text-base font-medium text-white hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        @(editingCategory?.Id > 0 ? "Update" : "Create")
+                    </button>
+                    <button @onclick="CloseForm" type="button"
+                            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 sm:mt-0 sm:w-auto sm:text-sm">
+                        Cancel
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 }
@@ -298,13 +373,6 @@
     private List<Category> allCategories = new();
     private List<Category> filteredCategories = new();
     private bool loading = true;
-    private bool showCreateModal = false;
-    
-    // Stats
-    private int totalCategories = 0;
-    private int activeCategories = 0;
-    private int homepageCategories = 0;
-    private int categoriesWithProducts = 0;
     
     // Filter properties
     private string searchTerm = string.Empty;
@@ -324,25 +392,26 @@
     }
     
     // Form properties
+    private bool showForm = false;
     private Category editingCategory = new();
+    private string formError = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadCategoriesAsync();
+        await LoadDataAsync();
     }
 
-    private async Task LoadCategoriesAsync()
+    private async Task LoadDataAsync()
     {
         loading = true;
         try
         {
             allCategories = await CategoryService.GetAllCategoriesAsync();
-            await CalculateStats();
             await ApplyFiltersAsync();
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("console.error", ex.Message);
+            await JSRuntime.InvokeVoidAsync("alert", $"Error loading categories: {ex.Message}");
         }
         finally
         {
@@ -350,38 +419,19 @@
         }
     }
 
-    private async Task CalculateStats()
-    {
-        totalCategories = allCategories.Count;
-        activeCategories = allCategories.Count(c => c.IsActive);
-        homepageCategories = allCategories.Count(c => c.IsDisplayedOnHomepage);
-        categoriesWithProducts = allCategories.Count(c => c.Products?.Any() == true);
-        await Task.CompletedTask;
-    }
-
     private async Task ApplyFiltersAsync()
     {
-        var filteredQuery = allCategories.AsEnumerable();
-
-        if (!string.IsNullOrWhiteSpace(searchTerm))
+        try
         {
-            filteredQuery = filteredQuery.Where(c =>
-                c.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                (c.NameAr?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) == true));
+            filteredCategories = await CategoryService.GetCategoriesWithFiltersAsync(
+                searchTerm: string.IsNullOrWhiteSpace(searchTerm) ? null : searchTerm.Trim(),
+                status: string.IsNullOrWhiteSpace(selectedStatus) ? null : selectedStatus
+            );
         }
-
-        filteredQuery = selectedStatus switch
+        catch (Exception ex)
         {
-            "active" => filteredQuery.Where(c => c.IsActive),
-            "inactive" => filteredQuery.Where(c => !c.IsActive),
-            "homepage" => filteredQuery.Where(c => c.IsDisplayedOnHomepage),
-            "hidden" => filteredQuery.Where(c => !c.IsDisplayedOnHomepage),
-            _ => filteredQuery
-        };
-
-        filteredCategories = filteredQuery.OrderBy(c => c.DisplayOrder).ThenBy(c => c.Name).ToList();
-        await Task.CompletedTask;
-        StateHasChanged();
+            await JSRuntime.InvokeVoidAsync("alert", $"Error filtering categories: {ex.Message}");
+        }
     }
 
     private async Task OnSearchChanged()
@@ -391,8 +441,14 @@
 
     private void ShowCreateForm()
     {
-        editingCategory = new Category { IsActive = true, DisplayOrder = allCategories.Count + 1 };
-        showCreateModal = true;
+        editingCategory = new Category
+        {
+            IsActive = true,
+            IsDisplayedOnHomepage = true,
+            DisplayOrder = allCategories.Any() ? allCategories.Max(c => c.DisplayOrder) + 1 : 1
+        };
+        formError = string.Empty;
+        showForm = true;
     }
 
     private void EditCategory(Category category)
@@ -406,20 +462,50 @@
             Description = category.Description,
             DescriptionAr = category.DescriptionAr,
             ImagePath = category.ImagePath,
-            DisplayOrder = category.DisplayOrder,
             IsActive = category.IsActive,
-            IsDisplayedOnHomepage = category.IsDisplayedOnHomepage
+            IsDisplayedOnHomepage = category.IsDisplayedOnHomepage,
+            DisplayOrder = category.DisplayOrder
         };
-        showCreateModal = true;
+        formError = string.Empty;
+        showForm = true;
+    }
+
+    private void CloseForm()
+    {
+        showForm = false;
+        editingCategory = new();
+        formError = string.Empty;
+    }
+
+    private async Task OnNameChanged()
+    {
+        if (!string.IsNullOrEmpty(editingCategory.Name) && string.IsNullOrEmpty(editingCategory.Slug))
+        {
+            editingCategory.Slug = await CategoryService.GenerateUniqueSlugAsync(editingCategory.Name, editingCategory.Id > 0 ? editingCategory.Id : null);
+        }
     }
 
     private async Task SaveCategory()
     {
         try
         {
-            // Debug: Log the ImagePath before saving
-            await JSRuntime.InvokeVoidAsync("console.log", $"Saving category with ImagePath: {editingCategory.ImagePath}");
-            
+            formError = string.Empty;
+
+            // Validation
+            if (string.IsNullOrWhiteSpace(editingCategory.Name))
+            {
+                formError = "Name is required.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(editingCategory.Slug))
+            {
+                formError = "Slug is required.";
+                return;
+            }
+
+            loading = true;
+
             if (editingCategory.Id > 0)
             {
                 await CategoryService.UpdateCategoryAsync(editingCategory);
@@ -428,29 +514,74 @@
             {
                 await CategoryService.CreateCategoryAsync(editingCategory);
             }
-            
-            showCreateModal = false;
-            await LoadCategoriesAsync();
+
+            await LoadDataAsync();
+            CloseForm();
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("console.error", ex.Message);
+            formError = ex.Message;
+        }
+        finally
+        {
+            loading = false;
         }
     }
 
-    private async Task DeleteCategory(Category category)
+    private async Task ToggleCategoryStatus(int categoryId)
     {
-        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete '{category.Name}'?");
+        try
+        {
+            loading = true;
+            await CategoryService.ToggleCategoryStatusAsync(categoryId);
+            await LoadDataAsync();
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error toggling category status: {ex.Message}");
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private async Task ToggleCategoryHomepage(int categoryId)
+    {
+        try
+        {
+            loading = true;
+            await CategoryService.ToggleCategoryHomepageDisplayAsync(categoryId);
+            await LoadDataAsync();
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error toggling homepage display: {ex.Message}");
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private async Task DeleteCategory(int categoryId)
+    {
+        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this category? This action cannot be undone.");
         if (confirmed)
         {
             try
             {
-                await CategoryService.DeleteCategoryAsync(category.Id);
-                await LoadCategoriesAsync();
+                loading = true;
+                await CategoryService.DeleteCategoryAsync(categoryId);
+                await LoadDataAsync();
             }
             catch (Exception ex)
             {
-                await JSRuntime.InvokeVoidAsync("console.error", ex.Message);
+                await JSRuntime.InvokeVoidAsync("alert", $"Error deleting category: {ex.Message}");
+            }
+            finally
+            {
+                loading = false;
             }
         }
     }

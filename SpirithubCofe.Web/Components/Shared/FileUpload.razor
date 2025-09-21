@@ -1,0 +1,312 @@
+@using System.IO
+@using Microsoft.AspNetCore.Components.Forms
+@inject IWebHostEnvironment WebHostEnvironment
+
+<div class="space-y-4">
+    @if (!string.IsNullOrEmpty(CurrentFileUrl))
+    {
+        <div class="flex items-center space-x-2 rtl:space-x-reverse">
+            @if (FileType == "image")
+            {
+                <img src="@CurrentFileUrl" alt="@AltText" class="w-16 h-16 object-cover rounded border" />
+            }
+            else
+            {
+                <div class="w-16 h-16 bg-gray-100 rounded border flex items-center justify-center">
+                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+            }
+            <span class="text-sm text-gray-600">@CurrentFileName</span>
+            <button type="button" @onclick="RemoveFile" 
+                    class="text-red-600 hover:text-red-800 text-sm">
+                Remove
+            </button>
+        </div>
+    }
+
+    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
+        <InputFile OnChange="HandleFileUpload" accept="@GetAcceptAttribute()" 
+                   class="hidden" id="@InputId" />
+        
+        <label for="@InputId" class="cursor-pointer">
+            <div class="space-y-2">
+                @if (IsUploading)
+                {
+                    <div class="flex items-center justify-center">
+                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span class="text-blue-600">Uploading...</span>
+                    </div>
+                }
+                else
+                {
+                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <div class="text-sm text-gray-600">
+                        <span class="font-medium text-blue-600 hover:text-blue-500">
+                            Click to select file
+                        </span>
+                        or drag and drop
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">
+                        @GetFileTypeDescription()
+                    </p>
+                }
+            </div>
+        </label>
+    </div>
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="text-red-600 text-sm">
+            @ErrorMessage
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public string Folder { get; set; } = "temp";
+    [Parameter] public string FileType { get; set; } = "image";
+    [Parameter] public string? Prefix { get; set; }
+    [Parameter] public string? CurrentFileUrl { get; set; }
+    [Parameter] public EventCallback<string?> CurrentFileUrlChanged { get; set; }
+    [Parameter] public string AltText { get; set; } = "Uploaded file";
+    [Parameter] public EventCallback<UploadResult> OnFileUploaded { get; set; }
+    [Parameter] public EventCallback OnFileRemoved { get; set; }
+
+    private string InputId = $"file-upload-{Guid.NewGuid():N}";
+    private bool IsUploading = false;
+    private string? ErrorMessage;
+    private string? CurrentFileName;
+
+    // File type configurations
+    private readonly Dictionary<string, FileTypeConfig> _fileTypeConfigs = new()
+    {
+        {
+            "image", new FileTypeConfig
+            {
+                Extensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg" },
+                MaxSizeBytes = 5 * 1024 * 1024, // 5MB
+                AcceptAttribute = "image/*"
+            }
+        },
+        {
+            "document", new FileTypeConfig
+            {
+                Extensions = new[] { ".pdf", ".doc", ".docx", ".txt", ".rtf" },
+                MaxSizeBytes = 10 * 1024 * 1024, // 10MB
+                AcceptAttribute = ".pdf,.doc,.docx,.txt,.rtf"
+            }
+        },
+        {
+            "video", new FileTypeConfig
+            {
+                Extensions = new[] { ".mp4", ".avi", ".mov", ".wmv", ".flv" },
+                MaxSizeBytes = 50 * 1024 * 1024, // 50MB
+                AcceptAttribute = "video/*"
+            }
+        },
+        {
+            "audio", new FileTypeConfig
+            {
+                Extensions = new[] { ".mp3", ".wav", ".ogg", ".aac" },
+                MaxSizeBytes = 20 * 1024 * 1024, // 20MB
+                AcceptAttribute = "audio/*"
+            }
+        }
+    };
+
+    // Folder configurations
+    private readonly Dictionary<string, string> _folderPaths = new()
+    {
+        { "categories", "images/categories" },
+        { "products", "images/products" },
+        { "slides", "images/slides" },
+        { "users", "images/users" },
+        { "brands", "images/brands" },
+        { "banners", "images/banners" },
+        { "documents", "files/documents" },
+        { "videos", "files/videos" },
+        { "audio", "files/audio" },
+        { "temp", "files/temp" }
+    };
+
+    protected override void OnInitialized()
+    {
+        if (!string.IsNullOrEmpty(CurrentFileUrl))
+        {
+            CurrentFileName = Path.GetFileName(CurrentFileUrl);
+        }
+    }
+
+    private async Task HandleFileUpload(InputFileChangeEventArgs e)
+    {
+        ErrorMessage = null;
+        IsUploading = true;
+        StateHasChanged();
+
+        try
+        {
+            if (e.File == null)
+            {
+                ErrorMessage = "No file selected";
+                return;
+            }
+
+            // Validate file type
+            if (!_fileTypeConfigs.ContainsKey(FileType))
+            {
+                ErrorMessage = $"Unsupported file type: {FileType}";
+                return;
+            }
+
+            var config = _fileTypeConfigs[FileType];
+            var fileExtension = Path.GetExtension(e.File.Name).ToLowerInvariant();
+
+            // Check file extension
+            if (!config.Extensions.Contains(fileExtension))
+            {
+                ErrorMessage = $"File extension not allowed. Allowed: {string.Join(", ", config.Extensions)}";
+                return;
+            }
+
+            // Check file size
+            if (e.File.Size > config.MaxSizeBytes)
+            {
+                var maxSizeMB = config.MaxSizeBytes / (1024 * 1024);
+                ErrorMessage = $"File size must be less than {maxSizeMB}MB";
+                return;
+            }
+
+            // Validate folder
+            if (!_folderPaths.ContainsKey(Folder))
+            {
+                ErrorMessage = $"Invalid folder: {Folder}";
+                return;
+            }
+
+            // Generate unique filename
+            var fileName = $"{Prefix ?? Folder}_{DateTime.Now:yyyyMMdd_HHmmss}_{Guid.NewGuid().ToString("N")[..8]}{fileExtension}";
+            var relativePath = _folderPaths[Folder];
+            var fullFolderPath = Path.Combine(WebHostEnvironment.WebRootPath, relativePath);
+            var fullFilePath = Path.Combine(fullFolderPath, fileName);
+
+            // Ensure directory exists
+            Directory.CreateDirectory(fullFolderPath);
+
+            // Save file
+            await using var stream = e.File.OpenReadStream(maxAllowedSize: config.MaxSizeBytes);
+            await using var fileStream = new FileStream(fullFilePath, FileMode.Create);
+            await stream.CopyToAsync(fileStream);
+
+            // Update properties
+            var fileUrl = $"/{relativePath}/{fileName}".Replace("\\", "/");
+            CurrentFileUrl = fileUrl;
+            CurrentFileName = fileName;
+
+            await CurrentFileUrlChanged.InvokeAsync(CurrentFileUrl);
+
+            var result = new UploadResult
+            {
+                Success = true,
+                FileUrl = fileUrl,
+                FileName = fileName,
+                OriginalName = e.File.Name,
+                FileSize = e.File.Size,
+                FileType = FileType,
+                Folder = Folder,
+                Message = "File uploaded successfully!"
+            };
+
+            await OnFileUploaded.InvokeAsync(result);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Upload error: {ex.Message}";
+        }
+        finally
+        {
+            IsUploading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RemoveFile()
+    {
+        if (!string.IsNullOrEmpty(CurrentFileUrl) && !string.IsNullOrEmpty(CurrentFileName))
+        {
+            try
+            {
+                // Delete physical file
+                var relativePath = _folderPaths[Folder];
+                var fullFilePath = Path.Combine(WebHostEnvironment.WebRootPath, relativePath, CurrentFileName);
+                
+                if (File.Exists(fullFilePath))
+                {
+                    File.Delete(fullFilePath);
+                }
+
+                CurrentFileUrl = null;
+                CurrentFileName = null;
+                await CurrentFileUrlChanged.InvokeAsync(null);
+                await OnFileRemoved.InvokeAsync();
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Delete error: {ex.Message}";
+            }
+        }
+        else
+        {
+            CurrentFileUrl = null;
+            CurrentFileName = null;
+            await CurrentFileUrlChanged.InvokeAsync(null);
+            await OnFileRemoved.InvokeAsync();
+        }
+        
+        StateHasChanged();
+    }
+
+    private string GetAcceptAttribute()
+    {
+        return _fileTypeConfigs.ContainsKey(FileType) 
+            ? _fileTypeConfigs[FileType].AcceptAttribute
+            : "*/*";
+    }
+
+    private string GetFileTypeDescription()
+    {
+        if (!_fileTypeConfigs.ContainsKey(FileType))
+            return "All file types";
+
+        var config = _fileTypeConfigs[FileType];
+        var maxSizeMB = config.MaxSizeBytes / (1024 * 1024);
+        var extensions = string.Join(", ", config.Extensions.Select(e => e.ToUpper()));
+        
+        return $"{extensions} up to {maxSizeMB}MB";
+    }
+
+    public class UploadResult
+    {
+        public bool Success { get; set; }
+        public string FileUrl { get; set; } = "";
+        public string FileName { get; set; } = "";
+        public string OriginalName { get; set; } = "";
+        public long FileSize { get; set; }
+        public string FileType { get; set; } = "";
+        public string Folder { get; set; } = "";
+        public string Message { get; set; } = "";
+    }
+
+    private class FileTypeConfig
+    {
+        public string[] Extensions { get; set; } = Array.Empty<string>();
+        public long MaxSizeBytes { get; set; }
+        public string AcceptAttribute { get; set; } = "";
+    }
+}
