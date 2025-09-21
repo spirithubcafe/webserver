@@ -69,6 +69,9 @@ builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSe
 // Register localization service
 builder.Services.AddScoped<ILocalizationService, LocalizationService>();
 
+// Register cart service
+builder.Services.AddScoped<CartService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

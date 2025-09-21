@@ -1,7 +1,10 @@
 @page "/cart"
-@using Microsoft.AspNetCore.Authorization
-@attribute [Authorize]
 @layout PublicLayout
+@using SpirithubCofe.Web.Services
+@inject CartService CartService
+@inject NavigationManager Navigation
+@implements IDisposable
+@rendermode InteractiveServer
 
 <div class="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50">
     <!-- Header Section -->
@@ -10,12 +13,12 @@
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-3xl font-bold">Shopping Cart</h1>
-                    <p class="mt-2 text-orange-100">@cartItems.Count item@(cartItems.Count != 1 ? "s" : "") in your cart</p>
+                    <p class="mt-2 text-orange-100">@CartService.Items.Count item@(CartService.Items.Count != 1 ? "s" : "") in your cart</p>
                 </div>
                 <div class="hidden md:flex items-center space-x-4">
                     <div class="bg-white/20 rounded-lg px-4 py-2">
                         <span class="text-sm font-medium">Subtotal</span>
-                        <div class="text-xl font-bold">@GetSubtotal().ToString("F3") OMR</div>
+                        <div class="text-xl font-bold">@CartService.TotalPrice.ToString("F3") OMR</div>
                     </div>
                 </div>
             </div>
@@ -23,7 +26,7 @@
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        @if (!cartItems.Any())
+        @if (!CartService.Items.Any())
         {
             <!-- Empty Cart State -->
             <div class="text-center py-16">
@@ -56,7 +59,7 @@
                         </div>
                         
                         <div class="divide-y divide-gray-100">
-                            @foreach (var item in cartItems)
+                            @foreach (var item in CartService.Items)
                             {
                                 <div class="p-6 hover:bg-gray-50 transition-colors duration-200">
                                     <div class="flex items-center space-x-6">
@@ -79,7 +82,7 @@
                                         <!-- Product Details -->
                                         <div class="flex-1 min-w-0">
                                             <h3 class="text-lg font-semibold text-gray-900 truncate">@item.Name</h3>
-                                            <p class="text-sm text-gray-500 mt-1">SKU: @item.Sku</p>
+                                            <p class="text-sm text-gray-500 mt-1">Product ID: @item.ProductId</p>
                                             <div class="mt-2">
                                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                     In Stock
@@ -87,10 +90,9 @@
                                             </div>
                                         </div>
 
-                                        <!-- Quantity Controls -->
-                                        <div class="flex items-center space-x-3">
+                                            <div class="flex items-center space-x-3">
                                             <div class="flex items-center bg-gray-100 rounded-xl">
-                                                <button @onclick="() => DecreaseQuantity(item.Id)" 
+                                                <button @onclick="async () => await DecreaseQuantity(item.ProductId)" 
                                                         class="p-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-l-xl transition-colors">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
@@ -99,7 +101,7 @@
                                                 <div class="px-4 py-2 text-center min-w-[3rem] font-semibold text-gray-900">
                                                     @item.Quantity
                                                 </div>
-                                                <button @onclick="() => IncreaseQuantity(item.Id)" 
+                                                <button @onclick="async () => await IncreaseQuantity(item.ProductId)" 
                                                         class="p-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-r-xl transition-colors">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
@@ -116,7 +118,7 @@
                                             <div class="text-sm text-gray-500 mt-1">
                                                 @item.Price.ToString("F3") OMR each
                                             </div>
-                                            <button @onclick="() => RemoveFromCart(item.Id)" 
+                                            <button @onclick="async () => await RemoveFromCart(item.ProductId)" 
                                                     class="mt-3 inline-flex items-center text-sm text-red-600 hover:text-red-800 font-medium transition-colors">
                                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
@@ -138,7 +140,7 @@
                             </svg>
                             Continue Shopping
                         </a>
-                        <button @onclick="ClearCart" class="flex-1 inline-flex items-center justify-center px-6 py-3 border-2 border-red-200 text-red-700 font-semibold rounded-xl hover:bg-red-50 transition-all duration-300">
+                        <button @onclick="async () => await ClearCart()" class="flex-1 inline-flex items-center justify-center px-6 py-3 border-2 border-red-200 text-red-700 font-semibold rounded-xl hover:bg-red-50 transition-all duration-300">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                             </svg>
@@ -157,7 +159,7 @@
                         <div class="p-6 space-y-4">
                             <!-- Items Summary -->
                             <div class="space-y-3">
-                                @foreach (var item in cartItems)
+                                @foreach (var item in CartService.Items)
                                 {
                                     <div class="flex justify-between text-sm">
                                         <span class="text-gray-600">@item.Name × @item.Quantity</span>
@@ -169,7 +171,7 @@
                             <div class="border-t border-gray-200 pt-4 space-y-3">
                                 <div class="flex justify-between">
                                     <span class="text-gray-600">Subtotal</span>
-                                    <span class="font-medium">@GetSubtotal().ToString("F3") OMR</span>
+                                    <span class="font-medium">@CartService.TotalPrice.ToString("F3") OMR</span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-gray-600">Shipping</span>
@@ -230,92 +232,58 @@
 </div>
 
 @code {
-    private List<CartItemModel> cartItems = new();
-
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        LoadCartItems();
+        await CartService.InitializeAsync();
+        CartService.OnCartChanged += StateHasChanged;
     }
 
-    private void LoadCartItems()
+    private async Task IncreaseQuantity(int productId)
     {
-        // Simulate loading cart items - replace with actual data service
-        cartItems = new List<CartItemModel>
-        {
-            new() { Id = 1, Name = "Ethiopian Yirgacheffe", Sku = "ETH001", Price = 4.900m, Quantity = 2, ImageUrl = "/images/coffee1.jpg" },
-            new() { Id = 2, Name = "Colombian Supremo", Sku = "COL001", Price = 5.200m, Quantity = 1, ImageUrl = "/images/coffee2.jpg" },
-            new() { Id = 3, Name = "Brazilian Santos", Sku = "BRA001", Price = 3.800m, Quantity = 3, ImageUrl = "/images/coffee3.jpg" }
-        };
-    }
-
-    private void IncreaseQuantity(int itemId)
-    {
-        var item = cartItems.FirstOrDefault(x => x.Id == itemId);
+        var item = CartService.Items.FirstOrDefault(x => x.ProductId == productId);
         if (item != null)
         {
-            item.Quantity++;
-            StateHasChanged();
+            await CartService.UpdateQuantityAsync(productId, item.Quantity + 1);
         }
     }
 
-    private void DecreaseQuantity(int itemId)
+    private async Task DecreaseQuantity(int productId)
     {
-        var item = cartItems.FirstOrDefault(x => x.Id == itemId);
+        var item = CartService.Items.FirstOrDefault(x => x.ProductId == productId);
         if (item != null && item.Quantity > 1)
         {
-            item.Quantity--;
-            StateHasChanged();
+            await CartService.UpdateQuantityAsync(productId, item.Quantity - 1);
         }
     }
 
-    private void RemoveFromCart(int itemId)
+    private async Task RemoveFromCart(int productId)
     {
-        cartItems.RemoveAll(x => x.Id == itemId);
-        StateHasChanged();
+        await CartService.RemoveFromCartAsync(productId);
     }
 
-    private void ClearCart()
+    private async Task ClearCart()
     {
-        cartItems.Clear();
-        StateHasChanged();
+        await CartService.ClearCartAsync();
     }
 
     private void ProceedToCheckout()
     {
-        // Navigate to checkout page
-        // NavigationManager.NavigateTo("/checkout");
-    }
-
-    private decimal GetSubtotal()
-    {
-        return cartItems.Sum(x => x.Price * x.Quantity);
+        // اینجا کاربر باید وارد سیستم شود
+        Navigation.NavigateTo("/Account/Login?returnUrl=%2Fcheckout");
     }
 
     private decimal GetTax()
     {
-        return GetSubtotal() * 0.05m; // 5% tax
+        return CartService.TotalPrice * 0.05m; // 5% tax
     }
 
     private decimal GetTotal()
     {
-        return GetSubtotal() + GetTax();
+        return CartService.TotalPrice + GetTax();
     }
 
-    public class CartItemModel
+    public void Dispose()
     {
-        public int Id { get; set; }
-        public string Name { get; set; } = "";
-        public string Sku { get; set; } = "";
-        public decimal Price { get; set; }
-        public int Quantity { get; set; }
-        public string? ImageUrl { get; set; }
-    }
-
-    public class ProductModel
-    {
-        public int Id { get; set; }
-        public string Name { get; set; } = "";
-        public decimal Price { get; set; }
-        public string? ImageUrl { get; set; }
+        CartService.OnCartChanged -= StateHasChanged;
     }
 }

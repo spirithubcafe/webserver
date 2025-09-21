@@ -1,0 +1,66 @@
+@using SpirithubCofe.Web.Services
+@using Microsoft.Extensions.Localization
+@inject CartService CartService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@inject IStringLocalizer<Resources> Localizer
+@implements IDisposable
+@rendermode InteractiveServer
+<div class="relative">
+    <button @onclick="NavigateToCart" class="flex items-center p-2 text-gray-600 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200 group">
+        <!-- Cart Icon -->
+        <div class="relative">
+            <svg class="w-6 h-6 group-hover:scale-105 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 1.5M7 13l-1.5 1.5M17 13v6a2 2 0 01-2 2H9a2 2 0 01-2 2V13m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01"></path>
+            </svg>
+            
+            <!-- Item Count Badge -->
+            @if (itemCount > 0)
+            {
+                <span class="absolute -top-2 -right-2 bg-amber-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                    @(itemCount > 99 ? "99+" : itemCount.ToString())
+                </span>
+            }
+        </div>
+        
+        <!-- Text (Hidden on mobile) -->
+        <span class="hidden sm:block mx-2 text-sm font-medium">@Localizer["Cart"]</span>
+        
+        <!-- Price (Hidden on mobile) -->
+        @if (totalPrice > 0)
+        {
+            <span class="hidden lg:block mx-2 text-xs text-gray-500 price">
+                @totalPrice.ToString("C", new System.Globalization.CultureInfo("ar-OM"))
+            </span>
+        }
+    </button>
+</div>
+
+@code {
+    private int itemCount = 0;
+    private decimal totalPrice = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CartService.InitializeAsync();
+        UpdateCartInfo();
+        CartService.OnCartChanged += UpdateCartInfo;
+    }
+
+    private void UpdateCartInfo()
+    {
+        itemCount = CartService.ItemCount;
+        totalPrice = CartService.TotalPrice;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void NavigateToCart()
+    {
+        Navigation.NavigateTo("/cart");
+    }
+
+    public void Dispose()
+    {
+        CartService.OnCartChanged -= UpdateCartInfo;
+    }
+}

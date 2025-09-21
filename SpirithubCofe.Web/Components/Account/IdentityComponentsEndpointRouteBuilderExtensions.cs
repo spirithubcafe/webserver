@@ -43,10 +43,24 @@ internal static class IdentityComponentsEndpointRouteBuilderExtensions
         accountGroup.MapPost("/Logout", async (
             ClaimsPrincipal user,
             [FromServices] SignInManager<ApplicationUser> signInManager,
-            [FromForm] string returnUrl) =>
+            [FromForm] string? ReturnUrl) =>
         {
             await signInManager.SignOutAsync();
-            return TypedResults.LocalRedirect($"~/{returnUrl}");
+            
+            // Ensure we have a safe local redirect URL
+            var redirectUrl = string.IsNullOrEmpty(ReturnUrl) ? "~/" : ReturnUrl;
+            
+            // Make sure the URL starts with ~/ for local redirect
+            if (!redirectUrl.StartsWith("~/") && !redirectUrl.StartsWith("/"))
+            {
+                redirectUrl = $"~/{redirectUrl}";
+            }
+            else if (redirectUrl.StartsWith("/") && !redirectUrl.StartsWith("~/"))
+            {
+                redirectUrl = $"~{redirectUrl}";
+            }
+            
+            return TypedResults.LocalRedirect(redirectUrl);
         });
 
         var manageGroup = accountGroup.MapGroup("/Manage").RequireAuthorization();
