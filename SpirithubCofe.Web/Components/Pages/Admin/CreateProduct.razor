@@ -1,4 +1,5 @@
 @page "/admin/products/create"
+@layout AdminLayout
 @attribute [Authorize(Roles = "Admin")]
 @inject ProductService ProductService
 @inject CategoryService CategoryService
@@ -13,7 +14,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <!-- Page Header -->
-        <div class="bg-white shadow-sm rounded-lg border mb-6">
+        <div class="bg-white shadow-sm rounded-lg mb-6">
             <div class="px-6 py-4 border-b border-gray-200">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                     <div>
@@ -65,7 +66,7 @@
             <!-- Basic Information Tab -->
             @if (activeTab == "basic")
             {
-                <div class="bg-white shadow-sm rounded-lg border">
+                <div class="bg-white shadow-sm rounded-lg">
                     <div class="px-6 py-4 border-b border-gray-200">
                         <h2 class="text-lg font-semibold text-gray-900">Basic Information</h2>
                         <p class="text-sm text-gray-600">Product name, description, and category</p>
@@ -190,7 +191,7 @@
             <!-- Coffee Details Tab -->
             @if (activeTab == "coffee")
             {
-                <div class="bg-white shadow-sm rounded-lg border">
+                <div class="bg-white shadow-sm rounded-lg ">
                     <div class="px-6 py-4 border-b border-gray-200">
                         <h2 class="text-lg font-semibold text-gray-900">Coffee Details</h2>
                         <p class="text-sm text-gray-600">Specific coffee characteristics and attributes</p>
@@ -371,7 +372,7 @@
             {
                 <div class="space-y-6">
                     <!-- Main Product Image -->
-                    <div class="bg-white shadow-sm rounded-lg border">
+                    <div class="bg-white shadow-sm rounded-lg ">
                         <div class="px-6 py-4 border-b border-gray-200">
                             <h2 class="text-lg font-semibold text-gray-900">Main Product Image</h2>
                             <p class="text-sm text-gray-600">Primary image displayed in product listings</p>
@@ -402,7 +403,7 @@
                     </div>
 
                     <!-- Gallery Images -->
-                    <div class="bg-white shadow-sm rounded-lg border">
+                    <div class="bg-white shadow-sm rounded-lg ">
                         <div class="px-6 py-4 border-b border-gray-200">
                             <h2 class="text-lg font-semibold text-gray-900">Gallery Images</h2>
                             <p class="text-sm text-gray-600">Additional product images (maximum 5)</p>
@@ -458,7 +459,7 @@
             {
                 <div class="space-y-6">
                     <!-- Base Pricing (if no variants) -->
-                    <div class="bg-white shadow-sm rounded-lg border">
+                    <div class="bg-white shadow-sm rounded-lg ">
                         <div class="px-6 py-4 border-b border-gray-200">
                             <h2 class="text-lg font-semibold text-gray-900">Base Pricing</h2>
                             <p class="text-sm text-gray-600">Default pricing when no variants are defined</p>
@@ -509,7 +510,7 @@
                     </div>
 
                     <!-- Product Variants -->
-                    <div class="bg-white shadow-sm rounded-lg border">
+                    <div class="bg-white shadow-sm rounded-lg ">
                         <div class="px-6 py-4 border-b border-gray-200">
                             <div class="flex items-center justify-between">
                                 <div>
@@ -670,7 +671,7 @@
             <!-- SEO & Settings Tab -->
             @if (activeTab == "seo")
             {
-                <div class="bg-white shadow-sm rounded-lg border">
+                <div class="bg-white shadow-sm rounded-lg ">
                     <div class="px-6 py-4 border-b border-gray-200">
                         <h2 class="text-lg font-semibold text-gray-900">SEO & Advanced Settings</h2>
                         <p class="text-sm text-gray-600">Search engine optimization and additional settings</p>
@@ -745,7 +746,7 @@
             }
 
             <!-- Action Buttons -->
-            <div class="bg-white shadow-sm rounded-lg border">
+            <div class="bg-white shadow-sm rounded-lg">
                 <div class="px-6 py-4">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
                         <div class="text-sm text-gray-600">
