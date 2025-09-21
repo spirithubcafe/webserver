@@ -23,8 +23,7 @@
             <li>
                 <a @onclick="@(() => ChangeLanguage("en"))" 
                    class="@GetMenuItemClass("en")">
-                    <span class="fi fi-us w-5 h-4 rounded mr-2"></span>
-                    English
+                     English
                     @if (_selectedCulture == "en")
                     {
                         <svg class="w-4 h-4 ml-auto text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -36,8 +35,7 @@
             <li>
                 <a @onclick="@(() => ChangeLanguage("ar"))" 
                    class="@GetMenuItemClass("ar")">
-                    <span class="fi fi-om w-5 h-4 rounded mr-2"></span>
-                    العربية
+                     العربية
                     @if (_selectedCulture == "ar")
                     {
                         <svg class="w-4 h-4 ml-auto text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

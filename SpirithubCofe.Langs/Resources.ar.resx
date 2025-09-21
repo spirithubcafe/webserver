@@ -671,4 +671,227 @@
   <data name="BrowseCoffee" xml:space="preserve">
     <value>تصفح القهوة</value>
   </data>
+  
+  <!-- New Admin Features -->
+  <data name="Roles" xml:space="preserve">
+    <value>الأدوار</value>
+  </data>
+  <data name="Slides" xml:space="preserve">
+    <value>الشرائح</value>
+  </data>
+  <data name="UserManagement" xml:space="preserve">
+    <value>إدارة المستخدمين</value>
+  </data>
+  <data name="ManageSystemUsers" xml:space="preserve">
+    <value>إدارة مستخدمي النظام وأدوارهم</value>
+  </data>
+  <data name="TotalUsers" xml:space="preserve">
+    <value>إجمالي المستخدمين</value>
+  </data>
+  <data name="ActiveUsers" xml:space="preserve">
+    <value>المستخدمين النشطين</value>
+  </data>
+  <data name="LockedUsers" xml:space="preserve">
+    <value>المستخدمين المحظورين</value>
+  </data>
+  <data name="OnlineUsers" xml:space="preserve">
+    <value>المستخدمين المتصلين</value>
+  </data>
+  <data name="SearchUsers" xml:space="preserve">
+    <value>البحث عن المستخدمين...</value>
+  </data>
+  <data name="FilterByRole" xml:space="preserve">
+    <value>تصفية حسب الدور</value>
+  </data>
+  <data name="AllRoles" xml:space="preserve">
+    <value>جميع الأدوار</value>
+  </data>
+  <data name="ShowLocked" xml:space="preserve">
+    <value>عرض المحظورين فقط</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>البريد الإلكتروني</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+  <data name="LastLogin" xml:space="preserve">
+    <value>آخر تسجيل دخول</value>
+  </data>
+  <data name="Never" xml:space="preserve">
+    <value>أبداً</value>
+  </data>
+  <data name="ManageRoles" xml:space="preserve">
+    <value>إدارة الأدوار</value>
+  </data>
+  <data name="Lock" xml:space="preserve">
+    <value>حظر</value>
+  </data>
+  <data name="Unlock" xml:space="preserve">
+    <value>إلغاء الحظر</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>نشط</value>
+  </data>
+  <data name="Locked" xml:space="preserve">
+    <value>محظور</value>
+  </data>
+  <data name="RoleManagement" xml:space="preserve">
+    <value>إدارة الأدوار</value>
+  </data>
+  <data name="ManageSystemRoles" xml:space="preserve">
+    <value>إدارة أدوار النظام والصلاحيات</value>
+  </data>
+  <data name="TotalRoles" xml:space="preserve">
+    <value>إجمالي الأدوار</value>
+  </data>
+  <data name="SystemRoles" xml:space="preserve">
+    <value>أدوار النظام</value>
+  </data>
+  <data name="CustomRoles" xml:space="preserve">
+    <value>الأدوار المخصصة</value>
+  </data>
+  <data name="CreateRole" xml:space="preserve">
+    <value>إنشاء دور</value>
+  </data>
+  <data name="CreateNewRole" xml:space="preserve">
+    <value>إنشاء دور جديد</value>
+  </data>
+  <data name="RoleName" xml:space="preserve">
+    <value>اسم الدور</value>
+  </data>
+  <data name="EnterRoleName" xml:space="preserve">
+    <value>أدخل اسم الدور</value>
+  </data>
+  <data name="Permissions" xml:space="preserve">
+    <value>الصلاحيات</value>
+  </data>
+  <data name="SelectPermissions" xml:space="preserve">
+    <value>اختر الصلاحيات لهذا الدور</value>
+  </data>
+  <data name="UserCount" xml:space="preserve">
+    <value>عدد المستخدمين</value>
+  </data>
+  <data name="SystemRole" xml:space="preserve">
+    <value>دور النظام</value>
+  </data>
+  <data name="ManageUsers" xml:space="preserve">
+    <value>إدارة المستخدمين</value>
+  </data>
+  <data name="ManageProducts" xml:space="preserve">
+    <value>إدارة المنتجات</value>
+  </data>
+  <data name="ManageOrders" xml:space="preserve">
+    <value>إدارة الطلبات</value>
+  </data>
+  <data name="ManageCategories" xml:space="preserve">
+    <value>إدارة الفئات</value>
+  </data>
+  <data name="ViewReports" xml:space="preserve">
+    <value>عرض التقارير</value>
+  </data>
+  <data name="SystemSettings" xml:space="preserve">
+    <value>إعدادات النظام</value>
+  </data>
+  
+  <!-- Additional admin translations -->
+  <data name="ManageUsersDescription" xml:space="preserve">
+    <value>إدارة مستخدمي النظام وأدوارهم</value>
+  </data>
+  <data name="Admins" xml:space="preserve">
+    <value>المديرين</value>
+  </data>
+  <data name="Customers" xml:space="preserve">
+    <value>العملاء</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>الكل</value>
+  </data>
+  <data name="Inactive" xml:space="preserve">
+    <value>غير نشط</value>
+  </data>
+  <data name="UsersList" xml:space="preserve">
+    <value>قائمة المستخدمين</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>جاري التحميل</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>المستخدم</value>
+  </data>
+  <data name="Role" xml:space="preserve">
+    <value>الدور</value>
+  </data>
+  
+  <!-- User Management -->
+  <data name="CreateUser" xml:space="preserve">
+    <value>إنشاء مستخدم</value>
+  </data>
+  <data name="CreateNewUser" xml:space="preserve">
+    <value>إنشاء مستخدم جديد</value>
+  </data>
+  <data name="EnterEmail" xml:space="preserve">
+    <value>أدخل عنوان البريد الإلكتروني</value>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>اسم المستخدم</value>
+  </data>
+  <data name="EnterUserName" xml:space="preserve">
+    <value>أدخل اسم المستخدم</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>كلمة المرور</value>
+  </data>
+  <data name="EnterPassword" xml:space="preserve">
+    <value>أدخل كلمة المرور</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>تأكيد كلمة المرور</value>
+  </data>
+  <data name="PhoneNumber" xml:space="preserve">
+    <value>رقم الهاتف</value>
+  </data>
+  <data name="EnterPhoneNumber" xml:space="preserve">
+    <value>أدخل رقم الهاتف</value>
+  </data>
+  <data name="EmailConfirmed" xml:space="preserve">
+    <value>البريد الإلكتروني مؤكد</value>
+  </data>
+  <data name="Creating" xml:space="preserve">
+    <value>جاري الإنشاء</value>
+  </data>
+  <data name="NoUsersFound" xml:space="preserve">
+    <value>لم يتم العثور على مستخدمين</value>
+  </data>
+  <data name="NoUsersFoundDescription" xml:space="preserve">
+    <value>جرب تعديل معايير البحث</value>
+  </data>
+  
+  <!-- Edit User -->
+  <data name="EditUser" xml:space="preserve">
+    <value>تعديل المستخدم</value>
+  </data>
+  <data name="AccountLocked" xml:space="preserve">
+    <value>الحساب محظور</value>
+  </data>
+  <data name="Updating" xml:space="preserve">
+    <value>جاري التحديث</value>
+  </data>
+  
+  <!-- Password Reset -->
+  <data name="PasswordResetSuccess" xml:space="preserve">
+    <value>تم إعادة تعيين كلمة المرور بنجاح</value>
+  </data>
+  <data name="ImportantInformation" xml:space="preserve">
+    <value>معلومات مهمة</value>
+  </data>
+  <data name="PasswordResetWarning" xml:space="preserve">
+    <value>ستظهر كلمة المرور هذه مرة واحدة فقط. يرجى حفظها بشكل آمن ومشاركتها مع المستخدم عبر قناة آمنة.</value>
+  </data>
+  <data name="NewPassword" xml:space="preserve">
+    <value>كلمة المرور الجديدة</value>
+  </data>
+  <data name="Understood" xml:space="preserve">
+    <value>مفهوم</value>
+  </data>
 </root>

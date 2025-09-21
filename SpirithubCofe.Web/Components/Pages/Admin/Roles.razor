@@ -1,0 +1,336 @@
+@page "/admin/roles"
+@layout AdminLayout
+@attribute [Authorize(Roles = "Admin")]
+@inject RoleManager<IdentityRole> RoleManager
+@inject UserManager<ApplicationUser> UserManager
+@inject IStringLocalizer<SpirithubCofe.Langs.Resources> Localizer
+@using Microsoft.AspNetCore.Identity
+@using SpirithubCofe.Web.Data
+@using Microsoft.AspNetCore.Authorization
+
+<PageTitle>@Localizer["Roles"] - Admin</PageTitle>
+
+<div class="p-6">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">@Localizer["RoleManagement"]</h1>
+                <p class="text-gray-600">@Localizer["ManageRolesDescription"]</p>
+            </div>
+            <button @onclick="ShowCreateRoleModal" 
+                    class="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center gap-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
+                </svg>
+                @Localizer["CreateRole"]
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+            <div class="flex items-center">
+                <div class="p-2 bg-blue-100 rounded-lg">
+                    <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">@Localizer["TotalRoles"]</p>
+                    <p class="text-2xl font-semibold text-gray-900">@totalRoles</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+            <div class="flex items-center">
+                <div class="p-2 bg-green-100 rounded-lg">
+                    <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 12a5 5 0 100-10 5 5 0 000 10zm0-8a3 3 0 110 6 3 3 0 010-6zm7 12a7 7 0 11-14 0h14z"></path>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">@Localizer["AssignedUsers"]</p>
+                    <p class="text-2xl font-semibold text-gray-900">@totalAssignedUsers</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+            <div class="flex items-center">
+                <div class="p-2 bg-amber-100 rounded-lg">
+                    <svg class="w-6 h-6 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">@Localizer["CustomRoles"]</p>
+                    <p class="text-2xl font-semibold text-gray-900">@customRoles</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Roles Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        @foreach (var role in roles)
+        {
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center">
+                            <div class="p-2 @GetRoleIconBackground(role.Name!) rounded-lg">
+                                <svg class="w-6 h-6 @GetRoleIconColor(role.Name!)" fill="currentColor" viewBox="0 0 20 20">
+                                    @GetRoleIcon(role.Name!)
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-lg font-semibold text-gray-900">@role.Name</h3>
+                                <p class="text-sm text-gray-500">ID: @role.Id.Substring(0, 8)...</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button @onclick="() => EditRole(role)" 
+                                    class="text-amber-600 hover:text-amber-700 transition-colors">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+                                </svg>
+                            </button>
+                            @if (CanDeleteRole(role.Name!))
+                            {
+                                <button @onclick="() => DeleteRole(role)" 
+                                        class="text-red-600 hover:text-red-700 transition-colors">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" clip-rule="evenodd"></path>
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </button>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- User Count -->
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">@Localizer["UsersInRole"]</span>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                @roleUserCounts.GetValueOrDefault(role.Name!, 0)
+                            </span>
+                        </div>
+
+                        <!-- Description -->
+                        <div>
+                            <p class="text-sm text-gray-600">@GetRoleDescription(role.Name!)</p>
+                        </div>
+
+                        <!-- Permissions Preview -->
+                        <div>
+                            <label class="text-xs font-medium text-gray-500 uppercase tracking-wider">@Localizer["Permissions"]</label>
+                            <div class="mt-1 flex flex-wrap gap-1">
+                                @foreach (var permission in GetRolePermissions(role.Name!))
+                                {
+                                    <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                                        @permission
+                                    </span>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="pt-4 border-t border-gray-200">
+                            <div class="flex space-x-3">
+                                <button @onclick="() => ManageUsers(role)" 
+                                        class="flex-1 bg-blue-50 text-blue-700 hover:bg-blue-100 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    @Localizer["ManageUsers"]
+                                </button>
+                                <button @onclick="() => ManagePermissions(role)" 
+                                        class="flex-1 bg-amber-50 text-amber-700 hover:bg-amber-100 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    @Localizer["Permissions"]
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Create Role Modal -->
+    @if (showCreateModal)
+    {
+        <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" @onclick="HideCreateRoleModal">
+            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white" @onclick:stopPropagation="true">
+                <div class="mt-3">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">@Localizer["CreateNewRole"]</h3>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["RoleName"]</label>
+                        <input type="text" @bind="newRoleName" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-amber-500 focus:border-amber-500"
+                               placeholder="@Localizer["EnterRoleName"]" />
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["Description"]</label>
+                        <textarea @bind="newRoleDescription" rows="3"
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-amber-500 focus:border-amber-500"
+                                  placeholder="@Localizer["EnterRoleDescription"]"></textarea>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button @onclick="CreateRole" 
+                                class="flex-1 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-md font-medium transition-colors">
+                            @Localizer["Create"]
+                        </button>
+                        <button @onclick="HideCreateRoleModal" 
+                                class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-md font-medium transition-colors">
+                            @Localizer["Cancel"]
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<IdentityRole> roles = new();
+    private Dictionary<string, int> roleUserCounts = new();
+    private bool showCreateModal = false;
+    private string newRoleName = "";
+    private string newRoleDescription = "";
+    
+    private int totalRoles = 0;
+    private int totalAssignedUsers = 0;
+    private int customRoles = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRoles();
+        await LoadUserCounts();
+        UpdateStats();
+    }
+
+    private async Task LoadRoles()
+    {
+        roles = await Task.FromResult(RoleManager.Roles.ToList());
+    }
+
+    private async Task LoadUserCounts()
+    {
+        foreach (var role in roles)
+        {
+            var usersInRole = await UserManager.GetUsersInRoleAsync(role.Name!);
+            roleUserCounts[role.Name!] = usersInRole.Count;
+        }
+    }
+
+    private void UpdateStats()
+    {
+        totalRoles = roles.Count;
+        totalAssignedUsers = roleUserCounts.Values.Sum();
+        customRoles = roles.Count(r => !IsSystemRole(r.Name!));
+    }
+
+    private bool IsSystemRole(string roleName) => 
+        roleName is "Admin" or "Customer" or "Staff";
+
+    private bool CanDeleteRole(string roleName) => 
+        !IsSystemRole(roleName) && roleUserCounts.GetValueOrDefault(roleName, 0) == 0;
+
+    private string GetRoleIconBackground(string roleName) => roleName switch
+    {
+        "Admin" => "bg-red-100",
+        "Staff" => "bg-blue-100",
+        "Customer" => "bg-green-100",
+        _ => "bg-gray-100"
+    };
+
+    private string GetRoleIconColor(string roleName) => roleName switch
+    {
+        "Admin" => "text-red-600",
+        "Staff" => "text-blue-600",
+        "Customer" => "text-green-600",
+        _ => "text-gray-600"
+    };
+
+    private string GetRoleIcon(string roleName) => roleName switch
+    {
+        "Admin" => "<path fill-rule=\"evenodd\" d=\"M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clip-rule=\"evenodd\"></path>",
+        "Staff" => "<path d=\"M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z\"></path>",
+        "Customer" => "<path d=\"M9 12a5 5 0 100-10 5 5 0 000 10zm0-8a3 3 0 110 6 3 3 0 010-6zm7 12a7 7 0 11-14 0h14z\"></path>",
+        _ => "<path fill-rule=\"evenodd\" d=\"M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z\" clip-rule=\"evenodd\"></path>"
+    };
+
+    private string GetRoleDescription(string roleName) => roleName switch
+    {
+        "Admin" => Localizer["AdminRoleDescription"],
+        "Staff" => Localizer["StaffRoleDescription"],
+        "Customer" => Localizer["CustomerRoleDescription"],
+        _ => Localizer["CustomRoleDescription"]
+    };
+
+    private List<string> GetRolePermissions(string roleName) => roleName switch
+    {
+        "Admin" => new() { "Full Access", "User Management", "System Settings", "Reports" },
+        "Staff" => new() { "Product Management", "Order Management", "Customer Support" },
+        "Customer" => new() { "View Products", "Place Orders", "View Order History" },
+        _ => new() { "Custom Permissions" }
+    };
+
+    private void ShowCreateRoleModal()
+    {
+        showCreateModal = true;
+        newRoleName = "";
+        newRoleDescription = "";
+    }
+
+    private void HideCreateRoleModal()
+    {
+        showCreateModal = false;
+    }
+
+    private async Task CreateRole()
+    {
+        if (string.IsNullOrWhiteSpace(newRoleName))
+            return;
+
+        var role = new IdentityRole(newRoleName.Trim());
+        var result = await RoleManager.CreateAsync(role);
+        
+        if (result.Succeeded)
+        {
+            await LoadRoles();
+            await LoadUserCounts();
+            UpdateStats();
+            HideCreateRoleModal();
+            StateHasChanged();
+        }
+    }
+
+    private void EditRole(IdentityRole role)
+    {
+        // TODO: Navigate to edit role page
+    }
+
+    private async Task DeleteRole(IdentityRole role)
+    {
+        if (CanDeleteRole(role.Name!))
+        {
+            await RoleManager.DeleteAsync(role);
+            await LoadRoles();
+            await LoadUserCounts();
+            UpdateStats();
+            StateHasChanged();
+        }
+    }
+
+    private void ManageUsers(IdentityRole role)
+    {
+        // TODO: Navigate to role users management page
+    }
+
+    private void ManagePermissions(IdentityRole role)
+    {
+        // TODO: Navigate to role permissions management page
+    }
+}

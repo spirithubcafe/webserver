@@ -671,4 +671,227 @@
   <data name="BrowseCoffee" xml:space="preserve">
     <value>Browse Coffee</value>
   </data>
+  
+  <!-- New Admin Features -->
+  <data name="Roles" xml:space="preserve">
+    <value>Roles</value>
+  </data>
+  <data name="Slides" xml:space="preserve">
+    <value>Slides</value>
+  </data>
+  <data name="UserManagement" xml:space="preserve">
+    <value>User Management</value>
+  </data>
+  <data name="ManageSystemUsers" xml:space="preserve">
+    <value>Manage system users and their roles</value>
+  </data>
+  <data name="TotalUsers" xml:space="preserve">
+    <value>Total Users</value>
+  </data>
+  <data name="ActiveUsers" xml:space="preserve">
+    <value>Active Users</value>
+  </data>
+  <data name="LockedUsers" xml:space="preserve">
+    <value>Locked Users</value>
+  </data>
+  <data name="OnlineUsers" xml:space="preserve">
+    <value>Online Users</value>
+  </data>
+  <data name="SearchUsers" xml:space="preserve">
+    <value>Search users...</value>
+  </data>
+  <data name="FilterByRole" xml:space="preserve">
+    <value>Filter by role</value>
+  </data>
+  <data name="AllRoles" xml:space="preserve">
+    <value>All Roles</value>
+  </data>
+  <data name="ShowLocked" xml:space="preserve">
+    <value>Show locked only</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="LastLogin" xml:space="preserve">
+    <value>Last Login</value>
+  </data>
+  <data name="Never" xml:space="preserve">
+    <value>Never</value>
+  </data>
+  <data name="ManageRoles" xml:space="preserve">
+    <value>Manage Roles</value>
+  </data>
+  <data name="Lock" xml:space="preserve">
+    <value>Lock</value>
+  </data>
+  <data name="Unlock" xml:space="preserve">
+    <value>Unlock</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Locked" xml:space="preserve">
+    <value>Locked</value>
+  </data>
+  <data name="RoleManagement" xml:space="preserve">
+    <value>Role Management</value>
+  </data>
+  <data name="ManageSystemRoles" xml:space="preserve">
+    <value>Manage system roles and permissions</value>
+  </data>
+  <data name="TotalRoles" xml:space="preserve">
+    <value>Total Roles</value>
+  </data>
+  <data name="SystemRoles" xml:space="preserve">
+    <value>System Roles</value>
+  </data>
+  <data name="CustomRoles" xml:space="preserve">
+    <value>Custom Roles</value>
+  </data>
+  <data name="CreateRole" xml:space="preserve">
+    <value>Create Role</value>
+  </data>
+  <data name="CreateNewRole" xml:space="preserve">
+    <value>Create New Role</value>
+  </data>
+  <data name="RoleName" xml:space="preserve">
+    <value>Role Name</value>
+  </data>
+  <data name="EnterRoleName" xml:space="preserve">
+    <value>Enter role name</value>
+  </data>
+  <data name="Permissions" xml:space="preserve">
+    <value>Permissions</value>
+  </data>
+  <data name="SelectPermissions" xml:space="preserve">
+    <value>Select permissions for this role</value>
+  </data>
+  <data name="UserCount" xml:space="preserve">
+    <value>User Count</value>
+  </data>
+  <data name="SystemRole" xml:space="preserve">
+    <value>System Role</value>
+  </data>
+  <data name="ManageUsers" xml:space="preserve">
+    <value>Manage Users</value>
+  </data>
+  <data name="ManageProducts" xml:space="preserve">
+    <value>Manage Products</value>
+  </data>
+  <data name="ManageOrders" xml:space="preserve">
+    <value>Manage Orders</value>
+  </data>
+  <data name="ManageCategories" xml:space="preserve">
+    <value>Manage Categories</value>
+  </data>
+  <data name="ViewReports" xml:space="preserve">
+    <value>View Reports</value>
+  </data>
+  <data name="SystemSettings" xml:space="preserve">
+    <value>System Settings</value>
+  </data>
+  
+  <!-- Additional admin translations -->
+  <data name="ManageUsersDescription" xml:space="preserve">
+    <value>Manage system users and their roles</value>
+  </data>
+  <data name="Admins" xml:space="preserve">
+    <value>Admins</value>
+  </data>
+  <data name="Customers" xml:space="preserve">
+    <value>Customers</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="Inactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="UsersList" xml:space="preserve">
+    <value>Users List</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="Role" xml:space="preserve">
+    <value>Role</value>
+  </data>
+  
+  <!-- User Management -->
+  <data name="CreateUser" xml:space="preserve">
+    <value>Create User</value>
+  </data>
+  <data name="CreateNewUser" xml:space="preserve">
+    <value>Create New User</value>
+  </data>
+  <data name="EnterEmail" xml:space="preserve">
+    <value>Enter email address</value>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="EnterUserName" xml:space="preserve">
+    <value>Enter username</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="EnterPassword" xml:space="preserve">
+    <value>Enter password</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>Confirm Password</value>
+  </data>
+  <data name="PhoneNumber" xml:space="preserve">
+    <value>Phone Number</value>
+  </data>
+  <data name="EnterPhoneNumber" xml:space="preserve">
+    <value>Enter phone number</value>
+  </data>
+  <data name="EmailConfirmed" xml:space="preserve">
+    <value>Email Confirmed</value>
+  </data>
+  <data name="Creating" xml:space="preserve">
+    <value>Creating</value>
+  </data>
+  <data name="NoUsersFound" xml:space="preserve">
+    <value>No users found</value>
+  </data>
+  <data name="NoUsersFoundDescription" xml:space="preserve">
+    <value>Try adjusting your search criteria</value>
+  </data>
+  
+  <!-- Edit User -->
+  <data name="EditUser" xml:space="preserve">
+    <value>Edit User</value>
+  </data>
+  <data name="AccountLocked" xml:space="preserve">
+    <value>Account Locked</value>
+  </data>
+  <data name="Updating" xml:space="preserve">
+    <value>Updating</value>
+  </data>
+  
+  <!-- Password Reset -->
+  <data name="PasswordResetSuccess" xml:space="preserve">
+    <value>Password Reset Successful</value>
+  </data>
+  <data name="ImportantInformation" xml:space="preserve">
+    <value>Important Information</value>
+  </data>
+  <data name="PasswordResetWarning" xml:space="preserve">
+    <value>This password will only be displayed once. Please save it securely and share it with the user through a secure channel.</value>
+  </data>
+  <data name="NewPassword" xml:space="preserve">
+    <value>New Password</value>
+  </data>
+  <data name="Understood" xml:space="preserve">
+    <value>Understood</value>
+  </data>
 </root>

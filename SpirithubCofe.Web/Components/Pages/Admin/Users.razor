@@ -1,0 +1,949 @@
+@page "/admin/users"
+@layout AdminLayout
+@attribute [Authorize(Roles = "Admin")]
+@inject UserManager<ApplicationUser> UserManager
+@inject RoleManager<IdentityRole> RoleManager
+@inject IStringLocalizer<SpirithubCofe.Langs.Resources> Localizer
+
+@rendermode InteractiveServer
+
+@using Microsoft.AspNetCore.Identity
+@using SpirithubCofe.Web.Data
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using System.ComponentModel.DataAnnotations
+
+<PageTitle>@Localizer["Users"] - Admin</PageTitle>
+
+<div class="p-6">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">@Localizer["UserManagement"]</h1>
+        <p class="text-gray-600">@Localizer["ManageUsersDescription"]</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+            <div class="flex items-center">
+                <div class="p-2 bg-blue-100 rounded-lg">
+                    <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 12a5 5 0 100-10 5 5 0 000 10zm0-8a3 3 0 110 6 3 3 0 010-6zm7 12a7 7 0 11-14 0h14z"></path>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">@Localizer["TotalUsers"]</p>
+                    <p class="text-2xl font-semibold text-gray-900">@totalUsers</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+            <div class="flex items-center">
+                <div class="p-2 bg-green-100 rounded-lg">
+                    <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">@Localizer["ActiveUsers"]</p>
+                    <p class="text-2xl font-semibold text-gray-900">@activeUsers</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+            <div class="flex items-center">
+                <div class="p-2 bg-amber-100 rounded-lg">
+                    <svg class="w-6 h-6 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">@Localizer["Admins"]</p>
+                    <p class="text-2xl font-semibold text-gray-900">@adminUsers</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+            <div class="flex items-center">
+                <div class="p-2 bg-purple-100 rounded-lg">
+                    <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"></path>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">@Localizer["Customers"]</p>
+                    <p class="text-2xl font-semibold text-gray-900">@customerUsers</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100">
+        <div class="flex flex-col sm:flex-row gap-4">
+            <div class="flex-1">
+                <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["Search"]</label>
+                <input type="text" @bind="searchTerm" @oninput="OnSearchChanged" 
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                       placeholder="@Localizer["SearchUsers"]" />
+            </div>
+            <div class="sm:w-48">
+                <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["Role"]</label>
+                <select @bind="selectedRole" @bind:after="OnRoleFilterChanged" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+                    <option value="">@Localizer["AllRoles"]</option>
+                    @foreach (var role in availableRoles)
+                    {
+                        <option value="@role">@role</option>
+                    }
+                </select>
+            </div>
+            <div class="sm:w-32">
+                <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["Status"]</label>
+                <select @bind="selectedStatus" @bind:after="OnStatusFilterChanged" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+                    <option value="">@Localizer["All"]</option>
+                    <option value="active">@Localizer["Active"]</option>
+                    <option value="inactive">@Localizer["Inactive"]</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h3 class="text-lg font-semibold text-gray-900">@Localizer["UsersList"]</h3>
+            <button @onclick="OpenCreateUserModal" 
+                    class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                @Localizer["CreateUser"]
+            </button>
+        </div>
+
+        @if (loading)
+        {
+            <div class="p-8 text-center">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600"></div>
+                <p class="mt-2 text-gray-600">@Localizer["Loading"]...</p>
+            </div>
+        }
+        else if (filteredUsers.Any())
+        {
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                @Localizer["User"]
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                @Localizer["Email"]
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                @Localizer["Roles"]
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                @Localizer["Status"]
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                @Localizer["LastLogin"]
+                            </th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                @Localizer["Actions"]
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach (var user in filteredUsers)
+                        {
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <div class="h-10 w-10 rounded-full bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center">
+                                                <span class="text-sm font-medium text-white">
+                                                    @(user.UserName?.Substring(0, 1).ToUpper() ?? "U")
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">@user.UserName</div>
+                                            <div class="text-sm text-gray-500">ID: @user.Id.Substring(0, 8)...</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">@user.Email</div>
+                                    <div class="text-sm text-gray-500">
+                                        @if (user.EmailConfirmed)
+                                        {
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                @Localizer["Verified"]
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                @Localizer["Unverified"]
+                                            </span>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex flex-wrap gap-1">
+                                        @foreach (var role in userRoles.GetValueOrDefault(user.Id, new List<string>()))
+                                        {
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                @role
+                                            </span>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @if (!user.LockoutEnabled || user.LockoutEnd == null || user.LockoutEnd < DateTimeOffset.Now)
+                                    {
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            @Localizer["Active"]
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            @Localizer["Locked"]
+                                        </span>
+                                    }
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    @(user.LastLoginDate?.ToString("MMM dd, yyyy") ?? Localizer["Never"])
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex justify-end space-x-2">
+                                        <button @onclick="() => EditUser(user)" 
+                                                class="text-amber-600 hover:text-amber-900 transition-colors">
+                                            @Localizer["Edit"]
+                                        </button>
+                                        <button @onclick="() => ManageRoles(user)" 
+                                                class="text-blue-600 hover:text-blue-900 transition-colors">
+                                            @Localizer["Roles"]
+                                        </button>
+                                        @if (!user.EmailConfirmed)
+                                        {
+                                            <button @onclick="() => ConfirmUserEmail(user)" 
+                                                    class="text-green-600 hover:text-green-900 transition-colors"
+                                                    title="@Localizer["ConfirmEmail"]">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                            </button>
+                                        }
+                                        <button @onclick="() => ResetUserPassword(user)" 
+                                                class="text-purple-600 hover:text-purple-900 transition-colors"
+                                                title="@Localizer["ResetPassword"]">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                                            </svg>
+                                        </button>
+                                        @if (user.LockoutEnabled && user.LockoutEnd > DateTimeOffset.Now)
+                                        {
+                                            <button @onclick="() => UnlockUser(user)" 
+                                                    class="text-green-600 hover:text-green-900 transition-colors">
+                                                @Localizer["Unlock"]
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button @onclick="() => LockUser(user)" 
+                                                    class="text-red-600 hover:text-red-900 transition-colors">
+                                                @Localizer["Lock"]
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="p-8 text-center">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">@Localizer["NoUsersFound"]</h3>
+                <p class="mt-1 text-sm text-gray-500">@Localizer["NoUsersFoundDescription"]</p>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Create User Modal -->
+@if (showCreateUserModal)
+{
+    <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+        <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">@Localizer["CreateNewUser"]</h3>
+            </div>
+            
+            <div class="px-6 py-4">
+                <EditForm Model="@newUser" OnValidSubmit="@CreateUser">
+                    <DataAnnotationsValidator />
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">@Localizer["Email"]</label>
+                            <InputText @bind-Value="newUser.Email" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500" 
+                                       placeholder="@Localizer["EnterEmail"]" />
+                            <ValidationMessage For="@(() => newUser.Email)" class="text-red-500 text-sm mt-1" />
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">@Localizer["UserName"]</label>
+                            <InputText @bind-Value="newUser.UserName" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500" 
+                                       placeholder="@Localizer["EnterUserName"]" />
+                            <ValidationMessage For="@(() => newUser.UserName)" class="text-red-500 text-sm mt-1" />
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">@Localizer["Password"]</label>
+                            <InputText type="password" @bind-Value="newUser.Password" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500" 
+                                       placeholder="@Localizer["EnterPassword"]" />
+                            <ValidationMessage For="@(() => newUser.Password)" class="text-red-500 text-sm mt-1" />
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">@Localizer["ConfirmPassword"]</label>
+                            <InputText type="password" @bind-Value="newUser.ConfirmPassword" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500" 
+                                       placeholder="@Localizer["ConfirmPassword"]" />
+                            <ValidationMessage For="@(() => newUser.ConfirmPassword)" class="text-red-500 text-sm mt-1" />
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">@Localizer["PhoneNumber"]</label>
+                            <InputText @bind-Value="newUser.PhoneNumber" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500" 
+                                       placeholder="@Localizer["EnterPhoneNumber"]" />
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">@Localizer["Roles"]</label>
+                            <div class="space-y-2 max-h-32 overflow-y-auto">
+                                @foreach (var role in availableRoles)
+                                {
+                                    <label class="flex items-center">
+                                        <input type="checkbox" 
+                                               checked="@newUser.SelectedRoles.Contains(role)"
+                                               @onchange="@((e) => ToggleRole(role, (bool)e.Value!))"
+                                               class="rounded border-gray-300 text-amber-600 focus:ring-amber-500" />
+                                        <span class="ml-2 text-sm text-gray-700">@role</span>
+                                    </label>
+                                }
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <input type="checkbox" @bind="newUser.EmailConfirmed" 
+                                   class="rounded border-gray-300 text-amber-600 focus:ring-amber-500" />
+                            <label class="ml-2 text-sm text-gray-700">@Localizer["EmailConfirmed"]</label>
+                        </div>
+                    </div>
+                    
+                    @if (!string.IsNullOrEmpty(createUserError))
+                    {
+                        <div class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                            @createUserError
+                        </div>
+                    }
+                    
+                    <div class="flex justify-end space-x-3 mt-6">
+                        <button type="button" @onclick="CloseCreateUserModal" 
+                                class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                            @Localizer["Cancel"]
+                        </button>
+                        <button type="submit" 
+                                disabled="@creatingUser"
+                                class="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 disabled:opacity-50">
+                            @if (creatingUser)
+                            {
+                                <span class="flex items-center">
+                                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                    @Localizer["Creating"]...
+                                </span>
+                            }
+                            else
+                            {
+                                @Localizer["Create"]
+                            }
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Edit User Modal -->
+@if (showEditUserModal && editingUser != null)
+{
+    <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+        <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">@Localizer["EditUser"]</h3>
+            </div>
+            
+            <div class="px-6 py-4">
+                <EditForm Model="@editUser" OnValidSubmit="@UpdateUser">
+                    <DataAnnotationsValidator />
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">@Localizer["Email"]</label>
+                            <InputText @bind-Value="editUser.Email" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500" 
+                                       placeholder="@Localizer["EnterEmail"]" />
+                            <ValidationMessage For="@(() => editUser.Email)" class="text-red-500 text-sm mt-1" />
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">@Localizer["UserName"]</label>
+                            <InputText @bind-Value="editUser.UserName" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500" 
+                                       placeholder="@Localizer["EnterUserName"]" />
+                            <ValidationMessage For="@(() => editUser.UserName)" class="text-red-500 text-sm mt-1" />
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">@Localizer["PhoneNumber"]</label>
+                            <InputText @bind-Value="editUser.PhoneNumber" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500" 
+                                       placeholder="@Localizer["EnterPhoneNumber"]" />
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">@Localizer["Roles"]</label>
+                            <div class="space-y-2 max-h-32 overflow-y-auto">
+                                @foreach (var role in availableRoles)
+                                {
+                                    <label class="flex items-center">
+                                        <input type="checkbox" 
+                                               checked="@editUser.SelectedRoles.Contains(role)"
+                                               @onchange="@((e) => ToggleEditRole(role, (bool)e.Value!))"
+                                               class="rounded border-gray-300 text-amber-600 focus:ring-amber-500" />
+                                        <span class="ml-2 text-sm text-gray-700">@role</span>
+                                    </label>
+                                }
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <input type="checkbox" @bind="editUser.EmailConfirmed" 
+                                   class="rounded border-gray-300 text-amber-600 focus:ring-amber-500" />
+                            <label class="ml-2 text-sm text-gray-700">@Localizer["EmailConfirmed"]</label>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <input type="checkbox" @bind="editUser.LockoutEnabled" 
+                                   class="rounded border-gray-300 text-amber-600 focus:ring-amber-500" />
+                            <label class="ml-2 text-sm text-gray-700">@Localizer["AccountLocked"]</label>
+                        </div>
+                    </div>
+                    
+                    @if (!string.IsNullOrEmpty(editUserError))
+                    {
+                        <div class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                            @editUserError
+                        </div>
+                    }
+                    
+                    <div class="flex justify-end space-x-3 mt-6">
+                        <button type="button" @onclick="CloseEditUserModal" 
+                                class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                            @Localizer["Cancel"]
+                        </button>
+                        <button type="submit" 
+                                disabled="@updatingUser"
+                                class="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 disabled:opacity-50">
+                            @if (updatingUser)
+                            {
+                                <span class="flex items-center">
+                                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                    @Localizer["Updating"]...
+                                </span>
+                            }
+                            else
+                            {
+                                @Localizer["Update"]
+                            }
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Password Reset Info Modal -->
+@if (showPasswordResetInfo)
+{
+    <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+        <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">@Localizer["PasswordResetSuccess"]</h3>
+            </div>
+            
+            <div class="px-6 py-4">
+                <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4 mb-4">
+                    <div class="flex">
+                        <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-yellow-800">@Localizer["ImportantInformation"]</h3>
+                            <div class="mt-2 text-sm text-yellow-700">
+                                <p>@Localizer["PasswordResetWarning"]</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 rounded-md p-4">
+                    <p class="text-sm text-gray-600 mb-2">@Localizer["NewPassword"]:</p>
+                    <pre class="text-sm text-gray-800 whitespace-pre-wrap bg-white p-2 border rounded">@resetPasswordInfo</pre>
+                </div>
+            </div>
+            
+            <div class="px-6 py-4 border-t border-gray-200 flex justify-end">
+                <button @onclick="ClosePasswordResetInfo" 
+                        class="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700">
+                    @Localizer["Understood"]
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<ApplicationUser> users = new();
+    private List<ApplicationUser> filteredUsers = new();
+    private Dictionary<string, List<string>> userRoles = new();
+    private List<string> availableRoles = new();
+    
+    private string searchTerm = "";
+    private string selectedRole = "";
+    private string selectedStatus = "";
+    private bool loading = true;
+    
+    private int totalUsers = 0;
+    private int activeUsers = 0;
+    private int adminUsers = 0;
+    private int customerUsers = 0;
+
+    // Create User Modal
+    private bool showCreateUserModal = false;
+    private CreateUserViewModel newUser = new();
+    private bool creatingUser = false;
+    private string createUserError = "";
+
+    // Edit User Modal
+    private bool showEditUserModal = false;
+    private EditUserViewModel editUser = new();
+    private ApplicationUser? editingUser = null;
+    private bool updatingUser = false;
+    private string editUserError = "";
+
+    // Password Reset
+    private bool showPasswordResetInfo = false;
+    private string resetPasswordInfo = "";
+
+    public class CreateUserViewModel
+    {
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email format")]
+        public string Email { get; set; } = "";
+
+        [Required(ErrorMessage = "Username is required")]
+        public string UserName { get; set; } = "";
+
+        [Required(ErrorMessage = "Password is required")]
+        [MinLength(6, ErrorMessage = "Password must be at least 6 characters")]
+        public string Password { get; set; } = "";
+
+        [Required(ErrorMessage = "Confirm password is required")]
+        [Compare("Password", ErrorMessage = "Passwords do not match")]
+        public string ConfirmPassword { get; set; } = "";
+
+        public string PhoneNumber { get; set; } = "";
+        public bool EmailConfirmed { get; set; } = true;
+        public List<string> SelectedRoles { get; set; } = new();
+    }
+
+    public class EditUserViewModel
+    {
+        public string Id { get; set; } = "";
+        
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email format")]
+        public string Email { get; set; } = "";
+
+        [Required(ErrorMessage = "Username is required")]
+        public string UserName { get; set; } = "";
+
+        public string PhoneNumber { get; set; } = "";
+        public bool EmailConfirmed { get; set; }
+        public bool LockoutEnabled { get; set; }
+        public List<string> SelectedRoles { get; set; } = new();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+        await LoadRoles();
+        UpdateStats();
+        FilterUsers();
+        loading = false;
+    }
+
+    private async Task LoadUsers()
+    {
+        users = UserManager.Users.ToList();
+        
+        // Load roles for each user
+        foreach (var user in users)
+        {
+            var roles = await UserManager.GetRolesAsync(user);
+            userRoles[user.Id] = roles.ToList();
+        }
+    }
+
+    private async Task LoadRoles()
+    {
+        availableRoles = await Task.FromResult(RoleManager.Roles.Select(r => r.Name!).ToList());
+    }
+
+    private void UpdateStats()
+    {
+        totalUsers = users.Count;
+        activeUsers = users.Count(u => !u.LockoutEnabled || u.LockoutEnd == null || u.LockoutEnd < DateTimeOffset.Now);
+        adminUsers = userRoles.Count(ur => ur.Value.Contains("Admin"));
+        customerUsers = userRoles.Count(ur => ur.Value.Contains("Customer"));
+    }
+
+    private void FilterUsers()
+    {
+        filteredUsers = users.Where(u =>
+            (string.IsNullOrEmpty(searchTerm) || 
+             u.UserName!.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+             u.Email!.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) &&
+            (string.IsNullOrEmpty(selectedRole) || 
+             userRoles.GetValueOrDefault(u.Id, new()).Contains(selectedRole)) &&
+            (string.IsNullOrEmpty(selectedStatus) || 
+             (selectedStatus == "active" && (!u.LockoutEnabled || u.LockoutEnd == null || u.LockoutEnd < DateTimeOffset.Now)) ||
+             (selectedStatus == "inactive" && u.LockoutEnabled && u.LockoutEnd > DateTimeOffset.Now))
+        ).ToList();
+    }
+
+    private void OnSearchChanged(ChangeEventArgs e)
+    {
+        searchTerm = e.Value?.ToString() ?? "";
+        FilterUsers();
+    }
+
+    private void OnRoleFilterChanged()
+    {
+        FilterUsers();
+    }
+
+    private void OnStatusFilterChanged()
+    {
+        FilterUsers();
+    }
+
+    private void EditUser(ApplicationUser user)
+    {
+        editingUser = user;
+        editUser = new EditUserViewModel
+        {
+            Id = user.Id,
+            Email = user.Email ?? "",
+            UserName = user.UserName ?? "",
+            PhoneNumber = user.PhoneNumber ?? "",
+            EmailConfirmed = user.EmailConfirmed,
+            LockoutEnabled = user.LockoutEnabled,
+            SelectedRoles = userRoles.GetValueOrDefault(user.Id, new()).ToList()
+        };
+        editUserError = "";
+        showEditUserModal = true;
+    }
+
+    private void ManageRoles(ApplicationUser user)
+    {
+        editingUser = user;
+        editUser = new EditUserViewModel
+        {
+            Id = user.Id,
+            Email = user.Email ?? "",
+            UserName = user.UserName ?? "",
+            SelectedRoles = userRoles.GetValueOrDefault(user.Id, new()).ToList()
+        };
+        editUserError = "";
+        showEditUserModal = true;
+    }
+
+    private async Task LockUser(ApplicationUser user)
+    {
+        await UserManager.SetLockoutEnabledAsync(user, true);
+        await UserManager.SetLockoutEndDateAsync(user, DateTimeOffset.Now.AddYears(100));
+        await LoadUsers();
+        UpdateStats();
+        FilterUsers();
+        StateHasChanged();
+    }
+
+    private async Task UnlockUser(ApplicationUser user)
+    {
+        await UserManager.SetLockoutEndDateAsync(user, null);
+        await LoadUsers();
+        UpdateStats();
+        FilterUsers();
+        StateHasChanged();
+    }
+
+    // Create User Modal Methods
+    private void OpenCreateUserModal()
+    {
+        newUser = new CreateUserViewModel();
+        createUserError = "";
+        showCreateUserModal = true;
+    }
+
+    private void CloseCreateUserModal()
+    {
+        showCreateUserModal = false;
+        newUser = new CreateUserViewModel();
+        createUserError = "";
+    }
+
+    private void ToggleRole(string role, bool isSelected)
+    {
+        if (isSelected)
+        {
+            if (!newUser.SelectedRoles.Contains(role))
+                newUser.SelectedRoles.Add(role);
+        }
+        else
+        {
+            newUser.SelectedRoles.Remove(role);
+        }
+    }
+
+    private async Task CreateUser()
+    {
+        if (creatingUser) return;
+        
+        try
+        {
+            creatingUser = true;
+            createUserError = "";
+
+            // Create the user
+            var user = new ApplicationUser
+            {
+                UserName = newUser.UserName,
+                Email = newUser.Email,
+                PhoneNumber = newUser.PhoneNumber,
+                EmailConfirmed = newUser.EmailConfirmed
+            };
+
+            var result = await UserManager.CreateAsync(user, newUser.Password);
+
+            if (result.Succeeded)
+            {
+                // Assign roles
+                if (newUser.SelectedRoles.Any())
+                {
+                    await UserManager.AddToRolesAsync(user, newUser.SelectedRoles);
+                }
+
+                // Refresh data
+                await LoadUsers();
+                UpdateStats();
+                FilterUsers();
+                
+                CloseCreateUserModal();
+                StateHasChanged();
+            }
+            else
+            {
+                createUserError = string.Join(", ", result.Errors.Select(e => e.Description));
+            }
+        }
+        catch (Exception ex)
+        {
+            createUserError = $"Error creating user: {ex.Message}";
+        }
+        finally
+        {
+            creatingUser = false;
+        }
+    }
+
+    // Edit User Modal Methods
+    private void CloseEditUserModal()
+    {
+        showEditUserModal = false;
+        editUser = new EditUserViewModel();
+        editingUser = null;
+        editUserError = "";
+    }
+
+    private void ToggleEditRole(string role, bool isSelected)
+    {
+        if (isSelected)
+        {
+            if (!editUser.SelectedRoles.Contains(role))
+                editUser.SelectedRoles.Add(role);
+        }
+        else
+        {
+            editUser.SelectedRoles.Remove(role);
+        }
+    }
+
+    private async Task UpdateUser()
+    {
+        if (updatingUser || editingUser == null) return;
+        
+        try
+        {
+            updatingUser = true;
+            editUserError = "";
+
+            // Update basic user info
+            editingUser.Email = editUser.Email;
+            editingUser.UserName = editUser.UserName;
+            editingUser.PhoneNumber = editUser.PhoneNumber;
+            editingUser.EmailConfirmed = editUser.EmailConfirmed;
+            editingUser.LockoutEnabled = editUser.LockoutEnabled;
+
+            var result = await UserManager.UpdateAsync(editingUser);
+
+            if (result.Succeeded)
+            {
+                // Update roles
+                var currentRoles = await UserManager.GetRolesAsync(editingUser);
+                var rolesToRemove = currentRoles.Except(editUser.SelectedRoles).ToList();
+                var rolesToAdd = editUser.SelectedRoles.Except(currentRoles).ToList();
+
+                if (rolesToRemove.Any())
+                {
+                    await UserManager.RemoveFromRolesAsync(editingUser, rolesToRemove);
+                }
+
+                if (rolesToAdd.Any())
+                {
+                    await UserManager.AddToRolesAsync(editingUser, rolesToAdd);
+                }
+
+                // Handle lockout
+                if (editUser.LockoutEnabled)
+                {
+                    await UserManager.SetLockoutEndDateAsync(editingUser, DateTimeOffset.Now.AddYears(100));
+                }
+                else
+                {
+                    await UserManager.SetLockoutEndDateAsync(editingUser, null);
+                }
+
+                // Refresh data
+                await LoadUsers();
+                UpdateStats();
+                FilterUsers();
+                
+                CloseEditUserModal();
+                StateHasChanged();
+            }
+            else
+            {
+                editUserError = string.Join(", ", result.Errors.Select(e => e.Description));
+            }
+        }
+        catch (Exception ex)
+        {
+            editUserError = $"Error updating user: {ex.Message}";
+        }
+        finally
+        {
+            updatingUser = false;
+        }
+    }
+
+    // Email Confirmation and Password Reset
+    private async Task ConfirmUserEmail(ApplicationUser user)
+    {
+        try
+        {
+            user.EmailConfirmed = true;
+            await UserManager.UpdateAsync(user);
+            await LoadUsers();
+            FilterUsers();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            // Handle error
+            Console.WriteLine($"Error confirming email: {ex.Message}");
+        }
+    }
+
+    private async Task ResetUserPassword(ApplicationUser user)
+    {
+        try
+        {
+            // Generate a new password
+            string newPassword = GenerateRandomPassword();
+            
+            // Reset password
+            var token = await UserManager.GeneratePasswordResetTokenAsync(user);
+            var result = await UserManager.ResetPasswordAsync(user, token, newPassword);
+            
+            if (result.Succeeded)
+            {
+                // In a real application, you would send this password via email
+                // For now, we'll show it in a modal or notification
+                resetPasswordInfo = $"New password for {user.Email}: {newPassword}";
+                showPasswordResetInfo = true;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle error
+            Console.WriteLine($"Error resetting password: {ex.Message}");
+        }
+    }
+
+    private string GenerateRandomPassword()
+    {
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+        var random = new Random();
+        return new string(Enumerable.Repeat(chars, 12).Select(s => s[random.Next(s.Length)]).ToArray());
+    }
+
+    private void ClosePasswordResetInfo()
+    {
+        showPasswordResetInfo = false;
+        resetPasswordInfo = "";
+    }
+}
