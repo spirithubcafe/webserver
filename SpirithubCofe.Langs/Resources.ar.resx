@@ -894,4 +894,63 @@
   <data name="Understood" xml:space="preserve">
     <value>مفهوم</value>
   </data>
+  
+  <!-- Settings -->
+  <data name="ManageApplicationSettings" xml:space="preserve">
+    <value>إدارة إعدادات التطبيق والتكوينات</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>عام</value>
+  </data>
+  <data name="Branding" xml:space="preserve">
+    <value>العلامة التجارية</value>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>الإعدادات العامة</value>
+  </data>
+  <data name="SiteName" xml:space="preserve">
+    <value>اسم الموقع</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>حفظ</value>
+  </data>
+  <data name="BrandingSettings" xml:space="preserve">
+    <value>إعدادات العلامة التجارية</value>
+  </data>
+  <data name="LogoConfiguration" xml:space="preserve">
+    <value>تكوين الشعار</value>
+  </data>
+  <data name="LogoType" xml:space="preserve">
+    <value>نوع الشعار</value>
+  </data>
+  <data name="TextLogo" xml:space="preserve">
+    <value>شعار نصي</value>
+  </data>
+  <data name="ImageLogo" xml:space="preserve">
+    <value>شعار بصورة</value>
+  </data>
+  <data name="LogoText" xml:space="preserve">
+    <value>نص الشعار</value>
+  </data>
+  <data name="LogoTextArabic" xml:space="preserve">
+    <value>نص الشعار بالعربية</value>
+  </data>
+  <data name="Optional" xml:space="preserve">
+    <value>اختياري</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>معاينة</value>
+  </data>
+  <data name="SaveLogoSettings" xml:space="preserve">
+    <value>حفظ إعدادات الشعار</value>
+  </data>
+  <data name="LogoImage" xml:space="preserve">
+    <value>صورة الشعار</value>
+  </data>
+  <data name="EnterLogoImagePath" xml:space="preserve">
+    <value>أدخل مسار صورة الشعار</value>
+  </data>
+  <data name="CurrentLogo" xml:space="preserve">
+    <value>الشعار الحالي</value>
+  </data>
 </root>

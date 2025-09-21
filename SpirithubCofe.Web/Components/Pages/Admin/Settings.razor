@@ -8,6 +8,7 @@
 @using SpirithubCofe.Web.Components.Shared
 @using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Authorization
+@rendermode InteractiveServer
 
 <PageTitle>@Localizer["Settings"] - Admin</PageTitle>
 
@@ -15,7 +16,7 @@
     <!-- Header -->
     <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900">@Localizer["Settings"]</h1>
-        <p class="mt-2 text-gray-600">مدیریت تنظیمات برنامه</p>
+        <p class="mt-2 text-gray-600">@Localizer["ManageApplicationSettings"]</p>
     </div>
 
     <!-- Settings Tabs -->
@@ -28,7 +29,7 @@
                     <svg class="w-5 h-5 mr-2 inline" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path>
                     </svg>
-                    عمومی
+                    @Localizer["General"]
                 </button>
                 
                 <button @onclick="@(() => SetActiveTab("branding"))" 
@@ -36,7 +37,7 @@
                     <svg class="w-5 h-5 mr-2 inline" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path>
                     </svg>
-                    برندینگ
+                    @Localizer["Branding"]
                 </button>
             </nav>
         </div>
@@ -47,15 +48,15 @@
             {
                 <!-- General Settings -->
                 <div class="space-y-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">تنظیمات عمومی</h3>
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">@Localizer["GeneralSettings"]</h3>
                     
                     <!-- Site Name -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">نام سایت</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["SiteName"]</label>
                             <input @bind="siteNameValue" @bind:event="oninput" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="SpirithubCofe" />
                             <button @onclick="@(() => UpdateSetting("site_name", siteNameValue))" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
-                                ذخیره
+                                @Localizer["Save"]
                             </button>
                         </div>
                     </div>
@@ -65,25 +66,25 @@
             {
                 <!-- Branding Settings -->
                 <div class="space-y-8">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">تنظیمات برندینگ</h3>
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">@Localizer["BrandingSettings"]</h3>
                     
                     <!-- Logo Configuration -->
                     <div class="bg-gray-50 rounded-xl p-6">
-                        <h4 class="text-md font-semibold text-gray-800 mb-4">پیکربندی لوگو</h4>
+                        <h4 class="text-md font-semibold text-gray-800 mb-4">@Localizer["LogoConfiguration"]</h4>
                         
                         <!-- Logo Type Selection -->
                         <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-3">نوع لوگو</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">@Localizer["LogoType"]</label>
                             <div class="flex space-x-4">
                                 <label class="flex items-center">
                                     <input type="radio" @onchange="@(() => SetLogoType("text"))" checked="@(logoTypeValue == "text")" 
                                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" />
-                                    <span class="ml-2 text-sm text-gray-700">لوگو متنی</span>
+                                    <span class="ml-2 text-sm text-gray-700">@Localizer["TextLogo"]</span>
                                 </label>
                                 <label class="flex items-center">
                                     <input type="radio" @onchange="@(() => SetLogoType("image"))" checked="@(logoTypeValue == "image")" 
                                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" />
-                                    <span class="ml-2 text-sm text-gray-700">لوگو تصویری</span>
+                                    <span class="ml-2 text-sm text-gray-700">@Localizer["ImageLogo"]</span>
                                 </label>
                             </div>
                         </div>
@@ -94,29 +95,29 @@
                             <div class="space-y-4">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">متن لوگو</label>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["LogoText"]</label>
                                         <input @bind="logoTextValue" @bind:event="oninput" type="text" 
                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
                                                placeholder="SpirithubCofe" />
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">متن لوگو عربی (اختیاری)</label>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["LogoTextArabic"] (@Localizer["Optional"])</label>
                                         <input @bind="logoTextArValue" @bind:event="oninput" type="text" 
                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-                                               placeholder="روح هاب کافه" dir="rtl" />
+                                               placeholder="روح هاب كافيه" dir="rtl" />
                                     </div>
                                 </div>
                                 
                                 <!-- Preview -->
                                 <div class="bg-white p-4 rounded-lg shadow-sm">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">پیش‌نمایش</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["Preview"]</label>
                                     <div class="text-xl font-bold text-amber-600">
                                         @(string.IsNullOrEmpty(logoTextValue) ? "SpirithubCofe" : logoTextValue)
                                     </div>
                                 </div>
                                 
                                 <button @onclick="SaveLogoSettings" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                                    ذخیره تنظیمات لوگو
+                                    @Localizer["SaveLogoSettings"]
                                 </button>
                             </div>
                         }
@@ -125,24 +126,31 @@
                             <!-- Image Logo Configuration -->
                             <div class="space-y-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">تصویر لوگو</label>
-                                    <input type="text" @bind="logoImageValue" @bind:event="oninput" 
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-                                           placeholder="/images/logo.png" />
-                                    <p class="text-xs text-gray-500 mt-1">آدرس تصویر لوگو را وارد کنید</p>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["LogoImage"]</label>
+                                    
+                                    <!-- File Upload Component -->
+                                    <FileUpload Folder="logos" 
+                                               FileType="image" 
+                                               Prefix="logo"
+                                               @bind-CurrentFileUrl="logoImageValue"
+                                               AltText="Logo Image"
+                                               OnFileUploaded="@OnLogoUploaded"
+                                               OnFileRemoved="@OnLogoRemoved" />
+                                    
+                                    <p class="text-xs text-gray-500 mt-1">Upload or drop logo image file here</p>
                                 </div>
                                 
                                 @if (!string.IsNullOrEmpty(logoImageValue))
                                 {
                                     <!-- Current Logo Preview -->
                                     <div class="bg-white p-4 rounded-lg shadow-sm">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">لوگو فعلی</label>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["CurrentLogo"]</label>
                                         <img src="@logoImageValue" alt="Logo" class="h-16 w-auto" />
                                     </div>
                                 }
                                 
                                 <button @onclick="SaveLogoSettings" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                                    ذخیره تنظیمات لوگو
+                                    @Localizer["SaveLogoSettings"]
                                 </button>
                             </div>
                         }
@@ -213,10 +221,25 @@
         logoTypeValue = type;
     }
 
-    private async Task OnLogoUploaded(string filePath)
+    private async Task OnLogoUploaded(SpirithubCofe.Web.Components.Shared.FileUpload.UploadResult result)
     {
-        logoImageValue = filePath;
-        // Show success message
+        if (result.Success)
+        {
+            logoImageValue = result.FileUrl;
+            await JSRuntime.InvokeVoidAsync("showSuccessToast", "Logo uploaded successfully!");
+            StateHasChanged();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("showErrorToast", $"Upload failed: {result.Message}");
+        }
+    }
+
+    private async Task OnLogoRemoved()
+    {
+        logoImageValue = "";
+        await JSRuntime.InvokeVoidAsync("showSuccessToast", "Logo removed successfully!");
+        StateHasChanged();
     }
 
     private async Task SaveLogoSettings()

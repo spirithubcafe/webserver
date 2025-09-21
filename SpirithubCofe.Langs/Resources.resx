@@ -894,4 +894,63 @@
   <data name="Understood" xml:space="preserve">
     <value>Understood</value>
   </data>
+  
+  <!-- Settings -->
+  <data name="ManageApplicationSettings" xml:space="preserve">
+    <value>Manage application settings and configurations</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="Branding" xml:space="preserve">
+    <value>Branding</value>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>General Settings</value>
+  </data>
+  <data name="SiteName" xml:space="preserve">
+    <value>Site Name</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="BrandingSettings" xml:space="preserve">
+    <value>Branding Settings</value>
+  </data>
+  <data name="LogoConfiguration" xml:space="preserve">
+    <value>Logo Configuration</value>
+  </data>
+  <data name="LogoType" xml:space="preserve">
+    <value>Logo Type</value>
+  </data>
+  <data name="TextLogo" xml:space="preserve">
+    <value>Text Logo</value>
+  </data>
+  <data name="ImageLogo" xml:space="preserve">
+    <value>Image Logo</value>
+  </data>
+  <data name="LogoText" xml:space="preserve">
+    <value>Logo Text</value>
+  </data>
+  <data name="LogoTextArabic" xml:space="preserve">
+    <value>Logo Text Arabic</value>
+  </data>
+  <data name="Optional" xml:space="preserve">
+    <value>Optional</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="SaveLogoSettings" xml:space="preserve">
+    <value>Save Logo Settings</value>
+  </data>
+  <data name="LogoImage" xml:space="preserve">
+    <value>Logo Image</value>
+  </data>
+  <data name="EnterLogoImagePath" xml:space="preserve">
+    <value>Enter logo image path</value>
+  </data>
+  <data name="CurrentLogo" xml:space="preserve">
+    <value>Current Logo</value>
+  </data>
 </root>
