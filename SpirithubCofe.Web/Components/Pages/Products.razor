@@ -379,7 +379,7 @@
         );
         
         // Show success message
-        await ShowToast($"✅ Added {quantity} x {product.Name} to cart!");
+        await ShowToast($"Added {quantity} x {product.Name} to cart!");
         
         // Reset quantity to 1 after adding to cart
         productQuantities[productId] = 1;
@@ -401,7 +401,7 @@
         );
         
         // Show success message
-        await ShowToast($"✅ Added {product.Name} to cart!");
+        await ShowToast($"Added {product.Name} to cart!");
         StateHasChanged();
     }
 

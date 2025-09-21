@@ -3,6 +3,7 @@
 @using SpirithubCofe.Web.Services
 @inject CartService CartService
 @inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @implements IDisposable
 @rendermode InteractiveServer
 
@@ -266,10 +267,19 @@
         await CartService.ClearCartAsync();
     }
 
-    private void ProceedToCheckout()
+    private async Task ProceedToCheckout()
     {
-        // اینجا کاربر باید وارد سیستم شود
-        Navigation.NavigateTo("/Account/Login?returnUrl=%2Fcheckout");
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (authState.User.Identity?.IsAuthenticated == true)
+        {
+            // کاربر لاگین کرده است، مستقیماً به checkout می‌رود
+            Navigation.NavigateTo("/checkout");
+        }
+        else
+        {
+            // کاربر لاگین نکرده، به صفحه لاگین می‌رود
+            Navigation.NavigateTo("/Account/Login?returnUrl=%2Fcheckout");
+        }
     }
 
     private decimal GetTax()
