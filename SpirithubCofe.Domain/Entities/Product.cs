@@ -103,6 +103,46 @@ public class Product
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     
     /// <summary>
+    /// Whether this product is featured
+    /// </summary>
+    public bool IsFeatured { get; set; } = false;
+    
+    /// <summary>
+    /// Coffee origin/region
+    /// </summary>
+    public string? Origin { get; set; }
+    
+    /// <summary>
+    /// Processing method (Washed, Natural, Honey, etc.)
+    /// </summary>
+    public string? ProcessingMethod { get; set; }
+    
+    /// <summary>
+    /// Tasting notes (flavor profile)
+    /// </summary>
+    public string? TastingNotes { get; set; }
+    
+    /// <summary>
+    /// Brewing instructions
+    /// </summary>
+    public string? BrewingInstructions { get; set; }
+    
+    /// <summary>
+    /// SEO meta title
+    /// </summary>
+    public string? MetaTitle { get; set; }
+    
+    /// <summary>
+    /// SEO meta description
+    /// </summary>
+    public string? MetaDescription { get; set; }
+    
+    /// <summary>
+    /// URL slug for SEO-friendly URLs
+    /// </summary>
+    public string? Slug { get; set; }
+    
+    /// <summary>
     /// Category this product belongs to
     /// </summary>
     public int CategoryId { get; set; }

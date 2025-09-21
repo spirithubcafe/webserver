@@ -23,6 +23,8 @@ public class ProductService
     {
         return await _context.Products
             .Include(p => p.Category)
+            .Include(p => p.MainImage)
+            .Include(p => p.GalleryImages)
             .Include(p => p.Variants.Where(v => v.IsActive))
             .Include(p => p.Reviews.Where(r => r.IsApproved))
             .OrderBy(p => p.Category!.DisplayOrder)
@@ -196,5 +198,30 @@ public class ProductService
             .OrderBy(p => p.Category!.DisplayOrder)
             .ThenBy(p => p.DisplayOrder)
             .ToListAsync();
+    }
+
+    /// <summary>
+    /// Create a new product
+    /// </summary>
+    public async Task<Product> CreateProductAsync(Product product)
+    {
+        product.CreatedAt = DateTime.UtcNow;
+        product.UpdatedAt = DateTime.UtcNow;
+        
+        _context.Products.Add(product);
+        await _context.SaveChangesAsync();
+        return product;
+    }
+
+    /// <summary>
+    /// Update an existing product
+    /// </summary>
+    public async Task<Product> UpdateProductAsync(Product product)
+    {
+        product.UpdatedAt = DateTime.UtcNow;
+        
+        _context.Products.Update(product);
+        await _context.SaveChangesAsync();
+        return product;
     }
 }

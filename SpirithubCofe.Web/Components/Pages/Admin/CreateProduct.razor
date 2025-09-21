@@ -1,0 +1,642 @@
+@page "/admin/products/create"
+@attribute [Authorize(Roles = "Admin")]
+@using SpirithubCofe.Domain.Entities
+@using Microsoft.AspNetCore.Components.Forms
+@using System.IO
+
+@rendermode InteractiveServer
+
+@inject ProductService ProductService
+@inject CategoryService CategoryService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@inject IWebHostEnvironment WebHostEnvironment
+
+<div class="container mx-auto p-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center space-x-4">
+            <button @onclick="GoBack" class="btn btn-ghost btn-sm">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                Back
+            </button>
+            <div>
+                <h1 class="text-3xl font-bold text-base-content">Add New Product</h1>
+                <p class="text-base-content/70 mt-1">Create a new coffee product for your shop</p>
+            </div>
+        </div>
+        <div class="flex space-x-3">
+            <button type="button" @onclick="SaveAsDraft" class="btn btn-outline btn-sm" disabled="@saving">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"></path>
+                </svg>
+                Save as Draft
+            </button>
+            <button type="submit" form="productForm" class="btn btn-primary btn-sm" disabled="@saving">
+                @if (saving)
+                {
+                    <span class="loading loading-spinner loading-sm mr-2"></span>
+                    <text>Creating...</text>
+                }
+                else
+                {
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <text>Create Product</text>
+                }
+            </button>
+        </div>
+    </div>
+
+    <form id="productForm" @onsubmit="SaveProduct" @onsubmit:preventDefault="true">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Content -->
+            <div class="lg:col-span-2 space-y-8">
+                
+                <!-- Basic Information -->
+                <div class="bg-base-100 rounded-xl shadow-sm border border-base-200">
+                    <div class="p-6 border-b border-base-200">
+                        <h2 class="text-lg font-semibold text-base-content">Basic Information</h2>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-medium">Product Name <span class="text-error">*</span></span>
+                                </label>
+                                <input type="text" @bind="product.Name" class="input input-bordered" 
+                                       placeholder="Ethiopian Yirgacheffe" required />
+                            </div>
+                            
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-medium">Arabic Name</span>
+                                </label>
+                                <input type="text" @bind="product.NameAr" class="input input-bordered" 
+                                       placeholder="يرغاشيف إثيوبي" dir="rtl" />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-medium">SKU <span class="text-error">*</span></span>
+                                </label>
+                                <input type="text" @bind="product.Sku" class="input input-bordered" 
+                                       placeholder="COFFEE-ETH-001" required />
+                            </div>
+                            
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-medium">Category <span class="text-error">*</span></span>
+                                </label>
+                                <select @bind="product.CategoryId" class="select select-bordered" required>
+                                    <option value="">Select Category</option>
+                                    @if (categories != null)
+                                    {
+                                        @foreach (var category in categories)
+                                        {
+                                            <option value="@category.Id">@category.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-medium">Description</span>
+                            </label>
+                            <textarea @bind="product.Description" class="textarea textarea-bordered h-24" 
+                                      placeholder="A bright and floral coffee with notes of citrus and berries..."></textarea>
+                        </div>
+
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-medium">Arabic Description</span>
+                            </label>
+                            <textarea @bind="product.DescriptionAr" class="textarea textarea-bordered h-24" 
+                                      placeholder="قهوة مشرقة وزهرية مع نكهات الحمضيات والتوت..." dir="rtl"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coffee Properties -->
+                <div class="bg-base-100 rounded-xl shadow-sm border border-base-200">
+                    <div class="p-6 border-b border-base-200">
+                        <h2 class="text-lg font-semibold text-base-content">Coffee Properties</h2>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-medium">Intensity (1-10)</span>
+                                </label>
+                                <input type="number" @bind="product.Intensity" class="input input-bordered" 
+                                       min="1" max="10" placeholder="7" />
+                            </div>
+
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-medium">Origin</span>
+                                </label>
+                                <input type="text" @bind="product.Origin" class="input input-bordered" 
+                                       placeholder="Ethiopia" />
+                            </div>
+
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-medium">Processing Method</span>
+                                </label>
+                                <select @bind="product.ProcessingMethod" class="select select-bordered">
+                                    <option value="">Select Method</option>
+                                    <option value="Washed">Washed</option>
+                                    <option value="Natural">Natural</option>
+                                    <option value="Honey">Honey</option>
+                                    <option value="Pulped Natural">Pulped Natural</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-medium">Tasting Notes</span>
+                            </label>
+                            <input type="text" @bind="product.TastingNotes" class="input input-bordered" 
+                                   placeholder="Citrus, Berry, Floral" />
+                        </div>
+
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-medium">Brewing Instructions</span>
+                            </label>
+                            <textarea @bind="product.BrewingInstructions" class="textarea textarea-bordered h-20" 
+                                      placeholder="Use 1:16 ratio, 200°F water temperature..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Images -->
+                <div class="bg-base-100 rounded-xl shadow-sm border border-base-200">
+                    <div class="p-6 border-b border-base-200">
+                        <h2 class="text-lg font-semibold text-base-content">Product Images</h2>
+                        <p class="text-sm text-base-content/60 mt-1">Upload high-quality images of your product</p>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        <!-- Main Image Upload -->
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-medium">Main Product Image</span>
+                            </label>
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-1">
+                                    <InputFile OnChange="HandleMainImageUpload" accept="image/*" class="file-input file-input-bordered w-full" />
+                                    <div class="label">
+                                        <span class="label-text-alt">Recommended: 800x800px, JPG or PNG</span>
+                                    </div>
+                                </div>
+                                @if (!string.IsNullOrEmpty(mainImagePreview))
+                                {
+                                    <div class="w-20 h-20 rounded-lg overflow-hidden border-2 border-base-300">
+                                        <img src="@mainImagePreview" alt="Main image preview" class="w-full h-full object-cover" />
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Gallery Images Upload -->
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-medium">Gallery Images</span>
+                            </label>
+                            <InputFile OnChange="HandleGalleryImagesUpload" accept="image/*" multiple class="file-input file-input-bordered w-full" />
+                            <div class="label">
+                                <span class="label-text-alt">Upload multiple images for the product gallery</span>
+                            </div>
+                            
+                            @if (galleryImagePreviews.Any())
+                            {
+                                <div class="grid grid-cols-4 gap-4 mt-4">
+                                    @foreach (var (preview, index) in galleryImagePreviews.Select((p, i) => (p, i)))
+                                    {
+                                        <div class="relative group">
+                                            <div class="w-full h-20 rounded-lg overflow-hidden border-2 border-base-300">
+                                                <img src="@preview" alt="Gallery image @(index + 1)" class="w-full h-full object-cover" />
+                                            </div>
+                                            <button type="button" @onclick="() => RemoveGalleryImage(index)" 
+                                                    class="absolute -top-2 -right-2 btn btn-error btn-xs btn-circle opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Variants -->
+                <div class="bg-base-100 rounded-xl shadow-sm border border-base-200">
+                    <div class="p-6 border-b border-base-200">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h2 class="text-lg font-semibold text-base-content">Product Variants</h2>
+                                <p class="text-sm text-base-content/60 mt-1">Different sizes, weights, or grind options</p>
+                            </div>
+                            <button type="button" @onclick="AddVariant" class="btn btn-primary btn-sm">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                Add Variant
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        @if (!variants.Any())
+                        {
+                            <div class="text-center py-8">
+                                <svg class="mx-auto h-12 w-12 text-base-content/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                </svg>
+                                <h3 class="mt-4 text-lg font-medium text-base-content">No Variants Added</h3>
+                                <p class="mt-2 text-base-content/60">Add different variants like sizes or grind options</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="space-y-4">
+                                @foreach (var (variant, index) in variants.Select((v, i) => (v, i)))
+                                {
+                                    <div class="border border-base-300 rounded-lg p-4">
+                                        <div class="flex justify-between items-start mb-4">
+                                            <h3 class="font-medium">Variant @(index + 1)</h3>
+                                            <button type="button" @onclick="() => RemoveVariant(index)" class="btn btn-error btn-xs">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                            <div class="form-control">
+                                                <label class="label">
+                                                    <span class="label-text">Size/Weight</span>
+                                                </label>
+                                                <input type="text" @bind="variant.Weight" class="input input-bordered input-sm" 
+                                                       placeholder="250" />
+                                            </div>
+                                            
+                                            <div class="form-control">
+                                                <label class="label">
+                                                    <span class="label-text">Price (OMR)</span>
+                                                </label>
+                                                <input type="number" @bind="variant.Price" step="0.001" class="input input-bordered input-sm" 
+                                                       placeholder="15.900" />
+                                            </div>
+                                            
+                                            <div class="form-control">
+                                                <label class="label">
+                                                    <span class="label-text">Stock Quantity</span>
+                                                </label>
+                                                <input type="number" @bind="variant.StockQuantity" class="input input-bordered input-sm" 
+                                                       placeholder="50" />
+                                            </div>
+                                            
+                                            <div class="form-control">
+                                                <label class="label">
+                                                    <span class="label-text">SKU</span>
+                                                </label>
+                                                <input type="text" @bind="variant.VariantSku" class="input input-bordered input-sm" 
+                                                       placeholder="COFFEE-ETH-001-250G" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Status & Settings -->
+                <div class="bg-base-100 rounded-xl shadow-sm border border-base-200">
+                    <div class="p-6 border-b border-base-200">
+                        <h2 class="text-lg font-semibold text-base-content">Status & Settings</h2>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div class="form-control">
+                            <label class="label cursor-pointer">
+                                <span class="label-text">Active Product</span>
+                                <input type="checkbox" @bind="product.IsActive" class="toggle toggle-primary" />
+                            </label>
+                        </div>
+                        
+                        <div class="form-control">
+                            <label class="label cursor-pointer">
+                                <span class="label-text">Featured Product</span>
+                                <input type="checkbox" @bind="product.IsFeatured" class="toggle toggle-primary" />
+                            </label>
+                        </div>
+                        
+                        <div class="form-control">
+                            <label class="label cursor-pointer">
+                                <span class="label-text">Digital Product</span>
+                                <input type="checkbox" @bind="product.IsDigital" class="toggle toggle-primary" />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEO & Meta -->
+                <div class="bg-base-100 rounded-xl shadow-sm border border-base-200">
+                    <div class="p-6 border-b border-base-200">
+                        <h2 class="text-lg font-semibold text-base-content">SEO & Meta</h2>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text">Meta Title</span>
+                            </label>
+                            <input type="text" @bind="product.MetaTitle" class="input input-bordered input-sm" 
+                                   placeholder="Ethiopian Yirgacheffe Coffee" />
+                        </div>
+                        
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text">Meta Description</span>
+                            </label>
+                            <textarea @bind="product.MetaDescription" class="textarea textarea-bordered textarea-sm h-20" 
+                                      placeholder="Premium Ethiopian coffee with bright citrus notes..."></textarea>
+                        </div>
+                        
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text">URL Slug</span>
+                            </label>
+                            <input type="text" @bind="product.Slug" class="input input-bordered input-sm" 
+                                   placeholder="ethiopian-yirgacheffe" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Actions -->
+                <div class="bg-base-100 rounded-xl shadow-sm border border-base-200">
+                    <div class="p-6">
+                        <div class="space-y-3">
+                            <button type="submit" form="productForm" class="btn btn-primary w-full" disabled="@saving">
+                                @if (saving)
+                                {
+                                    <span class="loading loading-spinner loading-sm mr-2"></span>
+                                    <text>Creating Product...</text>
+                                }
+                                else
+                                {
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    <text>Create Product</text>
+                                }
+                            </button>
+                            
+                            <button type="button" @onclick="SaveAsDraft" class="btn btn-outline w-full" disabled="@saving">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"></path>
+                                </svg>
+                                Save as Draft
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@code {
+    private Product product = new();
+    private List<Category> categories = new();
+    private List<ProductVariant> variants = new();
+    private bool saving = false;
+    
+    // Image handling
+    private string mainImagePreview = "";
+    private List<string> galleryImagePreviews = new();
+    private IBrowserFile? mainImageFile;
+    private List<IBrowserFile> galleryImageFiles = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            categories = await CategoryService.GetAllCategoriesAsync();
+            
+            // Initialize with default values
+            product.IsActive = true;
+            product.CreatedAt = DateTime.UtcNow;
+            product.UpdatedAt = DateTime.UtcNow;
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", "Error loading categories:", ex.Message);
+        }
+    }
+
+    private async Task HandleMainImageUpload(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            // Validate file
+            if (file.Size > 5 * 1024 * 1024) // 5MB limit
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "File size must be less than 5MB");
+                return;
+            }
+
+            if (!file.ContentType.StartsWith("image/"))
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Please select an image file");
+                return;
+            }
+
+            mainImageFile = file;
+            
+            // Create preview
+            var buffer = new byte[file.Size];
+            await file.OpenReadStream().ReadAsync(buffer);
+            var base64 = Convert.ToBase64String(buffer);
+            mainImagePreview = $"data:{file.ContentType};base64,{base64}";
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleGalleryImagesUpload(InputFileChangeEventArgs e)
+    {
+        var files = e.GetMultipleFiles(10); // Max 10 images
+        
+        foreach (var file in files)
+        {
+            // Validate file
+            if (file.Size > 5 * 1024 * 1024) // 5MB limit
+            {
+                await JSRuntime.InvokeVoidAsync("alert", $"File {file.Name} is too large (max 5MB)");
+                continue;
+            }
+
+            if (!file.ContentType.StartsWith("image/"))
+            {
+                await JSRuntime.InvokeVoidAsync("alert", $"File {file.Name} is not an image");
+                continue;
+            }
+
+            galleryImageFiles.Add(file);
+            
+            // Create preview
+            var buffer = new byte[file.Size];
+            await file.OpenReadStream().ReadAsync(buffer);
+            var base64 = Convert.ToBase64String(buffer);
+            galleryImagePreviews.Add($"data:{file.ContentType};base64,{base64}");
+        }
+        
+        StateHasChanged();
+    }
+
+    private void RemoveGalleryImage(int index)
+    {
+        if (index >= 0 && index < galleryImagePreviews.Count)
+        {
+            galleryImagePreviews.RemoveAt(index);
+            if (index < galleryImageFiles.Count)
+            {
+                galleryImageFiles.RemoveAt(index);
+            }
+            StateHasChanged();
+        }
+    }
+
+    private void AddVariant()
+    {
+        variants.Add(new ProductVariant
+        {
+            ProductId = product.Id,
+            IsActive = true
+        });
+        StateHasChanged();
+    }
+
+    private void RemoveVariant(int index)
+    {
+        if (index >= 0 && index < variants.Count)
+        {
+            variants.RemoveAt(index);
+            StateHasChanged();
+        }
+    }
+
+    private async Task SaveProduct()
+    {
+        if (saving) return;
+        
+        saving = true;
+        try
+        {
+            await SaveProductInternal(false);
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+    private async Task SaveAsDraft()
+    {
+        if (saving) return;
+        
+        saving = true;
+        try
+        {
+            await SaveProductInternal(true);
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+    private async Task SaveProductInternal(bool isDraft)
+    {
+        try
+        {
+            // Set draft status
+            if (isDraft)
+            {
+                product.IsActive = false;
+            }
+
+            // Upload main image
+            if (mainImageFile != null)
+            {
+                var mainImagePath = await SaveImageAsync(mainImageFile);
+                product.MainImage = new ProductImage
+                {
+                    ImagePath = mainImagePath,
+                    AltText = product.Name,
+                    IsMain = true
+                };
+            }
+
+            // Upload gallery images
+            var galleryImages = new List<ProductImage>();
+            foreach (var file in galleryImageFiles)
+            {
+                var imagePath = await SaveImageAsync(file);
+                galleryImages.Add(new ProductImage
+                {
+                    ImagePath = imagePath,
+                    AltText = product.Name,
+                    IsMain = false
+                });
+            }
+            product.GalleryImages = galleryImages;
+
+            // Add variants
+            product.Variants = variants;
+
+            // Save product
+            var savedProduct = await ProductService.CreateProductAsync(product);
+            
+            await JSRuntime.InvokeVoidAsync("alert", isDraft ? "Product saved as draft!" : "Product created successfully!");
+            Navigation.NavigateTo("/admin/products");
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error saving product: {ex.Message}");
+        }
+    }
+
+    private async Task<string> SaveImageAsync(IBrowserFile file)
+    {
+        var uploadsPath = Path.Combine(WebHostEnvironment.WebRootPath, "uploads", "products");
+        Directory.CreateDirectory(uploadsPath);
+
+        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
+        var filePath = Path.Combine(uploadsPath, fileName);
+
+        using var stream = new FileStream(filePath, FileMode.Create);
+        await file.OpenReadStream().CopyToAsync(stream);
+
+        return $"/uploads/products/{fileName}";
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/admin/products");
+    }
+}
