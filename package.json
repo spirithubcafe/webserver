@@ -1,5 +1,8 @@
 {
   "scripts": {
     "start": "dotnet run --project SpirithubCofe.Web"
+  },
+  "devDependencies": {
+    "daisyui": "^5.1.13"
   }
 }
