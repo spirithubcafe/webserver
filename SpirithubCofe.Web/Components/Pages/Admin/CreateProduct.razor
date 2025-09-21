@@ -1,136 +1,116 @@
 @page "/admin/products/create"
 @attribute [Authorize(Roles = "Admin")]
-@using SpirithubCofe.Domain.Entities
-@using Microsoft.AspNetCore.Components.Forms
-@using System.IO
-
-@rendermode InteractiveServer
-
 @inject ProductService ProductService
 @inject CategoryService CategoryService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
-@inject IWebHostEnvironment WebHostEnvironment
+@using SpirithubCofe.Domain.Entities
+@rendermode InteractiveServer
 
-<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-    <div class="container mx-auto px-4 py-8">
-        <!-- Header -->
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8 space-y-4 lg:space-y-0">
-            <div class="flex items-center space-x-4">
-                <button @onclick="GoBack" class="btn btn-ghost btn-circle">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                    </svg>
-                </button>
-                <div>
-                    <h1 class="text-3xl font-bold bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
-                        Add New Product
-                    </h1>
-                    <p class="text-gray-600 dark:text-gray-400 mt-1">Create a premium coffee experience</p>
+<PageTitle>Add New Product - SpirithubCofe Admin</PageTitle>
+
+<div class="min-h-screen bg-gray-50 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Page Header -->
+        <div class="bg-white shadow-sm rounded-lg border mb-6">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Add New Product</h1>
+                        <p class="mt-1 text-sm text-gray-600">Create a new coffee product with comprehensive details</p>
+                    </div>
+                    <div class="mt-4 sm:mt-0 flex space-x-3">
+                        <button type="button" @onclick="GoBack" 
+                                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                            Back to Products
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div class="flex space-x-3">
-                <button type="button" @onclick="SaveAsDraft" class="btn btn-outline" disabled="@saving">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"></path>
-                    </svg>
-                    Save as Draft
-                </button>
-                <button type="submit" form="productForm" class="btn btn-primary" disabled="@saving">
-                    @if (saving)
-                    {
-                        <span class="loading loading-spinner loading-sm mr-2"></span>
-                        <span>Creating...</span>
-                    }
-                    else
-                    {
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        <span>Create Product</span>
-                    }
-                </button>
+
+            <!-- Tab Navigation -->
+            <div class="px-6">
+                <nav class="flex space-x-8" aria-label="Tabs">
+                    <button @onclick="@(() => SetActiveTab("basic"))" type="button"
+                            class="@(activeTab == "basic" ? "border-blue-500 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300") py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap">
+                        Basic Information
+                    </button>
+                    <button @onclick="@(() => SetActiveTab("coffee"))" type="button"
+                            class="@(activeTab == "coffee" ? "border-blue-500 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300") py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap">
+                        Coffee Details
+                    </button>
+                    <button @onclick="@(() => SetActiveTab("images"))" type="button"
+                            class="@(activeTab == "images" ? "border-blue-500 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300") py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap">
+                        Images
+                    </button>
+                    <button @onclick="@(() => SetActiveTab("pricing"))" type="button"
+                            class="@(activeTab == "pricing" ? "border-blue-500 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300") py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap">
+                        Pricing & Variants
+                    </button>
+                    <button @onclick="@(() => SetActiveTab("seo"))" type="button"
+                            class="@(activeTab == "seo" ? "border-blue-500 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300") py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap">
+                        SEO & Settings
+                    </button>
+                </nav>
             </div>
         </div>
 
-        <!-- Tabs Navigation -->
-        <div class="tabs tabs-boxed mb-8 bg-white dark:bg-gray-800 shadow-lg rounded-xl p-2">
-            <button class="tab @(activeTab == "basic" ? "tab-active" : "")" @onclick="() => SetActiveTab(\"basic\")">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                Basic Info
-            </button>
-            <button class="tab @(activeTab == "coffee" ? "tab-active" : "")" @onclick="() => SetActiveTab(\"coffee\")">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7 21H2V10H7l1-1V7a1 1 0 011-1h8a1 1 0 011 1v2l1 1h5v11h-5l-1-1V8"></path>
-                </svg>
-                Coffee Info
-            </button>
-            <button class="tab @(activeTab == "images" ? "tab-active" : "")" @onclick="() => SetActiveTab(\"images\")">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                </svg>
-                Images
-            </button>
-            <button class="tab @(activeTab == "pricing" ? "tab-active" : "")" @onclick="() => SetActiveTab(\"pricing\")">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-                </svg>
-                Pricing & Variants
-            </button>
-            <button class="tab @(activeTab == "seo" ? "tab-active" : "")" @onclick="() => SetActiveTab(\"seo\")">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-                SEO & Settings
-            </button>
-        </div>
-
-    <form id="productForm" @onsubmit="SaveProduct" @onsubmit:preventDefault="true">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Main Content -->
-            <div class="lg:col-span-2 space-y-8">
-                
-                <!-- Basic Information -->
-                <div class="bg-base-100 rounded-xl shadow-sm border border-base-200">
-                    <div class="p-6 border-b border-base-200">
-                        <h2 class="text-lg font-semibold text-base-content">Basic Information</h2>
+        <!-- Main Content -->
+        <form @onsubmit:preventDefault="true" class="space-y-6">
+            
+            <!-- Basic Information Tab -->
+            @if (activeTab == "basic")
+            {
+                <div class="bg-white shadow-sm rounded-lg border">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-semibold text-gray-900">Basic Information</h2>
+                        <p class="text-sm text-gray-600">Product name, description, and category</p>
                     </div>
                     <div class="p-6 space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="form-control">
-                                <label class="label">
-                                    <span class="label-text font-medium">Product Name <span class="text-error">*</span></span>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- Product Name (EN) -->
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">
+                                    Product Name (English) <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" @bind="product.Name" class="input input-bordered" 
+                                <input type="text" @bind="product.Name" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
                                        placeholder="Ethiopian Yirgacheffe" required />
                             </div>
-                            
-                            <div class="form-control">
-                                <label class="label">
-                                    <span class="label-text font-medium">Arabic Name</span>
-                                </label>
-                                <input type="text" @bind="product.NameAr" class="input input-bordered" 
-                                       placeholder="يرغاشيف إثيوبي" dir="rtl" />
-                            </div>
-                        </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="form-control">
-                                <label class="label">
-                                    <span class="label-text font-medium">SKU <span class="text-error">*</span></span>
+                            <!-- Product Name (AR) -->
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">
+                                    Product Name (Arabic)
                                 </label>
-                                <input type="text" @bind="product.Sku" class="input input-bordered" 
-                                       placeholder="COFFEE-ETH-001" required />
+                                <input type="text" @bind="product.NameAr" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                       placeholder="يرغاشيف الإثيوبية" dir="rtl" />
                             </div>
-                            
-                            <div class="form-control">
-                                <label class="label">
-                                    <span class="label-text font-medium">Category <span class="text-error">*</span></span>
+
+                            <!-- SKU -->
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">
+                                    SKU <span class="text-red-500">*</span>
                                 </label>
-                                <select @bind="product.CategoryId" class="select select-bordered" required>
-                                    <option value="">Select Category</option>
+                                <input type="text" @bind="product.Sku" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                       placeholder="YRG-ETH-001" required />
+                            </div>
+
+                            <!-- Category -->
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">
+                                    Category <span class="text-red-500">*</span>
+                                </label>
+                                <select @bind="product.CategoryId" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                        required>
+                                    <option value="">Select a category</option>
                                     @if (categories != null)
                                     {
                                         @foreach (var category in categories)
@@ -142,448 +122,860 @@
                             </div>
                         </div>
 
-                        <div class="form-control">
-                            <label class="label">
-                                <span class="label-text font-medium">Description</span>
+                        <!-- Description (EN) -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">
+                                Description (English)
                             </label>
-                            <textarea @bind="product.Description" class="textarea textarea-bordered h-24" 
-                                      placeholder="A bright and floral coffee with notes of citrus and berries..."></textarea>
+                            <textarea @bind="product.Description" rows="4"
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                      placeholder="Describe this coffee product..."></textarea>
                         </div>
 
-                        <div class="form-control">
-                            <label class="label">
-                                <span class="label-text font-medium">Arabic Description</span>
+                        <!-- Description (AR) -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">
+                                Description (Arabic)
                             </label>
-                            <textarea @bind="product.DescriptionAr" class="textarea textarea-bordered h-24" 
-                                      placeholder="قهوة مشرقة وزهرية مع نكهات الحمضيات والتوت..." dir="rtl"></textarea>
+                            <textarea @bind="product.DescriptionAr" rows="4"
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                      placeholder="وصف منتج القهوة..." dir="rtl"></textarea>
                         </div>
-                    </div>
-                </div>
 
-                <!-- Coffee Properties -->
-                <div class="bg-base-100 rounded-xl shadow-sm border border-base-200">
-                    <div class="p-6 border-b border-base-200">
-                        <h2 class="text-lg font-semibold text-base-content">Coffee Properties</h2>
-                    </div>
-                    <div class="p-6 space-y-6">
+                        <!-- Product Settings -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div class="form-control">
-                                <label class="label">
-                                    <span class="label-text font-medium">Intensity (1-10)</span>
-                                </label>
-                                <input type="number" @bind="product.Intensity" class="input input-bordered" 
-                                       min="1" max="10" placeholder="7" />
+                            <div class="flex items-center space-x-3">
+                                <input type="checkbox" @bind="product.IsActive" 
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                                <label class="text-sm font-medium text-gray-700">Active Product</label>
                             </div>
+                            <div class="flex items-center space-x-3">
+                                <input type="checkbox" @bind="product.IsFeatured" 
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                                <label class="text-sm font-medium text-gray-700">Featured Product</label>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <input type="checkbox" @bind="product.IsDigital" 
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                                <label class="text-sm font-medium text-gray-700">Digital Product</label>
+                            </div>
+                        </div>
 
-                            <div class="form-control">
-                                <label class="label">
-                                    <span class="label-text font-medium">Origin</span>
-                                </label>
-                                <input type="text" @bind="product.Origin" class="input input-bordered" 
+                        <!-- Additional Fields -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Tags</label>
+                                <input type="text" @bind="product.Tags" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                       placeholder="organic, fair-trade, single-origin" />
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Origin</label>
+                                <input type="text" @bind="product.Origin" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
                                        placeholder="Ethiopia" />
                             </div>
-
-                            <div class="form-control">
-                                <label class="label">
-                                    <span class="label-text font-medium">Processing Method</span>
-                                </label>
-                                <select @bind="product.ProcessingMethod" class="select select-bordered">
-                                    <option value="">Select Method</option>
-                                    <option value="Washed">Washed</option>
-                                    <option value="Natural">Natural</option>
-                                    <option value="Honey">Honey</option>
-                                    <option value="Pulped Natural">Pulped Natural</option>
-                                </select>
-                            </div>
                         </div>
 
-                        <div class="form-control">
-                            <label class="label">
-                                <span class="label-text font-medium">Tasting Notes</span>
-                            </label>
-                            <input type="text" @bind="product.TastingNotes" class="input input-bordered" 
-                                   placeholder="Citrus, Berry, Floral" />
-                        </div>
-
-                        <div class="form-control">
-                            <label class="label">
-                                <span class="label-text font-medium">Brewing Instructions</span>
-                            </label>
-                            <textarea @bind="product.BrewingInstructions" class="textarea textarea-bordered h-20" 
-                                      placeholder="Use 1:16 ratio, 200°F water temperature..."></textarea>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">Intensity (1-10)</label>
+                            <input type="number" @bind="product.Intensity" min="1" max="10"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                   placeholder="7" />
                         </div>
                     </div>
                 </div>
+            }
 
-                <!-- Product Images -->
-                <div class="bg-base-100 rounded-xl shadow-sm border border-base-200">
-                    <div class="p-6 border-b border-base-200">
-                        <h2 class="text-lg font-semibold text-base-content">Product Images</h2>
-                        <p class="text-sm text-base-content/60 mt-1">Upload high-quality images of your product</p>
+            <!-- Coffee Details Tab -->
+            @if (activeTab == "coffee")
+            {
+                <div class="bg-white shadow-sm rounded-lg border">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-semibold text-gray-900">Coffee Details</h2>
+                        <p class="text-sm text-gray-600">Specific coffee characteristics and attributes</p>
                     </div>
                     <div class="p-6 space-y-6">
-                        <!-- Main Image Upload -->
-                        <div class="form-control">
-                            <label class="label">
-                                <span class="label-text font-medium">Main Product Image</span>
-                            </label>
-                            <div class="flex items-start space-x-4">
-                                <div class="flex-1">
-                                    <InputFile OnChange="HandleMainImageUpload" accept="image/*" class="file-input file-input-bordered w-full" />
-                                    <div class="label">
-                                        <span class="label-text-alt">Recommended: 800x800px, JPG or PNG</span>
-                                    </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- Roast Level -->
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Roast Level</label>
+                                <select @bind="product.RoastLevel" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Select roast level</option>
+                                    <option value="Light">Light Roast</option>
+                                    <option value="Medium-Light">Medium-Light Roast</option>
+                                    <option value="Medium">Medium Roast</option>
+                                    <option value="Medium-Dark">Medium-Dark Roast</option>
+                                    <option value="Dark">Dark Roast</option>
+                                    <option value="French">French Roast</option>
+                                    <option value="Italian">Italian Roast</option>
+                                </select>
+                            </div>
+
+                            <!-- Roast Level (AR) -->
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Roast Level (Arabic)</label>
+                                <input type="text" @bind="product.RoastLevelAr" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                       placeholder="تحميص متوسط" dir="rtl" />
+                            </div>
+
+                            <!-- Process -->
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Processing Method</label>
+                                <select @bind="product.Process" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Select processing method</option>
+                                    <option value="Washed">Washed</option>
+                                    <option value="Natural">Natural (Dry)</option>
+                                    <option value="Honey">Honey Process</option>
+                                    <option value="Semi-Washed">Semi-Washed</option>
+                                    <option value="Wet Hulled">Wet Hulled</option>
+                                </select>
+                            </div>
+
+                            <!-- Process (AR) -->
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Processing Method (Arabic)</label>
+                                <input type="text" @bind="product.ProcessAr" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                       placeholder="معالجة مغسولة" dir="rtl" />
+                            </div>
+
+                            <!-- Variety -->
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Coffee Variety</label>
+                                <input type="text" @bind="product.Variety" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                       placeholder="Heirloom" />
+                            </div>
+
+                            <!-- Variety (AR) -->
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Coffee Variety (Arabic)</label>
+                                <input type="text" @bind="product.VarietyAr" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                       placeholder="متنوعة الإرث" dir="rtl" />
+                            </div>
+
+                            <!-- Altitude -->
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Altitude (meters)</label>
+                                <input type="number" @bind="product.Altitude" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                       placeholder="1800" />
+                            </div>
+
+                            <!-- Farm -->
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Farm/Estate</label>
+                                <input type="text" @bind="product.Farm" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                       placeholder="Yirgacheffe Coffee Farmers Cooperative" />
+                            </div>
+                        </div>
+
+                        <!-- Farm (AR) -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">Farm/Estate (Arabic)</label>
+                            <input type="text" @bind="product.FarmAr" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                   placeholder="تعاونية مزارعي قهوة يرغاشيف" dir="rtl" />
+                        </div>
+
+                        <!-- Tasting Notes -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Tasting Notes (English)</label>
+                                <textarea @bind="product.TastingNotes" rows="3"
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                          placeholder="Bright acidity, floral aroma, citrus notes"></textarea>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Tasting Notes (Arabic)</label>
+                                <textarea @bind="product.TastingNotesAr" rows="3"
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                          placeholder="حموضة مشرقة، رائحة زهرية، نكهات حمضيات" dir="rtl"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Aromatic Profile -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Aromatic Profile (English)</label>
+                                <input type="text" @bind="product.AromaticProfile" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                       placeholder="Floral, citrus, wine-like" />
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Aromatic Profile (Arabic)</label>
+                                <input type="text" @bind="product.AromaticProfileAr" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                       placeholder="زهري، حمضيات، شبيه بالنبيذ" dir="rtl" />
+                            </div>
+                        </div>
+
+                        <!-- Uses and Compatibility -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Best Uses (English)</label>
+                                <textarea @bind="product.Uses" rows="2"
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                          placeholder="Pour over, drip coffee, cold brew"></textarea>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Best Uses (Arabic)</label>
+                                <textarea @bind="product.UsesAr" rows="2"
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                          placeholder="قهوة صب، قهوة بالتنقيط، قهوة باردة" dir="rtl"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Equipment Compatibility (English)</label>
+                                <input type="text" @bind="product.Compatibility" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                       placeholder="V60, Chemex, French Press" />
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Equipment Compatibility (Arabic)</label>
+                                <input type="text" @bind="product.CompatibilityAr" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                       placeholder="في60، كيمكس، فرنش بريس" dir="rtl" />
+                            </div>
+                        </div>
+
+                        <!-- Brewing Instructions -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Brewing Instructions (English)</label>
+                                <textarea @bind="product.BrewingInstructions" rows="3"
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                          placeholder="Use 1:16 ratio, 200°F water, 3-4 minute brew time"></textarea>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Brewing Instructions (Arabic)</label>
+                                <textarea @bind="product.BrewingInstructionsAr" rows="3"
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                          placeholder="استخدم نسبة 1:16، ماء 93 درجة مئوية، 3-4 دقائق تحضير" dir="rtl"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Images Tab -->
+            @if (activeTab == "images")
+            {
+                <div class="space-y-6">
+                    <!-- Main Product Image -->
+                    <div class="bg-white shadow-sm rounded-lg border">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h2 class="text-lg font-semibold text-gray-900">Main Product Image</h2>
+                            <p class="text-sm text-gray-600">Primary image displayed in product listings</p>
+                        </div>
+                        <div class="p-6 space-y-6">
+                            <FileUpload Folder="products" 
+                                       FileType="image" 
+                                       Prefix="product-main"
+                                       @bind-CurrentFileUrl="mainImageUrl"
+                                       AltText="@product.ImageAlt"
+                                       OnFileUploaded="OnMainImageUploaded" />
+                            
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-medium text-gray-700">Image Alt Text (English)</label>
+                                    <input type="text" @bind="product.ImageAlt" 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                           placeholder="Ethiopian Yirgacheffe coffee beans" />
                                 </div>
-                                @if (!string.IsNullOrEmpty(mainImagePreview))
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-medium text-gray-700">Image Alt Text (Arabic)</label>
+                                    <input type="text" @bind="product.ImageAltAr" 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                           placeholder="حبوب قهوة يرغاشيف الإثيوبية" dir="rtl" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gallery Images -->
+                    <div class="bg-white shadow-sm rounded-lg border">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h2 class="text-lg font-semibold text-gray-900">Gallery Images</h2>
+                            <p class="text-sm text-gray-600">Additional product images (maximum 5)</p>
+                        </div>
+                        <div class="p-6 space-y-6">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                @for (int i = 0; i < galleryImages.Count; i++)
                                 {
-                                    <div class="w-20 h-20 rounded-lg overflow-hidden border-2 border-base-300">
-                                        <img src="@mainImagePreview" alt="Main image preview" class="w-full h-full object-cover" />
+                                    int index = i; // Capture for closure
+                                    <div class="border border-gray-200 rounded-lg p-4">
+                                        <div class="mb-2 flex items-center justify-between">
+                                            <span class="text-sm font-medium text-gray-700">Gallery Image @(index + 1)</span>
+                                            @if (!string.IsNullOrEmpty(galleryImages[index]))
+                                            {
+                                                <button type="button" @onclick="() => RemoveGalleryImage(index)" 
+                                                        class="text-red-600 hover:text-red-800 text-sm">
+                                                    Remove
+                                                </button>
+                                            }
+                                        </div>
+                                        <FileUpload Folder="products" 
+                                                   FileType="image" 
+                                                   Prefix="@($"product-gallery-{index}")"
+                                                   @bind-CurrentFileUrl="galleryImages[index]"
+                                                   OnFileUploaded="@((result) => OnGalleryImageUploaded(index, result))" />
                                     </div>
                                 }
                             </div>
+                            
+                            @if (galleryImages.Count < 5)
+                            {
+                                <div class="text-center">
+                                    <button type="button" @onclick="AddGalleryImageSlot" 
+                                            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                        Add Gallery Image (@galleryImages.Count/5)
+                                    </button>
+                                </div>
+                            }
+                            
+                            <div class="bg-blue-50 border border-blue-200 rounded-md p-4">
+                                <p class="text-sm text-blue-700">💡 Add up to 5 high-quality images showing different angles and details of your coffee product.</p>
+                            </div>
                         </div>
+                    </div>
+                </div>
+            }
 
-                        <!-- Gallery Images Upload -->
-                        <div class="form-control">
-                            <label class="label">
-                                <span class="label-text font-medium">Gallery Images</span>
-                            </label>
-                            <InputFile OnChange="HandleGalleryImagesUpload" accept="image/*" multiple class="file-input file-input-bordered w-full" />
-                            <div class="label">
-                                <span class="label-text-alt">Upload multiple images for the product gallery</span>
+            <!-- Pricing & Variants Tab -->
+            @if (activeTab == "pricing")
+            {
+                <div class="space-y-6">
+                    <!-- Base Pricing (if no variants) -->
+                    <div class="bg-white shadow-sm rounded-lg border">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h2 class="text-lg font-semibold text-gray-900">Base Pricing</h2>
+                            <p class="text-sm text-gray-600">Default pricing when no variants are defined</p>
+                        </div>
+                        <div class="p-6 space-y-6">
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-medium text-gray-700">
+                                        Base Price (OMR) <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="number" @bind="basePrice" step="0.001" min="0"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                           placeholder="5.250" />
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-medium text-gray-700">Discount Price (OMR)</label>
+                                    <input type="number" @bind="baseDiscountPrice" step="0.001" min="0"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                           placeholder="4.500" />
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-medium text-gray-700">Base Weight (g)</label>
+                                    <input type="number" @bind="baseWeight" min="0"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                           placeholder="250" />
+                                </div>
                             </div>
                             
-                            @if (galleryImagePreviews.Any())
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-medium text-gray-700">Stock Quantity</label>
+                                    <input type="number" @bind="baseStockQuantity" min="0"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                           placeholder="100" />
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-medium text-gray-700">Low Stock Threshold</label>
+                                    <input type="number" @bind="baseLowStockThreshold" min="0"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                           placeholder="5" />
+                                </div>
+                            </div>
+
+                            <div class="bg-blue-50 border border-blue-200 rounded-md p-4">
+                                <p class="text-sm text-blue-700">💡 Base pricing will be used if no variants are defined. Add variants below for different weights/sizes.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Variants -->
+                    <div class="bg-white shadow-sm rounded-lg border">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h2 class="text-lg font-semibold text-gray-900">Product Variants</h2>
+                                    <p class="text-sm text-gray-600">Different weights, sizes, and pricing options</p>
+                                </div>
+                                <button type="button" @onclick="AddVariant" 
+                                        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                    Add Variant
+                                </button>
+                            </div>
+                        </div>
+                        <div class="p-6 space-y-6">
+                            @if (productVariants.Any())
                             {
-                                <div class="grid grid-cols-4 gap-4 mt-4">
-                                    @foreach (var (preview, index) in galleryImagePreviews.Select((p, i) => (p, i)))
-                                    {
-                                        <div class="relative group">
-                                            <div class="w-full h-20 rounded-lg overflow-hidden border-2 border-base-300">
-                                                <img src="@preview" alt="Gallery image @(index + 1)" class="w-full h-full object-cover" />
-                                            </div>
-                                            <button type="button" @onclick="() => RemoveGalleryImage(index)" 
-                                                    class="absolute -top-2 -right-2 btn btn-error btn-xs btn-circle opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                                </svg>
+                                @foreach (var variant in productVariants.Select((v, i) => new { Variant = v, Index = i }))
+                                {
+                                    <div class="border border-gray-200 rounded-lg p-6 space-y-6">
+                                        <div class="flex items-center justify-between">
+                                            <h3 class="text-lg font-medium text-gray-900">Variant @(variant.Index + 1)</h3>
+                                            <button type="button" @onclick="() => RemoveVariant(variant.Index)" 
+                                                    class="text-red-600 hover:text-red-800 text-sm">
+                                                Remove
                                             </button>
                                         </div>
-                                    }
+
+                                        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                                            <div class="space-y-2">
+                                                <label class="block text-sm font-medium text-gray-700">
+                                                    Variant SKU <span class="text-red-500">*</span>
+                                                </label>
+                                                <input type="text" @bind="variant.Variant.VariantSku" 
+                                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                                       placeholder="YRG-ETH-250G" />
+                                            </div>
+                                            <div class="space-y-2">
+                                                <label class="block text-sm font-medium text-gray-700">
+                                                    Weight <span class="text-red-500">*</span>
+                                                </label>
+                                                <input type="number" @bind="variant.Variant.Weight" min="0" step="0.1"
+                                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                                       placeholder="250" />
+                                            </div>
+                                            <div class="space-y-2">
+                                                <label class="block text-sm font-medium text-gray-700">Unit</label>
+                                                <select @bind="variant.Variant.WeightUnit" 
+                                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                                    <option value="g">Grams (g)</option>
+                                                    <option value="kg">Kilograms (kg)</option>
+                                                    <option value="oz">Ounces (oz)</option>
+                                                    <option value="lb">Pounds (lb)</option>
+                                                </select>
+                                            </div>
+                                            <div class="flex items-center space-x-3 pt-6">
+                                                <input type="checkbox" @bind="variant.Variant.IsDefault" 
+                                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                                                <label class="text-sm font-medium text-gray-700">Default Variant</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                                            <div class="space-y-2">
+                                                <label class="block text-sm font-medium text-gray-700">
+                                                    Price (OMR) <span class="text-red-500">*</span>
+                                                </label>
+                                                <input type="number" @bind="variant.Variant.Price" step="0.001" min="0"
+                                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                                       placeholder="5.250" />
+                                            </div>
+                                            <div class="space-y-2">
+                                                <label class="block text-sm font-medium text-gray-700">Discount Price (OMR)</label>
+                                                <input type="number" @bind="variant.Variant.DiscountPrice" step="0.001" min="0"
+                                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                                       placeholder="4.500" />
+                                            </div>
+                                            <div class="space-y-2">
+                                                <label class="block text-sm font-medium text-gray-700">Display Order</label>
+                                                <input type="number" @bind="variant.Variant.DisplayOrder" min="0"
+                                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                                       placeholder="@(variant.Index)" />
+                                            </div>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                            <div class="space-y-2">
+                                                <label class="block text-sm font-medium text-gray-700">Stock Quantity</label>
+                                                <input type="number" @bind="variant.Variant.StockQuantity" min="0"
+                                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                                       placeholder="100" />
+                                            </div>
+                                            <div class="space-y-2">
+                                                <label class="block text-sm font-medium text-gray-700">Low Stock Threshold</label>
+                                                <input type="number" @bind="variant.Variant.LowStockThreshold" min="0"
+                                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                                       placeholder="5" />
+                                            </div>
+                                        </div>
+
+                                        <!-- Dimensions -->
+                                        <div class="border-t border-gray-200 pt-4">
+                                            <h4 class="text-sm font-medium text-gray-900 mb-4">Dimensions (Optional)</h4>
+                                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                                                <div class="space-y-2">
+                                                    <label class="block text-sm font-medium text-gray-700">Length (cm)</label>
+                                                    <input type="number" @bind="variant.Variant.Length" step="0.1" min="0"
+                                                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                                           placeholder="10.5" />
+                                                </div>
+                                                <div class="space-y-2">
+                                                    <label class="block text-sm font-medium text-gray-700">Width (cm)</label>
+                                                    <input type="number" @bind="variant.Variant.Width" step="0.1" min="0"
+                                                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                                           placeholder="8.0" />
+                                                </div>
+                                                <div class="space-y-2">
+                                                    <label class="block text-sm font-medium text-gray-700">Height (cm)</label>
+                                                    <input type="number" @bind="variant.Variant.Height" step="0.1" min="0"
+                                                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                                           placeholder="15.0" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center space-x-3">
+                                            <input type="checkbox" @bind="variant.Variant.IsActive" 
+                                                   class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                                            <label class="text-sm font-medium text-gray-700">Active Variant</label>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="text-center py-8">
+                                    <div class="text-gray-500 mb-4">
+                                        <svg class="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"></path>
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mb-4">No variants defined yet. Add variants for different weights or sizes.</p>
+                                    <button type="button" @onclick="AddVariant" 
+                                            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                        Add Your First Variant
+                                    </button>
                                 </div>
                             }
                         </div>
                     </div>
                 </div>
+            }
 
-                <!-- Product Variants -->
-                <div class="bg-base-100 rounded-xl shadow-sm border border-base-200">
-                    <div class="p-6 border-b border-base-200">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h2 class="text-lg font-semibold text-base-content">Product Variants</h2>
-                                <p class="text-sm text-base-content/60 mt-1">Different sizes, weights, or grind options</p>
+            <!-- SEO & Settings Tab -->
+            @if (activeTab == "seo")
+            {
+                <div class="bg-white shadow-sm rounded-lg border">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-semibold text-gray-900">SEO & Advanced Settings</h2>
+                        <p class="text-sm text-gray-600">Search engine optimization and additional settings</p>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Meta Keywords</label>
+                                <input type="text" @bind="product.MetaKeywords" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                       placeholder="coffee, ethiopian, yirgacheffe, organic" />
                             </div>
-                            <button type="button" @onclick="AddVariant" class="btn btn-primary btn-sm">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                </svg>
-                                Add Variant
-                            </button>
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">URL Slug</label>
+                                <input type="text" @bind="product.Slug" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                       placeholder="ethiopian-yirgacheffe-coffee" />
+                            </div>
                         </div>
-                    </div>
-                    <div class="p-6">
-                        @if (!variants.Any())
-                        {
-                            <div class="text-center py-8">
-                                <svg class="mx-auto h-12 w-12 text-base-content/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                                </svg>
-                                <h3 class="mt-4 text-lg font-medium text-base-content">No Variants Added</h3>
-                                <p class="mt-2 text-base-content/60">Add different variants like sizes or grind options</p>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="space-y-4">
-                                @foreach (var (variant, index) in variants.Select((v, i) => (v, i)))
-                                {
-                                    <div class="border border-base-300 rounded-lg p-4">
-                                        <div class="flex justify-between items-start mb-4">
-                                            <h3 class="font-medium">Variant @(index + 1)</h3>
-                                            <button type="button" @onclick="() => RemoveVariant(index)" class="btn btn-error btn-xs">
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                        
-                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                            <div class="form-control">
-                                                <label class="label">
-                                                    <span class="label-text">Size/Weight</span>
-                                                </label>
-                                                <input type="text" @bind="variant.Weight" class="input input-bordered input-sm" 
-                                                       placeholder="250" />
-                                            </div>
-                                            
-                                            <div class="form-control">
-                                                <label class="label">
-                                                    <span class="label-text">Price (OMR)</span>
-                                                </label>
-                                                <input type="number" @bind="variant.Price" step="0.001" class="input input-bordered input-sm" 
-                                                       placeholder="15.900" />
-                                            </div>
-                                            
-                                            <div class="form-control">
-                                                <label class="label">
-                                                    <span class="label-text">Stock Quantity</span>
-                                                </label>
-                                                <input type="number" @bind="variant.StockQuantity" class="input input-bordered input-sm" 
-                                                       placeholder="50" />
-                                            </div>
-                                            
-                                            <div class="form-control">
-                                                <label class="label">
-                                                    <span class="label-text">SKU</span>
-                                                </label>
-                                                <input type="text" @bind="variant.VariantSku" class="input input-bordered input-sm" 
-                                                       placeholder="COFFEE-ETH-001-250G" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-                        }
-                    </div>
-                </div>
-            </div>
 
-            <!-- Sidebar -->
-            <div class="space-y-6">
-                <!-- Status & Settings -->
-                <div class="bg-base-100 rounded-xl shadow-sm border border-base-200">
-                    <div class="p-6 border-b border-base-200">
-                        <h2 class="text-lg font-semibold text-base-content">Status & Settings</h2>
-                    </div>
-                    <div class="p-6 space-y-4">
-                        <div class="form-control">
-                            <label class="label cursor-pointer">
-                                <span class="label-text">Active Product</span>
-                                <input type="checkbox" @bind="product.IsActive" class="toggle toggle-primary" />
-                            </label>
+                        <!-- Certifications -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="flex items-center space-x-3">
+                                <input type="checkbox" @bind="product.IsOrganic" 
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                                <label class="text-sm font-medium text-gray-700">🌱 Organic Certified</label>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <input type="checkbox" @bind="product.IsFairTrade" 
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                                <label class="text-sm font-medium text-gray-700">🤝 Fair Trade Certified</label>
+                            </div>
                         </div>
-                        
-                        <div class="form-control">
-                            <label class="label cursor-pointer">
-                                <span class="label-text">Featured Product</span>
-                                <input type="checkbox" @bind="product.IsFeatured" class="toggle toggle-primary" />
-                            </label>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Product Launch Date</label>
+                                <input type="date" @bind="product.LaunchDate" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Sort Order</label>
+                                <input type="number" @bind="product.SortOrder" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                       placeholder="0" />
+                                <p class="text-xs text-gray-500">Lower numbers appear first</p>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Expiry/Best Before</label>
+                                <input type="date" @bind="product.ExpiryDate" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                            </div>
                         </div>
-                        
-                        <div class="form-control">
-                            <label class="label cursor-pointer">
-                                <span class="label-text">Digital Product</span>
-                                <input type="checkbox" @bind="product.IsDigital" class="toggle toggle-primary" />
-                            </label>
+
+                        <!-- Internal Notes -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Internal Notes (English)</label>
+                                <textarea @bind="product.Notes" rows="3"
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                          placeholder="Internal notes for staff only..."></textarea>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Internal Notes (Arabic)</label>
+                                <textarea @bind="product.NotesAr" rows="3"
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                          placeholder="ملاحظات داخلية للموظفين فقط..." dir="rtl"></textarea>
+                            </div>
                         </div>
                     </div>
                 </div>
+            }
 
-                <!-- SEO & Meta -->
-                <div class="bg-base-100 rounded-xl shadow-sm border border-base-200">
-                    <div class="p-6 border-b border-base-200">
-                        <h2 class="text-lg font-semibold text-base-content">SEO & Meta</h2>
-                    </div>
-                    <div class="p-6 space-y-4">
-                        <div class="form-control">
-                            <label class="label">
-                                <span class="label-text">Meta Title</span>
-                            </label>
-                            <input type="text" @bind="product.MetaTitle" class="input input-bordered input-sm" 
-                                   placeholder="Ethiopian Yirgacheffe Coffee" />
+            <!-- Action Buttons -->
+            <div class="bg-white shadow-sm rounded-lg border">
+                <div class="px-6 py-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                        <div class="text-sm text-gray-600">
+                            Review all information before saving the product.
                         </div>
-                        
-                        <div class="form-control">
-                            <label class="label">
-                                <span class="label-text">Meta Description</span>
-                            </label>
-                            <textarea @bind="product.MetaDescription" class="textarea textarea-bordered textarea-sm h-20" 
-                                      placeholder="Premium Ethiopian coffee with bright citrus notes..."></textarea>
-                        </div>
-                        
-                        <div class="form-control">
-                            <label class="label">
-                                <span class="label-text">URL Slug</span>
-                            </label>
-                            <input type="text" @bind="product.Slug" class="input input-bordered input-sm" 
-                                   placeholder="ethiopian-yirgacheffe" />
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Save Actions -->
-                <div class="bg-base-100 rounded-xl shadow-sm border border-base-200">
-                    <div class="p-6">
-                        <div class="space-y-3">
-                            <button type="submit" form="productForm" class="btn btn-primary w-full" disabled="@saving">
+                        <div class="flex space-x-3">
+                            <button type="button" @onclick="SaveAsDraft" disabled="@saving"
+                                    class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">
                                 @if (saving)
                                 {
-                                    <span class="loading loading-spinner loading-sm mr-2"></span>
-                                    <text>Creating Product...</text>
-                                }
-                                else
-                                {
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                    <text>Create Product</text>
                                 }
-                            </button>
-                            
-                            <button type="button" @onclick="SaveAsDraft" class="btn btn-outline w-full" disabled="@saving">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"></path>
-                                </svg>
                                 Save as Draft
+                            </button>
+                            <button type="button" @onclick="SaveProduct" disabled="@saving"
+                                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50">
+                                @if (saving)
+                                {
+                                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                }
+                                Save & Publish
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
 
 @code {
-    private Product product = new();
-    private List<Category> categories = new();
-    private List<ProductVariant> variants = new();
+    private Product product = new() { IsActive = true };
+    private List<Category>? categories;
     private bool saving = false;
-    
-    // Image handling
-    private string mainImagePreview = "";
-    private List<string> galleryImagePreviews = new();
-    private IBrowserFile? mainImageFile;
-    private List<IBrowserFile> galleryImageFiles = new();
+    private string activeTab = "basic";
+    private List<string?> galleryImages = new() { null }; // Start with one empty slot
+    private string? mainImageUrl; // URL for the main product image
+
+    // Base pricing (when no variants)
+    private decimal? basePrice;
+    private decimal? baseDiscountPrice;
+    private decimal? baseWeight;
+    private int? baseStockQuantity;
+    private int baseLowStockThreshold = 5;
+
+    // Product variants
+    private List<ProductVariant> productVariants = new();
 
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            categories = await CategoryService.GetAllCategoriesAsync();
-            
-            // Initialize with default values
-            product.IsActive = true;
-            product.CreatedAt = DateTime.UtcNow;
-            product.UpdatedAt = DateTime.UtcNow;
-        }
-        catch (Exception ex)
-        {
-            await JSRuntime.InvokeVoidAsync("console.error", "Error loading categories:", ex.Message);
-        }
+        categories = await CategoryService.GetAllCategoriesAsync();
     }
 
-    private async Task HandleMainImageUpload(InputFileChangeEventArgs e)
+    private void SetActiveTab(string tab)
     {
-        var file = e.File;
-        if (file != null)
-        {
-            // Validate file
-            if (file.Size > 5 * 1024 * 1024) // 5MB limit
-            {
-                await JSRuntime.InvokeVoidAsync("alert", "File size must be less than 5MB");
-                return;
-            }
-
-            if (!file.ContentType.StartsWith("image/"))
-            {
-                await JSRuntime.InvokeVoidAsync("alert", "Please select an image file");
-                return;
-            }
-
-            mainImageFile = file;
-            
-            // Create preview
-            var buffer = new byte[file.Size];
-            await file.OpenReadStream().ReadAsync(buffer);
-            var base64 = Convert.ToBase64String(buffer);
-            mainImagePreview = $"data:{file.ContentType};base64,{base64}";
-            StateHasChanged();
-        }
+        activeTab = tab;
     }
 
-    private async Task HandleGalleryImagesUpload(InputFileChangeEventArgs e)
+    private void GoBack()
     {
-        var files = e.GetMultipleFiles(10); // Max 10 images
-        
-        foreach (var file in files)
-        {
-            // Validate file
-            if (file.Size > 5 * 1024 * 1024) // 5MB limit
-            {
-                await JSRuntime.InvokeVoidAsync("alert", $"File {file.Name} is too large (max 5MB)");
-                continue;
-            }
-
-            if (!file.ContentType.StartsWith("image/"))
-            {
-                await JSRuntime.InvokeVoidAsync("alert", $"File {file.Name} is not an image");
-                continue;
-            }
-
-            galleryImageFiles.Add(file);
-            
-            // Create preview
-            var buffer = new byte[file.Size];
-            await file.OpenReadStream().ReadAsync(buffer);
-            var base64 = Convert.ToBase64String(buffer);
-            galleryImagePreviews.Add($"data:{file.ContentType};base64,{base64}");
-        }
-        
-        StateHasChanged();
+        Navigation.NavigateTo("/admin/products");
     }
 
-    private void RemoveGalleryImage(int index)
-    {
-        if (index >= 0 && index < galleryImagePreviews.Count)
-        {
-            galleryImagePreviews.RemoveAt(index);
-            if (index < galleryImageFiles.Count)
-            {
-                galleryImageFiles.RemoveAt(index);
-            }
-            StateHasChanged();
-        }
-    }
-
+    // Variant methods
     private void AddVariant()
     {
-        variants.Add(new ProductVariant
+        var newVariant = new ProductVariant
         {
-            ProductId = product.Id,
-            IsActive = true
-        });
+            WeightUnit = "g",
+            IsActive = true,
+            DisplayOrder = productVariants.Count,
+            LowStockThreshold = 5
+        };
+        
+        productVariants.Add(newVariant);
         StateHasChanged();
     }
 
     private void RemoveVariant(int index)
     {
-        if (index >= 0 && index < variants.Count)
+        if (index >= 0 && index < productVariants.Count)
         {
-            variants.RemoveAt(index);
+            productVariants.RemoveAt(index);
+            
+            // Update display orders
+            for (int i = 0; i < productVariants.Count; i++)
+            {
+                productVariants[i].DisplayOrder = i;
+            }
+            
+            StateHasChanged();
+        }
+    }
+
+    // Gallery methods
+    private void AddGalleryImageSlot()
+    {
+        if (galleryImages.Count < 5)
+        {
+            galleryImages.Add(null);
+            StateHasChanged();
+        }
+    }
+
+    private void RemoveGalleryImage(int index)
+    {
+        if (index >= 0 && index < galleryImages.Count)
+        {
+            galleryImages.RemoveAt(index);
+            StateHasChanged();
+        }
+    }
+
+    // File upload handlers
+    private void OnMainImageUploaded(FileUpload.UploadResult result)
+    {
+        if (result.Success)
+        {
+            mainImageUrl = result.FileUrl;
+            
+            // Create or update the main image
+            product.MainImage = new SpirithubCofe.Domain.Entities.ProductImage
+            {
+                FileName = result.FileName,
+                ImagePath = result.FileUrl,
+                AltText = product.ImageAlt,
+                AltTextAr = product.ImageAltAr,
+                IsMain = true,
+                FileSize = result.FileSize,
+                CreatedAt = DateTime.UtcNow
+            };
+            
+            StateHasChanged();
+        }
+    }
+
+    private void OnGalleryImageUploaded(int index, FileUpload.UploadResult result)
+    {
+        if (result.Success && index >= 0 && index < galleryImages.Count)
+        {
+            galleryImages[index] = result.FileUrl;
+            
+            // Create gallery image entity
+            var galleryImage = new SpirithubCofe.Domain.Entities.ProductImage
+            {
+                FileName = result.FileName,
+                ImagePath = result.FileUrl,
+                IsMain = false,
+                DisplayOrder = index,
+                FileSize = result.FileSize,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            // Add to product gallery if not already exists
+            if (!product.GalleryImages.Any(gi => gi.DisplayOrder == index))
+            {
+                product.GalleryImages.Add(galleryImage);
+            }
+            else
+            {
+                // Update existing gallery image
+                var existing = product.GalleryImages.FirstOrDefault(gi => gi.DisplayOrder == index);
+                if (existing != null)
+                {
+                    existing.FileName = result.FileName;
+                    existing.ImagePath = result.FileUrl;
+                    existing.FileSize = result.FileSize;
+                    existing.CreatedAt = DateTime.UtcNow;
+                }
+            }
+            
             StateHasChanged();
         }
     }
 
     private async Task SaveProduct()
     {
-        if (saving) return;
-        
         saving = true;
         try
         {
-            await SaveProductInternal(false);
+            // Generate slug if empty
+            if (string.IsNullOrEmpty(product.Slug))
+            {
+                product.Slug = GenerateSlug(product.Name);
+            }
+
+            // Handle pricing - if variants exist, use them; otherwise create base variant
+            if (productVariants.Any())
+            {
+                // Assign variants to product
+                foreach (var variant in productVariants)
+                {
+                    variant.ProductId = product.Id;
+                    product.Variants.Add(variant);
+                }
+            }
+            else if (basePrice.HasValue)
+            {
+                // Create a default variant from base pricing
+                var defaultVariant = new ProductVariant
+                {
+                    VariantSku = product.Sku + "-DEFAULT",
+                    Weight = baseWeight ?? 0,
+                    WeightUnit = "g",
+                    Price = basePrice.Value,
+                    DiscountPrice = baseDiscountPrice,
+                    StockQuantity = baseStockQuantity ?? 0,
+                    LowStockThreshold = baseLowStockThreshold,
+                    IsActive = true,
+                    IsDefault = true,
+                    DisplayOrder = 0,
+                    ProductId = product.Id
+                };
+                product.Variants.Add(defaultVariant);
+            }
+
+            var createdProduct = await ProductService.CreateProductAsync(product);
+            
+            await JSRuntime.InvokeVoidAsync("alert", "Product created successfully!");
+            Navigation.NavigateTo($"/admin/products");
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error creating product: {ex.Message}");
         }
         finally
         {
@@ -593,86 +985,18 @@
 
     private async Task SaveAsDraft()
     {
-        if (saving) return;
+        product.IsActive = false;
+        await SaveProduct();
+    }
+
+    private string GenerateSlug(string name)
+    {
+        if (string.IsNullOrEmpty(name)) return string.Empty;
         
-        saving = true;
-        try
-        {
-            await SaveProductInternal(true);
-        }
-        finally
-        {
-            saving = false;
-        }
-    }
-
-    private async Task SaveProductInternal(bool isDraft)
-    {
-        try
-        {
-            // Set draft status
-            if (isDraft)
-            {
-                product.IsActive = false;
-            }
-
-            // Upload main image
-            if (mainImageFile != null)
-            {
-                var mainImagePath = await SaveImageAsync(mainImageFile);
-                product.MainImage = new ProductImage
-                {
-                    ImagePath = mainImagePath,
-                    AltText = product.Name,
-                    IsMain = true
-                };
-            }
-
-            // Upload gallery images
-            var galleryImages = new List<ProductImage>();
-            foreach (var file in galleryImageFiles)
-            {
-                var imagePath = await SaveImageAsync(file);
-                galleryImages.Add(new ProductImage
-                {
-                    ImagePath = imagePath,
-                    AltText = product.Name,
-                    IsMain = false
-                });
-            }
-            product.GalleryImages = galleryImages;
-
-            // Add variants
-            product.Variants = variants;
-
-            // Save product
-            var savedProduct = await ProductService.CreateProductAsync(product);
-            
-            await JSRuntime.InvokeVoidAsync("alert", isDraft ? "Product saved as draft!" : "Product created successfully!");
-            Navigation.NavigateTo("/admin/products");
-        }
-        catch (Exception ex)
-        {
-            await JSRuntime.InvokeVoidAsync("alert", $"Error saving product: {ex.Message}");
-        }
-    }
-
-    private async Task<string> SaveImageAsync(IBrowserFile file)
-    {
-        var uploadsPath = Path.Combine(WebHostEnvironment.WebRootPath, "uploads", "products");
-        Directory.CreateDirectory(uploadsPath);
-
-        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
-        var filePath = Path.Combine(uploadsPath, fileName);
-
-        using var stream = new FileStream(filePath, FileMode.Create);
-        await file.OpenReadStream().CopyToAsync(stream);
-
-        return $"/uploads/products/{fileName}";
-    }
-
-    private void GoBack()
-    {
-        Navigation.NavigateTo("/admin/products");
+        return name.ToLowerInvariant()
+                  .Replace(" ", "-")
+                  .Replace("&", "and")
+                  .Replace("--", "-")
+                  .Trim('-');
     }
 }

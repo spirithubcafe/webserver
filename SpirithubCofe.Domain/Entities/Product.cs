@@ -88,6 +88,46 @@ public class Product
     public bool IsDigital { get; set; } = false;
     
     /// <summary>
+    /// Whether this is a featured product
+    /// </summary>
+    public bool IsFeatured { get; set; } = false;
+    
+    /// <summary>
+    /// Whether this product is organic certified
+    /// </summary>
+    public bool IsOrganic { get; set; } = false;
+    
+    /// <summary>
+    /// Whether this product is fair trade certified
+    /// </summary>
+    public bool IsFairTrade { get; set; } = false;
+    
+    /// <summary>
+    /// Image alt text for SEO and accessibility
+    /// </summary>
+    public string? ImageAlt { get; set; }
+    
+    /// <summary>
+    /// Image alt text in Arabic
+    /// </summary>
+    public string? ImageAltAr { get; set; }
+    
+    /// <summary>
+    /// Product launch date
+    /// </summary>
+    public DateTime? LaunchDate { get; set; }
+    
+    /// <summary>
+    /// Product expiry or best before date
+    /// </summary>
+    public DateTime? ExpiryDate { get; set; }
+    
+    /// <summary>
+    /// Sort order for manual product ordering
+    /// </summary>
+    public int SortOrder { get; set; } = 0;
+    
+    /// <summary>
     /// Display order for sorting products within a category
     /// </summary>
     public int DisplayOrder { get; set; }
@@ -103,19 +143,11 @@ public class Product
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     
     /// <summary>
-    /// Whether this product is featured
-    /// </summary>
-    public bool IsFeatured { get; set; } = false;
-    
-    /// <summary>
     /// Coffee origin/region
     /// </summary>
     public string? Origin { get; set; }
     
-    /// <summary>
-    /// Processing method (Washed, Natural, Honey, etc.)
-    /// </summary>
-    public string? ProcessingMethod { get; set; }
+
     
     /// <summary>
     /// Tasting notes (flavor profile)
@@ -123,9 +155,78 @@ public class Product
     public string? TastingNotes { get; set; }
     
     /// <summary>
+    /// Tasting notes in Arabic
+    /// </summary>
+    public string? TastingNotesAr { get; set; }
+    
+    /// <summary>
     /// Brewing instructions
     /// </summary>
     public string? BrewingInstructions { get; set; }
+    
+    /// <summary>
+    /// Brewing instructions in Arabic
+    /// </summary>
+    public string? BrewingInstructionsAr { get; set; }
+
+    // Coffee Information Fields (New)
+    
+    /// <summary>
+    /// Roast level in English (Light, Medium, Dark, etc.)
+    /// </summary>
+    public string? RoastLevel { get; set; }
+    
+    /// <summary>
+    /// Roast level in Arabic
+    /// </summary>
+    public string? RoastLevelAr { get; set; }
+    
+    /// <summary>
+    /// Processing method in English (Washed, Natural, Honey, etc.)
+    /// </summary>
+    public string? Process { get; set; }
+    
+    /// <summary>
+    /// Processing method in Arabic
+    /// </summary>
+    public string? ProcessAr { get; set; }
+    
+    /// <summary>
+    /// Coffee variety in English (Bourbon, Heirloom, etc.)
+    /// </summary>
+    public string? Variety { get; set; }
+    
+    /// <summary>
+    /// Coffee variety in Arabic
+    /// </summary>
+    public string? VarietyAr { get; set; }
+    
+    /// <summary>
+    /// Growing altitude in meters
+    /// </summary>
+    public int? Altitude { get; set; }
+    
+    /// <summary>
+    /// Farm or origin name in English
+    /// </summary>
+    public string? Farm { get; set; }
+    
+    /// <summary>
+    /// Farm or origin name in Arabic
+    /// </summary>
+    public string? FarmAr { get; set; }
+    
+
+    
+    /// <summary>
+    /// Additional meta keywords for SEO
+    /// </summary>
+    public string? MetaKeywords { get; set; }
+    
+    /// <summary>
+    /// Product tags (comma-separated)
+    /// </summary>
+    public string? Tags { get; set; }
     
     /// <summary>
     /// SEO meta title

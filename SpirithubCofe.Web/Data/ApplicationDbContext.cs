@@ -151,6 +151,65 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.Property(e => e.UsesAr)
                 .HasMaxLength(1000);
                 
+            // Coffee Information Properties
+            entity.Property(e => e.RoastLevel)
+                .HasMaxLength(100);
+                
+            entity.Property(e => e.RoastLevelAr)
+                .HasMaxLength(100);
+                
+            entity.Property(e => e.Process)
+                .HasMaxLength(100);
+                
+            entity.Property(e => e.ProcessAr)
+                .HasMaxLength(100);
+                
+            entity.Property(e => e.Variety)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.VarietyAr)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.Farm)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.FarmAr)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.TastingNotes)
+                .HasMaxLength(1000);
+                
+            entity.Property(e => e.TastingNotesAr)
+                .HasMaxLength(1000);
+                
+            entity.Property(e => e.BrewingInstructions)
+                .HasMaxLength(2000);
+                
+            entity.Property(e => e.BrewingInstructionsAr)
+                .HasMaxLength(2000);
+                
+            // SEO and Additional Properties
+            entity.Property(e => e.MetaTitle)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.MetaDescription)
+                .HasMaxLength(500);
+                
+            entity.Property(e => e.MetaKeywords)
+                .HasMaxLength(500);
+                
+            entity.Property(e => e.Tags)
+                .HasMaxLength(1000);
+                
+            entity.Property(e => e.Slug)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.ImageAlt)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.ImageAltAr)
+                .HasMaxLength(200);
+                
             entity.HasIndex(e => e.Sku)
                 .IsUnique()
                 .HasDatabaseName("IX_Products_Sku");
