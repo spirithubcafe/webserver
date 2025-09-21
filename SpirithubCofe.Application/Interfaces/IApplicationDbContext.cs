@@ -9,5 +9,6 @@ namespace SpirithubCofe.Application.Interfaces;
 public interface IApplicationDbContext
 {
     DbSet<Slide> Slides { get; }
+    DbSet<Setting> Settings { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

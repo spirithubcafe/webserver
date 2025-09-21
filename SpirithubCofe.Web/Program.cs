@@ -83,6 +83,10 @@ builder.Services.AddScoped<CategoryService>();
 
 // Register slide service
 builder.Services.AddScoped<SpirithubCofe.Application.Services.ISlideService, SpirithubCofe.Infrastructure.Services.SlideService>();
+
+// Register setting service
+builder.Services.AddScoped<SpirithubCofe.Application.Services.ISettingService, SpirithubCofe.Infrastructure.Services.SettingService>();
+
 builder.Services.AddScoped<SpirithubCofe.Application.Interfaces.IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>()!);
 
 // Register data seeder service

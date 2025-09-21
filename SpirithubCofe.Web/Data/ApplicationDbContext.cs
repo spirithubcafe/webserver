@@ -14,10 +14,36 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<ProductImage> ProductImages { get; set; }
     public DbSet<CategoryImage> CategoryImages { get; set; }
     public DbSet<ProductReview> ProductReviews { get; set; }
+    public DbSet<Setting> Settings { get; set; }
     
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+        
+        // Configure Setting entity
+        builder.Entity<Setting>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.Key)
+                .IsRequired()
+                .HasMaxLength(100);
+                
+            entity.Property(e => e.Value)
+                .IsRequired()
+                .HasMaxLength(2000);
+                
+            entity.Property(e => e.Category)
+                .IsRequired()
+                .HasMaxLength(50);
+                
+            entity.Property(e => e.DataType)
+                .IsRequired()
+                .HasMaxLength(20);
+                
+            entity.HasIndex(e => e.Key)
+                .IsUnique();
+        });
         
         // Configure Slide entity
         builder.Entity<Slide>(entity =>

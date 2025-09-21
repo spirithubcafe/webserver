@@ -2026,6 +2026,9 @@
   .mr-4 {
     margin-right: calc(var(--spacing) * 4);
   }
+  .-mb-px {
+    margin-bottom: -1px;
+  }
   .mb-1 {
     margin-bottom: calc(var(--spacing) * 1);
   }
@@ -2368,6 +2371,9 @@
   }
   .w-100 {
     width: calc(var(--spacing) * 100);
+  }
+  .w-auto {
+    width: auto;
   }
   .w-full {
     width: 100%;

@@ -1,10 +1,12 @@
 @inherits LayoutComponentBase
 
 @inject IStringLocalizer<SpirithubCofe.Langs.Resources> Localizer
+@inject SpirithubCofe.Application.Services.ISettingService SettingService
 @using System.Globalization
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Antiforgery
 
 <!DOCTYPE html>
 <html data-theme="light" lang="@CultureInfo.CurrentUICulture.TwoLetterISOLanguageName" dir="@(CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "rtl" : "ltr")" class="h-full bg-gray-50">
@@ -23,7 +25,14 @@
         <div class="fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 text-white">
             <!-- Logo -->
             <div class="flex items-center justify-center h-16 bg-gray-800">
-                <h1 class="text-xl font-bold text-amber-400">SpirithubCofe Admin</h1>
+                @if (!string.IsNullOrEmpty(logoType) && logoType == "image" && !string.IsNullOrEmpty(logoImage))
+                {
+                    <img src="@logoImage" alt="Logo" class="h-10 w-auto" />
+                }
+                else
+                {
+                    <h1 class="text-xl font-bold text-amber-400">@(!string.IsNullOrEmpty(logoText) ? logoText : "SpirithubCofe") Admin</h1>
+                }
             </div>
 
             <!-- Navigation -->
@@ -192,4 +201,24 @@
 
 @code {
     [Inject] public NavigationManager NavigationManager { get; set; } = default!;
+    
+    private string logoType = "text";
+    private string logoText = "SpirithubCofe";
+    private string logoImage = "";
+    
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Load logo settings from database
+            logoType = await SettingService.GetValueAsync("logo_type", "text");
+            logoText = await SettingService.GetValueAsync("logo_text", "SpirithubCofe");
+            logoImage = await SettingService.GetValueAsync("logo_image", "");
+        }
+        catch (Exception ex)
+        {
+            // Fallback to defaults if settings service fails
+            Console.WriteLine($"Error loading logo settings: {ex.Message}");
+        }
+    }
 }

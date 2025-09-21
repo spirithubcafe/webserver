@@ -1,5 +1,278 @@
 @page "/admin/settings"
 @layout AdminLayout
 @attribute [Authorize(Roles = "Admin")]
+@inject SpirithubCofe.Application.Services.ISettingService SettingService
+@inject IStringLocalizer<SpirithubCofe.Langs.Resources> Localizer
+@inject IJSRuntime JSRuntime
+@using SpirithubCofe.Application.DTOs
+@using SpirithubCofe.Web.Components.Shared
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Authorization
 
-<PageTitle>Settings Management - SpirithubCofe</PageTitle>
+<PageTitle>@Localizer["Settings"] - Admin</PageTitle>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">@Localizer["Settings"]</h1>
+        <p class="mt-2 text-gray-600">مدیریت تنظیمات برنامه</p>
+    </div>
+
+    <!-- Settings Tabs -->
+    <div class="bg-white shadow-lg rounded-xl overflow-hidden">
+        <!-- Tab Navigation -->
+        <div class="border-b border-gray-200">
+            <nav class="-mb-px flex space-x-8 px-6">
+                <button @onclick="@(() => SetActiveTab("general"))" 
+                        class="@GetTabClasses("general")">
+                    <svg class="w-5 h-5 mr-2 inline" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path>
+                    </svg>
+                    عمومی
+                </button>
+                
+                <button @onclick="@(() => SetActiveTab("branding"))" 
+                        class="@GetTabClasses("branding")">
+                    <svg class="w-5 h-5 mr-2 inline" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path>
+                    </svg>
+                    برندینگ
+                </button>
+            </nav>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="p-6">
+            @if (activeTab == "general")
+            {
+                <!-- General Settings -->
+                <div class="space-y-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">تنظیمات عمومی</h3>
+                    
+                    <!-- Site Name -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">نام سایت</label>
+                            <input @bind="siteNameValue" @bind:event="oninput" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="SpirithubCofe" />
+                            <button @onclick="@(() => UpdateSetting("site_name", siteNameValue))" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                                ذخیره
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (activeTab == "branding")
+            {
+                <!-- Branding Settings -->
+                <div class="space-y-8">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">تنظیمات برندینگ</h3>
+                    
+                    <!-- Logo Configuration -->
+                    <div class="bg-gray-50 rounded-xl p-6">
+                        <h4 class="text-md font-semibold text-gray-800 mb-4">پیکربندی لوگو</h4>
+                        
+                        <!-- Logo Type Selection -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-3">نوع لوگو</label>
+                            <div class="flex space-x-4">
+                                <label class="flex items-center">
+                                    <input type="radio" @onchange="@(() => SetLogoType("text"))" checked="@(logoTypeValue == "text")" 
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" />
+                                    <span class="ml-2 text-sm text-gray-700">لوگو متنی</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" @onchange="@(() => SetLogoType("image"))" checked="@(logoTypeValue == "image")" 
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" />
+                                    <span class="ml-2 text-sm text-gray-700">لوگو تصویری</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        @if (logoTypeValue == "text")
+                        {
+                            <!-- Text Logo Configuration -->
+                            <div class="space-y-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">متن لوگو</label>
+                                        <input @bind="logoTextValue" @bind:event="oninput" type="text" 
+                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                               placeholder="SpirithubCofe" />
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">متن لوگو عربی (اختیاری)</label>
+                                        <input @bind="logoTextArValue" @bind:event="oninput" type="text" 
+                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                               placeholder="روح هاب کافه" dir="rtl" />
+                                    </div>
+                                </div>
+                                
+                                <!-- Preview -->
+                                <div class="bg-white p-4 rounded-lg shadow-sm">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">پیش‌نمایش</label>
+                                    <div class="text-xl font-bold text-amber-600">
+                                        @(string.IsNullOrEmpty(logoTextValue) ? "SpirithubCofe" : logoTextValue)
+                                    </div>
+                                </div>
+                                
+                                <button @onclick="SaveLogoSettings" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                    ذخیره تنظیمات لوگو
+                                </button>
+                            </div>
+                        }
+                        else
+                        {
+                            <!-- Image Logo Configuration -->
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">تصویر لوگو</label>
+                                    <input type="text" @bind="logoImageValue" @bind:event="oninput" 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                           placeholder="/images/logo.png" />
+                                    <p class="text-xs text-gray-500 mt-1">آدرس تصویر لوگو را وارد کنید</p>
+                                </div>
+                                
+                                @if (!string.IsNullOrEmpty(logoImageValue))
+                                {
+                                    <!-- Current Logo Preview -->
+                                    <div class="bg-white p-4 rounded-lg shadow-sm">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">لوگو فعلی</label>
+                                        <img src="@logoImageValue" alt="Logo" class="h-16 w-auto" />
+                                    </div>
+                                }
+                                
+                                <button @onclick="SaveLogoSettings" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                    ذخیره تنظیمات لوگو
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Toast Component -->
+<SpirithubCofe.Web.Components.Shared.Toast />
+
+@code {
+    private string activeTab = "branding";
+    private string logoTypeValue = "text";
+    private string logoTextValue = "SpirithubCofe";
+    private string logoTextArValue = "";
+    private string logoImageValue = "";
+    private string siteNameValue = "SpirithubCofe";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSettings();
+    }
+
+    private string GetTabClasses(string tab)
+    {
+        if (activeTab == tab)
+            return "border-blue-500 text-blue-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors";
+        else
+            return "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors";
+    }
+
+    private async Task LoadSettings()
+    {
+        try
+        {
+            // Load logo type
+            logoTypeValue = await SettingService.GetValueAsync("logo_type", "text");
+            
+            // Load logo text
+            logoTextValue = await SettingService.GetValueAsync("logo_text", "SpirithubCofe");
+            logoTextArValue = await SettingService.GetValueAsync("logo_text_ar", "");
+            
+            // Load logo image
+            logoImageValue = await SettingService.GetValueAsync("logo_image", "");
+            
+            // Load site name
+            siteNameValue = await SettingService.GetValueAsync("site_name", "SpirithubCofe");
+            
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            // Handle error silently for now
+            Console.WriteLine($"Error loading settings: {ex.Message}");
+        }
+    }
+
+    private void SetActiveTab(string tab)
+    {
+        activeTab = tab;
+    }
+
+    private void SetLogoType(string type)
+    {
+        logoTypeValue = type;
+    }
+
+    private async Task OnLogoUploaded(string filePath)
+    {
+        logoImageValue = filePath;
+        // Show success message
+    }
+
+    private async Task SaveLogoSettings()
+    {
+        try
+        {
+            // Save logo type
+            await UpdateSetting("logo_type", logoTypeValue);
+            
+            if (logoTypeValue == "text")
+            {
+                // Save text logo settings
+                await UpdateSetting("logo_text", logoTextValue);
+                await UpdateSetting("logo_text_ar", logoTextArValue);
+            }
+            else
+            {
+                // Save image logo setting
+                await UpdateSetting("logo_image", logoImageValue);
+            }
+            
+            // Show success message
+            await JSRuntime.InvokeVoidAsync("showSuccessToast", "تنظیمات لوگو با موفقیت ذخیره شد!");
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("showErrorToast", $"خطا در ذخیره تنظیمات: {ex.Message}");
+        }
+    }
+
+    private async Task UpdateSetting(string key, string value)
+    {
+        try
+        {
+            var exists = await SettingService.ExistsAsync(key);
+            
+            if (exists)
+            {
+                await SettingService.UpdateAsync(key, new UpdateSettingDto { Value = value });
+            }
+            else
+            {
+                await SettingService.CreateAsync(new CreateSettingDto 
+                { 
+                    Key = key, 
+                    Value = value,
+                    Category = key.StartsWith("logo") ? "Branding" : "General",
+                    DataType = key.EndsWith("_image") ? "Image" : "Text"
+                });
+            }
+            
+            await JSRuntime.InvokeVoidAsync("showSuccessToast", "تنظیمات با موفقیت ذخیره شد!");
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("showErrorToast", $"خطا در ذخیره تنظیمات: {ex.Message}");
+        }
+    }
+}
