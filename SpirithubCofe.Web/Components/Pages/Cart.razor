@@ -272,12 +272,10 @@
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         if (authState.User.Identity?.IsAuthenticated == true)
         {
-            // کاربر لاگین کرده است، مستقیماً به checkout می‌رود
             Navigation.NavigateTo("/checkout");
         }
         else
         {
-            // کاربر لاگین نکرده، به صفحه لاگین می‌رود
             Navigation.NavigateTo("/Account/Login?returnUrl=%2Fcheckout");
         }
     }

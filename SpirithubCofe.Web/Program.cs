@@ -72,6 +72,10 @@ builder.Services.AddScoped<ILocalizationService, LocalizationService>();
 // Register cart service
 builder.Services.AddScoped<CartService>();
 
+// Register slide service
+builder.Services.AddScoped<SpirithubCofe.Application.Services.ISlideService, SpirithubCofe.Infrastructure.Services.SlideService>();
+builder.Services.AddScoped<SpirithubCofe.Application.Interfaces.IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>()!);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -20,6 +20,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SpirithubCofe.Langs\SpirithubCofe.Langs.csproj" />
+    <ProjectReference Include="..\SpirithubCofe.Domain\SpirithubCofe.Domain.csproj" />
+    <ProjectReference Include="..\SpirithubCofe.Application\SpirithubCofe.Application.csproj" />
+    <ProjectReference Include="..\SpirithubCofe.Infrastructure\SpirithubCofe.Infrastructure.csproj" />
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

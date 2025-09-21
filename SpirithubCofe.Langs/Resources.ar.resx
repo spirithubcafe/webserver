@@ -214,12 +214,6 @@
   </data>
   
   <!-- Product -->
-  <data name="Products" xml:space="preserve">
-    <value>المنتجات</value>
-  </data>
-  <data name="AddToCart" xml:space="preserve">
-    <value>أضف للسلة</value>
-  </data>
   <data name="AddToFavorites" xml:space="preserve">
     <value>أضف للمفضلة</value>
   </data>
@@ -245,9 +239,6 @@
   </data>
   <data name="NoResultsMessage" xml:space="preserve">
     <value>جرب البحث بكلمات مختلفة</value>
-  </data>
-  <data name="Categories" xml:space="preserve">
-    <value>الفئات</value>
   </data>
   <data name="AllCategories" xml:space="preserve">
     <value>جميع الفئات</value>
@@ -333,5 +324,348 @@
   <!-- Currency -->
   <data name="Currency" xml:space="preserve">
     <value>ر.ع.</value>
+  </data>
+  
+  <!-- Slideshow Management -->
+  <data name="SlideshowManagement" xml:space="preserve">
+    <value>إدارة العرض المرئي</value>
+  </data>
+  <data name="ManageHomepageSlides" xml:space="preserve">
+    <value>إدارة شرائح الصفحة الرئيسية</value>
+  </data>
+  <data name="NewSlide" xml:space="preserve">
+    <value>شريحة جديدة</value>
+  </data>
+  <data name="EditSlide" xml:space="preserve">
+    <value>تعديل الشريحة</value>
+  </data>
+  <data name="TotalSlides" xml:space="preserve">
+    <value>إجمالي الشرائح</value>
+  </data>
+  <data name="TotalRegisteredSlides" xml:space="preserve">
+    <value>إجمالي الشرائح المسجلة</value>
+  </data>
+  <data name="ActiveSlides" xml:space="preserve">
+    <value>الشرائح النشطة</value>
+  </data>
+  <data name="InactiveSlides" xml:space="preserve">
+    <value>الشرائح غير النشطة</value>
+  </data>
+  <data name="SlidesList" xml:space="preserve">
+    <value>قائمة الشرائح</value>
+  </data>
+  <data name="Image" xml:space="preserve">
+    <value>الصورة</value>
+  </data>
+  <data name="Order" xml:space="preserve">
+    <value>الترتيب</value>
+  </data>
+  <data name="CreatedAt" xml:space="preserve">
+    <value>تاريخ الإنشاء</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>الإجراءات</value>
+  </data>
+  <data name="NoSlidesYet" xml:space="preserve">
+    <value>لا توجد شرائح بعد</value>
+  </data>
+  <data name="CreateYourFirstSlide" xml:space="preserve">
+    <value>أنشئ شريحتك الأولى</value>
+  </data>
+  
+  <!-- Slide Form -->
+  <data name="SlideImage" xml:space="preserve">
+    <value>صورة الشريحة</value>
+  </data>
+  <data name="ImageFormatInfo" xml:space="preserve">
+    <value>JPG أو PNG أو WEBP - بحد أقصى 5 ميجابايت</value>
+  </data>
+  <data name="TitleEnglish" xml:space="preserve">
+    <value>العنوان (إنجليزي)</value>
+  </data>
+  <data name="TitleArabic" xml:space="preserve">
+    <value>العنوان (عربي)</value>
+  </data>
+  <data name="SlideTitle" xml:space="preserve">
+    <value>عنوان الشريحة</value>
+  </data>
+  <data name="ArabicTitle" xml:space="preserve">
+    <value>العنوان</value>
+  </data>
+  <data name="SubtitleEnglish" xml:space="preserve">
+    <value>العنوان الفرعي (إنجليزي)</value>
+  </data>
+  <data name="SubtitleArabic" xml:space="preserve">
+    <value>العنوان الفرعي (عربي)</value>
+  </data>
+  <data name="SubtitleDescription" xml:space="preserve">
+    <value>العنوان الفرعي أو الوصف</value>
+  </data>
+  <data name="ArabicSubtitle" xml:space="preserve">
+    <value>العنوان الفرعي</value>
+  </data>
+  <data name="ButtonTextEnglish" xml:space="preserve">
+    <value>نص الزر (إنجليزي)</value>
+  </data>
+  <data name="ButtonTextArabic" xml:space="preserve">
+    <value>نص الزر (عربي)</value>
+  </data>
+  <data name="ArabicButtonText" xml:space="preserve">
+    <value>اشتر الآن</value>
+  </data>
+  <data name="ButtonLink" xml:space="preserve">
+    <value>رابط الزر</value>
+  </data>
+  <data name="DisplayOrder" xml:space="preserve">
+    <value>ترتيب العرض</value>
+  </data>
+  <data name="BackgroundColor" xml:space="preserve">
+    <value>لون الخلفية</value>
+  </data>
+  <data name="TextColor" xml:space="preserve">
+    <value>لون النص</value>
+  </data>
+  <data name="SlideActive" xml:space="preserve">
+    <value>الشريحة نشطة</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>تحديث</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>إنشاء</value>
+  </data>
+  
+  <!-- Validation Messages -->
+  <data name="TitleRequired" xml:space="preserve">
+    <value>العنوان مطلوب</value>
+  </data>
+  <data name="SubtitleRequired" xml:space="preserve">
+    <value>العنوان الفرعي مطلوب</value>
+  </data>
+  <data name="ImageRequired" xml:space="preserve">
+    <value>الصورة مطلوبة</value>
+  </data>
+  <data name="ButtonTextRequired" xml:space="preserve">
+    <value>نص الزر مطلوب</value>
+  </data>
+  <data name="ButtonLinkRequired" xml:space="preserve">
+    <value>رابط الزر مطلوب</value>
+  </data>
+  
+  <!-- Alert Messages -->
+  <data name="ErrorLoadingSlides" xml:space="preserve">
+    <value>خطأ في تحميل الشرائح</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>خطأ غير متوقع</value>
+  </data>
+  <data name="SlideUpdatedSuccessfully" xml:space="preserve">
+    <value>تم تحديث الشريحة بنجاح</value>
+  </data>
+  <data name="ErrorUpdating" xml:space="preserve">
+    <value>خطأ في التحديث</value>
+  </data>
+  <data name="SlideCreatedSuccessfully" xml:space="preserve">
+    <value>تم إنشاء الشريحة بنجاح</value>
+  </data>
+  <data name="ErrorCreating" xml:space="preserve">
+    <value>خطأ في الإنشاء</value>
+  </data>
+  <data name="ErrorUploadingImage" xml:space="preserve">
+    <value>خطأ في تحميل الصورة</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>خطأ</value>
+  </data>
+  <data name="ConfirmDeleteSlide" xml:space="preserve">
+    <value>هل أنت متأكد من حذف هذه الشريحة؟</value>
+  </data>
+  <data name="SlideDeletedSuccessfully" xml:space="preserve">
+    <value>تم حذف الشريحة بنجاح</value>
+  </data>
+  <data name="ErrorDeletingSlide" xml:space="preserve">
+    <value>خطأ في حذف الشريحة</value>
+  </data>
+  
+  <!-- Navigation Menu -->
+  <data name="Products" xml:space="preserve">
+    <value>المنتجات</value>
+  </data>
+  <data name="AllProducts" xml:space="preserve">
+    <value>جميع المنتجات</value>
+  </data>
+  <data name="BrowseEverything" xml:space="preserve">
+    <value>تصفح كل شيء</value>
+  </data>
+  <data name="SingleOrigin" xml:space="preserve">
+    <value>منشأ واحد</value>
+  </data>
+  <data name="PremiumSingleFarms" xml:space="preserve">
+    <value>مزارع مميزة واحدة</value>
+  </data>
+  <data name="Blends" xml:space="preserve">
+    <value>الخلطات</value>
+  </data>
+  <data name="CraftedBlends" xml:space="preserve">
+    <value>خلطات مصنوعة بعناية</value>
+  </data>
+  <data name="Organic" xml:space="preserve">
+    <value>عضوي</value>
+  </data>
+  <data name="CertifiedOrganic" xml:space="preserve">
+    <value>معتمد عضوياً</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>عن المقهى</value>
+  </data>
+  <data name="Contact" xml:space="preserve">
+    <value>اتصل بنا</value>
+  </data>
+  <data name="MyProfile" xml:space="preserve">
+    <value>ملفي الشخصي</value>
+  </data>
+  <data name="AdminPanel" xml:space="preserve">
+    <value>لوحة الإدارة</value>
+  </data>
+  <data name="SignOut" xml:space="preserve">
+    <value>تسجيل الخروج</value>
+  </data>
+  <data name="SignUp" xml:space="preserve">
+    <value>التسجيل</value>
+  </data>
+  <data name="Customer" xml:space="preserve">
+    <value>عميل</value>
+  </data>
+  <data name="CoffeeBeans" xml:space="preserve">
+    <value>حبوب القهوة</value>
+  </data>
+  <data name="GroundCoffee" xml:space="preserve">
+    <value>قهوة مطحونة</value>
+  </data>
+  <data name="Accessories" xml:space="preserve">
+    <value>الإكسسوارات</value>
+  </data>
+  
+  <!-- Footer -->
+  <data name="QuickLinks" xml:space="preserve">
+    <value>روابط سريعة</value>
+  </data>
+  <data name="ContactInfo" xml:space="preserve">
+    <value>معلومات التواصل</value>
+  </data>
+  <data name="ShippingInfo" xml:space="preserve">
+    <value>معلومات الشحن</value>
+  </data>
+  <data name="PremiumCoffeeExperience" xml:space="preserve">
+    <value>تجربة قهوة مميزة من عُمان. نحن نحصل على أجود أنواع الحبوب ونوصل لك الكوب المثالي إلى باب منزلك.</value>
+  </data>
+  <data name="AllRightsReserved" xml:space="preserve">
+    <value>جميع الحقوق محفوظة</value>
+  </data>
+  
+  <!-- Admin Interface -->
+  <data name="Dashboard" xml:space="preserve">
+    <value>لوحة التحكم</value>
+  </data>
+  <data name="ManageYourCoffeeShop" xml:space="preserve">
+    <value>إدارة متجر القهوة</value>
+  </data>
+  <data name="AddProduct" xml:space="preserve">
+    <value>إضافة منتج</value>
+  </data>
+  <data name="Categories" xml:space="preserve">
+    <value>الأقسام</value>
+  </data>
+  <data name="Orders" xml:space="preserve">
+    <value>الطلبات</value>
+  </data>
+  <data name="Users" xml:space="preserve">
+    <value>المستخدمون</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>التقارير</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>الإعدادات</value>
+  </data>
+  <data name="Administrator" xml:space="preserve">
+    <value>مدير النظام</value>
+  </data>
+  <data name="BackToWebsite" xml:space="preserve">
+    <value>العودة للموقع</value>
+  </data>
+  <data name="AnUnhandledErrorOccurred" xml:space="preserve">
+    <value>حدث خطأ غير متوقع.</value>
+  </data>
+  <data name="Reload" xml:space="preserve">
+    <value>إعادة تحميل</value>
+  </data>
+  
+  <!-- Home Page Content -->
+  <data name="WhyChoose" xml:space="preserve">
+    <value>لماذا تختار سبيريت هب كافيه؟</value>
+  </data>
+  <data name="PerfectCoffeeExperience" xml:space="preserve">
+    <value>نحن شغوفون بتقديم تجربة القهوة المثالية من الحبة إلى الكوب.</value>
+  </data>
+  <data name="PremiumQuality" xml:space="preserve">
+    <value>جودة ممتازة</value>
+  </data>
+  <data name="HandSelectedBeans" xml:space="preserve">
+    <value>حبوب مختارة يدوياً من أفضل مناطق القهوة، لضمان طعم استثنائي في كل كوب.</value>
+  </data>
+  <data name="FastDelivery" xml:space="preserve">
+    <value>توصيل سريع</value>
+  </data>
+  <data name="QuickReliableDelivery" xml:space="preserve">
+    <value>توصيل سريع وموثوق عبر عُمان مع شركائنا الموثوقين في الشحن - نول وأرامكس.</value>
+  </data>
+  <data name="SecurePayment" xml:space="preserve">
+    <value>دفع آمن</value>
+  </data>
+  <data name="SafeSecureTransactions" xml:space="preserve">
+    <value>معاملات آمنة ومأمونة عبر بنك مسقط وبوابات الدفع الموثوقة الأخرى.</value>
+  </data>
+  <data name="FeaturedCoffee" xml:space="preserve">
+    <value>القهوة المميزة</value>
+  </data>
+  <data name="DiscoverPopularSelections" xml:space="preserve">
+    <value>اكتشف أكثر مجموعات القهوة شعبية لدينا</value>
+  </data>
+  <data name="EthiopianYirgacheffe" xml:space="preserve">
+    <value>الإثيوبية يرغاشيف</value>
+  </data>
+  <data name="LightRoastFloral" xml:space="preserve">
+    <value>تحميص فاتح مع نكهات زهرية وحموضة مشرقة</value>
+  </data>
+  <data name="BrazilianSantos" xml:space="preserve">
+    <value>البرازيلية سانتوس</value>
+  </data>
+  <data name="MediumRoastChocolate" xml:space="preserve">
+    <value>تحميص متوسط مع نكهات الشوكولاتة والمكسرات</value>
+  </data>
+  <data name="ColombianSupremo" xml:space="preserve">
+    <value>الكولومبية سوبريمو</value>
+  </data>
+  <data name="DarkRoastBold" xml:space="preserve">
+    <value>تحميص غامق مع نكهة غنية وجريئة</value>
+  </data>
+  <data name="AddToCart" xml:space="preserve">
+    <value>أضف للسلة</value>
+  </data>
+  <data name="ViewAllProducts" xml:space="preserve">
+    <value>عرض جميع المنتجات</value>
+  </data>
+  <data name="ReadyForPremiumCoffee" xml:space="preserve">
+    <value>مستعد لتجربة القهوة الممتازة؟</value>
+  </data>
+  <data name="JoinThousandsCoffeeLovers" xml:space="preserve">
+    <value>انضم إلى آلاف محبي القهوة في عُمان الذين يثقون في سبيريت هب كافيه لمشروبهم اليومي.</value>
+  </data>
+  <data name="CreateAccount" xml:space="preserve">
+    <value>إنشاء حساب</value>
+  </data>
+  <data name="BrowseCoffee" xml:space="preserve">
+    <value>تصفح القهوة</value>
   </data>
 </root>

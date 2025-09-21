@@ -1,0 +1,602 @@
+@page "/admin/slides"
+@rendermode InteractiveServer
+@inject SpirithubCofe.Application.Services.ISlideService SlideService
+@inject IJSRuntime JSRuntime
+@inject IStringLocalizer<SpirithubCofe.Langs.Resources> Localizer
+@using SpirithubCofe.Application.DTOs
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Web
+@using System.ComponentModel.DataAnnotations
+@attribute [Authorize(Roles = "Admin")]
+
+<PageTitle>@Localizer["SlideshowManagement"] - @Localizer["SiteTitle"]</PageTitle>
+
+<div class="container mx-auto p-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-base-content">@Localizer["SlideshowManagement"]</h1>
+            <p class="text-base-content/70 mt-2">@Localizer["ManageHomepageSlides"]</p>
+        </div>
+        <button class="btn btn-primary" @onclick="() => ShowCreateModal()">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            @Localizer["NewSlide"]
+        </button>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats shadow mb-8 w-full">
+        <div class="stat">
+            <div class="stat-figure text-primary">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 002 2v12a2 2 0 002 2z"/>
+                </svg>
+            </div>
+            <div class="stat-title">@Localizer["TotalSlides"]</div>
+            <div class="stat-value text-primary">@slides.Count()</div>
+            <div class="stat-desc">@Localizer["TotalRegisteredSlides"]</div>
+        </div>
+        
+        <div class="stat">
+            <div class="stat-figure text-success">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div class="stat-title">@Localizer["Active"]</div>
+            <div class="stat-value text-success">@slides.Count(s => s.IsActive)</div>
+            <div class="stat-desc">@Localizer["ActiveSlides"]</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-figure text-warning">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div class="stat-title">@Localizer["Inactive"]</div>
+            <div class="stat-value text-warning">@slides.Count(s => !s.IsActive)</div>
+            <div class="stat-desc">@Localizer["InactiveSlides"]</div>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (!string.IsNullOrEmpty(alertMessage))
+    {
+        <div class="alert @(alertType == "success" ? "alert-success" : "alert-error") mb-6">
+            <svg class="w-6 h-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+                @if (alertType == "success")
+                {
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                }
+                else
+                {
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                }
+            </svg>
+            <span>@alertMessage</span>
+        </div>
+    }
+
+    <!-- Slides Table -->
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title mb-4">@Localizer["SlidesList"]</h2>
+            
+            @if (slides.Any())
+            {
+                <div class="overflow-x-auto">
+                    <table class="table table-zebra w-full">
+                        <thead>
+                            <tr>
+                                <th>@Localizer["Image"]</th>
+                                <th>@Localizer["Title"]</th>
+                                <th>@Localizer["Order"]</th>
+                                <th>@Localizer["Status"]</th>
+                                <th>@Localizer["CreatedAt"]</th>
+                                <th>@Localizer["Actions"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var slide in slides.OrderBy(s => s.Order))
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="avatar">
+                                            <div class="mask mask-squircle w-12 h-12">
+                                                <img src="@slide.ImagePath" alt="@slide.Title" />
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="font-bold">@slide.Title</div>
+                                        <div class="text-sm opacity-50">@slide.Subtitle</div>
+                                    </td>
+                                    <td>
+                                        <div class="badge badge-ghost badge-sm">@slide.Order</div>
+                                    </td>
+                                    <td>
+                                        @if (slide.IsActive)
+                                        {
+                                            <div class="badge badge-success gap-2">
+                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                                </svg>
+                                                @Localizer["Active"]
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="badge badge-error gap-2">
+                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                                </svg>
+                                                @Localizer["Inactive"]
+                                            </div>
+                                        }
+                                    </td>
+                                    <td>@slide.CreatedAt.ToString("yyyy/MM/dd")</td>
+                                    <td>
+                                        <div class="flex gap-2">
+                                            <button class="btn btn-sm btn-ghost" @onclick="() => ShowEditModal(slide)">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                                </svg>
+                                            </button>
+                                            <button class="btn btn-sm btn-ghost" @onclick="() => ToggleSlideStatus(slide.Id)">
+                                                @if (slide.IsActive)
+                                                {
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L12 12m-3-3l6.364 6.364"/>
+                                                    </svg>
+                                                }
+                                                else
+                                                {
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                    </svg>
+                                                }
+                                            </button>
+                                            <button class="btn btn-sm btn-error" @onclick="() => DeleteSlide(slide.Id)">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-8">
+                    <svg class="w-16 h-16 mx-auto text-base-content/30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <h3 class="text-lg font-medium text-base-content/70 mb-2">@Localizer["NoSlidesYet"]</h3>
+                    <p class="text-base-content/50 mb-4">@Localizer["CreateYourFirstSlide"]</p>
+                    <button class="btn btn-primary" @onclick="() => ShowCreateModal()">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        @Localizer["NewSlide"]
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Create/Edit Modal -->
+@if (showModal)
+{
+    <div class="modal modal-open">
+        <div class="modal-box w-11/12 max-w-4xl">
+            <h3 class="font-bold text-lg mb-4">
+                @(isEditing ? Localizer["EditSlide"] : Localizer["NewSlide"])
+            </h3>
+            
+            <EditForm Model="slideForm" OnValidSubmit="SaveSlide" class="space-y-4">
+                <DataAnnotationsValidator />
+                
+                <!-- Image Upload -->
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">@Localizer["SlideImage"]</span>
+                    </label>
+                    <div class="border-2 border-dashed border-base-300 rounded-lg p-6 text-center">
+                        @if (!string.IsNullOrEmpty(slideForm.ImagePath))
+                        {
+                            <div class="mb-4">
+                                <img src="@slideForm.ImagePath" alt="Preview" class="mx-auto h-32 object-cover rounded-lg" />
+                            </div>
+                        }
+                        <InputFile OnChange="HandleImageUpload" accept="image/*" class="file-input file-input-bordered w-full max-w-xs" />
+                        <p class="text-sm text-base-content/70 mt-2">@Localizer["ImageFormatInfo"]</p>
+                    </div>
+                    <ValidationMessage For="() => slideForm.ImagePath" class="text-error text-sm mt-1" />
+                </div>
+
+                <!-- Title -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">@Localizer["TitleEnglish"]</span>
+                        </label>
+                        <InputText @bind-Value="slideForm.Title" class="input input-bordered" placeholder="@Localizer["SlideTitle"]" />
+                        <ValidationMessage For="() => slideForm.Title" class="text-error text-sm mt-1" />
+                    </div>
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">@Localizer["TitleArabic"]</span>
+                        </label>
+                        <InputText @bind-Value="slideForm.TitleAr" class="input input-bordered" placeholder="@Localizer["ArabicTitle"]" dir="rtl" />
+                    </div>
+                </div>
+
+                <!-- Subtitle -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">@Localizer["SubtitleEnglish"]</span>
+                        </label>
+                        <InputTextArea @bind-Value="slideForm.Subtitle" class="textarea textarea-bordered h-24" placeholder="@Localizer["SubtitleDescription"]" />
+                        <ValidationMessage For="() => slideForm.Subtitle" class="text-error text-sm mt-1" />
+                    </div>
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">@Localizer["SubtitleArabic"]</span>
+                        </label>
+                        <InputTextArea @bind-Value="slideForm.SubtitleAr" class="textarea textarea-bordered h-24" placeholder="@Localizer["ArabicSubtitle"]" dir="rtl" />
+                    </div>
+                </div>
+
+                <!-- Button Text & URL -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">@Localizer["ButtonTextEnglish"]</span>
+                        </label>
+                        <InputText @bind-Value="slideForm.ButtonText" class="input input-bordered" placeholder="Shop Now" />
+                        <ValidationMessage For="() => slideForm.ButtonText" class="text-error text-sm mt-1" />
+                    </div>
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">@Localizer["ButtonTextArabic"]</span>
+                        </label>
+                        <InputText @bind-Value="slideForm.ButtonTextAr" class="input input-bordered" placeholder="@Localizer["ArabicButtonText"]" dir="rtl" />
+                    </div>
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">@Localizer["ButtonLink"]</span>
+                    </label>
+                    <InputText @bind-Value="slideForm.ButtonUrl" class="input input-bordered" placeholder="/products" />
+                    <ValidationMessage For="() => slideForm.ButtonUrl" class="text-error text-sm mt-1" />
+                </div>
+
+                <!-- Order & Status -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">@Localizer["DisplayOrder"]</span>
+                        </label>
+                        <InputNumber @bind-Value="slideForm.Order" class="input input-bordered" />
+                    </div>
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">@Localizer["BackgroundColor"]</span>
+                        </label>
+                        <InputText @bind-Value="slideForm.BackgroundColor" class="input input-bordered" placeholder="bg-gradient-to-r" />
+                    </div>
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">@Localizer["TextColor"]</span>
+                        </label>
+                        <InputText @bind-Value="slideForm.TextColor" class="input input-bordered" placeholder="text-white" />
+                    </div>
+                </div>
+
+                <div class="form-control">
+                    <label class="cursor-pointer label justify-start gap-4">
+                        <InputCheckbox @bind-Value="slideForm.IsActive" class="checkbox checkbox-primary" />
+                        <span class="label-text">@Localizer["SlideActive"]</span>
+                    </label>
+                </div>
+
+                <div class="modal-action">
+                    <button type="button" class="btn btn-ghost" @onclick="HideModal">@Localizer["Cancel"]</button>
+                    <button type="submit" class="btn btn-primary" disabled="@isLoading">
+                        @if (isLoading)
+                        {
+                            <span class="loading loading-spinner loading-sm mr-2"></span>
+                        }
+                        @(isEditing ? Localizer["Update"] : Localizer["Create"])
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    private List<SlideDto> slides = new();
+    private bool showModal = false;
+    private bool isEditing = false;
+    private bool isLoading = false;
+    private string alertMessage = "";
+    private string alertType = "";
+    
+    private class SlideFormModel
+    {
+        public int Id { get; set; } = 0;
+        
+        [Required(ErrorMessage = "Title is required")]
+        public string Title { get; set; } = "";
+        
+        public string? TitleAr { get; set; }
+        
+        [Required(ErrorMessage = "Subtitle is required")]
+        public string Subtitle { get; set; } = "";
+        
+        public string? SubtitleAr { get; set; }
+        
+        [Required(ErrorMessage = "Image is required")]
+        public string ImagePath { get; set; } = "";
+        
+        [Required(ErrorMessage = "Button text is required")]
+        public string ButtonText { get; set; } = "";
+        
+        public string? ButtonTextAr { get; set; }
+        
+        [Required(ErrorMessage = "Button link is required")]
+        public string ButtonUrl { get; set; } = "";
+        
+        public int Order { get; set; } = 0;
+        public bool IsActive { get; set; } = true;
+        public string? BackgroundColor { get; set; }
+        public string? TextColor { get; set; } = "text-white";
+    }
+    
+    private SlideFormModel slideForm = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSlides();
+    }
+
+    private async Task LoadSlides()
+    {
+        try
+        {
+            var result = await SlideService.GetAllSlidesAsync();
+            if (result.Success)
+            {
+                slides = result.Slides.ToList();
+            }
+            else
+            {
+                ShowAlert(Localizer["ErrorLoadingSlides"] + ": " + result.Message, "error");
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowAlert(Localizer["UnexpectedError"] + ": " + ex.Message, "error");
+        }
+    }
+
+    private void ShowCreateModal()
+    {
+        slideForm = new SlideFormModel();
+        isEditing = false;
+        showModal = true;
+    }
+
+    private void ShowEditModal(SlideDto slide)
+    {
+        slideForm = new SlideFormModel
+        {
+            Id = slide.Id,
+            Title = slide.Title,
+            TitleAr = slide.TitleAr,
+            Subtitle = slide.Subtitle,
+            SubtitleAr = slide.SubtitleAr,
+            ImagePath = slide.ImagePath,
+            ButtonText = slide.ButtonText,
+            ButtonTextAr = slide.ButtonTextAr,
+            ButtonUrl = slide.ButtonUrl,
+            Order = slide.Order,
+            IsActive = slide.IsActive,
+            BackgroundColor = slide.BackgroundColor,
+            TextColor = slide.TextColor
+        };
+        isEditing = true;
+        showModal = true;
+    }
+
+    private void HideModal()
+    {
+        showModal = false;
+        isEditing = false;
+        slideForm = new SlideFormModel();
+    }
+
+    private async Task HandleImageUpload(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            if (e.File != null)
+            {
+                isLoading = true;
+                
+                // Convert IBrowserFile to a format compatible with the service
+                var fileName = $"slide_{DateTime.Now:yyyyMMdd_HHmmss}_{e.File.Name}";
+                var filePath = Path.Combine("wwwroot/images/slides", fileName);
+                
+                // Ensure directory exists
+                Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
+                
+                // Save file
+                await using var stream = e.File.OpenReadStream(maxAllowedSize: 5 * 1024 * 1024); // 5MB limit
+                await using var fileStream = new FileStream(filePath, FileMode.Create);
+                await stream.CopyToAsync(fileStream);
+                
+                slideForm.ImagePath = $"/images/slides/{fileName}";
+                
+                isLoading = false;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            isLoading = false;
+            ShowAlert(Localizer["ErrorUploadingImage"] + ": " + ex.Message, "error");
+        }
+    }
+
+    private async Task SaveSlide()
+    {
+        try
+        {
+            isLoading = true;
+            
+            if (isEditing)
+            {
+                var updateDto = new UpdateSlideDto
+                {
+                    Id = slideForm.Id,
+                    Title = slideForm.Title,
+                    TitleAr = slideForm.TitleAr,
+                    Subtitle = slideForm.Subtitle,
+                    SubtitleAr = slideForm.SubtitleAr,
+                    ImagePath = slideForm.ImagePath,
+                    ButtonText = slideForm.ButtonText,
+                    ButtonTextAr = slideForm.ButtonTextAr,
+                    ButtonUrl = slideForm.ButtonUrl,
+                    Order = slideForm.Order,
+                    IsActive = slideForm.IsActive,
+                    BackgroundColor = slideForm.BackgroundColor,
+                    TextColor = slideForm.TextColor
+                };
+                
+                var result = await SlideService.UpdateSlideAsync(updateDto);
+                if (result.Success)
+                {
+                    ShowAlert(Localizer["SlideUpdatedSuccessfully"], "success");
+                    HideModal();
+                    await LoadSlides();
+                }
+                else
+                {
+                    ShowAlert(Localizer["ErrorUpdating"] + ": " + result.Message, "error");
+                }
+            }
+            else
+            {
+                var createDto = new CreateSlideDto
+                {
+                    Title = slideForm.Title,
+                    TitleAr = slideForm.TitleAr,
+                    Subtitle = slideForm.Subtitle,
+                    SubtitleAr = slideForm.SubtitleAr,
+                    ImagePath = slideForm.ImagePath,
+                    ButtonText = slideForm.ButtonText,
+                    ButtonTextAr = slideForm.ButtonTextAr,
+                    ButtonUrl = slideForm.ButtonUrl,
+                    Order = slideForm.Order,
+                    IsActive = slideForm.IsActive,
+                    BackgroundColor = slideForm.BackgroundColor,
+                    TextColor = slideForm.TextColor
+                };
+                
+                var result = await SlideService.CreateSlideAsync(createDto);
+                if (result.Success)
+                {
+                    ShowAlert(Localizer["SlideCreatedSuccessfully"], "success");
+                    HideModal();
+                    await LoadSlides();
+                }
+                else
+                {
+                    ShowAlert(Localizer["ErrorCreating"] + ": " + result.Message, "error");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowAlert(Localizer["UnexpectedError"] + ": " + ex.Message, "error");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task ToggleSlideStatus(int id)
+    {
+        try
+        {
+            var result = await SlideService.ToggleSlideStatusAsync(id);
+            if (result.Success)
+            {
+                ShowAlert(result.Message, "success");
+                await LoadSlides();
+            }
+            else
+            {
+                ShowAlert(Localizer["Error"] + ": " + result.Message, "error");
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowAlert(Localizer["UnexpectedError"] + ": " + ex.Message, "error");
+        }
+    }
+
+    private async Task DeleteSlide(int id)
+    {
+        try
+        {
+            var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", Localizer["ConfirmDeleteSlide"]);
+            if (confirmed)
+            {
+                var result = await SlideService.DeleteSlideAsync(id);
+                if (result)
+                {
+                    ShowAlert(Localizer["SlideDeletedSuccessfully"], "success");
+                    await LoadSlides();
+                }
+                else
+                {
+                    ShowAlert(Localizer["ErrorDeletingSlide"], "error");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowAlert(Localizer["UnexpectedError"] + ": " + ex.Message, "error");
+        }
+    }
+
+    private void ShowAlert(string message, string type)
+    {
+        alertMessage = message;
+        alertType = type;
+        StateHasChanged();
+        
+        // Auto-hide alert after 5 seconds
+        _ = Task.Delay(5000).ContinueWith(_ =>
+        {
+            alertMessage = "";
+            InvokeAsync(StateHasChanged);
+        });
+    }
+}

@@ -1,0 +1,208 @@
+@rendermode InteractiveServer
+@inject SpirithubCofe.Application.Services.ISlideService SlideService
+@inject IStringLocalizer<SpirithubCofe.Langs.Resources> Localizer
+@using SpirithubCofe.Application.DTOs
+@using System.Globalization
+
+<!-- Hero Slideshow Section -->
+<div class="carousel w-full h-screen relative overflow-hidden">
+    @if (slides.Any())
+    {
+        @for (int i = 0; i < slides.Count; i++)
+        {
+            var slide = slides[i];
+            var slideId = $"slide{i + 1}";
+            var nextSlideId = i + 1 < slides.Count ? $"slide{i + 2}" : "slide1";
+            var prevSlideId = i > 0 ? $"slide{i}" : $"slide{slides.Count}";
+            
+            <div id="@slideId" class="carousel-item relative w-full h-full">
+                <!-- Background Image -->
+                <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
+                     style="background-image: url('@slide.ImagePath');">
+                    <!-- Overlay -->
+                    <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+                </div>
+                
+                <!-- Content -->
+                <div class="relative z-10 flex items-center justify-center w-full h-full px-4 md:px-8">
+                    <div class="text-center max-w-4xl mx-auto">
+                        <!-- Title -->
+                        <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold mb-4 @slide.TextColor animate-fade-in-up">
+                            @slide.GetLocalizedTitle(CultureInfo.CurrentUICulture.Name)
+                        </h1>
+                        
+                        <!-- Subtitle -->
+                        <p class="text-lg md:text-xl lg:text-2xl mb-8 @slide.TextColor opacity-90 animate-fade-in-up animation-delay-200">
+                            @slide.GetLocalizedSubtitle(CultureInfo.CurrentUICulture.Name)
+                        </p>
+                        
+                        <!-- Call to Action Button -->
+                        @if (!string.IsNullOrEmpty(slide.ButtonText) && !string.IsNullOrEmpty(slide.ButtonUrl))
+                        {
+                            <div class="animate-fade-in-up animation-delay-400">
+                                <a href="@slide.ButtonUrl" 
+                                   class="btn btn-primary btn-lg px-8 py-3 text-lg font-semibold rounded-full hover:scale-105 transition-all duration-300 shadow-lg">
+                                    @slide.GetLocalizedButtonText(CultureInfo.CurrentUICulture.Name)
+                                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+                
+                <!-- Navigation Arrows -->
+                @if (slides.Count > 1)
+                {
+                    <!-- Previous -->
+                    <div class="absolute flex justify-between transform -translate-y-1/2 left-5 top-1/2">
+                        <a href="#@prevSlideId" class="btn btn-circle btn-ghost text-white hover:bg-white hover:bg-opacity-20 transition-all duration-300">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                            </svg>
+                        </a>
+                    </div>
+                    
+                    <!-- Next -->
+                    <div class="absolute flex justify-between transform -translate-y-1/2 right-5 top-1/2">
+                        <a href="#@nextSlideId" class="btn btn-circle btn-ghost text-white hover:bg-white hover:bg-opacity-20 transition-all duration-300">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+        
+        <!-- Slide Indicators -->
+        @if (slides.Count > 1)
+        {
+            <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
+                <div class="flex space-x-2">
+                    @for (int i = 0; i < slides.Count; i++)
+                    {
+                        var slideId = $"slide{i + 1}";
+                        <a href="#@slideId" class="w-3 h-3 rounded-full bg-white bg-opacity-50 hover:bg-opacity-80 transition-all duration-300"></a>
+                    }
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <!-- Default Hero when no slides -->
+        <div class="carousel-item relative w-full h-full bg-gradient-to-br from-orange-500 to-amber-600">
+            <div class="relative z-10 flex items-center justify-center w-full h-full px-4 md:px-8">
+                <div class="text-center max-w-4xl mx-auto text-white">
+                    <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold mb-4 animate-fade-in-up">
+                        SpirithubCofe
+                    </h1>
+                    <p class="text-lg md:text-xl lg:text-2xl mb-8 opacity-90 animate-fade-in-up animation-delay-200">
+                        @Localizer["Welcome to our premium coffee experience"]
+                    </p>
+                    <div class="animate-fade-in-up animation-delay-400">
+                        <a href="/products" 
+                           class="btn btn-outline btn-lg px-8 py-3 text-lg font-semibold rounded-full hover:scale-105 transition-all duration-300 border-white text-white hover:bg-white hover:text-orange-600">
+                            @Localizer["Explore Products"]
+                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Auto-slide functionality -->
+@if (slides.Count > 1)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let currentSlide = 1;
+            const totalSlides = @slides.Count;
+            
+            function nextSlide() {
+                currentSlide = currentSlide >= totalSlides ? 1 : currentSlide + 1;
+                window.location.hash = `slide${currentSlide}`;
+            }
+            
+            // Auto-advance slides every 5 seconds
+            setInterval(nextSlide, 5000);
+            
+            // Pause auto-advance when user hovers over carousel
+            const carousel = document.querySelector('.carousel');
+            let autoSlide = setInterval(nextSlide, 5000);
+            
+            carousel.addEventListener('mouseenter', () => {
+                clearInterval(autoSlide);
+            });
+            
+            carousel.addEventListener('mouseleave', () => {
+                autoSlide = setInterval(nextSlide, 5000);
+            });
+        });
+    </script>
+}
+
+<style>
+    @@keyframes fade-in-up {
+        0% {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .animate-fade-in-up {
+        animation: fade-in-up 0.8s ease-out forwards;
+    }
+    
+    .animation-delay-200 {
+        animation-delay: 0.2s;
+        opacity: 0;
+    }
+    
+    .animation-delay-400 {
+        animation-delay: 0.4s;
+        opacity: 0;
+    }
+    
+    .carousel-item {
+        scroll-behavior: smooth;
+    }
+    
+    /* RTL Support */
+    [dir="rtl"] .btn svg {
+        margin-left: 0;
+        margin-right: 0.5rem;
+        transform: scaleX(-1);
+    }
+</style>
+
+@code {
+    private List<SlideDto> slides = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var result = await SlideService.GetActiveSlidesAsync();
+            if (result.Success)
+            {
+                slides = result.Slides.ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error but don't break the component
+            Console.WriteLine($"Error loading slides: {ex.Message}");
+        }
+    }
+}
