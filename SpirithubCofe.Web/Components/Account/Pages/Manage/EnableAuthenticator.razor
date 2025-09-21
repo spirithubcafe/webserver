@@ -9,6 +9,7 @@
 @using Microsoft.AspNetCore.Components.Web
 @using SpirithubCofe.Web.Data
 @using SpirithubCofe.Web.Components.Account.Shared
+@using QRCoder
 
 @inject UserManager<ApplicationUser> UserManager
 @inject IdentityUserAccessor UserAccessor
@@ -107,16 +108,28 @@ else
                         
                         <div class="bg-gray-50 rounded-xl p-6 mb-4">
                             <div class="text-center">
-                                <div class="bg-white rounded-lg p-4 inline-block mb-4">
-                                    <div data-url="@authenticatorUri" class="w-48 h-48 bg-gray-200 rounded-lg flex items-center justify-center">
-                                        <span class="text-gray-500">QR Code</span>
+                                @if (!string.IsNullOrEmpty(qrCodeDataUri))
+                                {
+                                    <div class="bg-white rounded-lg p-4 inline-block mb-4 border-2 border-gray-100">
+                                        <img src="@qrCodeDataUri" alt="QR Code for Authenticator Setup" class="w-48 h-48" />
                                     </div>
-                                </div>
+                                    <p class="text-sm text-gray-600 mb-4">
+                                        Scan this QR code with your authenticator app
+                                    </p>
+                                }
+                                else
+                                {
+                                    <div class="bg-white rounded-lg p-4 inline-block mb-4">
+                                        <div class="w-48 h-48 bg-gray-200 rounded-lg flex items-center justify-center">
+                                            <span class="loading loading-spinner loading-lg text-gray-500"></span>
+                                        </div>
+                                    </div>
+                                }
+                                
                                 <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
                                     <p class="text-sm text-blue-800 mb-2">
-                                        <strong>Learn how to</strong> 
-                                        <a href="https://go.microsoft.com/fwlink/?Linkid=852423" 
-                                           class="text-blue-600 hover:text-blue-800 underline">enable QR code generation</a>
+                                        <strong>Can't scan the QR code?</strong> 
+                                        Use the manual entry key below instead.
                                     </p>
                                 </div>
                             </div>
@@ -209,6 +222,7 @@ else
     private ApplicationUser user = default!;
     private string? sharedKey;
     private string? authenticatorUri;
+    private string? qrCodeDataUri;
     private IEnumerable<string>? recoveryCodes;
 
     [CascadingParameter]
@@ -268,6 +282,21 @@ else
 
         var email = await UserManager.GetEmailAsync(user);
         authenticatorUri = GenerateQrCodeUri(email!, unformattedKey!);
+        
+        // Generate QR code
+        qrCodeDataUri = GenerateQrCodeDataUri(authenticatorUri);
+    }
+
+    private string GenerateQrCodeDataUri(string text)
+    {
+        using var qrGenerator = new QRCodeGenerator();
+        using var qrCodeData = qrGenerator.CreateQrCode(text, QRCodeGenerator.ECCLevel.Q);
+        using var qrCode = new PngByteQRCode(qrCodeData);
+        
+        var qrCodeBytes = qrCode.GetGraphic(4);
+        var base64String = Convert.ToBase64String(qrCodeBytes);
+        
+        return $"data:image/png;base64,{base64String}";
     }
 
     private string FormatKey(string unformattedKey)
@@ -292,7 +321,7 @@ else
         return string.Format(
             CultureInfo.InvariantCulture,
             AuthenticatorUriFormat,
-            UrlEncoder.Encode("Microsoft.AspNetCore.Identity.UI"),
+            UrlEncoder.Encode("SpirithubCofe"),
             UrlEncoder.Encode(email),
             unformattedKey);
     }
