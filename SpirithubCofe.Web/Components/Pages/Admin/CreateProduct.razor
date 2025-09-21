@@ -12,44 +12,80 @@
 @inject IJSRuntime JSRuntime
 @inject IWebHostEnvironment WebHostEnvironment
 
-<div class="container mx-auto p-6">
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-8">
-        <div class="flex items-center space-x-4">
-            <button @onclick="GoBack" class="btn btn-ghost btn-sm">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-                Back
-            </button>
-            <div>
-                <h1 class="text-3xl font-bold text-base-content">Add New Product</h1>
-                <p class="text-base-content/70 mt-1">Create a new coffee product for your shop</p>
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8 space-y-4 lg:space-y-0">
+            <div class="flex items-center space-x-4">
+                <button @onclick="GoBack" class="btn btn-ghost btn-circle">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <div>
+                    <h1 class="text-3xl font-bold bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
+                        Add New Product
+                    </h1>
+                    <p class="text-gray-600 dark:text-gray-400 mt-1">Create a premium coffee experience</p>
+                </div>
+            </div>
+            <div class="flex space-x-3">
+                <button type="button" @onclick="SaveAsDraft" class="btn btn-outline" disabled="@saving">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                    Save as Draft
+                </button>
+                <button type="submit" form="productForm" class="btn btn-primary" disabled="@saving">
+                    @if (saving)
+                    {
+                        <span class="loading loading-spinner loading-sm mr-2"></span>
+                        <span>Creating...</span>
+                    }
+                    else
+                    {
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <span>Create Product</span>
+                    }
+                </button>
             </div>
         </div>
-        <div class="flex space-x-3">
-            <button type="button" @onclick="SaveAsDraft" class="btn btn-outline btn-sm" disabled="@saving">
+
+        <!-- Tabs Navigation -->
+        <div class="tabs tabs-boxed mb-8 bg-white dark:bg-gray-800 shadow-lg rounded-xl p-2">
+            <button class="tab @(activeTab == "basic" ? "tab-active" : "")" @onclick="() => SetActiveTab(\"basic\")">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                Save as Draft
+                Basic Info
             </button>
-            <button type="submit" form="productForm" class="btn btn-primary btn-sm" disabled="@saving">
-                @if (saving)
-                {
-                    <span class="loading loading-spinner loading-sm mr-2"></span>
-                    <text>Creating...</text>
-                }
-                else
-                {
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    <text>Create Product</text>
-                }
+            <button class="tab @(activeTab == "coffee" ? "tab-active" : "")" @onclick="() => SetActiveTab(\"coffee\")">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7 21H2V10H7l1-1V7a1 1 0 011-1h8a1 1 0 011 1v2l1 1h5v11h-5l-1-1V8"></path>
+                </svg>
+                Coffee Info
+            </button>
+            <button class="tab @(activeTab == "images" ? "tab-active" : "")" @onclick="() => SetActiveTab(\"images\")">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                Images
+            </button>
+            <button class="tab @(activeTab == "pricing" ? "tab-active" : "")" @onclick="() => SetActiveTab(\"pricing\")">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                </svg>
+                Pricing & Variants
+            </button>
+            <button class="tab @(activeTab == "seo" ? "tab-active" : "")" @onclick="() => SetActiveTab(\"seo\")">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                SEO & Settings
             </button>
         </div>
-    </div>
 
     <form id="productForm" @onsubmit="SaveProduct" @onsubmit:preventDefault="true">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">

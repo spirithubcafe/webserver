@@ -96,7 +96,7 @@
                     <label class="label">
                         <span class="label-text font-medium">Search Products</span>
                     </label>
-                    <input type="text" placeholder="Search by name or SKU" @bind="searchTerm" @onkeyup="OnSearchChanged" 
+                    <input type="text" placeholder="Search by name or SKU" @bind="searchTerm" @oninput="OnSearchChanged" 
                            class="input input-bordered input-sm" />
                 </div>
                 
@@ -104,7 +104,7 @@
                     <label class="label">
                         <span class="label-text font-medium">Category</span>
                     </label>
-                    <select @bind="selectedCategoryId" @bind:after="OnFilterChanged" class="select select-bordered select-sm">
+                    <select @bind="selectedCategory" @oninput="OnCategoryChanged" class="select select-bordered select-sm">
                         <option value="">All Categories</option>
                         @if (categories != null)
                         {
@@ -120,7 +120,7 @@
                     <label class="label">
                         <span class="label-text font-medium">Status</span>
                     </label>
-                    <select @bind="selectedStatus" @bind:after="OnFilterChanged" class="select select-bordered select-sm">
+                    <select @bind="selectedStatus" @oninput="OnStatusChanged" class="select select-bordered select-sm">
                         <option value="">All Status</option>
                         <option value="active">Active</option>
                         <option value="inactive">Inactive</option>
@@ -132,7 +132,7 @@
                     <label class="label">
                         <span class="label-text font-medium">Sort By</span>
                     </label>
-                    <select @bind="sortBy" @bind:after="OnFilterChanged" class="select select-bordered select-sm">
+                    <select @bind="sortBy" @oninput="OnSortChanged" class="select select-bordered select-sm">
                         <option value="name">Name</option>
                         <option value="price">Price</option>
                         <option value="created">Date Created</option>
@@ -150,12 +150,12 @@
             <span class="text-sm text-base-content/60">Showing Results (@filteredProducts?.Count ?? 0)</span>
         </div>
         <div class="btn-group">
-            <button @onclick="SetGridView" class="btn btn-sm @GetViewModeClass("grid")">
+            <button @onclick="ToggleView" class="btn btn-sm @(isGridView ? "btn-primary" : "btn-ghost")">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
                 </svg>
             </button>
-            <button @onclick="SetTableView" class="btn btn-sm @GetViewModeClass("table")">
+            <button @onclick="ToggleView" class="btn btn-sm @(!isGridView ? "btn-primary" : "btn-ghost")">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
                 </svg>
@@ -186,7 +186,7 @@
             </div>
         </div>
     }
-    else if (viewMode == "grid")
+    else if (isGridView)
     {
         <!-- Grid View -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -392,11 +392,12 @@
     private List<Product>? filteredProducts;
     private List<Category>? categories;
     private bool loading = true;
-    private string viewMode = "grid";
+    private bool isGridView = true;
+    private bool hasRendered = false;
     
-    // Filter properties
+    // Filters
     private string searchTerm = "";
-    private string selectedCategoryId = "";
+    private string selectedCategory = "";
     private string selectedStatus = "";
     private string sortBy = "name";
     
@@ -411,6 +412,15 @@
         await LoadDataAsync();
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            hasRendered = true;
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
     private async Task LoadDataAsync()
     {
         loading = true;
@@ -423,7 +433,10 @@
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("console.error", ex.Message);
+            if (hasRendered)
+            {
+                await JSRuntime.InvokeVoidAsync("console.error", ex.Message);
+            }
         }
         finally
         {
@@ -448,73 +461,86 @@
     private async Task ApplyFiltersAsync()
     {
         if (allProducts == null) return;
-        
-        var filteredQuery = allProducts.AsEnumerable();
+
+        var query = allProducts.AsQueryable();
 
         // Search filter
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            filteredQuery = filteredQuery.Where(p =>
-                p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                p.Sku.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                (p.NameAr?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) == true));
+            query = query.Where(p => p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                                   p.Description.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
         }
 
         // Category filter
-        if (!string.IsNullOrEmpty(selectedCategoryId) && int.TryParse(selectedCategoryId, out int categoryId))
+        if (!string.IsNullOrWhiteSpace(selectedCategory))
         {
-            filteredQuery = filteredQuery.Where(p => p.CategoryId == categoryId);
+            if (int.TryParse(selectedCategory, out int categoryId))
+            {
+                query = query.Where(p => p.CategoryId == categoryId);
+            }
         }
 
         // Status filter
-        filteredQuery = selectedStatus switch
+        if (!string.IsNullOrWhiteSpace(selectedStatus))
         {
-            "active" => filteredQuery.Where(p => p.IsActive),
-            "inactive" => filteredQuery.Where(p => !p.IsActive),
-            "outofstock" => filteredQuery.Where(p => p.Variants.All(v => v.StockQuantity == 0)),
-            _ => filteredQuery
+            switch (selectedStatus)
+            {
+                case "active":
+                    query = query.Where(p => p.IsActive);
+                    break;
+                case "inactive":
+                    query = query.Where(p => !p.IsActive);
+                    break;
+                case "featured":
+                    query = query.Where(p => p.IsFeatured);
+                    break;
+                case "out-of-stock":
+                    query = query.Where(p => p.Variants.All(v => v.StockQuantity == 0));
+                    break;
+            }
+        }
+
+        // Sorting
+        query = sortBy switch
+        {
+            "name" => query.OrderBy(p => p.Name),
+            "price" => query.OrderBy(p => p.Variants.Min(v => v.Price)),
+            "created" => query.OrderByDescending(p => p.CreatedAt),
+            "rating" => query.OrderByDescending(p => p.AverageRating),
+            _ => query.OrderBy(p => p.Name)
         };
 
-        // Sort
-        filteredQuery = sortBy switch
-        {
-            "price" => filteredQuery.OrderBy(p => p.Variants.Any() ? p.Variants.Min(v => v.Price) : 0),
-            "created" => filteredQuery.OrderByDescending(p => p.CreatedAt),
-            "rating" => filteredQuery.OrderByDescending(p => p.AverageRating),
-            "stock" => filteredQuery.OrderByDescending(p => p.Variants.Sum(v => v.StockQuantity)),
-            _ => filteredQuery.OrderBy(p => p.Name)
-        };
-
-        filteredProducts = filteredQuery.ToList();
+        filteredProducts = query.ToList();
         await Task.CompletedTask;
-        StateHasChanged();
     }
 
-    private async Task OnSearchChanged()
+    private async Task OnSearchChanged(ChangeEventArgs e)
     {
+        searchTerm = e.Value?.ToString() ?? "";
         await ApplyFiltersAsync();
     }
 
-    private async Task OnFilterChanged()
+    private async Task OnCategoryChanged(ChangeEventArgs e)
     {
+        selectedCategory = e.Value?.ToString() ?? "";
         await ApplyFiltersAsync();
     }
 
-    private void SetGridView()
+    private async Task OnStatusChanged(ChangeEventArgs e)
     {
-        viewMode = "grid";
-        StateHasChanged();
+        selectedStatus = e.Value?.ToString() ?? "";
+        await ApplyFiltersAsync();
     }
 
-    private void SetTableView()
+    private async Task OnSortChanged(ChangeEventArgs e)
     {
-        viewMode = "table";
-        StateHasChanged();
+        sortBy = e.Value?.ToString() ?? "name";
+        await ApplyFiltersAsync();
     }
 
-    private string GetViewModeClass(string mode)
+    private void ToggleView()
     {
-        return viewMode == mode ? "btn-active" : "";
+        isGridView = !isGridView;
     }
 
     private async Task ToggleProductStatus(Product product)
@@ -523,17 +549,21 @@
         {
             product.IsActive = !product.IsActive;
             await ProductService.UpdateProductAsync(product);
-            await CalculateStatsAsync();
-            StateHasChanged();
+            await LoadDataAsync();
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("console.error", ex.Message);
+            if (hasRendered)
+            {
+                await JSRuntime.InvokeVoidAsync("console.error", ex.Message);
+            }
         }
     }
 
     private async Task DeleteProduct(Product product)
     {
+        if (!hasRendered) return;
+        
         var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete '{product.Name}'?");
         if (confirmed)
         {
@@ -551,6 +581,8 @@
 
     private async Task ExportProducts()
     {
+        if (!hasRendered) return;
+        
         // TODO: Implement CSV export functionality
         await JSRuntime.InvokeVoidAsync("alert", "Export functionality coming soon!");
     }
