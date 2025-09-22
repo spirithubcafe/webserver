@@ -274,12 +274,12 @@ public class SlideService : ISlideService
         }
     }
 
-    public async Task<bool> DeleteSlideImageAsync(string imagePath)
+    public Task<bool> DeleteSlideImageAsync(string imagePath)
     {
         try
         {
             if (string.IsNullOrEmpty(imagePath))
-                return true;
+                return Task.FromResult(true);
 
             var fullPath = Path.Combine("wwwroot", imagePath.TrimStart('/'));
             if (File.Exists(fullPath))
@@ -288,12 +288,12 @@ public class SlideService : ISlideService
                 _logger.LogInformation("Deleted slide image at {Path}", imagePath);
             }
 
-            return true;
+            return Task.FromResult(true);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting slide image at {Path}", imagePath);
-            return false;
+            return Task.FromResult(false);
         }
     }
 

@@ -6,6 +6,7 @@
 @using Microsoft.AspNetCore.Components.Web
 @inject CartService CartService
 @inject IJSRuntime JSRuntime
+@inject IStringLocalizer<SpirithubCofe.Langs.Resources> Localizer
 @implements IDisposable
 
 <PageTitle>Products - SpirithubCofe</PageTitle>
@@ -39,7 +40,7 @@
                         type="text"
                         @bind="searchQuery"
                         @oninput="OnSearchInput"
-                        placeholder="Search coffee..."
+                        placeholder="@Localizer["SearchCoffee"]"
                         class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors duration-200"
                     />
                 </div>

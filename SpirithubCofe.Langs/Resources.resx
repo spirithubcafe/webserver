@@ -911,9 +911,6 @@
   <data name="SiteName" xml:space="preserve">
     <value>Site Name</value>
   </data>
-  <data name="Save" xml:space="preserve">
-    <value>Save</value>
-  </data>
   <data name="BrandingSettings" xml:space="preserve">
     <value>Branding Settings</value>
   </data>
@@ -952,5 +949,23 @@
   </data>
   <data name="CurrentLogo" xml:space="preserve">
     <value>Current Logo</value>
+  </data>
+  <data name="SearchCategories" xml:space="preserve">
+    <value>Search categories...</value>
+  </data>
+  <data name="EditCategory" xml:space="preserve">
+    <value>Edit Category</value>
+  </data>
+  <data name="CreateNewCategory" xml:space="preserve">
+    <value>Create New Category</value>
+  </data>
+  <data name="CategoryImage" xml:space="preserve">
+    <value>Category Image</value>
+  </data>
+  <data name="SearchByNameOrSKU" xml:space="preserve">
+    <value>Search by name or SKU</value>
+  </data>
+  <data name="SearchCoffee" xml:space="preserve">
+    <value>Search coffee...</value>
   </data>
 </root>

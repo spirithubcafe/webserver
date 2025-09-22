@@ -262,11 +262,11 @@
             }
             
             // Show success message
-            await JSRuntime.InvokeVoidAsync("showSuccessToast", "تنظیمات لوگو با موفقیت ذخیره شد!");
+            await JSRuntime.InvokeVoidAsync("showSuccessToast", "Logo settings saved successfully!");
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("showErrorToast", $"خطا در ذخیره تنظیمات: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("showErrorToast", $"Error saving logo settings: {ex.Message}");
         }
     }
 
@@ -291,11 +291,11 @@
                 });
             }
             
-            await JSRuntime.InvokeVoidAsync("showSuccessToast", "تنظیمات با موفقیت ذخیره شد!");
+            await JSRuntime.InvokeVoidAsync("showSuccessToast", "Settings saved successfully!");
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("showErrorToast", $"خطا در ذخیره تنظیمات: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("showErrorToast", $"Error saving settings: {ex.Message}");
         }
     }
 }

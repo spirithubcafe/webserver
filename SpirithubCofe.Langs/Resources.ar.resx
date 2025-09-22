@@ -911,9 +911,6 @@
   <data name="SiteName" xml:space="preserve">
     <value>اسم الموقع</value>
   </data>
-  <data name="Save" xml:space="preserve">
-    <value>حفظ</value>
-  </data>
   <data name="BrandingSettings" xml:space="preserve">
     <value>إعدادات العلامة التجارية</value>
   </data>
@@ -952,5 +949,23 @@
   </data>
   <data name="CurrentLogo" xml:space="preserve">
     <value>الشعار الحالي</value>
+  </data>
+  <data name="SearchCategories" xml:space="preserve">
+    <value>البحث في الفئات...</value>
+  </data>
+  <data name="EditCategory" xml:space="preserve">
+    <value>تعديل الفئة</value>
+  </data>
+  <data name="CreateNewCategory" xml:space="preserve">
+    <value>إنشاء فئة جديدة</value>
+  </data>
+  <data name="CategoryImage" xml:space="preserve">
+    <value>صورة الفئة</value>
+  </data>
+  <data name="SearchByNameOrSKU" xml:space="preserve">
+    <value>البحث بالاسم أو رمز المنتج</value>
+  </data>
+  <data name="SearchCoffee" xml:space="preserve">
+    <value>البحث عن القهوة...</value>
   </data>
 </root>

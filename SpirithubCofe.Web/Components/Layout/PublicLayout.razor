@@ -4,6 +4,7 @@
 @inject IStringLocalizer<Resources> Localizer
 @inject CartService CartService
 @inject NavigationManager Navigation
+@inject SpirithubCofe.Application.Services.ISettingService SettingService
 @using System.Globalization
 @using SpirithubCofe.Web.Services
 
@@ -30,27 +31,40 @@
                     <!-- Logo and Brand -->
                     <div class="flex items-center space-x-4">
                         <div class="flex-shrink-0 flex items-center">
-                            <!-- Coffee Bean Logo -->
-                            <div
-                                class="w-10 h-10 bg-gradient-to-br from-amber-500 to-amber-600 rounded-full flex items-center justify-center mr-3 shadow-md">
-                                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        d="M18.5 3H6c-1.1 0-2 .9-2 2v5.71c0 3.83 2.95 7.18 6.78 7.29 3.96.12 7.22-3.06 7.22-7v-1h.5c1.93 0 3.5-1.57 3.5-3.5S20.43 3 18.5 3zM16 5v3h1.5c.83 0 1.5-.67 1.5-1.5S17.83 5 17 5h-1zM6 5h8v8.58c0 2.4-1.9 4.42-4.29 4.42S5.42 15.98 5.42 13.58V5z" />
-                                </svg>
-                            </div>
-                            <div class="flex flex-col">
-                                <a href="/"
-                                    class="text-2xl font-bold text-gray-900 hover:text-amber-600 transition-colors">SpirithubCofe</a>
-                                <span class="text-xs text-gray-500 font-medium">Premium Coffee from Oman</span>
-                            </div>
+                            @if (logoType == "image" && !string.IsNullOrEmpty(logoImage))
+                            {
+                                <!-- Dynamic Image Logo -->
+                                <a href="/" class="flex items-center">
+                                    <img src="@logoImage" alt="@(logoText ?? "SpirithubCofe")" class="h-12 w-auto mr-3" />
+                                </a>
+                            }
+                            else
+                            {
+                                <!-- Text Logo with Coffee Bean Icon -->
+                                <div
+                                    class="w-10 h-10 bg-gradient-to-br from-amber-500 to-amber-600 rounded-full flex items-center justify-center mr-3 shadow-md">
+                                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            d="M18.5 3H6c-1.1 0-2 .9-2 2v5.71c0 3.83 2.95 7.18 6.78 7.29 3.96.12 7.22-3.06 7.22-7v-1h.5c1.93 0 3.5-1.57 3.5-3.5S20.43 3 18.5 3zM16 5v3h1.5c.83 0 1.5-.67 1.5-1.5S17.83 5 17 5h-1zM6 5h8v8.58c0 2.4-1.9 4.42-4.29 4.42S5.42 15.98 5.42 13.58V5z" />
+                                    </svg>
+                                </div>
+                                <div class="flex flex-col">
+                                    <a href="/"
+                                        class="text-2xl font-bold text-gray-900 hover:text-amber-600 transition-colors">
+                                        @(string.IsNullOrEmpty(logoText) ? "SpirithubCofe" : logoText)
+                                    </a>
+                                    <span class="text-xs text-gray-500 font-medium">Premium Coffee from Oman</span>
+                                </div>
+                            }
                         </div>
                     </div>
 
                     <!-- Main Navigation - Desktop -->
                     <div class="hidden lg:flex items-center space-x-1">
-                        <a href="/"
-                            class="flex items-center px-4 py-2 text-sm font-medium text-gray-900 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200 group">
-
+ 
+                        <div class="relative group">
+                            <button
+                                class="flex items-center px-4 py-2 text-sm font-medium text-gray-600 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200">
                             <svg class="w-4 h-4 mr-2 text-gray-400 group-hover:text-amber-600" viewBox="0 0 24 24"
                                 fill="none">
                                 <path d="M22 22L2 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
@@ -67,17 +81,6 @@
                                     d="M14 9.5C14 10.6046 13.1046 11.5 12 11.5C10.8954 11.5 10 10.6046 10 9.5C10 8.39543 10.8954 7.5 12 7.5C13.1046 7.5 14 8.39543 14 9.5Z"
                                     stroke="currentColor" stroke-width="1.5" />
                             </svg>
-                            @Localizer["Home"]
-                        </a>
-                        <div class="relative group">
-                            <button
-                                class="flex items-center px-4 py-2 text-sm font-medium text-gray-600 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200">
-                                <svg class="w-4 h-4 mr-2 text-gray-400 group-hover:text-amber-600" fill="currentColor"
-                                    viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M10 2L3 7v11a2 2 0 002 2h10a2 2 0 002-2V7l-7-5zM6 18V9h8v9H6z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
                                 @Localizer["Products"]
                                 <svg class="w-4 h-4 ml-1 text-gray-400 group-hover:text-amber-600" fill="currentColor"
                                     viewBox="0 0 20 20">
@@ -319,23 +322,26 @@
             <div class="lg:hidden hidden" id="mobile-menu">
                 <div class="px-4 pt-4 pb-6 space-y-3 bg-white border-t border-gray-100 shadow-lg">
                     <!-- Mobile Navigation Links -->
-                    <a href="/"
-                        class="flex items-center px-4 py-3 text-base font-medium text-gray-900 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200">
-                        <svg class="w-5 h-5 mr-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                                d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z">
-                            </path>
-                        </svg>
-                        @Localizer["Home"]
-                    </a>
+ 
 
                     <!-- Mobile Products Submenu -->
                     <div class="space-y-1">
                         <div class="flex items-center px-4 py-3 text-base font-medium text-gray-700">
-                            <svg class="w-5 h-5 mr-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M10 2L3 7v11a2 2 0 002 2h10a2 2 0 002-2V7l-7-5zM6 18V9h8v9H6z"
-                                    clip-rule="evenodd"></path>
+                            <svg class="w-4 h-4 mr-2 text-gray-400 group-hover:text-amber-600" viewBox="0 0 24 24"
+                                fill="none">
+                                <path d="M22 22L2 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                <path d="M2 11L10.1259 4.49931C11.2216 3.62279 12.7784 3.62279 13.8741 4.49931L22 11"
+                                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                <path d="M15.5 5.5V3.5C15.5 3.22386 15.7239 3 16 3H18.5C18.7761 3 19 3.22386 19 3.5V8.5"
+                                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                <path d="M4 22V9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                <path d="M20 22V9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                <path
+                                    d="M15 22V17C15 15.5858 15 14.8787 14.5607 14.4393C14.1213 14 13.4142 14 12 14C10.5858 14 9.87868 14 9.43934 14.4393C9 14.8787 9 15.5858 9 17V22"
+                                    stroke="currentColor" stroke-width="1.5" />
+                                <path
+                                    d="M14 9.5C14 10.6046 13.1046 11.5 12 11.5C10.8954 11.5 10 10.6046 10 9.5C10 8.39543 10.8954 7.5 12 7.5C13.1046 7.5 14 8.39543 14 9.5Z"
+                                    stroke="currentColor" stroke-width="1.5" />
                             </svg>
                             @Localizer["Products"]
                         </div>
@@ -519,12 +525,33 @@
 
     @code {
         private int mobileCartCount = 0;
+        private string logoType = "text";
+        private string logoText = "SpirithubCofe";
+        private string logoImage = "";
 
         protected override async Task OnInitializedAsync()
         {
+            await LoadLogoSettings();
             await CartService.InitializeAsync();
             UpdateMobileCartInfo();
             CartService.OnCartChanged += UpdateMobileCartInfo;
+        }
+
+        private async Task LoadLogoSettings()
+        {
+            try
+            {
+                logoType = await SettingService.GetValueAsync("logo_type", "text");
+                logoText = await SettingService.GetValueAsync("logo_text", "SpirithubCofe");
+                logoImage = await SettingService.GetValueAsync("logo_image", "");
+            }
+            catch (Exception)
+            {
+                // If settings service fails, use defaults
+                logoType = "text";
+                logoText = "SpirithubCofe";
+                logoImage = "";
+            }
         }
 
         private void UpdateMobileCartInfo()

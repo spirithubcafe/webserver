@@ -97,7 +97,7 @@
                     <label class="label">
                         <span class="label-text font-medium">Search Products</span>
                     </label>
-                    <input type="text" placeholder="Search by name or SKU" @bind="searchTerm" @oninput="OnSearchChanged" 
+                    <input type="text" placeholder="@Localizer["SearchByNameOrSKU"]" @bind="searchTerm" @oninput="OnSearchChanged" 
                            class="input input-bordered input-sm" />
                 </div>
                 
@@ -469,7 +469,7 @@
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
             query = query.Where(p => p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                                   p.Description.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+                                   (p.Description != null && p.Description.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)));
         }
 
         // Category filter
