@@ -3,6 +3,7 @@
 @rendermode InteractiveServer
 @layout SpirithubCofe.Web.Components.Layout.PublicLayout
 @using SpirithubCofe.Web.Services
+@using SpirithubCofe.Web.Components.Shared
 @using Microsoft.AspNetCore.Components.Web
 @inject CartService CartService
 @inject IJSRuntime JSRuntime
@@ -10,6 +11,9 @@
 @implements IDisposable
 
 <PageTitle>Products - SpirithubCofe</PageTitle>
+
+<!-- Toast Component -->
+<Toast />
 
 <!-- Hero Section -->
 <section class="relative bg-gradient-to-br from-amber-50 to-amber-100 py-16">
@@ -277,7 +281,6 @@
     private string searchQuery = string.Empty;
     private string sortOption = "name";
     private System.Timers.Timer? searchTimer;
-    private bool hasRendered = false;
     
     // Dictionary to track quantities for each product
     private Dictionary<int, int> productQuantities = new();
@@ -330,15 +333,6 @@
         // Initialize CartService
         await CartService.InitializeAsync();
     }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            hasRendered = true;
-        }
-        await base.OnAfterRenderAsync(firstRender);
-    }
     
     private int GetQuantity(int productId)
     {
@@ -389,8 +383,8 @@
             quantity: quantity
         );
         
-        // Show success message
-        await ShowToast($"Added {quantity} x {product.Name} to cart!");
+        // Show success message using Toast component
+        await Toast.ShowSuccess(JSRuntime, $"Added {quantity} x {product.Name} to cart!");
         
         // Reset quantity to 1 after adding to cart
         productQuantities[productId] = 1;
@@ -411,39 +405,9 @@
             quantity: 1
         );
         
-        // Show success message
-        await ShowToast($"Added {product.Name} to cart!");
+        // Show success message using Toast component
+        await Toast.ShowSuccess(JSRuntime, $"Added {product.Name} to cart!");
         StateHasChanged();
-    }
-
-    private async Task ShowToast(string message)
-    {
-        // Only invoke JS if the component has been rendered
-        if (hasRendered)
-        {
-            await JSRuntime.InvokeVoidAsync("eval", $@"
-                if (!window.showToast) {{
-                    window.showToast = function(message) {{
-                        const toast = document.createElement('div');
-                        toast.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300 translate-x-full';
-                        toast.textContent = message;
-                        document.body.appendChild(toast);
-                        
-                        setTimeout(() => {{
-                            toast.classList.remove('translate-x-full');
-                        }}, 100);
-                        
-                        setTimeout(() => {{
-                            toast.classList.add('translate-x-full');
-                            setTimeout(() => {{
-                                document.body.removeChild(toast);
-                            }}, 300);
-                        }}, 3000);
-                    }};
-                }}
-                window.showToast('{message}');
-            ");
-        }
     }
     
     private IEnumerable<ProductViewModel> GetFilteredProducts()
