@@ -1025,4 +1025,123 @@
   <data name="ExplorePremiumCollections" xml:space="preserve">
     <value>Explore our premium coffee collections</value>
   </data>
+
+  <!-- Product Management -->
+  <data name="ProductManagement" xml:space="preserve">
+    <value>Product Management</value>
+  </data>
+  <data name="ManageCoffeeProductsInventory" xml:space="preserve">
+    <value>Manage coffee products and inventory</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="TotalProducts" xml:space="preserve">
+    <value>Total Products</value>
+  </data>
+  <data name="ActiveProducts" xml:space="preserve">
+    <value>Active Products</value>
+  </data>
+  <data name="OutOfStock" xml:space="preserve">
+    <value>Out of Stock</value>
+  </data>
+  <data name="AverageRating" xml:space="preserve">
+    <value>Average Rating</value>
+  </data>
+  <data name="SearchProducts" xml:space="preserve">
+    <value>Search Products</value>
+  </data>
+  <data name="SearchByNameOrSku" xml:space="preserve">
+    <value>Search by name or SKU...</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="AllCategories" xml:space="preserve">
+    <value>All Categories</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="AllStatuses" xml:space="preserve">
+    <value>All Statuses</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Inactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="Featured" xml:space="preserve">
+    <value>Featured</value>
+  </data>
+  <data name="SortBy" xml:space="preserve">
+    <value>Sort By</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="CreatedDate" xml:space="preserve">
+    <value>Created Date</value>
+  </data>
+  <data name="Rating" xml:space="preserve">
+    <value>Rating</value>
+  </data>
+  <data name="ShowingResults" xml:space="preserve">
+    <value>Showing {0} results</value>
+  </data>
+  <data name="LoadingProducts" xml:space="preserve">
+    <value>Loading products...</value>
+  </data>
+  <data name="CreateFirstProduct" xml:space="preserve">
+    <value>Create your first product</value>
+  </data>
+  <data name="CreateProduct" xml:space="preserve">
+    <value>Create Product</value>
+  </data>
+  <data name="Stock" xml:space="preserve">
+    <value>Stock</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Activate" xml:space="preserve">
+    <value>Activate</value>
+  </data>
+  <data name="Deactivate" xml:space="preserve">
+    <value>Deactivate</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="ExportFeatureSoon" xml:space="preserve">
+    <value>Export feature will be added soon!</value>
+  </data>
+  <data name="ConfirmDeleteProduct" xml:space="preserve">
+    <value>Are you sure you want to delete product '{0}'?</value>
+  </data>
+  <data name="ProductStatusChanged" xml:space="preserve">
+    <value>Product '{0}' status changed successfully.</value>
+  </data>
+  <data name="ProductDeleted" xml:space="preserve">
+    <value>Product '{0}' deleted successfully.</value>
+  </data>
+  <data name="CannotDeleteProduct" xml:space="preserve">
+    <value>Cannot delete product: {0}</value>
+  </data>
+  <data name="ErrorChangingStatus" xml:space="preserve">
+    <value>Error changing product status: {0}</value>
+  </data>
+  <data name="ErrorDeletingProduct" xml:space="preserve">
+    <value>Error deleting product: {0}</value>
+  </data>
+  <data name="ErrorLoadingData" xml:space="preserve">
+    <value>Error loading data: {0}</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
 </root>

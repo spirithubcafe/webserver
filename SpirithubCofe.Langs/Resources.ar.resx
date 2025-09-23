@@ -1025,4 +1025,123 @@
   <data name="ExplorePremiumCollections" xml:space="preserve">
     <value>استكشف مجموعاتنا المميزة من القهوة</value>
   </data>
+
+  <!-- Product Management -->
+  <data name="ProductManagement" xml:space="preserve">
+    <value>إدارة المنتجات</value>
+  </data>
+  <data name="ManageCoffeeProductsInventory" xml:space="preserve">
+    <value>إدارة منتجات القهوة والمخزون</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>تصدير</value>
+  </data>
+  <data name="TotalProducts" xml:space="preserve">
+    <value>إجمالي المنتجات</value>
+  </data>
+  <data name="ActiveProducts" xml:space="preserve">
+    <value>المنتجات النشطة</value>
+  </data>
+  <data name="OutOfStock" xml:space="preserve">
+    <value>نفد المخزون</value>
+  </data>
+  <data name="AverageRating" xml:space="preserve">
+    <value>متوسط التقييم</value>
+  </data>
+  <data name="SearchProducts" xml:space="preserve">
+    <value>البحث في المنتجات</value>
+  </data>
+  <data name="SearchByNameOrSku" xml:space="preserve">
+    <value>البحث بالاسم أو رمز المنتج...</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>الفئة</value>
+  </data>
+  <data name="AllCategories" xml:space="preserve">
+    <value>جميع الفئات</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+  <data name="AllStatuses" xml:space="preserve">
+    <value>جميع الحالات</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>نشط</value>
+  </data>
+  <data name="Inactive" xml:space="preserve">
+    <value>غير نشط</value>
+  </data>
+  <data name="Featured" xml:space="preserve">
+    <value>مميز</value>
+  </data>
+  <data name="SortBy" xml:space="preserve">
+    <value>ترتيب حسب</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>الاسم</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>السعر</value>
+  </data>
+  <data name="CreatedDate" xml:space="preserve">
+    <value>تاريخ الإنشاء</value>
+  </data>
+  <data name="Rating" xml:space="preserve">
+    <value>التقييم</value>
+  </data>
+  <data name="ShowingResults" xml:space="preserve">
+    <value>عرض {0} نتيجة</value>
+  </data>
+  <data name="LoadingProducts" xml:space="preserve">
+    <value>جاري تحميل المنتجات...</value>
+  </data>
+  <data name="CreateFirstProduct" xml:space="preserve">
+    <value>أنشئ منتجك الأول</value>
+  </data>
+  <data name="CreateProduct" xml:space="preserve">
+    <value>إنشاء منتج</value>
+  </data>
+  <data name="Stock" xml:space="preserve">
+    <value>المخزون</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>تحرير</value>
+  </data>
+  <data name="Activate" xml:space="preserve">
+    <value>تفعيل</value>
+  </data>
+  <data name="Deactivate" xml:space="preserve">
+    <value>إلغاء التفعيل</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="ExportFeatureSoon" xml:space="preserve">
+    <value>ستتم إضافة ميزة التصدير قريباً!</value>
+  </data>
+  <data name="ConfirmDeleteProduct" xml:space="preserve">
+    <value>هل أنت متأكد من حذف المنتج '{0}'؟</value>
+  </data>
+  <data name="ProductStatusChanged" xml:space="preserve">
+    <value>تم تغيير حالة المنتج '{0}' بنجاح.</value>
+  </data>
+  <data name="ProductDeleted" xml:space="preserve">
+    <value>تم حذف المنتج '{0}' بنجاح.</value>
+  </data>
+  <data name="CannotDeleteProduct" xml:space="preserve">
+    <value>لا يمكن حذف المنتج: {0}</value>
+  </data>
+  <data name="ErrorChangingStatus" xml:space="preserve">
+    <value>خطأ في تغيير حالة المنتج: {0}</value>
+  </data>
+  <data name="ErrorDeletingProduct" xml:space="preserve">
+    <value>خطأ في حذف المنتج: {0}</value>
+  </data>
+  <data name="ErrorLoadingData" xml:space="preserve">
+    <value>خطأ في تحميل البيانات: {0}</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>الإجراءات</value>
+  </data>
 </root>
