@@ -6,7 +6,9 @@
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
 @using SpirithubCofe.Domain.Entities
-@using SpirithubCofe.Web.Components.Shared
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Linq
+@using System.IO
 @rendermode InteractiveServer
 
 <Toast />
@@ -73,23 +75,23 @@
                 <!-- Tab Navigation -->
                 <div class="px-6">
                     <nav class="flex space-x-8" aria-label="Tabs">
-                        <button @onclick="@(() => SetActiveTab("basic"))" type="button"
+                        <button @onclick="@(() => SetActiveTab("basic"))" @onclick:preventDefault="true" type="button"
                                 class="@(activeTab == "basic" ? "border-blue-500 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300") py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap">
                             Basic Information
                         </button>
-                        <button @onclick="@(() => SetActiveTab("coffee"))" type="button"
+                        <button @onclick="@(() => SetActiveTab("coffee"))" @onclick:preventDefault="true" type="button"
                                 class="@(activeTab == "coffee" ? "border-blue-500 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300") py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap">
                             Coffee Details
                         </button>
-                        <button @onclick="@(() => SetActiveTab("images"))" type="button"
+                        <button @onclick="@(() => SetActiveTab("images"))" @onclick:preventDefault="true" type="button"
                                 class="@(activeTab == "images" ? "border-blue-500 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300") py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap">
                             Images
                         </button>
-                        <button @onclick="@(() => SetActiveTab("pricing"))" type="button"
+                        <button @onclick="@(() => SetActiveTab("pricing"))" @onclick:preventDefault="true" type="button"
                                 class="@(activeTab == "pricing" ? "border-blue-500 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300") py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap">
                             Pricing & Variants
                         </button>
-                        <button @onclick="@(() => SetActiveTab("seo"))" type="button"
+                        <button @onclick="@(() => SetActiveTab("seo"))" @onclick:preventDefault="true" type="button"
                                 class="@(activeTab == "seo" ? "border-blue-500 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300") py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap">
                             SEO & Settings
                         </button>
@@ -400,60 +402,20 @@
                             <p class="text-sm text-gray-600">Upload and manage product images</p>
                         </div>
                         <div class="p-6 space-y-6">
-                            <!-- Image Upload Section -->
+                            <!-- Main Image Upload Section -->
                             <div class="space-y-4">
                                 <h3 class="text-base font-medium text-gray-900">Main Product Image</h3>
-                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                                    @if (product.MainImage != null && !string.IsNullOrEmpty(product.MainImage.ImagePath))
-                                    {
-                                        <div class="mb-4">
-                                            <img src="@product.MainImage.ImagePath" alt="@product.Name" class="mx-auto h-32 w-32 object-cover rounded-lg" />
-                                        </div>
-                                    }
-                                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <div class="mt-4">
-                                        <label for="main-image" class="cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
-                                            <span>Upload main image</span>
-                                            <input id="main-image" name="main-image" type="file" class="sr-only" accept="image/*" />
-                                        </label>
-                                        <p class="pl-1">or drag and drop</p>
-                                    </div>
-                                    <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
-                                </div>
+                                <FileUpload 
+                                    Folder="products" 
+                                    FileType="image" 
+                                    Prefix="main"
+                                    CurrentFileUrl="@(product.MainImage?.ImagePath)"
+                                    AltText="@product.Name" 
+                                    OnFileUploaded="OnMainImageUploaded"
+                                    OnFileRemoved="OnMainImageRemoved" />
                             </div>
 
-                            <!-- Gallery Images -->
-                            <div class="space-y-4">
-                                <h3 class="text-base font-medium text-gray-900">Gallery Images (Max 5)</h3>
-                                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                                    @if (product.GalleryImages != null)
-                                    {
-                                        @foreach (var image in product.GalleryImages.Take(5))
-                                        {
-                                            <div class="relative">
-                                                <img src="@image.ImagePath" alt="Gallery image" class="h-24 w-24 object-cover rounded-lg" />
-                                                <button type="button" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600">
-                                                    ×
-                                                </button>
-                                            </div>
-                                        }
-                                    }
-                                    
-                                    @if (product.GalleryImages?.Count < 5)
-                                    {
-                                        <div class="h-24 w-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
-                                            <label for="gallery-images" class="cursor-pointer">
-                                                <svg class="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                                </svg>
-                                                <input id="gallery-images" name="gallery-images" type="file" class="sr-only" accept="image/*" multiple />
-                                            </label>
-                                        </div>
-                                    }
-                                </div>
-                            </div>
+ 
 
                             <!-- Image Alt Text -->
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -472,6 +434,55 @@
                                 </div>
                             </div>
                         </div>
+                                            <!-- Gallery Images -->
+                    <div class="bg-white shadow-sm rounded-lg ">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h2 class="text-lg font-semibold text-gray-900">Gallery Images</h2>
+                            <p class="text-sm text-gray-600">Additional product images (maximum 5)</p>
+                        </div>
+                        <div class="p-6 space-y-6">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                @for (int i = 0; i < galleryImages.Count; i++)
+                                {
+                                    int index = i; // Capture for closure
+                                    <div class="border border-gray-200 rounded-lg p-4">
+                                        <div class="mb-2 flex items-center justify-between">
+                                            <span class="text-sm font-medium text-gray-700">Gallery Image @(index + 1)</span>
+                                            @if (!string.IsNullOrEmpty(galleryImages[index]))
+                                            {
+                                                <button type="button" @onclick="() => RemoveGalleryImage(index)" 
+                                                        class="text-red-600 hover:text-red-800 text-sm">
+                                                    Remove
+                                                </button>
+                                            }
+                                        </div>
+                                        <FileUpload Folder="products" 
+                                                   FileType="image" 
+                                                   Prefix="@($"product-gallery-{index}")"
+                                                   @bind-CurrentFileUrl="galleryImages[index]"
+                                                   OnFileUploaded="@((result) => OnGalleryImageUploaded(index, result))" />
+                                    </div>
+                                }
+                            </div>
+                            
+                            @if (galleryImages.Count < 5)
+                            {
+                                <div class="text-center">
+                                    <button type="button" @onclick="AddGalleryImageSlot" 
+                                            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                        Add Gallery Image (@galleryImages.Count/5)
+                                    </button>
+                                </div>
+                            }
+                            
+                            <div class="bg-blue-50 border border-blue-200 rounded-md p-4">
+                                <p class="text-sm text-blue-700">💡 Add up to 5 high-quality images showing different angles and details of your coffee product.</p>
+                            </div>
+                        </div>
+                    </div>
                     </div>
                 }
 
@@ -531,8 +542,11 @@
                                                             }
                                                         </td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                            <button type="button" class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-                                                            <button type="button" class="text-red-600 hover:text-red-900">Delete</button>
+                                                            <button type="button" @onclick="() => EditVariant(variant)" class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+                                                            <button type="button" @onclick="() => ToggleVariantDefault(variant)" class="text-green-600 hover:text-green-900 mr-3">
+                                                                @(variant.IsDefault ? "★" : "☆")
+                                                            </button>
+                                                            <button type="button" @onclick="() => DeleteVariant(variant)" class="text-red-600 hover:text-red-900">Delete</button>
                                                         </td>
                                                     </tr>
                                                 }
@@ -554,13 +568,107 @@
 
                             <!-- Add New Variant Button -->
                             <div class="border-t border-gray-200 pt-6">
-                                <button type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                <button type="button" @onclick="ShowAddVariantForm" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                     </svg>
                                     Add New Variant
                                 </button>
                             </div>
+
+                            <!-- Add/Edit Variant Form -->
+                            @if (showAddVariant)
+                            {
+                                <div class="border-t border-gray-200 pt-6">
+                                    <div class="bg-gray-50 rounded-lg p-6">
+                                        <h4 class="text-lg font-medium text-gray-900 mb-4">@(isEditingVariant ? "Edit Variant" : "Add New Variant")</h4>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                            <!-- Variant SKU -->
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">Variant SKU <span class="text-red-500">*</span></label>
+                                                <input type="text" @bind="newVariant.VariantSku" 
+                                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                                       placeholder="COFFEE-250G" />
+                                            </div>
+                                            
+                                            <!-- Weight -->
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">Weight <span class="text-red-500">*</span></label>
+                                                <div class="flex">
+                                                    <input type="number" @bind="newVariant.Weight" 
+                                                           class="flex-1 px-3 py-2 border border-gray-300 rounded-l-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                                           placeholder="250" />
+                                                    <select @bind="newVariant.WeightUnit" 
+                                                            class="px-3 py-2 border border-l-0 border-gray-300 rounded-r-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                                        <option value="g">g</option>
+                                                        <option value="kg">kg</option>
+                                                        <option value="lb">lb</option>
+                                                        <option value="oz">oz</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Price -->
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">Price (OMR) <span class="text-red-500">*</span></label>
+                                                <input type="number" step="0.001" @bind="newVariant.Price" 
+                                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                                       placeholder="15.500" />
+                                            </div>
+                                            
+                                            <!-- Discount Price -->
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">Discount Price (OMR)</label>
+                                                <input type="number" step="0.001" @bind="newVariant.DiscountPrice" 
+                                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                                       placeholder="12.500" />
+                                            </div>
+                                            
+                                            <!-- Stock Quantity -->
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">Stock Quantity</label>
+                                                <input type="number" @bind="newVariant.StockQuantity" 
+                                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                                       placeholder="100" />
+                                            </div>
+                                            
+                                            <!-- Low Stock Threshold -->
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">Low Stock Alert</label>
+                                                <input type="number" @bind="newVariant.LowStockThreshold" 
+                                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                                       placeholder="10" />
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Checkboxes -->
+                                        <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                                            <div class="flex items-center">
+                                                <input type="checkbox" @bind="newVariant.IsActive" id="variantActive" 
+                                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                                                <label for="variantActive" class="ml-2 block text-sm text-gray-700">Active</label>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <input type="checkbox" @bind="newVariant.IsDefault" id="variantDefault" 
+                                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                                                <label for="variantDefault" class="ml-2 block text-sm text-gray-700">Set as Default</label>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Form Actions -->
+                                        <div class="flex justify-end space-x-3 mt-6">
+                                            <button type="button" @onclick="CancelAddVariant" 
+                                                    class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                                Cancel
+                                            </button>
+                                            <button type="button" @onclick="SaveNewVariant" 
+                                                    class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+                                                @(isEditingVariant ? "Update Variant" : "Add Variant")
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
                         </div>
                     </div>
                 }
@@ -657,6 +765,42 @@
                                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                                 </div>
                             </div>
+
+                            <!-- Product Certifications -->
+                            <div class="space-y-4">
+                                <h3 class="text-base font-medium text-gray-900">Product Certifications</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <!-- Organic Certification -->
+                                    <div class="flex items-center p-4 border border-gray-200 rounded-lg">
+                                        <div class="flex items-center h-5">
+                                            <input type="checkbox" @bind="product.IsOrganic" id="isOrganic" 
+                                                   class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded" />
+                                        </div>
+                                        <div class="ml-3">
+                                            <label for="isOrganic" class="flex items-center text-sm font-medium text-gray-700">
+                                                <span class="text-green-600 mr-2">🌱</span>
+                                                Organic Certified
+                                            </label>
+                                            <p class="text-xs text-gray-500">Product meets organic certification standards</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Fair Trade Certification -->
+                                    <div class="flex items-center p-4 border border-gray-200 rounded-lg">
+                                        <div class="flex items-center h-5">
+                                            <input type="checkbox" @bind="product.IsFairTrade" id="isFairTrade" 
+                                                   class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                                        </div>
+                                        <div class="ml-3">
+                                            <label for="isFairTrade" class="flex items-center text-sm font-medium text-gray-700">
+                                                <span class="text-blue-600 mr-2">🤝</span>
+                                                Fair Trade Certified
+                                            </label>
+                                            <p class="text-xs text-gray-500">Product meets fair trade certification standards</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 }
@@ -713,6 +857,15 @@
     private bool loading = true;
     private bool saving = false;
     private string activeTab = "basic";
+    
+    // For variant handling
+    private bool showAddVariant = false;
+    private bool isEditingVariant = false;
+    private ProductVariant newVariant = new();
+    private ProductVariant? editingVariant = null;
+    
+    // For gallery images handling
+    private List<string> galleryImages = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -723,6 +876,18 @@
             
             // Load categories
             categories = await CategoryService.GetAllCategoriesAsync();
+            
+            // Initialize gallery images from product's gallery images
+            if (product?.GalleryImages != null && product.GalleryImages.Any())
+            {
+                galleryImages = product.GalleryImages.OrderBy(g => g.DisplayOrder)
+                                                  .Select(g => g.ImagePath ?? "")
+                                                  .ToList();
+            }
+            else
+            {
+                galleryImages = new List<string>();
+            }
             
             if (product == null)
             {
@@ -839,5 +1004,364 @@
                   .Replace("&", "and")
                   .Replace("--", "-")
                   .Trim('-');
+    }
+
+    // Image handling methods with FileUpload component
+    private async Task OnMainImageUploaded(FileUpload.UploadResult result)
+    {
+        if (product == null || !result.Success) return;
+        
+        try
+        {
+            // Update or create main image
+            if (product.MainImage == null)
+            {
+                product.MainImage = new ProductImage 
+                { 
+                    ProductId = product.Id,
+                    IsMain = true
+                };
+            }
+            
+            product.MainImage.ImagePath = result.FileUrl;
+            product.MainImage.FileName = result.FileName;
+            product.MainImage.FileSize = (int)result.FileSize;
+            
+            // Update product in database
+            await ProductService.UpdateProductAsync(product);
+            await Toast.ShowSuccess(JSRuntime, "Main image uploaded successfully!");
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            await Toast.ShowError(JSRuntime, $"Error updating main image: {ex.Message}");
+        }
+    }
+
+    private async Task OnMainImageRemoved()
+    {
+        if (product?.MainImage == null) return;
+        
+        try
+        {
+            product.MainImage = null;
+            await ProductService.UpdateProductAsync(product);
+            await Toast.ShowSuccess(JSRuntime, "Main image removed successfully!");
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            await Toast.ShowError(JSRuntime, $"Error removing main image: {ex.Message}");
+        }
+    }
+
+    private async Task OnGalleryImageUploaded(FileUpload.UploadResult result)
+    {
+        if (product == null || !result.Success) return;
+        
+        try
+        {
+            // Initialize gallery images if null
+            product.GalleryImages ??= new List<ProductImage>();
+            
+            // Check if we haven't exceeded the limit
+            if (product.GalleryImages.Count >= 5)
+            {
+                await Toast.ShowError(JSRuntime, "Maximum 5 gallery images allowed");
+                return;
+            }
+            
+            // Add new gallery image
+            var galleryImage = new ProductImage
+            {
+                ProductId = product.Id,
+                ImagePath = result.FileUrl,
+                FileName = result.FileName,
+                FileSize = (int)result.FileSize,
+                IsMain = false,
+                DisplayOrder = product.GalleryImages.Count + 1
+            };
+            
+            product.GalleryImages.Add(galleryImage);
+            
+            // Update product in database
+            await ProductService.UpdateProductAsync(product);
+            await Toast.ShowSuccess(JSRuntime, "Gallery image uploaded successfully!");
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            await Toast.ShowError(JSRuntime, $"Error uploading gallery image: {ex.Message}");
+        }
+    }
+
+    private async Task RemoveGalleryImage(ProductImage image)
+    {
+        if (product?.GalleryImages == null) return;
+        
+        try
+        {
+            product.GalleryImages.Remove(image);
+            await ProductService.UpdateProductAsync(product);
+            await Toast.ShowSuccess(JSRuntime, "Image removed successfully");
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            await Toast.ShowError(JSRuntime, $"Error removing image: {ex.Message}");
+        }
+    }
+
+    // Variant handling methods
+    private void ShowAddVariantForm()
+    {
+        isEditingVariant = false;
+        editingVariant = null;
+        newVariant = new ProductVariant
+        {
+            ProductId = product?.Id ?? 0,
+            WeightUnit = "g",
+            IsActive = true,
+            DisplayOrder = (product?.Variants?.Count ?? 0) + 1
+        };
+        showAddVariant = true;
+    }
+
+    private void EditVariant(ProductVariant variant)
+    {
+        isEditingVariant = true;
+        editingVariant = variant;
+        
+        // Copy variant data to newVariant for editing
+        newVariant = new ProductVariant
+        {
+            Id = variant.Id,
+            ProductId = variant.ProductId,
+            VariantSku = variant.VariantSku,
+            Weight = variant.Weight,
+            WeightUnit = variant.WeightUnit,
+            Price = variant.Price,
+            DiscountPrice = variant.DiscountPrice,
+            StockQuantity = variant.StockQuantity,
+            LowStockThreshold = variant.LowStockThreshold,
+            IsActive = variant.IsActive,
+            IsDefault = variant.IsDefault,
+            DisplayOrder = variant.DisplayOrder
+        };
+        
+        showAddVariant = true;
+    }
+
+    private void CancelAddVariant()
+    {
+        showAddVariant = false;
+        isEditingVariant = false;
+        editingVariant = null;
+        newVariant = new();
+    }
+
+    private async Task SaveNewVariant()
+    {
+        if (product == null) return;
+        
+        try
+        {
+            // Validate variant
+            if (string.IsNullOrEmpty(newVariant.VariantSku))
+            {
+                await Toast.ShowError(JSRuntime, "SKU is required");
+                return;
+            }
+            
+            if (newVariant.Price <= 0)
+            {
+                await Toast.ShowError(JSRuntime, "Price must be greater than 0");
+                return;
+            }
+
+            if (isEditingVariant && editingVariant != null)
+            {
+                // Update existing variant
+                var variantToUpdate = product.Variants?.FirstOrDefault(v => v.Id == editingVariant.Id);
+                if (variantToUpdate != null)
+                {
+                    variantToUpdate.VariantSku = newVariant.VariantSku;
+                    variantToUpdate.Weight = newVariant.Weight;
+                    variantToUpdate.WeightUnit = newVariant.WeightUnit;
+                    variantToUpdate.Price = newVariant.Price;
+                    variantToUpdate.DiscountPrice = newVariant.DiscountPrice;
+                    variantToUpdate.StockQuantity = newVariant.StockQuantity;
+                    variantToUpdate.LowStockThreshold = newVariant.LowStockThreshold;
+                    variantToUpdate.IsActive = newVariant.IsActive;
+                    variantToUpdate.IsDefault = newVariant.IsDefault;
+                    
+                    // If setting as default, remove default from others
+                    if (newVariant.IsDefault)
+                    {
+                        foreach (var v in product.Variants?.Where(v => v.Id != variantToUpdate.Id) ?? Enumerable.Empty<ProductVariant>())
+                        {
+                            v.IsDefault = false;
+                        }
+                    }
+                }
+                
+                await Toast.ShowSuccess(JSRuntime, "Variant updated successfully");
+            }
+            else
+            {
+                // Add new variant
+                product.Variants ??= new List<ProductVariant>();
+                
+                // If this is the first variant or marked as default, make it default
+                if (product.Variants.Count == 0 || newVariant.IsDefault)
+                {
+                    newVariant.IsDefault = true;
+                    // Remove default from other variants if setting this as default
+                    foreach (var v in product.Variants)
+                    {
+                        v.IsDefault = false;
+                    }
+                }
+                
+                product.Variants.Add(newVariant);
+                await Toast.ShowSuccess(JSRuntime, "Variant added successfully");
+            }
+            
+            await ProductService.UpdateProductAsync(product);
+            
+            showAddVariant = false;
+            isEditingVariant = false;
+            editingVariant = null;
+            newVariant = new();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            await Toast.ShowError(JSRuntime, $"Error saving variant: {ex.Message}");
+        }
+    }
+
+    private async Task DeleteVariant(ProductVariant variant)
+    {
+        if (product?.Variants == null) return;
+        
+        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete variant {variant.VariantSku}?");
+        if (confirmed)
+        {
+            try
+            {
+                product.Variants.Remove(variant);
+                await ProductService.UpdateProductAsync(product);
+                await Toast.ShowSuccess(JSRuntime, "Variant deleted successfully");
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                await Toast.ShowError(JSRuntime, $"Error deleting variant: {ex.Message}");
+            }
+        }
+    }
+
+    private async Task ToggleVariantDefault(ProductVariant variant)
+    {
+        if (product?.Variants == null) return;
+        
+        try
+        {
+            // Remove default from all variants
+            foreach (var v in product.Variants)
+            {
+                v.IsDefault = false;
+            }
+            
+            // Set this variant as default
+            variant.IsDefault = true;
+            
+            await ProductService.UpdateProductAsync(product);
+            await Toast.ShowSuccess(JSRuntime, "Default variant updated");
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            await Toast.ShowError(JSRuntime, $"Error updating default variant: {ex.Message}");
+        }
+    }
+
+    // Gallery image handling methods
+    private void AddGalleryImageSlot()
+    {
+        if (galleryImages.Count < 5)
+        {
+            galleryImages.Add("");
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnGalleryImageUploaded(int index, FileUpload.UploadResult result)
+    {
+        if (result.Success && index >= 0 && index < galleryImages.Count)
+        {
+            galleryImages[index] = result.FileUrl;
+            
+            // Update the product's gallery images
+            if (product != null)
+            {
+                await UpdateProductGalleryImages();
+            }
+            
+            StateHasChanged();
+        }
+    }
+
+    private async Task RemoveGalleryImage(int index)
+    {
+        if (index >= 0 && index < galleryImages.Count)
+        {
+            galleryImages.RemoveAt(index);
+            
+            // Update the product's gallery images
+            if (product != null)
+            {
+                await UpdateProductGalleryImages();
+            }
+            
+            StateHasChanged();
+        }
+    }
+
+    private async Task UpdateProductGalleryImages()
+    {
+        if (product == null) return;
+
+        try
+        {
+            // Clear existing gallery images
+            product.GalleryImages?.Clear();
+            product.GalleryImages ??= new List<ProductImage>();
+
+            // Add new gallery images from the list
+            for (int i = 0; i < galleryImages.Count; i++)
+            {
+                if (!string.IsNullOrEmpty(galleryImages[i]))
+                {
+                    var galleryImage = new ProductImage
+                    {
+                        ProductId = product.Id,
+                        ImagePath = galleryImages[i],
+                        FileName = Path.GetFileName(galleryImages[i]),
+                        IsMain = false,
+                        DisplayOrder = i + 1
+                    };
+                    product.GalleryImages.Add(galleryImage);
+                }
+            }
+
+            // Update product in database
+            await ProductService.UpdateProductAsync(product);
+        }
+        catch (Exception ex)
+        {
+            await Toast.ShowError(JSRuntime, $"Error updating gallery images: {ex.Message}");
+        }
     }
 }
