@@ -104,15 +104,41 @@ public class ProductService
     /// </summary>
     public async Task<bool> DeleteProductAsync(int id)
     {
-        var product = await _context.Products.FindAsync(id);
+        var product = await _context.Products
+            .Include(p => p.Variants)
+            .Include(p => p.Reviews)
+            .Include(p => p.GalleryImages)
+            .FirstOrDefaultAsync(p => p.Id == id);
+            
         if (product == null)
         {
-            return false;
+            throw new InvalidOperationException("Product not found.");
         }
 
-        _context.Products.Remove(product);
-        await _context.SaveChangesAsync();
-        return true;
+        // Check if product has any active variants with stock
+        var hasStock = product.Variants.Any(v => v.IsActive && v.StockQuantity > 0);
+        if (hasStock)
+        {
+            throw new InvalidOperationException("Cannot delete product that has variants with stock. Please clear stock first.");
+        }
+
+        // Check if product has reviews (optional business rule)
+        var hasReviews = product.Reviews.Any();
+        if (hasReviews)
+        {
+            throw new InvalidOperationException($"Cannot delete product with {product.Reviews.Count} review(s). Consider deactivating instead.");
+        }
+
+        try
+        {
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        catch (DbUpdateException ex)
+        {
+            throw new InvalidOperationException($"Failed to delete product due to database constraints: {ex.InnerException?.Message ?? ex.Message}");
+        }
     }
 
     /// <summary>

@@ -143,24 +143,39 @@ public class CategoryService
     /// </summary>
     public async Task<bool> DeleteCategoryAsync(int id)
     {
-        var category = await _context.Categories
-            .Include(c => c.Products)
-            .FirstOrDefaultAsync(c => c.Id == id);
-        
-        if (category == null)
+        try
         {
-            return false;
-        }
+            var category = await _context.Categories
+                .Include(c => c.Products)
+                .FirstOrDefaultAsync(c => c.Id == id);
+            
+            if (category == null)
+            {
+                return false;
+            }
 
-        // Check if category has products
-        if (category.Products.Any())
+            // Check if category has products with a more detailed message
+            var productCount = category.Products.Count;
+            if (productCount > 0)
+            {
+                var productWord = productCount == 1 ? "product" : "products";
+                throw new InvalidOperationException($"Cannot delete category '{category.Name}' because it contains {productCount} {productWord}. Please move or delete the products first.");
+            }
+
+            _context.Categories.Remove(category);
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
+        }
+        catch (InvalidOperationException)
         {
-            throw new InvalidOperationException("Cannot delete category that contains products. Please move or delete the products first.");
+            // Re-throw InvalidOperationException as is
+            throw;
         }
-
-        _context.Categories.Remove(category);
-        await _context.SaveChangesAsync();
-        return true;
+        catch (Exception ex)
+        {
+            // Log any other exceptions and re-throw
+            throw new Exception($"Database error while deleting category: {ex.Message}", ex);
+        }
     }
 
     /// <summary>
@@ -195,6 +210,18 @@ public class CategoryService
         category.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
         return true;
+    }
+
+    /// <summary>
+    /// Check if a category can be deleted (has no products)
+    /// </summary>
+    public async Task<(bool CanDelete, int ProductCount)> CanDeleteCategoryAsync(int id)
+    {
+        var productCount = await _context.Products
+            .Where(p => p.CategoryId == id)
+            .CountAsync();
+        
+        return (productCount == 0, productCount);
     }
 
     /// <summary>

@@ -134,7 +134,7 @@ app.MapAdditionalIdentityEndpoints();
 await SeedAdminUser(app);
 
 // Seed sample data for categories and products
-await SeedSampleData(app);
+ await SeedSampleData(app); // Commented out for testing
 
 app.Run();
 
