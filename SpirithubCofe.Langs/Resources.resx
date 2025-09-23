@@ -968,4 +968,61 @@
   <data name="SearchCoffee" xml:space="preserve">
     <value>Search coffee...</value>
   </data>
+  <data name="ExploreCategories" xml:space="preserve">
+    <value>Explore Our Categories</value>
+  </data>
+  <data name="DiscoverCoffeeCategories" xml:space="preserve">
+    <value>Discover our wide range of coffee categories and find your perfect brew</value>
+  </data>
+  <data name="ViewAllCategories" xml:space="preserve">
+    <value>View All Categories</value>
+  </data>
+  <data name="ExploreCoffees" xml:space="preserve">
+    <value>Explore our premium selection</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="SortBy" xml:space="preserve">
+    <value>Sort by</value>
+  </data>
+  <data name="NameAZ" xml:space="preserve">
+    <value>Name A-Z</value>
+  </data>
+  <data name="PriceLowToHigh" xml:space="preserve">
+    <value>Price: Low to High</value>
+  </data>
+  <data name="PriceHighToLow" xml:space="preserve">
+    <value>Price: High to Low</value>
+  </data>
+  <data name="MostPopular" xml:space="preserve">
+    <value>Most Popular</value>
+  </data>
+  <data name="ActiveFilters" xml:space="preserve">
+    <value>Active filters</value>
+  </data>
+  <data name="ClearAll" xml:space="preserve">
+    <value>Clear all</value>
+  </data>
+  <data name="Showing" xml:space="preserve">
+    <value>Showing</value>
+  </data>
+  <data name="Of" xml:space="preserve">
+    <value>of</value>
+  </data>
+  <data name="NoProductsFound" xml:space="preserve">
+    <value>No products found</value>
+  </data>
+  <data name="TryAdjustingFilters" xml:space="preserve">
+    <value>Try adjusting your search terms or filters.</value>
+  </data>
+  <data name="ClearAllFilters" xml:space="preserve">
+    <value>Clear all filters</value>
+  </data>
+  <data name="FeaturedCategories" xml:space="preserve">
+    <value>Featured Categories</value>
+  </data>
+  <data name="ExplorePremiumCollections" xml:space="preserve">
+    <value>Explore our premium coffee collections</value>
+  </data>
 </root>

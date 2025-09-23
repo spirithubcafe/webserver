@@ -968,4 +968,61 @@
   <data name="SearchCoffee" xml:space="preserve">
     <value>البحث عن القهوة...</value>
   </data>
+  <data name="ExploreCategories" xml:space="preserve">
+    <value>استكشف فئاتنا</value>
+  </data>
+  <data name="DiscoverCoffeeCategories" xml:space="preserve">
+    <value>اكتشف مجموعتنا الواسعة من فئات القهوة واعثر على مشروبك المثالي</value>
+  </data>
+  <data name="ViewAllCategories" xml:space="preserve">
+    <value>عرض جميع الفئات</value>
+  </data>
+  <data name="ExploreCoffees" xml:space="preserve">
+    <value>اكتشف تشكيلتنا المميزة</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>الفئة</value>
+  </data>
+  <data name="SortBy" xml:space="preserve">
+    <value>ترتيب حسب</value>
+  </data>
+  <data name="NameAZ" xml:space="preserve">
+    <value>الاسم أ-ي</value>
+  </data>
+  <data name="PriceLowToHigh" xml:space="preserve">
+    <value>السعر: من الأقل إلى الأعلى</value>
+  </data>
+  <data name="PriceHighToLow" xml:space="preserve">
+    <value>السعر: من الأعلى إلى الأقل</value>
+  </data>
+  <data name="MostPopular" xml:space="preserve">
+    <value>الأكثر شعبية</value>
+  </data>
+  <data name="ActiveFilters" xml:space="preserve">
+    <value>الفلاتر النشطة</value>
+  </data>
+  <data name="ClearAll" xml:space="preserve">
+    <value>مسح الكل</value>
+  </data>
+  <data name="Showing" xml:space="preserve">
+    <value>عرض</value>
+  </data>
+  <data name="Of" xml:space="preserve">
+    <value>من</value>
+  </data>
+  <data name="NoProductsFound" xml:space="preserve">
+    <value>لم يتم العثور على منتجات</value>
+  </data>
+  <data name="TryAdjustingFilters" xml:space="preserve">
+    <value>حاول تعديل مصطلحات البحث أو الفلاتر.</value>
+  </data>
+  <data name="ClearAllFilters" xml:space="preserve">
+    <value>مسح جميع الفلاتر</value>
+  </data>
+  <data name="FeaturedCategories" xml:space="preserve">
+    <value>الفئات المميزة</value>
+  </data>
+  <data name="ExplorePremiumCollections" xml:space="preserve">
+    <value>استكشف مجموعاتنا المميزة من القهوة</value>
+  </data>
 </root>

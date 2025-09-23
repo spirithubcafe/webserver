@@ -1,11 +1,58 @@
 ﻿@page "/"
 @inject IStringLocalizer<Resources> Localizer
+@inject CategoryService CategoryService
 @using SpirithubCofe.Web.Components.Shared
+@using SpirithubCofe.Domain.Entities
 
 <PageTitle>@Localizer["Home"] - @Localizer["SiteTitle"]</PageTitle>
 
 <!-- Hero Slideshow Section -->
 <HeroSlideshow />
+
+<!-- Categories Section -->
+@if (homepageCategories.Any())
+{
+    <section class="py-16 bg-white border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">@Localizer["ExploreCategories"]</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    @Localizer["DiscoverCoffeeCategories"]
+                </p>
+            </div>
+
+            <div class="flex justify-center">
+                <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-4">
+                    @foreach (var category in homepageCategories)
+                    {
+                        <a href="/products/@category.Slug" class="block text-center">
+                            <div class="aspect-square bg-gray-50 rounded-xl shadow-sm border border-gray-100 hover:shadow-md mb-3">
+                                @if (!string.IsNullOrEmpty(category.ImagePath))
+                                {
+                                    <img src="@category.ImagePath" 
+                                         alt="@GetCategoryName(category)" 
+                                         class="w-full h-full object-cover rounded-xl" />
+                                }
+                                else
+                                {
+                                    <div class="w-full h-full bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center rounded-xl">
+                                        <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                        </svg>
+                                    </div>
+                                }
+                            </div>
+                            <h3 class="font-medium text-gray-900 text-sm hover:text-amber-600">
+                                @GetCategoryName(category)
+                            </h3>
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+}
 
 <!-- Features Section -->
 <section class="py-16 bg-white">
@@ -140,3 +187,29 @@
         </div>
     </div>
 </section>
+
+@code {
+    private List<Category> homepageCategories = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            homepageCategories = await CategoryService.GetHomepageCategoriesAsync();
+        }
+        catch (Exception ex)
+        {
+            // Log error in production
+            Console.WriteLine($"Error loading homepage categories: {ex.Message}");
+            homepageCategories = new();
+        }
+    }
+
+    private string GetCategoryName(Category category)
+    {
+        var currentCulture = System.Globalization.CultureInfo.CurrentUICulture.Name;
+        return currentCulture.StartsWith("ar") && !string.IsNullOrEmpty(category.NameAr) 
+            ? category.NameAr 
+            : category.Name;
+    }
+}

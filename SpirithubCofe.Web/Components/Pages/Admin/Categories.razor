@@ -2,135 +2,251 @@
 @layout AdminLayout
 @attribute [Authorize(Roles = "Admin")]
 @using SpirithubCofe.Domain.Entities
+@using Microsoft.AspNetCore.Authorization
+@using SpirithubCofe.Web.Components.Shared
 @inject CategoryService CategoryService
 @inject IJSRuntime JSRuntime
 @inject HttpClient HttpClient
 @inject IStringLocalizer<SpirithubCofe.Langs.Resources> Localizer
 @rendermode InteractiveServer
 
-<div class="p-6">
-    <!-- Header -->
-    <div class="mb-8">
-        <div class="flex justify-between items-center">
-            <div>
-                <h1 class="text-3xl font-bold text-gray-900 mb-2">Categories Management</h1>
-                <p class="text-gray-600">Manage your product categories and homepage display settings</p>
-            </div>
-            <button @onclick="ShowCreateForm" 
-                    class="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center gap-2">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
-                </svg>
-                Add Category
-            </button>
-        </div>
-    </div>
+<PageTitle>Category Management - SpirithubCofe Admin</PageTitle>
 
-    <!-- Success/Error Messages -->
-    @if (showSuccessMessage)
-    {
-        <div class="mb-6 bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg">
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                    </svg>
-                </div>
-                <div class="ml-3">
-                    <p class="text-sm text-green-700 font-medium">@successMessage</p>
-                </div>
-                <div class="ml-auto pl-3">
-                    <button @onclick="() => showSuccessMessage = false" class="text-green-400 hover:text-green-600">
-                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                        </svg>
-                    </button>
+<Toast />
+
+<div class="min-h-screen bg-gray-50 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Page Header -->
+        <div class="bg-white shadow-sm rounded-lg mb-6">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Category Management</h1>
+                        <p class="mt-1 text-sm text-gray-600">Manage product categories with professional controls</p>
+                    </div>
+                    <div class="mt-4 sm:mt-0 flex space-x-3">
+                        <button type="button" @onclick="ShowCreateForm" 
+                                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            Add New Category
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-    }
 
-    @if (showErrorMessage)
-    {
-        <div class="mb-6 bg-red-50 border-l-4 border-red-400 p-4 rounded-r-lg">
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                    </svg>
-                </div>
-                <div class="ml-3">
-                    <p class="text-sm text-red-700 font-medium">@errorMessage</p>
-                </div>
-                <div class="ml-auto pl-3">
-                    <button @onclick="() => showErrorMessage = false" class="text-red-400 hover:text-red-600">
-                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    }
-
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white rounded-xl shadow-sm p-6 border-gray-100">
-            <div class="flex items-center">
-                <div class="p-2 bg-blue-100 rounded-lg">
-                    <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                    </svg>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">Total Categories</p>
-                    <p class="text-2xl font-semibold text-gray-900">@totalCategories</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-sm p-6 border-gray-100">
-            <div class="flex items-center">
-                <div class="p-2 bg-green-100 rounded-lg">
-                    <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                    </svg>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">Active Categories</p>
-                    <p class="text-2xl font-semibold text-gray-900">@activeCategories</p>
+            <!-- Stats Section -->
+            <div class="px-6 py-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-blue-900">Total Categories</p>
+                                <p class="text-2xl font-bold text-blue-600">@totalCategories</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-green-50 rounded-lg p-4 border border-green-200">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <svg class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-green-900">Active Categories</p>
+                                <p class="text-2xl font-bold text-green-600">@activeCategories</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <svg class="h-8 w-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-purple-900">On Homepage</p>
+                                <p class="text-2xl font-bold text-purple-600">@homepageCategories</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-amber-50 rounded-lg p-4 border border-amber-200">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <svg class="h-8 w-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-amber-900">With Products</p>
+                                <p class="text-2xl font-bold text-amber-600">@categoriesWithProducts</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-6 border-gray-100">
-            <div class="flex items-center">
-                <div class="p-2 bg-purple-100 rounded-lg">
-                    <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"></path>
-                    </svg>
+        <!-- Main Content -->
+        @if (showCreateForm || editingCategory != null)
+        {
+            <!-- Create/Edit Form -->
+            <div class="bg-white shadow-sm rounded-lg mb-6">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-lg font-semibold text-gray-900">
+                                @(editingCategory?.Id > 0 ? "Edit Category" : "Add New Category")
+                            </h2>
+                            <p class="text-sm text-gray-600">
+                                @(editingCategory?.Id > 0 ? "Update category information and settings" : "Create a new category for product organization")
+                            </p>
+                        </div>
+                        <button type="button" @onclick="CancelForm" 
+                                class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">On Homepage</p>
-                    <p class="text-2xl font-semibold text-gray-900">@homepageCategories</p>
-                </div>
-            </div>
-        </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-6 border-gray-100">
-            <div class="flex items-center">
-                <div class="p-2 bg-amber-100 rounded-lg">
-                    <svg class="w-6 h-6 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9 12a5 5 0 100-10 5 5 0 000 10zm0-8a3 3 0 110 6 3 3 0 010-6zm7 12a7 7 0 11-14 0h14z"></path>
-                    </svg>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">With Products</p>
-                    <p class="text-2xl font-semibold text-gray-900">@categoriesWithProducts</p>
+                <div class="p-6">
+                    <form @onsubmit:preventDefault="true" class="space-y-6">
+                        
+                        <!-- Category Image -->
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-2">
+                                <label class="block text-sm font-medium text-gray-700">
+                                    Category Image <span class="text-red-500">*</span>
+                                </label>
+                                <span class="text-xs text-gray-500">(Recommended: 400x300px)</span>
+                            </div>
+                            
+                            <FileUpload Folder="categories" 
+                                       FileType="image" 
+                                       Prefix="category"
+                                       @bind-CurrentFileUrl="currentCategory.ImagePath"
+                                       OnFileUploaded="OnImageUploaded" />
+                        </div>
+
+                        <!-- Basic Information -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">
+                                    Name (English) <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" @bind="currentCategory.Name" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
+                                       placeholder="Coffee Beans" required />
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Name (Arabic)</label>
+                                <input type="text" @bind="currentCategory.NameAr" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
+                                       placeholder="حبوب القهوة" dir="rtl" />
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">
+                                Slug <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" @bind="currentCategory.Slug" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 font-mono" 
+                                   placeholder="coffee-beans" required />
+                            <p class="text-xs text-gray-500">Used in URLs - must be unique</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Description (English)</label>
+                                <textarea @bind="currentCategory.Description" rows="3"
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
+                                          placeholder="Premium coffee beans from around the world"></textarea>
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Description (Arabic)</label>
+                                <textarea @bind="currentCategory.DescriptionAr" rows="3"
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
+                                          placeholder="حبوب قهوة مميزة من جميع أنحاء العالم" dir="rtl"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Settings -->
+                        <div class="border-t border-gray-200 pt-6">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Category Settings</h3>
+                            
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-medium text-gray-700">Display Order</label>
+                                    <input type="number" @bind="currentCategory.DisplayOrder" min="0"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
+                                           placeholder="0" />
+                                    <p class="text-xs text-gray-500">Lower numbers appear first</p>
+                                </div>
+                                
+                                <div class="space-y-4">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" @bind="currentCategory.IsActive" 
+                                               class="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded" />
+                                        <label class="text-sm font-medium text-gray-700">Active Category</label>
+                                    </div>
+                                    <span class="text-xs text-gray-500">Only active categories will be visible to customers</span>
+                                </div>
+                                
+                                <div class="space-y-4">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" @bind="currentCategory.IsDisplayedOnHomepage" 
+                                               class="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded" />
+                                        <label class="text-sm font-medium text-gray-700">Show on Homepage</label>
+                                    </div>
+                                    <span class="text-xs text-gray-500">Display this category on the homepage</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="border-t border-gray-200 pt-6">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                                <div class="text-sm text-gray-600">
+                                    @(editingCategory?.Id > 0 ? "Review changes before updating the category." : "Review all information before creating the category.")
+                                </div>
+                                <div class="flex space-x-3">
+                                    <button type="button" @onclick="CancelForm" 
+                                            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                        Cancel
+                                    </button>
+                                    <button type="button" @onclick="SaveCategory" disabled="@saving"
+                                            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 disabled:opacity-50">
+                                        @if (saving)
+                                        {
+                                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                        }
+                                        @(editingCategory?.Id > 0 ? "Update Category" : "Create Category")
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
-        </div>
-    </div>
+        }    <!-- Stats Cards -->
+ 
 
     <!-- Filters -->
     <div class="bg-white rounded-xl shadow-sm border-gray-100 mb-6">
@@ -151,271 +267,177 @@
         </div>
     </div>
 
-    <!-- Categories Grid -->
-    @if (loading)
-    {
-        <div class="text-center py-12">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600 mx-auto"></div>
-            <p class="mt-2 text-sm text-gray-500">Loading categories...</p>
-        </div>
-    }
-    else if (filteredCategories == null || !filteredCategories.Any())
-    {
-        <div class="text-center py-12">
-            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-            </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">No categories found</h3>
-            <p class="mt-1 text-sm text-gray-500">Get started by creating your first category.</p>
-            <div class="mt-6">
-                <button @onclick="ShowCreateForm" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                    Add Category
-                </button>
+        <!-- Categories List -->
+        <div class="bg-white shadow-sm rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">Current Categories</h2>
+                <p class="text-sm text-gray-600">Manage existing categories and their display order</p>
             </div>
-        </div>
-    }
-    else
-    {
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach (var category in filteredCategories)
-            {
-                <div class="bg-white rounded-xl shadow-sm border-gray-100 p-6 hover:shadow-md transition-shadow">
-                    <!-- Category Image -->
-                    <div class="mb-4">
-                        @if (!string.IsNullOrEmpty(category.ImagePath))
-                        {
-                            <img src="@category.ImagePath" alt="@category.Name" class="w-full h-32 object-cover rounded-lg" />
-                        }
-                        else
-                        {
-                            <div class="w-full h-32 bg-gray-100 rounded-lg flex items-center justify-center">
-                                <svg class="w-12 h-12 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path>
-                                </svg>
-                            </div>
-                        }
-                    </div>
-
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="flex-1">
-                            <h3 class="text-lg font-semibold text-gray-900">@category.Name</h3>
-                            @if (!string.IsNullOrEmpty(category.NameAr))
-                            {
-                                <p class="text-sm text-gray-500 mt-1" dir="rtl">@category.NameAr</p>
-                            }
-                            <p class="text-xs text-gray-400 font-mono mt-1">@category.Slug</p>
-                        </div>
-                        <div class="flex gap-2">
-                            <button @onclick="() => EditCategory(category)"
-                                    class="p-2 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors">
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
-                                </svg>
-                            </button>
-                            <button @onclick="() => DeleteCategory(category)"
-                                    class="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-500">Status</span>
-                            <span class="@(category.IsActive ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800") px-2 py-1 rounded-full text-xs font-medium">
-                                @(category.IsActive ? "Active" : "Inactive")
-                            </span>
-                        </div>
-
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-500">Homepage</span>
-                            <span class="@(category.IsDisplayedOnHomepage ? "bg-blue-100 text-blue-800" : "bg-gray-100 text-gray-800") px-2 py-1 rounded-full text-xs font-medium">
-                                @(category.IsDisplayedOnHomepage ? "Visible" : "Hidden")
-                            </span>
-                        </div>
-
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-500">Display Order</span>
-                            <span class="text-sm font-medium text-gray-900">@category.DisplayOrder</span>
-                        </div>
-
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-500">Products</span>
-                            <span class="text-sm font-medium text-gray-900">@(category.Products?.Count ?? 0)</span>
-                        </div>
-
-                        @if (!string.IsNullOrEmpty(category.Description))
-                        {
-                            <div class="pt-2 border-t border-gray-100">
-                                <p class="text-sm text-gray-600 line-clamp-2">@category.Description</p>
-                            </div>
-                        }
-                    </div>
-                </div>
-            }
-        </div>
-    }
-</div>
-
-<!-- Category Form Modal -->
-@if (showCreateModal)
-{
-    <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" @onclick="() => showCreateModal = false">
-        <div class="relative top-20 mx-auto p-5 w-full max-w-lg bg-white rounded-lg shadow-lg" @onclick:stopPropagation="true">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-900">@(editingCategory?.Id > 0 ? @Localizer["EditCategory"] : @Localizer["CreateNewCategory"])</h3>
-                <button @onclick="() => showCreateModal = false" class="text-gray-400 hover:text-gray-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-
-            <form @onsubmit:preventDefault="true">
-                @if (editingCategory != null)
+            
+            <div class="p-6">
+                @if (allCategories.Any())
                 {
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Name (English)</label>
-                            <input type="text" @bind="editingCategory.Name" class="w-full px-3 py-2 border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" />
-                        </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Name (Arabic)</label>
-                        <input type="text" @bind="editingCategory.NameAr" dir="rtl" class="w-full px-3 py-2 border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" />
+                    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                        @foreach (var category in filteredCategories.OrderBy(c => c.DisplayOrder))
+                        {
+                            <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                                <!-- Category Image -->
+                                <div class="aspect-square bg-gray-200">
+                                    @if (!string.IsNullOrEmpty(category.ImagePath))
+                                    {
+                                        <img src="@category.ImagePath" alt="@category.Name" class="w-full h-full object-cover" />
+                                    }
+                                    else
+                                    {
+                                        <div class="w-full h-full bg-gray-100 flex items-center justify-center">
+                                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                            </svg>
+                                        </div>
+                                    }
+                                </div>
+                                
+                                <!-- Category Content -->
+                                <div class="p-4">
+                                    <div class="flex items-start justify-between mb-2">
+                                        <div class="flex-1">
+                                            <h3 class="text-sm font-semibold text-gray-900 truncate">@category.Name</h3>
+                                            @if (!string.IsNullOrEmpty(category.NameAr))
+                                            {
+                                                <p class="text-xs text-gray-600 truncate" dir="rtl">@category.NameAr</p>
+                                            }
+                                            <p class="text-xs text-gray-400 font-mono truncate">@category.Slug</p>
+                                        </div>
+                                        <div class="ml-2 flex-shrink-0">
+                                            @if (category.IsActive)
+                                            {
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                    Active
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                    Inactive
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="space-y-2 mb-3">
+                                        <div class="flex items-center justify-between text-xs text-gray-500">
+                                            <span>Display Order: @category.DisplayOrder</span>
+                                            <span>Products: @(category.Products?.Count ?? 0)</span>
+                                        </div>
+                                        
+                                        <div class="flex items-center justify-between text-xs">
+                                            <span class="text-gray-500">Homepage:</span>
+                                            @if (category.IsDisplayedOnHomepage)
+                                            {
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                    Visible
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                    Hidden
+                                                </span>
+                                            }
+                                        </div>
+                                        
+                                        @if (!string.IsNullOrEmpty(category.Description))
+                                        {
+                                            <div class="pt-2 border-t border-gray-100">
+                                                <p class="text-xs text-gray-600 line-clamp-2">@category.Description</p>
+                                            </div>
+                                        }
+                                    </div>
+                                    
+                                    <!-- Action Buttons -->
+                                    <div class="flex space-x-2">
+                                        <button @onclick="() => EditCategory(category)" 
+                                                class="flex-1 text-xs bg-amber-50 text-amber-700 hover:bg-amber-100 px-3 py-2 rounded-md border border-amber-200">
+                                            Edit
+                                        </button>
+                                        <button @onclick="() => ToggleCategoryStatus(category.Id)" 
+                                                class="flex-1 text-xs @(category.IsActive ? "bg-yellow-50 text-yellow-700 hover:bg-yellow-100 border-yellow-200" : "bg-green-50 text-green-700 hover:bg-green-100 border-green-200") px-3 py-2 rounded-md border">
+                                            @(category.IsActive ? "Deactivate" : "Activate")
+                                        </button>
+                                        <button @onclick="() => DeleteCategory(category)" 
+                                                class="flex-1 text-xs bg-red-50 text-red-700 hover:bg-red-100 px-3 py-2 rounded-md border border-red-200">
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
                     </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Slug</label>
-                        <input type="text" @bind="editingCategory.Slug" class="w-full px-3 py-2 border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 font-mono" />
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Description (English)</label>
-                        <textarea @bind="editingCategory.Description" rows="3" class="w-full px-3 py-2 border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500"></textarea>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Description (Arabic)</label>
-                        <textarea @bind="editingCategory.DescriptionAr" dir="rtl" rows="3" class="w-full px-3 py-2 border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500"></textarea>
-                    </div>
-
-                    <!-- Image Upload Section -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Category Image</label>
-                        <FileUpload Folder="categories" 
-                                   FileType="image" 
-                                   Prefix="category"
-                                   @bind-CurrentFileUrl="editingCategory.ImagePath"
-                                   AltText="@Localizer["CategoryImage"]" />
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Display Order</label>
-                        <input type="number" @bind="editingCategory.DisplayOrder" class="w-full px-3 py-2 border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" />
-                    </div>
-
-                    <div class="flex items-center space-x-4">
-                        <label class="flex items-center">
-                            <input type="checkbox" @bind="editingCategory.IsActive" class="rounded border-gray-300 text-amber-600 focus:ring-amber-500" />
-                            <span class="ml-2 text-sm text-gray-700">Active</span>
-                        </label>
-
-                        <label class="flex items-center">
-                            <input type="checkbox" @bind="editingCategory.IsDisplayedOnHomepage" class="rounded border-gray-300 text-amber-600 focus:ring-amber-500" />
-                            <span class="ml-2 text-sm text-gray-700">Show on Homepage</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="flex justify-end space-x-3 mt-6">
-                    <button type="button" @onclick="() => showCreateModal = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">
-                        Cancel
-                    </button>
-                    <button type="button" @onclick="SaveCategory" class="px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-lg">
-                        @(editingCategory?.Id > 0 ? "Update" : "Create")
-                    </button>
-                </div>
                 }
-            </form>
+                else
+                {
+                    <div class="text-center py-12">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">No categories</h3>
+                        <p class="mt-1 text-sm text-gray-500">Get started by creating your first category.</p>
+                        <div class="mt-6">
+                            <button type="button" @onclick="ShowCreateForm"
+                                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                                Add Your First Category
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
         </div>
     </div>
-}
+</div>
 
 @code {
     private List<Category> allCategories = new();
     private List<Category> filteredCategories = new();
-    private bool loading = true;
-    private bool showCreateModal = false;
-    
+    private Category currentCategory = new() { IsActive = true, IsDisplayedOnHomepage = true };
+    private Category? editingCategory = null;
+    private bool showCreateForm = false;
+    private bool saving = false;
+
     // Stats
     private int totalCategories = 0;
     private int activeCategories = 0;
     private int homepageCategories = 0;
     private int categoriesWithProducts = 0;
-    
+
     // Filter properties
     private string searchTerm = string.Empty;
-    private string _selectedStatus = string.Empty;
-    
-    // Message handling
-    private string successMessage = string.Empty;
-    private string errorMessage = string.Empty;
-    private bool showSuccessMessage = false;
-    private bool showErrorMessage = false;
-    
-    private string selectedStatus
-    {
-        get => _selectedStatus;
-        set
-        {
-            if (_selectedStatus != value)
-            {
-                _selectedStatus = value;
-                _ = ApplyFiltersAsync();
-            }
-        }
-    }
-    
-    // Form properties
-    private Category editingCategory = new();
+    private string selectedStatus = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadCategoriesAsync();
+        await LoadCategories();
     }
 
-    private async Task LoadCategoriesAsync()
+    private async Task LoadCategories()
     {
-        loading = true;
         try
         {
             allCategories = await CategoryService.GetAllCategoriesAsync();
-            await CalculateStats();
-            await ApplyFiltersAsync();
+            ApplyFilters();
+            CalculateStats();
         }
         catch (Exception ex)
         {
-            ShowErrorMessage($"Failed to load categories: {ex.Message}");
+            await Toast.ShowError(JSRuntime, $"Error loading categories: {ex.Message}");
         }
-        finally
-        {
-            loading = false;
-        }
+        
+        StateHasChanged();
     }
 
-    private async Task CalculateStats()
-    {
-        totalCategories = allCategories.Count;
-        activeCategories = allCategories.Count(c => c.IsActive);
-        homepageCategories = allCategories.Count(c => c.IsDisplayedOnHomepage);
-        categoriesWithProducts = allCategories.Count(c => c.Products?.Any() == true);
-        await Task.CompletedTask;
-    }
-
-    private async Task ApplyFiltersAsync()
+    private void ApplyFilters()
     {
         var filteredQuery = allCategories.AsEnumerable();
 
@@ -436,24 +458,42 @@
         };
 
         filteredCategories = filteredQuery.OrderBy(c => c.DisplayOrder).ThenBy(c => c.Name).ToList();
-        await Task.CompletedTask;
+    }
+
+    private void OnSearchChanged()
+    {
+        ApplyFilters();
         StateHasChanged();
     }
 
-    private async Task OnSearchChanged()
+    private void OnFilterChanged()
     {
-        await ApplyFiltersAsync();
+        ApplyFilters();
+        StateHasChanged();
     }
 
-    private void ShowCreateForm()
+    private void CalculateStats()
     {
-        editingCategory = new Category { IsActive = true, DisplayOrder = allCategories.Count + 1 };
-        showCreateModal = true;
+        totalCategories = allCategories.Count;
+        activeCategories = allCategories.Count(c => c.IsActive);
+        homepageCategories = allCategories.Count(c => c.IsDisplayedOnHomepage);
+        categoriesWithProducts = allCategories.Count(c => c.Products?.Any() == true);
     }
 
-    private void EditCategory(Category category)
+    private async Task ShowCreateForm()
     {
-        editingCategory = new Category
+        currentCategory = new() { IsActive = true, IsDisplayedOnHomepage = true, DisplayOrder = allCategories.Count };
+        editingCategory = null;
+        showCreateForm = true;
+        
+        // Scroll to top to show the create form
+        await JSRuntime.InvokeVoidAsync("scrollToTop");
+    }
+
+    private async Task EditCategory(Category category)
+    {
+        editingCategory = category;
+        currentCategory = new Category
         {
             Id = category.Id,
             Name = category.Name,
@@ -466,107 +506,120 @@
             IsActive = category.IsActive,
             IsDisplayedOnHomepage = category.IsDisplayedOnHomepage
         };
-        showCreateModal = true;
+        showCreateForm = true;
+        
+        // Scroll to top to show the edit form
+        await JSRuntime.InvokeVoidAsync("scrollToTop");
+    }
+
+    private void CancelForm()
+    {
+        showCreateForm = false;
+        editingCategory = null;
+        currentCategory = new() { IsActive = true, IsDisplayedOnHomepage = true };
+    }
+
+    private void OnImageUploaded(FileUpload.UploadResult result)
+    {
+        if (result.Success)
+        {
+            currentCategory.ImagePath = result.FileUrl;
+            StateHasChanged();
+        }
     }
 
     private async Task SaveCategory()
     {
-        if (editingCategory == null) return;
-        
+        saving = true;
         try
         {
-            string action = editingCategory.Id > 0 ? "updated" : "created";
-            string categoryName = editingCategory.Name;
-            
-            if (editingCategory.Id > 0)
+            if (editingCategory != null)
             {
-                await CategoryService.UpdateCategoryAsync(editingCategory);
+                // Update existing category
+                currentCategory.UpdatedAt = DateTime.UtcNow;
+                await CategoryService.UpdateCategoryAsync(currentCategory);
+                await Toast.ShowSuccess(JSRuntime, "Category updated successfully!");
             }
             else
             {
-                await CategoryService.CreateCategoryAsync(editingCategory);
+                // Create new category
+                currentCategory.CreatedAt = DateTime.UtcNow;
+                currentCategory.UpdatedAt = DateTime.UtcNow;
+                await CategoryService.CreateCategoryAsync(currentCategory);
+                await Toast.ShowSuccess(JSRuntime, "Category created successfully!");
             }
             
-            showCreateModal = false;
-            await LoadCategoriesAsync();
-            ShowSuccessMessage($"Category '{categoryName}' has been {action} successfully.");
+            CancelForm();
+            await LoadCategories();
         }
         catch (Exception ex)
         {
-            ShowErrorMessage($"Failed to save category: {ex.Message}");
+            await Toast.ShowError(JSRuntime, $"Error saving category: {ex.Message}");
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+    private async Task ToggleCategoryStatus(int categoryId)
+    {
+        try
+        {
+            var category = allCategories.FirstOrDefault(c => c.Id == categoryId);
+            if (category != null)
+            {
+                category.IsActive = !category.IsActive;
+                category.UpdatedAt = DateTime.UtcNow;
+                await CategoryService.UpdateCategoryAsync(category);
+                await LoadCategories();
+                await Toast.ShowSuccess(JSRuntime, "Category status updated successfully!");
+            }
+        }
+        catch (Exception ex)
+        {
+            await Toast.ShowError(JSRuntime, $"Error updating category status: {ex.Message}");
         }
     }
 
     private async Task DeleteCategory(Category category)
     {
-        try
+        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this category? This action cannot be undone.");
+        if (confirmed)
         {
-            // First show a loading message
-            ShowSuccessMessage($"Attempting to delete category '{category.Name}'...");
-            
-            // Check if category can be deleted first
-            var canDeleteResult = await CategoryService.CanDeleteCategoryAsync(category.Id);
-            if (!canDeleteResult.CanDelete)
+            try
             {
-                ShowErrorMessage($"Cannot delete category '{category.Name}' because it contains {canDeleteResult.ProductCount} product(s). Please move or delete the products first.");
-                return;
-            }
-            
-            var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete '{category.Name}'? This action cannot be undone.");
-            if (confirmed)
-            {
-                var result = await CategoryService.DeleteCategoryAsync(category.Id);
-                if (result)
+                var canDeleteResult = await CategoryService.CanDeleteCategoryAsync(category.Id);
+                if (!canDeleteResult.CanDelete)
                 {
-                    await LoadCategoriesAsync();
-                    ShowSuccessMessage($"Category '{category.Name}' has been deleted successfully.");
+                    await Toast.ShowError(JSRuntime, $"Cannot delete category '{category.Name}' because it contains {canDeleteResult.ProductCount} product(s). Please move or delete the products first.");
+                    return;
+                }
+
+                var success = await CategoryService.DeleteCategoryAsync(category.Id);
+                if (success)
+                {
+                    await LoadCategories();
+                    await Toast.ShowSuccess(JSRuntime, "Category deleted successfully!");
                 }
                 else
                 {
-                    ShowErrorMessage($"Category '{category.Name}' was not found or could not be deleted.");
+                    await Toast.ShowError(JSRuntime, "Error deleting category. Please try again.");
                 }
             }
+            catch (Exception ex)
+            {
+                await Toast.ShowError(JSRuntime, $"Error deleting category: {ex.Message}");
+            }
         }
-        catch (InvalidOperationException ex)
-        {
-            // This handles the case where category has products
-            ShowErrorMessage(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            ShowErrorMessage($"Failed to delete category: {ex.Message}");
-            // Also log to console for debugging
-            await JSRuntime.InvokeVoidAsync("console.error", "Delete error details:", ex);
-        }
-    }
-
-    private void ShowSuccessMessage(string message)
-    {
-        successMessage = message;
-        showSuccessMessage = true;
-        showErrorMessage = false;
-        StateHasChanged();
-        
-        // Auto-hide after 5 seconds
-        _ = Task.Delay(5000).ContinueWith(_ => 
-        {
-            showSuccessMessage = false;
-            InvokeAsync(StateHasChanged);
-        });
-    }
-
-    private void ShowErrorMessage(string message)
-    {
-        errorMessage = message;
-        showErrorMessage = true;
-        showSuccessMessage = false;
-        StateHasChanged();
-        
-        // Auto-hide after 8 seconds (longer for error messages)
-        _ = Task.Delay(8000).ContinueWith(_ => 
-        {
-            showErrorMessage = false;
-            InvokeAsync(StateHasChanged);
-        });
     }
 }
+
+<script>
+    window.scrollToTop = function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    };
+</script>
