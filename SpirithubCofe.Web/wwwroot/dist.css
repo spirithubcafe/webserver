@@ -1796,9 +1796,6 @@
   .ml-8 {
     margin-left: calc(var(--spacing) * 8);
   }
-  .ml-64 {
-    margin-left: calc(var(--spacing) * 64);
-  }
   .ml-auto {
     margin-left: auto;
   }
@@ -4548,6 +4545,86 @@
   .xl\:gap-x-16 {
     @media (width >= 80rem) {
       column-gap: calc(var(--spacing) * 16);
+    }
+  }
+  .ltr\:right-0 {
+    &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
+      right: calc(var(--spacing) * 0);
+    }
+  }
+  .ltr\:left-0 {
+    &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
+      left: calc(var(--spacing) * 0);
+    }
+  }
+  .ltr\:mr-1 {
+    &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
+      margin-right: calc(var(--spacing) * 1);
+    }
+  }
+  .ltr\:mr-3 {
+    &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
+      margin-right: calc(var(--spacing) * 3);
+    }
+  }
+  .ltr\:ml-3 {
+    &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
+      margin-left: calc(var(--spacing) * 3);
+    }
+  }
+  .ltr\:ml-8 {
+    &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
+      margin-left: calc(var(--spacing) * 8);
+    }
+  }
+  .ltr\:ml-64 {
+    &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
+      margin-left: calc(var(--spacing) * 64);
+    }
+  }
+  .ltr\:ml-auto {
+    &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
+      margin-left: auto;
+    }
+  }
+  .rtl\:right-0 {
+    &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
+      right: calc(var(--spacing) * 0);
+    }
+  }
+  .rtl\:left-0 {
+    &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
+      left: calc(var(--spacing) * 0);
+    }
+  }
+  .rtl\:mr-3 {
+    &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
+      margin-right: calc(var(--spacing) * 3);
+    }
+  }
+  .rtl\:mr-8 {
+    &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
+      margin-right: calc(var(--spacing) * 8);
+    }
+  }
+  .rtl\:mr-64 {
+    &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
+      margin-right: calc(var(--spacing) * 64);
+    }
+  }
+  .rtl\:mr-auto {
+    &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
+      margin-right: auto;
+    }
+  }
+  .rtl\:ml-1 {
+    &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
+      margin-left: calc(var(--spacing) * 1);
+    }
+  }
+  .rtl\:ml-3 {
+    &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
+      margin-left: calc(var(--spacing) * 3);
     }
   }
   .rtl\:space-x-reverse {

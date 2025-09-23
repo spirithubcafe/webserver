@@ -22,7 +22,7 @@
 <body class="h-full">
     <div class="flex h-full">
         <!-- Sidebar -->
-        <div class="fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 text-white">
+        <div class="fixed inset-y-0 ltr:left-0 rtl:right-0 z-50 w-64 bg-gray-900 text-white">
             <!-- Logo -->
             <div class="flex items-center justify-center h-16 bg-gray-800">
                 @if (!string.IsNullOrEmpty(logoType) && logoType == "image" && !string.IsNullOrEmpty(logoImage))
@@ -39,7 +39,7 @@
             <nav class="mt-8 px-4 space-y-2">
                 <!-- Dashboard -->
                 <a href="/admin" class="flex items-center px-4 py-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors">
-                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-5 h-5 ltr:mr-3 rtl:ml-3" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"></path>
                     </svg>
                     @Localizer["Dashboard"]
@@ -49,15 +49,15 @@
                 <div class="space-y-1">
                     <details class="group">
                         <summary class="flex items-center px-4 py-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors cursor-pointer list-none">
-                            <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="w-5 h-5 ltr:mr-3 rtl:ml-3" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 2L3 7v11a2 2 0 002 2h10a2 2 0 002-2V7l-7-5zM8 15a1 1 0 002 0v-3a1 1 0 00-2 0v3z" clip-rule="evenodd"></path>
                             </svg>
                             @Localizer["Products"]
-                            <svg class="w-4 h-4 ml-auto transition-transform group-open:rotate-180" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="w-4 h-4 ltr:ml-auto rtl:mr-auto transition-transform group-open:rotate-180" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                             </svg>
                         </summary>
-                        <div class="ml-8 space-y-1 mt-1">
+                        <div class="ltr:ml-8 rtl:mr-8 space-y-1 mt-1">
                             <a href="/admin/products" class="block px-4 py-2 text-sm text-gray-400 rounded hover:bg-gray-700 hover:text-white transition-colors">@Localizer["AllProducts"]</a>
                             <a href="/admin/products/create" class="block px-4 py-2 text-sm text-gray-400 rounded hover:bg-gray-700 hover:text-white transition-colors">@Localizer["AddProduct"]</a>
                             <a href="/admin/categories" class="block px-4 py-2 text-sm text-gray-400 rounded hover:bg-gray-700 hover:text-white transition-colors">@Localizer["Categories"]</a>
@@ -67,7 +67,7 @@
 
                 <!-- Orders -->
                 <a href="/admin/orders" class="flex items-center px-4 py-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors">
-                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-5 h-5 ltr:mr-3 rtl:ml-3" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"></path>
                     </svg>
                     @Localizer["Orders"]
@@ -75,7 +75,7 @@
 
                 <!-- Users -->
                 <a href="/admin/users" class="flex items-center px-4 py-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors">
-                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-5 h-5 ltr:mr-3 rtl:ml-3" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9 12a5 5 0 100-10 5 5 0 000 10zm0-8a3 3 0 110 6 3 3 0 010-6zm7 12a7 7 0 11-14 0h14z"></path>
                     </svg>
                     @Localizer["Users"]
@@ -83,7 +83,7 @@
 
                 <!-- Roles -->
                 <a href="/admin/roles" class="flex items-center px-4 py-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors">
-                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-5 h-5 ltr:mr-3 rtl:ml-3" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
                     </svg>
                     @Localizer["Roles"]
@@ -91,7 +91,7 @@
 
                 <!-- Slides -->
                 <a href="/admin/slides" class="flex items-center px-4 py-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors">
-                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-5 h-5 ltr:mr-3 rtl:ml-3" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path>
                     </svg>
                     @Localizer["Slides"]
@@ -99,7 +99,7 @@
 
                 <!-- Reports -->
                 <a href="/admin/reports" class="flex items-center px-4 py-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors">
-                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-5 h-5 ltr:mr-3 rtl:ml-3" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"></path>
                     </svg>
                     @Localizer["Reports"]
@@ -107,7 +107,7 @@
 
                 <!-- Settings -->
                 <a href="/admin/settings" class="flex items-center px-4 py-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors">
-                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-5 h-5 ltr:mr-3 rtl:ml-3" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path>
                     </svg>
                     @Localizer["Settings"]
@@ -115,14 +115,14 @@
             </nav>
 
             <!-- User Info -->
-            <div class="absolute bottom-0 left-0 right-0 p-4 bg-gray-800">
+            <div class="absolute bottom-0 ltr:left-0 rtl:right-0 ltr:right-0 rtl:left-0 p-4 bg-gray-800">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
                         <div class="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center">
                             <span class="text-sm font-medium text-white">A</span>
                         </div>
                     </div>
-                    <div class="ml-3 flex-1 min-w-0">
+                    <div class="ltr:ml-3 rtl:mr-3 flex-1 min-w-0">
                         <AuthorizeView>
                             <Authorized>
                                 <p class="text-sm font-medium text-white truncate">@context.User.Identity?.Name</p>
@@ -130,7 +130,7 @@
                             </Authorized>
                         </AuthorizeView>
                     </div>
-                    <form action="Account/Logout" method="post" class="ml-3">
+                    <form action="Account/Logout" method="post" class="ltr:ml-3 rtl:mr-3">
                         <AntiforgeryToken />
                         <input type="hidden" name="ReturnUrl" value="/" />
                         <button type="submit" class="text-gray-400 hover:text-white">
@@ -144,7 +144,7 @@
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 ml-64">
+        <div class="flex-1 ltr:ml-64 rtl:mr-64">
             <!-- Top Bar -->
             <header class="bg-white shadow-sm border-b border-gray-200">
                 <div class="flex items-center justify-between px-6 py-4">
@@ -157,7 +157,7 @@
                         <a href="/" class="text-gray-500 hover:text-gray-700 text-sm">
  
 
-                            <svg class="w-4 h-4 inline mr-1" viewBox="0 0 24 24" fill="none">
+                            <svg class="w-4 h-4 inline ltr:mr-1 rtl:ml-1" viewBox="0 0 24 24" fill="none">
 <path d="M20 12H4M4 12L10 6M4 12L10 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
                             @Localizer["BackToWebsite"]
