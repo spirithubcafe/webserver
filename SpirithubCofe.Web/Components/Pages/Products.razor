@@ -339,9 +339,17 @@
     {
         if (firstRender || shouldScrollToTop)
         {
-            // Scroll to top of page when component is first rendered or when parameters changed
-            await JSRuntime.InvokeVoidAsync("window.scrollTo", 0, 0);
-            shouldScrollToTop = false;
+            try
+            {
+                // Scroll to top of page when component is first rendered or when parameters changed
+                await JSRuntime.InvokeVoidAsync("window.scrollTo", 0, 0);
+                shouldScrollToTop = false;
+            }
+            catch (InvalidOperationException)
+            {
+                // Ignore JS interop exceptions during prerendering
+                shouldScrollToTop = false;
+            }
         }
     }
 
@@ -467,15 +475,11 @@
         };
     }
     
-    private async Task SetCategoryFilter(string categoryName)
+    private void SetCategoryFilter(string categoryName)
     {
         selectedCategory = categoryName;
         shouldScrollToTop = true;
         StateHasChanged();
-        
-        // Wait for next render cycle then scroll
-        await Task.Delay(1);
-        await JSRuntime.InvokeVoidAsync("window.scrollTo", 0, 0);
     }
     
     private void ClearCategoryFilter()

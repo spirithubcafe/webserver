@@ -524,6 +524,22 @@ else
         }
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                // Scroll to top of page when component is first rendered
+                await JSRuntime.InvokeVoidAsync("window.scrollTo", 0, 0);
+            }
+            catch (InvalidOperationException)
+            {
+                // Ignore JS interop exceptions during prerendering
+            }
+        }
+    }
+
     private async Task HandleShippingSubmit()
     {
         if (IsValidShippingAddress())

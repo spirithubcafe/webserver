@@ -435,10 +435,7 @@
         catch (Exception ex)
         {
             await Toast.ShowError(JSRuntime, string.Format(Localizer["ErrorLoadingData"], ex.Message));
-            if (hasRendered)
-            {
-                await JSRuntime.InvokeVoidAsync("console.error", ex.Message);
-            }
+            // Log error to console only after render (avoid JS interop during prerendering)
         }
         finally
         {
