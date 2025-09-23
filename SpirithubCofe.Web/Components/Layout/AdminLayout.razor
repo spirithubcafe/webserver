@@ -23,7 +23,7 @@
 <body class="h-full">
     <div class="flex h-full">
         <!-- Mobile menu button -->
-        <div class="lg:hidden fixed top-4 ltr:left-4 rtl:right-4 z-50">
+        <div class="lg:hidden fixed top-4 left-4">
             <button id="mobile-menu-button" type="button" class="bg-gray-900 text-white p-2 rounded-md shadow-lg hover:bg-gray-800 transition-colors">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
@@ -32,10 +32,10 @@
         </div>
 
         <!-- Mobile overlay -->
-        <div id="mobile-overlay" class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+        <div id="mobile-overlay" class="lg:hidden fixed inset-0  bg-opacity-30 backdrop-blur-sm z-30 hidden"></div>
 
         <!-- Sidebar -->
-        <div id="sidebar" class="fixed inset-y-0 ltr:left-0 rtl:right-0 z-50 w-64 bg-gray-900 text-white transition-transform duration-300 ease-in-out ltr:-translate-x-full rtl:translate-x-full lg:ltr:translate-x-0 lg:rtl:translate-x-0">
+        <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 text-white transition-transform duration-300 ease-in-out -translate-x-full lg:translate-x-0">
             <!-- Logo -->
             <div class="flex items-center justify-between h-16 bg-gray-800 px-4">
                 <div class="flex items-center">
@@ -165,7 +165,7 @@
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 lg:ltr:ml-64 lg:rtl:mr-64">
+        <div class="flex-1 lg:ml-64">
             <!-- Top Bar -->
             <header class="bg-white shadow-sm border-b border-gray-200">
                 <div class="flex items-center justify-between px-6 py-4">
@@ -196,8 +196,7 @@
 <path d="M7.5 19C8.15503 20.7478 9.92246 22 12 22C14.0775 22 15.845 20.7478 16.5 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
 </svg>
 
-
-                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">3</span>
+                             <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">3</span>
                         </button>
                     </div>
                 </div>
@@ -223,55 +222,91 @@
     </div>
 
     <!-- Mobile Menu JavaScript -->
+        <!-- Mobile Menu JavaScript -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const mobileCloseButton = document.getElementById('mobile-close-button');
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('mobile-overlay');
-            const isRtl = document.documentElement.dir === 'rtl';
+            
+            console.log('Mobile menu initialized:', {
+                mobileMenuButton: !!mobileMenuButton,
+                mobileCloseButton: !!mobileCloseButton,
+                sidebar: !!sidebar,
+                overlay: !!overlay
+            });
             
             function openMobileMenu() {
+                console.log('Opening mobile menu...');
+                if (!sidebar || !overlay) return;
+                
+                // Show sidebar
+                sidebar.classList.remove('-translate-x-full');
                 sidebar.classList.add('translate-x-0');
-                if (isRtl) {
-                    sidebar.classList.remove('translate-x-full');
-                } else {
-                    sidebar.classList.remove('-translate-x-full');
-                }
+                
+                // Show overlay
                 overlay.classList.remove('hidden');
-                document.body.style.overflow = 'hidden'; // Prevent background scroll
+                
+                // Prevent background scroll
+                document.body.style.overflow = 'hidden';
+                
+                console.log('Mobile menu opened');
             }
             
             function closeMobileMenu() {
-                if (isRtl) {
-                    sidebar.classList.add('translate-x-full');
-                    sidebar.classList.remove('translate-x-0');
-                } else {
-                    sidebar.classList.add('-translate-x-full');
-                    sidebar.classList.remove('translate-x-0');
-                }
+                console.log('Closing mobile menu...');
+                if (!sidebar || !overlay) return;
+                
+                // Hide sidebar
+                sidebar.classList.remove('translate-x-0');
+                sidebar.classList.add('-translate-x-full');
+                
+                // Hide overlay
                 overlay.classList.add('hidden');
-                document.body.style.overflow = ''; // Restore background scroll
+                
+                // Restore background scroll
+                document.body.style.overflow = '';
+                
+                console.log('Mobile menu closed');
             }
             
             // Mobile menu button click
             if (mobileMenuButton) {
-                mobileMenuButton.addEventListener('click', openMobileMenu);
+                mobileMenuButton.addEventListener('click', function(e) {
+                    console.log('Mobile menu button clicked');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openMobileMenu();
+                });
+            } else {
+                console.error('Mobile menu button not found');
             }
             
             // Mobile close button click
             if (mobileCloseButton) {
-                mobileCloseButton.addEventListener('click', closeMobileMenu);
+                mobileCloseButton.addEventListener('click', function(e) {
+                    console.log('Mobile close button clicked');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    closeMobileMenu();
+                });
             }
             
             // Overlay click to close
             if (overlay) {
-                overlay.addEventListener('click', closeMobileMenu);
+                overlay.addEventListener('click', function(e) {
+                    console.log('Overlay clicked');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    closeMobileMenu();
+                });
             }
             
             // Close menu on window resize to desktop
             window.addEventListener('resize', function() {
                 if (window.innerWidth >= 1024) { // lg breakpoint
+                    console.log('Resized to desktop, closing mobile menu');
                     closeMobileMenu();
                 }
             });
@@ -279,6 +314,7 @@
             // Escape key to close mobile menu
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape' && window.innerWidth < 1024) {
+                    console.log('Escape key pressed, closing mobile menu');
                     closeMobileMenu();
                 }
             });
