@@ -256,7 +256,7 @@
                 @foreach (var category in categories.Take(8))
                 {
                     <button 
-                        @onclick="async () => await SetCategoryFilter(category.Name)"
+                        @onclick="() => SetCategoryFilter(category.Name)"
                         class="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden"
                     >
                         <div class="aspect-square bg-gradient-to-br from-amber-50 to-amber-100 p-6 flex items-center justify-center">
