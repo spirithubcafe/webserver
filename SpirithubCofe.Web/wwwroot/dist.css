@@ -147,6 +147,7 @@
     --radius-xl: 0.75rem;
     --radius-2xl: 1rem;
     --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
     --animate-spin: spin 1s linear infinite;
     --animate-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     --blur-sm: 8px;
@@ -1622,6 +1623,9 @@
   .z-0 {
     z-index: 0;
   }
+  .z-40 {
+    z-index: 40;
+  }
   .z-50 {
     z-index: 50;
   }
@@ -2089,6 +2093,18 @@
     --tw-translate-x: calc(calc(1/2 * 100%) * -1);
     translate: var(--tw-translate-x) var(--tw-translate-y);
   }
+  .-translate-x-full {
+    --tw-translate-x: -100%;
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+  .translate-x-0 {
+    --tw-translate-x: calc(var(--spacing) * 0);
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+  .translate-x-full {
+    --tw-translate-x: 100%;
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
   .-translate-y-1\/2 {
     --tw-translate-y: calc(calc(1/2 * 100%) * -1);
     translate: var(--tw-translate-x) var(--tw-translate-y);
@@ -2140,6 +2156,9 @@
   }
   .cursor-pointer {
     cursor: pointer;
+  }
+  .resize {
+    resize: both;
   }
   .resize-none {
     resize: none;
@@ -3473,6 +3492,10 @@
     --tw-duration: 500ms;
     transition-duration: 500ms;
   }
+  .ease-in-out {
+    --tw-ease: var(--ease-in-out);
+    transition-timing-function: var(--ease-in-out);
+  }
   .ease-out {
     --tw-ease: var(--ease-out);
     transition-timing-function: var(--ease-out);
@@ -3731,6 +3754,13 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-gray-700);
+      }
+    }
+  }
+  .hover\:bg-gray-800 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-gray-800);
       }
     }
   }
@@ -4557,6 +4587,11 @@
       left: calc(var(--spacing) * 0);
     }
   }
+  .ltr\:left-4 {
+    &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
+      left: calc(var(--spacing) * 4);
+    }
+  }
   .ltr\:mr-1 {
     &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
       margin-right: calc(var(--spacing) * 1);
@@ -4577,19 +4612,40 @@
       margin-left: calc(var(--spacing) * 8);
     }
   }
-  .ltr\:ml-64 {
-    &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
-      margin-left: calc(var(--spacing) * 64);
-    }
-  }
   .ltr\:ml-auto {
     &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
       margin-left: auto;
     }
   }
+  .ltr\:-translate-x-full {
+    &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
+      --tw-translate-x: -100%;
+      translate: var(--tw-translate-x) var(--tw-translate-y);
+    }
+  }
+  .lg\:ltr\:ml-64 {
+    @media (width >= 64rem) {
+      &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
+        margin-left: calc(var(--spacing) * 64);
+      }
+    }
+  }
+  .lg\:ltr\:translate-x-0 {
+    @media (width >= 64rem) {
+      &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
+        --tw-translate-x: calc(var(--spacing) * 0);
+        translate: var(--tw-translate-x) var(--tw-translate-y);
+      }
+    }
+  }
   .rtl\:right-0 {
     &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
       right: calc(var(--spacing) * 0);
+    }
+  }
+  .rtl\:right-4 {
+    &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
+      right: calc(var(--spacing) * 4);
     }
   }
   .rtl\:left-0 {
@@ -4607,11 +4663,6 @@
       margin-right: calc(var(--spacing) * 8);
     }
   }
-  .rtl\:mr-64 {
-    &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
-      margin-right: calc(var(--spacing) * 64);
-    }
-  }
   .rtl\:mr-auto {
     &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
       margin-right: auto;
@@ -4627,10 +4678,31 @@
       margin-left: calc(var(--spacing) * 3);
     }
   }
+  .rtl\:translate-x-full {
+    &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
+      --tw-translate-x: 100%;
+      translate: var(--tw-translate-x) var(--tw-translate-y);
+    }
+  }
   .rtl\:space-x-reverse {
     &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
       :where(& > :not(:last-child)) {
         --tw-space-x-reverse: 1;
+      }
+    }
+  }
+  .lg\:rtl\:mr-64 {
+    @media (width >= 64rem) {
+      &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
+        margin-right: calc(var(--spacing) * 64);
+      }
+    }
+  }
+  .lg\:rtl\:translate-x-0 {
+    @media (width >= 64rem) {
+      &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
+        --tw-translate-x: calc(var(--spacing) * 0);
+        translate: var(--tw-translate-x) var(--tw-translate-y);
       }
     }
   }

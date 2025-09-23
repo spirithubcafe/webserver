@@ -7,6 +7,7 @@
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Antiforgery
+@using Microsoft.AspNetCore.Components
 
 <!DOCTYPE html>
 <html data-theme="light" lang="@CultureInfo.CurrentUICulture.TwoLetterISOLanguageName" dir="@(CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "rtl" : "ltr")" class="h-full bg-gray-50">
@@ -21,18 +22,38 @@
 </head>
 <body class="h-full">
     <div class="flex h-full">
+        <!-- Mobile menu button -->
+        <div class="lg:hidden fixed top-4 ltr:left-4 rtl:right-4 z-50">
+            <button id="mobile-menu-button" type="button" class="bg-gray-900 text-white p-2 rounded-md shadow-lg hover:bg-gray-800 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile overlay -->
+        <div id="mobile-overlay" class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+
         <!-- Sidebar -->
-        <div class="fixed inset-y-0 ltr:left-0 rtl:right-0 z-50 w-64 bg-gray-900 text-white">
+        <div id="sidebar" class="fixed inset-y-0 ltr:left-0 rtl:right-0 z-50 w-64 bg-gray-900 text-white transition-transform duration-300 ease-in-out ltr:-translate-x-full rtl:translate-x-full lg:ltr:translate-x-0 lg:rtl:translate-x-0">
             <!-- Logo -->
-            <div class="flex items-center justify-center h-16 bg-gray-800">
-                @if (!string.IsNullOrEmpty(logoType) && logoType == "image" && !string.IsNullOrEmpty(logoImage))
-                {
-                    <img src="@logoImage" alt="Logo" class="h-10 w-auto" />
-                }
-                else
-                {
-                    <h1 class="text-xl font-bold text-amber-400">@(!string.IsNullOrEmpty(logoText) ? logoText : "SpirithubCofe") Admin</h1>
-                }
+            <div class="flex items-center justify-between h-16 bg-gray-800 px-4">
+                <div class="flex items-center">
+                    @if (!string.IsNullOrEmpty(logoType) && logoType == "image" && !string.IsNullOrEmpty(logoImage))
+                    {
+                        <img src="@logoImage" alt="Logo" class="h-10 w-auto" />
+                    }
+                    else
+                    {
+                        <h1 class="text-xl font-bold text-amber-400">@(!string.IsNullOrEmpty(logoText) ? logoText : "SpirithubCofe") Admin</h1>
+                    }
+                </div>
+                <!-- Close button for mobile -->
+                <button id="mobile-close-button" type="button" class="lg:hidden text-gray-400 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
             </div>
 
             <!-- Navigation -->
@@ -144,13 +165,17 @@
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 ltr:ml-64 rtl:mr-64">
+        <div class="flex-1 lg:ltr:ml-64 lg:rtl:mr-64">
             <!-- Top Bar -->
             <header class="bg-white shadow-sm border-b border-gray-200">
                 <div class="flex items-center justify-between px-6 py-4">
-                    <div>
-                        <h1 class="text-2xl font-semibold text-gray-900">@Localizer["Dashboard"]</h1>
-                        <p class="text-sm text-gray-500">@Localizer["ManageYourCoffeeShop"]</p>
+                    <div class="flex items-center">
+                        <!-- Mobile menu space -->
+                        <div class="lg:hidden w-12"></div>
+                        <div>
+                            <h1 class="text-2xl font-semibold text-gray-900">@Localizer["Dashboard"]</h1>
+                            <p class="text-sm text-gray-500">@Localizer["ManageYourCoffeeShop"]</p>
+                        </div>
                     </div>
                     <div class="flex items-center space-x-4">
                         <!-- Back to Website -->
@@ -196,6 +221,69 @@
             </div>
         </div>
     </div>
+
+    <!-- Mobile Menu JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileCloseButton = document.getElementById('mobile-close-button');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            const isRtl = document.documentElement.dir === 'rtl';
+            
+            function openMobileMenu() {
+                sidebar.classList.add('translate-x-0');
+                if (isRtl) {
+                    sidebar.classList.remove('translate-x-full');
+                } else {
+                    sidebar.classList.remove('-translate-x-full');
+                }
+                overlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden'; // Prevent background scroll
+            }
+            
+            function closeMobileMenu() {
+                if (isRtl) {
+                    sidebar.classList.add('translate-x-full');
+                    sidebar.classList.remove('translate-x-0');
+                } else {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0');
+                }
+                overlay.classList.add('hidden');
+                document.body.style.overflow = ''; // Restore background scroll
+            }
+            
+            // Mobile menu button click
+            if (mobileMenuButton) {
+                mobileMenuButton.addEventListener('click', openMobileMenu);
+            }
+            
+            // Mobile close button click
+            if (mobileCloseButton) {
+                mobileCloseButton.addEventListener('click', closeMobileMenu);
+            }
+            
+            // Overlay click to close
+            if (overlay) {
+                overlay.addEventListener('click', closeMobileMenu);
+            }
+            
+            // Close menu on window resize to desktop
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 1024) { // lg breakpoint
+                    closeMobileMenu();
+                }
+            });
+            
+            // Escape key to close mobile menu
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && window.innerWidth < 1024) {
+                    closeMobileMenu();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
 
