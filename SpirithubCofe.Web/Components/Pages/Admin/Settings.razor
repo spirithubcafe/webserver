@@ -247,21 +247,21 @@
         try
         {
             // Save logo type
-            await UpdateSetting("logo_type", logoTypeValue);
+            await UpdateSettingInternal("logo_type", logoTypeValue);
             
             if (logoTypeValue == "text")
             {
                 // Save text logo settings
-                await UpdateSetting("logo_text", logoTextValue);
-                await UpdateSetting("logo_text_ar", logoTextArValue);
+                await UpdateSettingInternal("logo_text", logoTextValue);
+                await UpdateSettingInternal("logo_text_ar", logoTextArValue);
             }
             else
             {
                 // Save image logo setting
-                await UpdateSetting("logo_image", logoImageValue);
+                await UpdateSettingInternal("logo_image", logoImageValue);
             }
             
-            // Show success message
+            // Show success message only once
             await JSRuntime.InvokeVoidAsync("showSuccessToast", "Logo settings saved successfully!");
         }
         catch (Exception ex)
@@ -271,6 +271,19 @@
     }
 
     private async Task UpdateSetting(string key, string value)
+    {
+        try
+        {
+            await UpdateSettingInternal(key, value);
+            await JSRuntime.InvokeVoidAsync("showSuccessToast", "Settings saved successfully!");
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("showErrorToast", $"Error saving settings: {ex.Message}");
+        }
+    }
+
+    private async Task UpdateSettingInternal(string key, string value)
     {
         try
         {
@@ -290,12 +303,10 @@
                     DataType = key.EndsWith("_image") ? "Image" : "Text"
                 });
             }
-            
-            await JSRuntime.InvokeVoidAsync("showSuccessToast", "Settings saved successfully!");
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("showErrorToast", $"Error saving settings: {ex.Message}");
+            throw new Exception($"Error saving setting {key}: {ex.Message}");
         }
     }
 }

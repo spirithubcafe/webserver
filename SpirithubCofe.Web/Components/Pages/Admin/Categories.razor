@@ -10,7 +10,7 @@
 @inject IStringLocalizer<SpirithubCofe.Langs.Resources> Localizer
 @rendermode InteractiveServer
 
-<PageTitle>Category Management - SpirithubCofe Admin</PageTitle>
+<PageTitle>@Localizer["CategoryManagement"] - SpirithubCofe Admin</PageTitle>
 
 <Toast />
 
@@ -22,8 +22,8 @@
             <div class="px-6 py-4 border-b border-gray-200">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-900">Category Management</h1>
-                        <p class="mt-1 text-sm text-gray-600">Manage product categories with professional controls</p>
+                        <h1 class="text-2xl font-bold text-gray-900">@Localizer["CategoryManagement"]</h1>
+                        <p class="mt-1 text-sm text-gray-600">@Localizer["ManageProductCategories"]</p>
                     </div>
                     <div class="mt-4 sm:mt-0 flex space-x-3">
                         <button type="button" @onclick="ShowCreateForm" 
@@ -31,7 +31,7 @@
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                             </svg>
-                            Add New Category
+                            @Localizer["AddNewCategory"]
                         </button>
                     </div>
                 </div>
@@ -48,7 +48,7 @@
                                 </svg>
                             </div>
                             <div class="ml-4">
-                                <p class="text-sm font-medium text-blue-900">Total Categories</p>
+                                <p class="text-sm font-medium text-blue-900">@Localizer["TotalCategories"]</p>
                                 <p class="text-2xl font-bold text-blue-600">@totalCategories</p>
                             </div>
                         </div>
@@ -61,7 +61,7 @@
                                 </svg>
                             </div>
                             <div class="ml-4">
-                                <p class="text-sm font-medium text-green-900">Active Categories</p>
+                                <p class="text-sm font-medium text-green-900">@Localizer["ActiveCategories"]</p>
                                 <p class="text-2xl font-bold text-green-600">@activeCategories</p>
                             </div>
                         </div>
@@ -74,7 +74,7 @@
                                 </svg>
                             </div>
                             <div class="ml-4">
-                                <p class="text-sm font-medium text-purple-900">On Homepage</p>
+                                <p class="text-sm font-medium text-purple-900">@Localizer["OnHomepage"]</p>
                                 <p class="text-2xl font-bold text-purple-600">@homepageCategories</p>
                             </div>
                         </div>
@@ -87,7 +87,7 @@
                                 </svg>
                             </div>
                             <div class="ml-4">
-                                <p class="text-sm font-medium text-amber-900">With Products</p>
+                                <p class="text-sm font-medium text-amber-900">@Localizer["WithProducts"]</p>
                                 <p class="text-2xl font-bold text-amber-600">@categoriesWithProducts</p>
                             </div>
                         </div>
@@ -105,10 +105,10 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <h2 class="text-lg font-semibold text-gray-900">
-                                @(editingCategory?.Id > 0 ? "Edit Category" : "Add New Category")
+                                @(editingCategory?.Id > 0 ? Localizer["EditCategory"] : Localizer["CreateNewCategory"])
                             </h2>
                             <p class="text-sm text-gray-600">
-                                @(editingCategory?.Id > 0 ? "Update category information and settings" : "Create a new category for product organization")
+                                @(editingCategory?.Id > 0 ? Localizer["UpdateCategoryInfo"] : Localizer["CreateCategoryInfo"])
                             </p>
                         </div>
                         <button type="button" @onclick="CancelForm" 
@@ -127,9 +127,9 @@
                         <div class="space-y-4">
                             <div class="flex items-center space-x-2">
                                 <label class="block text-sm font-medium text-gray-700">
-                                    Category Image <span class="text-red-500">*</span>
+                                    @Localizer["CategoryImage"] <span class="text-red-500">@Localizer["Required"]</span>
                                 </label>
-                                <span class="text-xs text-gray-500">(Recommended: 400x300px)</span>
+                                <span class="text-xs text-gray-500">@Localizer["RecommendedSize"]</span>
                             </div>
                             
                             <FileUpload Folder="categories" 
@@ -143,7 +143,7 @@
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             <div class="space-y-2">
                                 <label class="block text-sm font-medium text-gray-700">
-                                    Name (English) <span class="text-red-500">*</span>
+                                    @Localizer["NameEnglish"] <span class="text-red-500">@Localizer["Required"]</span>
                                 </label>
                                 <input type="text" @bind="currentCategory.Name" 
                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
@@ -151,7 +151,7 @@
                             </div>
                             
                             <div class="space-y-2">
-                                <label class="block text-sm font-medium text-gray-700">Name (Arabic)</label>
+                                <label class="block text-sm font-medium text-gray-700">@Localizer["NameArabic"]</label>
                                 <input type="text" @bind="currentCategory.NameAr" 
                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
                                        placeholder="حبوب القهوة" dir="rtl" />
@@ -160,24 +160,24 @@
 
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-gray-700">
-                                Slug <span class="text-red-500">*</span>
+                                @Localizer["Slug"] <span class="text-red-500">@Localizer["Required"]</span>
                             </label>
                             <input type="text" @bind="currentCategory.Slug" 
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 font-mono" 
                                    placeholder="coffee-beans" required />
-                            <p class="text-xs text-gray-500">Used in URLs - must be unique</p>
+                            <p class="text-xs text-gray-500">@Localizer["SlugHelp"]</p>
                         </div>
 
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             <div class="space-y-2">
-                                <label class="block text-sm font-medium text-gray-700">Description (English)</label>
+                                <label class="block text-sm font-medium text-gray-700">@Localizer["DescriptionEnglish"]</label>
                                 <textarea @bind="currentCategory.Description" rows="3"
                                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
                                           placeholder="Premium coffee beans from around the world"></textarea>
                             </div>
                             
                             <div class="space-y-2">
-                                <label class="block text-sm font-medium text-gray-700">Description (Arabic)</label>
+                                <label class="block text-sm font-medium text-gray-700">@Localizer["DescriptionArabic"]</label>
                                 <textarea @bind="currentCategory.DescriptionAr" rows="3"
                                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
                                           placeholder="حبوب قهوة مميزة من جميع أنحاء العالم" dir="rtl"></textarea>
@@ -186,33 +186,33 @@
 
                         <!-- Settings -->
                         <div class="border-t border-gray-200 pt-6">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Category Settings</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">@Localizer["CategorySettings"]</h3>
                             
                             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                 <div class="space-y-2">
-                                    <label class="block text-sm font-medium text-gray-700">Display Order</label>
+                                    <label class="block text-sm font-medium text-gray-700">@Localizer["DisplayOrder"]</label>
                                     <input type="number" @bind="currentCategory.DisplayOrder" min="0"
                                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
                                            placeholder="0" />
-                                    <p class="text-xs text-gray-500">Lower numbers appear first</p>
+                                    <p class="text-xs text-gray-500">@Localizer["DisplayOrderHelp"]</p>
                                 </div>
                                 
                                 <div class="space-y-4">
                                     <div class="flex items-center space-x-3">
                                         <input type="checkbox" @bind="currentCategory.IsActive" 
                                                class="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded" />
-                                        <label class="text-sm font-medium text-gray-700">Active Category</label>
+                                        <label class="text-sm font-medium text-gray-700">@Localizer["ActiveCategory"]</label>
                                     </div>
-                                    <span class="text-xs text-gray-500">Only active categories will be visible to customers</span>
+                                    <span class="text-xs text-gray-500">@Localizer["ActiveCategoryHelp"]</span>
                                 </div>
                                 
                                 <div class="space-y-4">
                                     <div class="flex items-center space-x-3">
                                         <input type="checkbox" @bind="currentCategory.IsDisplayedOnHomepage" 
                                                class="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded" />
-                                        <label class="text-sm font-medium text-gray-700">Show on Homepage</label>
+                                        <label class="text-sm font-medium text-gray-700">@Localizer["ShowOnHomepage"]</label>
                                     </div>
-                                    <span class="text-xs text-gray-500">Display this category on the homepage</span>
+                                    <span class="text-xs text-gray-500">@Localizer["ShowOnHomepageHelp"]</span>
                                 </div>
                             </div>
                         </div>
@@ -221,12 +221,12 @@
                         <div class="border-t border-gray-200 pt-6">
                             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
                                 <div class="text-sm text-gray-600">
-                                    @(editingCategory?.Id > 0 ? "Review changes before updating the category." : "Review all information before creating the category.")
+                                    @(editingCategory?.Id > 0 ? Localizer["ReviewBeforeUpdate"] : Localizer["ReviewBeforeCreate"])
                                 </div>
                                 <div class="flex space-x-3">
                                     <button type="button" @onclick="CancelForm" 
                                             class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                                        Cancel
+                                        @Localizer["Cancel"]
                                     </button>
                                     <button type="button" @onclick="SaveCategory" disabled="@saving"
                                             class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 disabled:opacity-50">
@@ -237,7 +237,7 @@
                                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                             </svg>
                                         }
-                                        @(editingCategory?.Id > 0 ? "Update Category" : "Create Category")
+                                        @(editingCategory?.Id > 0 ? Localizer["UpdateCategory"] : Localizer["CreateCategory"])
                                     </button>
                                 </div>
                             </div>
@@ -257,11 +257,11 @@
                            class="w-full px-4 py-2 border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500">
                 </div>
                 <select @bind="selectedStatus" class="px-4 py-2 border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500">
-                    <option value="">All Status</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                    <option value="homepage">Shown on Homepage</option>
-                    <option value="hidden">Hidden from Homepage</option>
+                    <option value="">@Localizer["AllStatus"]</option>
+                    <option value="active">@Localizer["Active"]</option>
+                    <option value="inactive">@Localizer["Inactive"]</option>
+                    <option value="homepage">@Localizer["ShownOnHomepage"]</option>
+                    <option value="hidden">@Localizer["HiddenFromHomepage"]</option>
                 </select>
             </div>
         </div>
@@ -270,8 +270,8 @@
         <!-- Categories List -->
         <div class="bg-white shadow-sm rounded-lg">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-lg font-semibold text-gray-900">Current Categories</h2>
-                <p class="text-sm text-gray-600">Manage existing categories and their display order</p>
+                <h2 class="text-lg font-semibold text-gray-900">@Localizer["CurrentCategories"]</h2>
+                <p class="text-sm text-gray-600">@Localizer["ManageExistingCategories"]</p>
             </div>
             
             <div class="p-6">
@@ -299,7 +299,7 @@
                                 
                                 <!-- Category Content -->
                                 <div class="p-4">
-                                    <div class="flex items-start justify-between mb-2">
+                                        <div class="flex items-start justify-between mb-2">
                                         <div class="flex-1">
                                             <h3 class="text-sm font-semibold text-gray-900 truncate">@category.Name</h3>
                                             @if (!string.IsNullOrEmpty(category.NameAr))
@@ -312,13 +312,13 @@
                                             @if (category.IsActive)
                                             {
                                                 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                    Active
+                                                    @Localizer["Active"]
                                                 </span>
                                             }
                                             else
                                             {
                                                 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                                    Inactive
+                                                    @Localizer["Inactive"]
                                                 </span>
                                             }
                                         </div>
@@ -326,27 +326,25 @@
                                     
                                     <div class="space-y-2 mb-3">
                                         <div class="flex items-center justify-between text-xs text-gray-500">
-                                            <span>Display Order: @category.DisplayOrder</span>
-                                            <span>Products: @(category.Products?.Count ?? 0)</span>
+                                            <span>@Localizer["DisplayOrder"]: @category.DisplayOrder</span>
+                                            <span>@Localizer["Products"]: @(category.Products?.Count ?? 0)</span>
                                         </div>
                                         
                                         <div class="flex items-center justify-between text-xs">
-                                            <span class="text-gray-500">Homepage:</span>
+                                            <span class="text-gray-500">@Localizer["Homepage"]:</span>
                                             @if (category.IsDisplayedOnHomepage)
                                             {
                                                 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                    Visible
+                                                    @Localizer["Visible"]
                                                 </span>
                                             }
                                             else
                                             {
                                                 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                                    Hidden
+                                                    @Localizer["Hidden"]
                                                 </span>
                                             }
-                                        </div>
-                                        
-                                        @if (!string.IsNullOrEmpty(category.Description))
+                                        </div>                                        @if (!string.IsNullOrEmpty(category.Description))
                                         {
                                             <div class="pt-2 border-t border-gray-100">
                                                 <p class="text-xs text-gray-600 line-clamp-2">@category.Description</p>
@@ -358,15 +356,15 @@
                                     <div class="flex space-x-2">
                                         <button @onclick="() => EditCategory(category)" 
                                                 class="flex-1 text-xs bg-amber-50 text-amber-700 hover:bg-amber-100 px-3 py-2 rounded-md border border-amber-200">
-                                            Edit
+                                            @Localizer["Edit"]
                                         </button>
                                         <button @onclick="() => ToggleCategoryStatus(category.Id)" 
                                                 class="flex-1 text-xs @(category.IsActive ? "bg-yellow-50 text-yellow-700 hover:bg-yellow-100 border-yellow-200" : "bg-green-50 text-green-700 hover:bg-green-100 border-green-200") px-3 py-2 rounded-md border">
-                                            @(category.IsActive ? "Deactivate" : "Activate")
+                                            @(category.IsActive ? Localizer["Deactivate"] : Localizer["Activate"])
                                         </button>
                                         <button @onclick="() => DeleteCategory(category)" 
                                                 class="flex-1 text-xs bg-red-50 text-red-700 hover:bg-red-100 px-3 py-2 rounded-md border border-red-200">
-                                            Delete
+                                            @Localizer["Delete"]
                                         </button>
                                     </div>
                                 </div>
@@ -380,15 +378,15 @@
                         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                         </svg>
-                        <h3 class="mt-2 text-sm font-medium text-gray-900">No categories</h3>
-                        <p class="mt-1 text-sm text-gray-500">Get started by creating your first category.</p>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">@Localizer["NoCategories"]</h3>
+                        <p class="mt-1 text-sm text-gray-500">@Localizer["GetStartedFirstCategory"]</p>
                         <div class="mt-6">
                             <button type="button" @onclick="ShowCreateForm"
                                     class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                 </svg>
-                                Add Your First Category
+                                @Localizer["AddYourFirstCategory"]
                             </button>
                         </div>
                     </div>
@@ -431,7 +429,7 @@
         }
         catch (Exception ex)
         {
-            await Toast.ShowError(JSRuntime, $"Error loading categories: {ex.Message}");
+            await Toast.ShowError(JSRuntime, string.Format(Localizer["ErrorLoadingCategories"], ex.Message));
         }
         
         StateHasChanged();
@@ -538,7 +536,7 @@
                 // Update existing category
                 currentCategory.UpdatedAt = DateTime.UtcNow;
                 await CategoryService.UpdateCategoryAsync(currentCategory);
-                await Toast.ShowSuccess(JSRuntime, "Category updated successfully!");
+                await Toast.ShowSuccess(JSRuntime, Localizer["CategoryUpdatedSuccess"]);
             }
             else
             {
@@ -546,7 +544,7 @@
                 currentCategory.CreatedAt = DateTime.UtcNow;
                 currentCategory.UpdatedAt = DateTime.UtcNow;
                 await CategoryService.CreateCategoryAsync(currentCategory);
-                await Toast.ShowSuccess(JSRuntime, "Category created successfully!");
+                await Toast.ShowSuccess(JSRuntime, Localizer["CategoryCreatedSuccess"]);
             }
             
             CancelForm();
@@ -554,7 +552,7 @@
         }
         catch (Exception ex)
         {
-            await Toast.ShowError(JSRuntime, $"Error saving category: {ex.Message}");
+            await Toast.ShowError(JSRuntime, string.Format(Localizer["ErrorSavingCategory"], ex.Message));
         }
         finally
         {
@@ -573,18 +571,18 @@
                 category.UpdatedAt = DateTime.UtcNow;
                 await CategoryService.UpdateCategoryAsync(category);
                 await LoadCategories();
-                await Toast.ShowSuccess(JSRuntime, "Category status updated successfully!");
+                await Toast.ShowSuccess(JSRuntime, Localizer["CategoryStatusUpdatedSuccess"]);
             }
         }
         catch (Exception ex)
         {
-            await Toast.ShowError(JSRuntime, $"Error updating category status: {ex.Message}");
+            await Toast.ShowError(JSRuntime, string.Format(Localizer["ErrorUpdatingCategoryStatus"], ex.Message));
         }
     }
 
     private async Task DeleteCategory(Category category)
     {
-        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this category? This action cannot be undone.");
+        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", Localizer["ConfirmDeleteCategory"]);
         if (confirmed)
         {
             try
@@ -592,7 +590,7 @@
                 var canDeleteResult = await CategoryService.CanDeleteCategoryAsync(category.Id);
                 if (!canDeleteResult.CanDelete)
                 {
-                    await Toast.ShowError(JSRuntime, $"Cannot delete category '{category.Name}' because it contains {canDeleteResult.ProductCount} product(s). Please move or delete the products first.");
+                    await Toast.ShowError(JSRuntime, string.Format(Localizer["CannotDeleteCategoryWithProducts"], category.Name, canDeleteResult.ProductCount));
                     return;
                 }
 
@@ -600,16 +598,16 @@
                 if (success)
                 {
                     await LoadCategories();
-                    await Toast.ShowSuccess(JSRuntime, "Category deleted successfully!");
+                    await Toast.ShowSuccess(JSRuntime, Localizer["CategoryDeletedSuccess"]);
                 }
                 else
                 {
-                    await Toast.ShowError(JSRuntime, "Error deleting category. Please try again.");
+                    await Toast.ShowError(JSRuntime, Localizer["ErrorDeletingCategory"]);
                 }
             }
             catch (Exception ex)
             {
-                await Toast.ShowError(JSRuntime, $"Error deleting category: {ex.Message}");
+                await Toast.ShowError(JSRuntime, string.Format(Localizer["ErrorDeletingCategoryGeneral"], ex.Message));
             }
         }
     }

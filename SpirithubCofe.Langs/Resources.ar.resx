@@ -950,18 +950,6 @@
   <data name="CurrentLogo" xml:space="preserve">
     <value>الشعار الحالي</value>
   </data>
-  <data name="SearchCategories" xml:space="preserve">
-    <value>البحث في الفئات...</value>
-  </data>
-  <data name="EditCategory" xml:space="preserve">
-    <value>تعديل الفئة</value>
-  </data>
-  <data name="CreateNewCategory" xml:space="preserve">
-    <value>إنشاء فئة جديدة</value>
-  </data>
-  <data name="CategoryImage" xml:space="preserve">
-    <value>صورة الفئة</value>
-  </data>
   <data name="SearchByNameOrSKU" xml:space="preserve">
     <value>البحث بالاسم أو رمز المنتج</value>
   </data>
@@ -1095,5 +1083,195 @@
   </data>
   <data name="ErrorLoadingData" xml:space="preserve">
     <value>خطأ في تحميل البيانات: {0}</value>
+  </data>
+  
+  <!-- Dashboard Page -->
+  <data name="AdminDashboard" xml:space="preserve">
+    <value>لوحة التحكم الإدارية</value>
+  </data>
+  <data name="WelcomeToDashboard" xml:space="preserve">
+    <value>مرحباً بك في لوحة التحكم</value>
+  </data>
+  <data name="ManageSpirithubCafe" xml:space="preserve">
+    <value>إدارة متجر SpiritHub Cafe</value>
+  </data>
+  <data name="Product" xml:space="preserve">
+    <value>منتج</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>فئة</value>
+  </data>
+  <data name="Order" xml:space="preserve">
+    <value>طلب</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>مستخدم</value>
+  </data>
+  <data name="Slide" xml:space="preserve">
+    <value>شريحة</value>
+  </data>
+  <data name="SystemCustomization" xml:space="preserve">
+    <value>تخصيص النظام</value>
+  </data>
+  
+  <!-- Categories Page -->
+  <data name="CategoryManagement" xml:space="preserve">
+    <value>إدارة الفئات</value>
+  </data>
+  <data name="ManageProductCategories" xml:space="preserve">
+    <value>إدارة فئات المنتجات بأدوات احترافية</value>
+  </data>
+  <data name="AddNewCategory" xml:space="preserve">
+    <value>إضافة فئة جديدة</value>
+  </data>
+  <data name="TotalCategories" xml:space="preserve">
+    <value>إجمالي الفئات</value>
+  </data>
+  <data name="ActiveCategories" xml:space="preserve">
+    <value>الفئات النشطة</value>
+  </data>
+  <data name="OnHomepage" xml:space="preserve">
+    <value>في الصفحة الرئيسية</value>
+  </data>
+  <data name="WithProducts" xml:space="preserve">
+    <value>تحتوي على منتجات</value>
+  </data>
+  <data name="SearchCategories" xml:space="preserve">
+    <value>البحث في الفئات...</value>
+  </data>
+  <data name="AllStatus" xml:space="preserve">
+    <value>جميع الحالات</value>
+  </data>
+  <data name="ShownOnHomepage" xml:space="preserve">
+    <value>ظاهرة في الصفحة الرئيسية</value>
+  </data>
+  <data name="HiddenFromHomepage" xml:space="preserve">
+    <value>مخفية من الصفحة الرئيسية</value>
+  </data>
+  <data name="CategoryImage" xml:space="preserve">
+    <value>صورة الفئة</value>
+  </data>
+  <data name="EditCategory" xml:space="preserve">
+    <value>تعديل الفئة</value>
+  </data>
+  <data name="CreateNewCategory" xml:space="preserve">
+    <value>إضافة فئة جديدة</value>
+  </data>
+  <data name="UpdateCategoryInfo" xml:space="preserve">
+    <value>تحديث معلومات وإعدادات الفئة</value>
+  </data>
+  <data name="CreateCategoryInfo" xml:space="preserve">
+    <value>إنشاء فئة جديدة لتنظيم المنتجات</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>*</value>
+  </data>
+  <data name="RecommendedSize" xml:space="preserve">
+    <value>(الحجم المقترح: 400×300 بيكسل)</value>
+  </data>
+  <data name="NameEnglish" xml:space="preserve">
+    <value>الاسم (بالإنجليزية)</value>
+  </data>
+  <data name="NameArabic" xml:space="preserve">
+    <value>الاسم (بالعربية)</value>
+  </data>
+  <data name="Slug" xml:space="preserve">
+    <value>الرابط</value>
+  </data>
+  <data name="SlugHelp" xml:space="preserve">
+    <value>يُستخدم في الروابط - يجب أن يكون فريداً</value>
+  </data>
+  <data name="DescriptionEnglish" xml:space="preserve">
+    <value>الوصف (بالإنجليزية)</value>
+  </data>
+  <data name="DescriptionArabic" xml:space="preserve">
+    <value>الوصف (بالعربية)</value>
+  </data>
+  <data name="CategorySettings" xml:space="preserve">
+    <value>إعدادات الفئة</value>
+  </data>
+  <data name="DisplayOrderHelp" xml:space="preserve">
+    <value>الأرقام الأقل تظهر أولاً</value>
+  </data>
+  <data name="ActiveCategory" xml:space="preserve">
+    <value>فئة نشطة</value>
+  </data>
+  <data name="ActiveCategoryHelp" xml:space="preserve">
+    <value>فقط الفئات النشطة ستكون مرئية للعملاء</value>
+  </data>
+  <data name="ShowOnHomepage" xml:space="preserve">
+    <value>إظهار في الصفحة الرئيسية</value>
+  </data>
+  <data name="ShowOnHomepageHelp" xml:space="preserve">
+    <value>عرض هذه الفئة في الصفحة الرئيسية</value>
+  </data>
+  <data name="ReviewBeforeUpdate" xml:space="preserve">
+    <value>راجع التغييرات قبل تحديث الفئة.</value>
+  </data>
+  <data name="ReviewBeforeCreate" xml:space="preserve">
+    <value>راجع جميع المعلومات قبل إنشاء الفئة.</value>
+  </data>
+  <data name="UpdateCategory" xml:space="preserve">
+    <value>تحديث الفئة</value>
+  </data>
+  <data name="CreateCategory" xml:space="preserve">
+    <value>إنشاء الفئة</value>
+  </data>
+  <data name="CurrentCategories" xml:space="preserve">
+    <value>الفئات الحالية</value>
+  </data>
+  <data name="ManageExistingCategories" xml:space="preserve">
+    <value>إدارة الفئات الموجودة وترتيب عرضها</value>
+  </data>
+  <data name="Homepage" xml:space="preserve">
+    <value>الصفحة الرئيسية</value>
+  </data>
+  <data name="Visible" xml:space="preserve">
+    <value>مرئية</value>
+  </data>
+  <data name="Hidden" xml:space="preserve">
+    <value>مخفية</value>
+  </data>
+  <data name="NoCategories" xml:space="preserve">
+    <value>لا توجد فئات</value>
+  </data>
+  <data name="GetStartedFirstCategory" xml:space="preserve">
+    <value>ابدأ بإنشاء فئتك الأولى.</value>
+  </data>
+  <data name="AddYourFirstCategory" xml:space="preserve">
+    <value>أضف فئتك الأولى</value>
+  </data>
+  <data name="CategoryUpdatedSuccess" xml:space="preserve">
+    <value>تم تحديث الفئة بنجاح!</value>
+  </data>
+  <data name="CategoryCreatedSuccess" xml:space="preserve">
+    <value>تم إنشاء الفئة بنجاح!</value>
+  </data>
+  <data name="ErrorSavingCategory" xml:space="preserve">
+    <value>خطأ في حفظ الفئة: {0}</value>
+  </data>
+  <data name="CategoryStatusUpdatedSuccess" xml:space="preserve">
+    <value>تم تحديث حالة الفئة بنجاح!</value>
+  </data>
+  <data name="ErrorUpdatingCategoryStatus" xml:space="preserve">
+    <value>خطأ في تحديث حالة الفئة: {0}</value>
+  </data>
+  <data name="ConfirmDeleteCategory" xml:space="preserve">
+    <value>هل أنت متأكد من أنك تريد حذف هذه الفئة؟ لا يمكن التراجع عن هذا الإجراء.</value>
+  </data>
+  <data name="CannotDeleteCategoryWithProducts" xml:space="preserve">
+    <value>لا يمكن حذف الفئة '{0}' لأنها تحتوي على {1} منتج. يرجى نقل أو حذف المنتجات أولاً.</value>
+  </data>
+  <data name="CategoryDeletedSuccess" xml:space="preserve">
+    <value>تم حذف الفئة بنجاح!</value>
+  </data>
+  <data name="ErrorDeletingCategory" xml:space="preserve">
+    <value>خطأ في حذف الفئة. يرجى المحاولة مرة أخرى.</value>
+  </data>
+  <data name="ErrorDeletingCategoryGeneral" xml:space="preserve">
+    <value>خطأ في حذف الفئة: {0}</value>
+  </data>
+  <data name="ErrorLoadingCategories" xml:space="preserve">
+    <value>خطأ في تحميل الفئات: {0}</value>
   </data>
 </root>
