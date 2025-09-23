@@ -6,7 +6,10 @@
 @inject CategoryService CategoryService
 @inject IJSRuntime JSRuntime
 @inject IStringLocalizer<SpirithubCofe.Langs.Resources> Localizer
+@using SpirithubCofe.Web.Components.Shared
 @rendermode InteractiveServer
+
+<Toast />
 
 <div class="min-h-screen bg-gray-50 py-6">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -39,40 +42,8 @@
             </div>
         </div>
 
-        <!-- Success/Error Messages -->
-        @if (!string.IsNullOrEmpty(successMessage))
-        {
-            <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        <svg class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-3">
-                        <p class="text-sm text-green-700">@successMessage</p>
-                    </div>
-                </div>
-            </div>
-        }
-        
-        @if (!string.IsNullOrEmpty(errorMessage))
-        {
-            <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        <svg class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-3">
-                        <p class="text-sm text-red-700">@errorMessage</p>
-                    </div>
-                </div>
-            </div>
-        }
 
-        <!-- Stats Cards -->
+        <!-- Stats Cards -->        <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <div class="flex items-center justify-between">
@@ -425,10 +396,6 @@
     private bool isGridView = true;
     private bool hasRendered = false;
     
-    // Message handling
-    private string successMessage = "";
-    private string errorMessage = "";
-    
     // Filters
     private string searchTerm = "";
     private string selectedCategory = "";
@@ -467,7 +434,7 @@
         }
         catch (Exception ex)
         {
-            errorMessage = string.Format(Localizer["ErrorLoadingData"], ex.Message);
+            await Toast.ShowError(JSRuntime, string.Format(Localizer["ErrorLoadingData"], ex.Message));
             if (hasRendered)
             {
                 await JSRuntime.InvokeVoidAsync("console.error", ex.Message);
@@ -580,12 +547,12 @@
         {
             product.IsActive = !product.IsActive;
             await ProductService.UpdateProductAsync(product);
-            ShowSuccessMessage(string.Format(Localizer["ProductStatusChanged"], product.Name));
+            await Toast.ShowSuccess(JSRuntime, string.Format(Localizer["ProductStatusChanged"], product.Name));
             await LoadDataAsync();
         }
         catch (Exception ex)
         {
-            ShowErrorMessage(string.Format(Localizer["ErrorChangingStatus"], ex.Message));
+            await Toast.ShowError(JSRuntime, string.Format(Localizer["ErrorChangingStatus"], ex.Message));
         }
     }
 
@@ -599,59 +566,26 @@
             try
             {
                 await ProductService.DeleteProductAsync(product.Id);
-                ShowSuccessMessage(string.Format(Localizer["ProductDeleted"], product.Name));
+                await Toast.ShowSuccess(JSRuntime, string.Format(Localizer["ProductDeleted"], product.Name));
                 await LoadDataAsync();
             }
             catch (InvalidOperationException ex)
             {
-                ShowErrorMessage(string.Format(Localizer["CannotDeleteProduct"], ex.Message));
+                await Toast.ShowError(JSRuntime, string.Format(Localizer["CannotDeleteProduct"], ex.Message));
             }
             catch (Exception ex)
             {
-                ShowErrorMessage(string.Format(Localizer["ErrorDeletingProduct"], ex.Message));
+                await Toast.ShowError(JSRuntime, string.Format(Localizer["ErrorDeletingProduct"], ex.Message));
             }
         }
     }
     
-    private void ShowSuccessMessage(string message)
-    {
-        successMessage = message;
-        errorMessage = "";
-        StateHasChanged();
-        
-        // Clear message after 5 seconds
-        _ = Task.Delay(5000).ContinueWith(_ =>
-        {
-            InvokeAsync(() =>
-            {
-                successMessage = "";
-                StateHasChanged();
-            });
-        });
-    }
-    
-    private void ShowErrorMessage(string message)
-    {
-        errorMessage = message;
-        successMessage = "";
-        StateHasChanged();
-        
-        // Clear message after 10 seconds
-        _ = Task.Delay(10000).ContinueWith(_ =>
-        {
-            InvokeAsync(() =>
-            {
-                errorMessage = "";
-                StateHasChanged();
-            });
-        });
-    }
-
     private async Task ExportProducts()
     {
         if (!hasRendered) return;
         
         // TODO: Implement CSV export functionality
-        await JSRuntime.InvokeVoidAsync("alert", Localizer["ExportFeatureSoon"]);
+         await Toast.ShowError(JSRuntime, string.Format(Localizer["ExportFeatureSoon"] ));
+
     }
 }

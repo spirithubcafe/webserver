@@ -6,9 +6,12 @@
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
 @using SpirithubCofe.Domain.Entities
+@using SpirithubCofe.Web.Components.Shared
 @rendermode InteractiveServer
 
 <PageTitle>Add New Product - SpirithubCofe Admin</PageTitle>
+
+<Toast />
 
 <div class="min-h-screen bg-gray-50 py-6">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -971,12 +974,12 @@
 
             var createdProduct = await ProductService.CreateProductAsync(product);
             
-            await JSRuntime.InvokeVoidAsync("alert", "Product created successfully!");
+            await Toast.ShowSuccess(JSRuntime, "Product created successfully!");
             Navigation.NavigateTo($"/admin/products");
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("alert", $"Error creating product: {ex.Message}");
+            await Toast.ShowError(JSRuntime, $"Error creating product: {ex.Message}");
         }
         finally
         {

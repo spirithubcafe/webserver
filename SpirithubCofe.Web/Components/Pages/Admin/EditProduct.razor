@@ -6,7 +6,10 @@
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
 @using SpirithubCofe.Domain.Entities
+@using SpirithubCofe.Web.Components.Shared
 @rendermode InteractiveServer
+
+<Toast />
 
 <div class="min-h-screen bg-gray-50 py-6">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -93,39 +96,6 @@
                     </nav>
                 </div>
             </div>
-
-            <!-- Success/Error Messages -->
-            @if (!string.IsNullOrEmpty(successMessage))
-            {
-                <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm text-green-700">@successMessage</p>
-                        </div>
-                    </div>
-                </div>
-            }
-            
-            @if (!string.IsNullOrEmpty(errorMessage))
-            {
-                <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm text-red-700">@errorMessage</p>
-                        </div>
-                    </div>
-                </div>
-            }
 
             <!-- Main Content -->
             <form @onsubmit:preventDefault="true" class="space-y-6">
@@ -742,8 +712,6 @@
     private List<Category>? categories;
     private bool loading = true;
     private bool saving = false;
-    private string successMessage = "";
-    private string errorMessage = "";
     private string activeTab = "basic";
 
     protected override async Task OnInitializedAsync()
@@ -758,12 +726,12 @@
             
             if (product == null)
             {
-                errorMessage = "Product not found.";
+                await Toast.ShowError(JSRuntime, "Product not found.");
             }
         }
         catch (Exception ex)
         {
-            errorMessage = $"Error loading product: {ex.Message}";
+            await Toast.ShowError(JSRuntime, $"Error loading product: {ex.Message}");
         }
         finally
         {
@@ -799,17 +767,17 @@
             var updatedProduct = await ProductService.UpdateProductAsync(product);
             if (updatedProduct != null)
             {
-                ShowSuccessMessage($"Product '{product.Name}' has been updated successfully.");
+                await Toast.ShowSuccess(JSRuntime, $"Product '{product.Name}' has been updated successfully.");
                 product = updatedProduct; // Update the local instance
             }
             else
             {
-                ShowErrorMessage("Failed to update product.");
+                await Toast.ShowError(JSRuntime, "Failed to update product.");
             }
         }
         catch (Exception ex)
         {
-            ShowErrorMessage($"Error updating product: {ex.Message}");
+            await Toast.ShowError(JSRuntime, $"Error updating product: {ex.Message}");
         }
         finally
         {
@@ -839,17 +807,17 @@
             var updatedProduct = await ProductService.UpdateProductAsync(product);
             if (updatedProduct != null)
             {
-                ShowSuccessMessage($"Product '{product.Name}' has been saved as draft.");
+                await Toast.ShowSuccess(JSRuntime, $"Product '{product.Name}' has been saved as draft.");
                 product = updatedProduct; // Update the local instance
             }
             else
             {
-                ShowErrorMessage("Failed to save product as draft.");
+                await Toast.ShowError(JSRuntime, "Failed to save product as draft.");
             }
         }
         catch (Exception ex)
         {
-            ShowErrorMessage($"Error saving product as draft: {ex.Message}");
+            await Toast.ShowError(JSRuntime, $"Error saving product as draft: {ex.Message}");
         }
         finally
         {
@@ -862,40 +830,6 @@
         Navigation.NavigateTo("/admin/products");
     }
     
-    private void ShowSuccessMessage(string message)
-    {
-        successMessage = message;
-        errorMessage = "";
-        StateHasChanged();
-        
-        // Clear message after 5 seconds
-        _ = Task.Delay(5000).ContinueWith(_ =>
-        {
-            InvokeAsync(() =>
-            {
-                successMessage = "";
-                StateHasChanged();
-            });
-        });
-    }
-    
-    private void ShowErrorMessage(string message)
-    {
-        errorMessage = message;
-        successMessage = "";
-        StateHasChanged();
-        
-        // Clear message after 10 seconds
-        _ = Task.Delay(10000).ContinueWith(_ =>
-        {
-            InvokeAsync(() =>
-            {
-                errorMessage = "";
-                StateHasChanged();
-            });
-        });
-    }
-
     private string GenerateSlug(string name)
     {
         if (string.IsNullOrEmpty(name)) return string.Empty;

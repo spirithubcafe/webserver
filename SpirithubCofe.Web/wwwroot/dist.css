@@ -2403,10 +2403,6 @@
     border-bottom-style: var(--tw-border-style);
     border-bottom-width: 2px;
   }
-  .border-l-4 {
-    border-left-style: var(--tw-border-style);
-    border-left-width: 4px;
-  }
   .border-dashed {
     --tw-border-style: dashed;
     border-style: dashed;
@@ -2459,9 +2455,6 @@
   }
   .border-green-300 {
     border-color: var(--color-green-300);
-  }
-  .border-green-400 {
-    border-color: var(--color-green-400);
   }
   .border-indigo-200 {
     border-color: var(--color-indigo-200);
@@ -3324,9 +3317,6 @@
   }
   .text-red-100 {
     color: var(--color-red-100);
-  }
-  .text-red-400 {
-    color: var(--color-red-400);
   }
   .text-red-500 {
     color: var(--color-red-500);
