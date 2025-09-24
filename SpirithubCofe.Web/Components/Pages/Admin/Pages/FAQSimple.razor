@@ -1,0 +1,1219 @@
+@page "/admin/pages/faq"
+@attribute [Authorize(Roles = "Admin")]
+@layout AdminLayout
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components
+@using SpirithubCofe.Application.Services
+@using SpirithubCofe.Application.DTOs
+@using SpirithubCofe.Web.Components.Shared
+@inject IFAQService FAQService
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Modern Header -->
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
+            <div class="flex items-center space-x-4 mb-4 lg:mb-0">
+                <div class="p-3 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+                    <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z" fill="currentColor"/>
+                    </svg>
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 tracking-tight">FAQ Management</h1>
+                    <p class="text-gray-600 mt-1">Manage frequently asked questions and categories</p>
+                </div>
+            </div>
+            <div class="flex flex-wrap gap-3">
+                <button @onclick="ShowAddFAQModal" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-sm font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
+                    <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/>
+                    </svg>
+                    Add FAQ
+                </button>
+                <button @onclick="ShowAddCategoryModal" class="inline-flex items-center px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 text-sm font-medium border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
+                    <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none">
+                        <path d="M20 6h-2l-2-2H8L6 6H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-5 3v4h-2V9h-2l3-3 3 3h-2z" fill="currentColor"/>
+                    </svg>
+                    Add Category
+                </button>
+                <button @onclick="ShowPageSettingsModal" class="inline-flex items-center px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 text-sm font-medium border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
+                    <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none">
+                        <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" fill="currentColor"/>
+                    </svg>
+                    Settings
+                </button>
+            </div>
+        </div>
+
+        <!-- Modern Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total FAQs Card -->
+            <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 border border-slate-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 mb-1">Total FAQs</p>
+                        <p class="text-3xl font-bold text-gray-900">@faqs.Count</p>
+                        <p class="text-xs text-green-600 mt-1">
+                            <span class="inline-flex items-center">
+                                <svg class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none">
+                                    <path d="M7 14l3-3 3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                All questions
+                            </span>
+                        </p>
+                    </div>
+                    <div class="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl">
+                        <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Card -->
+            <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 border border-slate-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 mb-1">Categories</p>
+                        <p class="text-3xl font-bold text-gray-900">@categories.Count</p>
+                        <p class="text-xs text-blue-600 mt-1">
+                            <span class="inline-flex items-center">
+                                <svg class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none">
+                                    <path d="M7 14l3-3 3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Organization
+                            </span>
+                        </p>
+                    </div>
+                    <div class="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl">
+                        <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none">
+                            <path d="M10 4H4c-1.11 0-2 .89-2 2v3h2V6h6V4zm6 2v2h4v3h2V6c0-1.11-.89-2-2-2h-6zm-6 7H4v3c0 1.11.89 2 2 2h6v-2H6v-3zm8 5h-6v2h6c1.11 0 2-.89 2-2v-3h-2v3z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active FAQs Card -->
+            <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 border border-slate-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 mb-1">Active FAQs</p>
+                        <p class="text-3xl font-bold text-gray-900">@faqs.Count(f => f.IsActive)</p>
+                        <p class="text-xs text-green-600 mt-1">
+                            <span class="inline-flex items-center">
+                                <svg class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none">
+                                    <path d="M7 14l3-3 3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Published
+                            </span>
+                        </p>
+                    </div>
+                    <div class="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl">
+                        <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inactive FAQs Card -->
+            <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 border border-slate-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 mb-1">Inactive FAQs</p>
+                        <p class="text-3xl font-bold text-gray-900">@faqs.Count(f => !f.IsActive)</p>
+                        <p class="text-xs text-orange-600 mt-1">
+                            <span class="inline-flex items-center">
+                                <svg class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none">
+                                    <path d="M17 14l-3 3-3-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Draft mode
+                            </span>
+                        </p>
+                    </div>
+                    <div class="p-3 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl">
+                        <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modern Tab Navigation -->
+        <div class="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden mb-8">
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8 px-6" aria-label="Tabs">
+                    <button @onclick="SetFAQsTab" 
+                            class="@(activeTab == "faqs" ? "border-blue-500 text-blue-600 bg-blue-50" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300") whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm rounded-t-lg transition-all duration-200 flex items-center space-x-2">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z" fill="currentColor"/>
+                        </svg>
+                        <span>FAQs</span>
+                    </button>
+                    <button @onclick="SetCategoriesTab" 
+                            class="@(activeTab == "categories" ? "border-blue-500 text-blue-600 bg-blue-50" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300") whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm rounded-t-lg transition-all duration-200 flex items-center space-x-2">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                            <path d="M10 4H4c-1.11 0-2 .89-2 2v3h2V6h6V4zm6 2v2h4v3h2V6c0-1.11-.89-2-2-2h-6zm-6 7H4v3c0 1.11.89 2 2 2h6v-2H6v-3zm8 5h-6v2h6c1.11 0 2-.89 2-2v-3h-2v3z" fill="currentColor"/>
+                        </svg>
+                        <span>Categories</span>
+                    </button>
+                    <button @onclick="SetSettingsTab" 
+                            class="@(activeTab == "settings" ? "border-blue-500 text-blue-600 bg-blue-50" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300") whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm rounded-t-lg transition-all duration-200 flex items-center space-x-2">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                            <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" fill="currentColor"/>
+                        </svg>
+                        <span>Page Settings</span>
+                    </button>
+                </nav>
+            </div>
+            
+            <div class="p-6">
+                @if (isLoading)
+                {
+                    <div class="flex justify-center items-center h-64">
+                        <div class="text-center">
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                            <p class="text-gray-600 text-lg font-medium">Loading FAQ data...</p>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <!-- FAQs Tab Content -->
+                    @if (activeTab == "faqs")
+                    {
+                        <div class="flex flex-col lg:flex-row gap-4 mb-6">
+                            <div class="flex-1">
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg class="h-5 w-5 text-gray-400" viewBox="0 0 24 24" fill="none">
+                                            <path d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                    <input type="text" 
+                                           class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition-all duration-200" 
+                                           placeholder="Search FAQs..." 
+                                           @bind="searchQuery" 
+                                           @oninput="OnSearchChanged">
+                                </div>
+                            </div>
+                            <div class="lg:w-64">
+                                <select class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition-all duration-200" 
+                                        @onchange="OnCategoryFilterChanged">
+                                    <option value="">All Categories</option>
+                                    @foreach (var category in categories)
+                                    {
+                                        <option value="@category.Id">@category.NameEn</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="lg:w-32">
+                                <button class="w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2" @onclick="ClearFilters">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                                        <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    <span>Clear</span>
+                                </button>
+                            </div>
+                        </div>
+
+                    <!-- Modern FAQs Table -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Question</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @if (filteredFAQs.Any())
+                                    {
+                                        @foreach (var faq in filteredFAQs.OrderBy(f => f.Order))
+                                        {
+                                            <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">@faq.Order</span>
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <div class="font-medium text-gray-900 max-w-xs truncate" title="@faq.QuestionEn">@faq.QuestionEn</div>
+                                                    @if (!string.IsNullOrEmpty(faq.QuestionAr))
+                                                    {
+                                                        <div class="text-sm text-gray-500 max-w-xs truncate" dir="rtl" title="@faq.QuestionAr">@faq.QuestionAr</div>
+                                                    }
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    @if (faq.Category != null)
+                                                    {
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">@faq.Category.NameEn</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-gray-400 text-sm">No category</span>
+                                                    }
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    @if (faq.IsActive)
+                                                    {
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                            <svg class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="currentColor">
+                                                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                                            </svg>
+                                                            Active
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                            <svg class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="currentColor">
+                                                                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                                                            </svg>
+                                                            Inactive
+                                                        </span>
+                                                    }
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                    @faq.CreatedAt.ToString("MMM dd, yyyy")
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                    <div class="flex items-center justify-end space-x-2">
+                                                        <button @onclick="() => EditFAQ(faq)" 
+                                                                class="text-blue-600 hover:text-blue-900 p-1 rounded-md hover:bg-blue-50 transition-colors duration-150" 
+                                                                title="Edit FAQ">
+                                                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                                                                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/>
+                                                            </svg>
+                                                        </button>
+                                                        <button @onclick="() => ToggleFAQStatus(faq)" 
+                                                                class="text-yellow-600 hover:text-yellow-900 p-1 rounded-md hover:bg-yellow-50 transition-colors duration-150" 
+                                                                title="Toggle Status">
+                                                            @if (faq.IsActive)
+                                                            {
+                                                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                                                                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                                                                </svg>
+                                                            }
+                                                            else
+                                                            {
+                                                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                                                                    <path d="M8 5v14l11-7z"/>
+                                                                </svg>
+                                                            }
+                                                        </button>
+                                                        <button @onclick="() => DeleteFAQ(faq)" 
+                                                                class="text-red-600 hover:text-red-900 p-1 rounded-md hover:bg-red-50 transition-colors duration-150" 
+                                                                title="Delete FAQ">
+                                                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                                                                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="6" class="px-6 py-12 text-center">
+                                                <div class="flex flex-col items-center">
+                                                    <svg class="w-12 h-12 text-gray-400 mb-4" viewBox="0 0 24 24" fill="none">
+                                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z" fill="currentColor"/>
+                                                    </svg>
+                                                    <h3 class="text-lg font-medium text-gray-900 mb-2">No FAQs found</h3>
+                                                    <p class="text-gray-500 mb-4">Get started by creating your first FAQ</p>
+                                                    <button @onclick="ShowAddFAQModal" 
+                                                            class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                                                        <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none">
+                                                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/>
+                                                        </svg>
+                                                        Add Your First FAQ
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+
+                <!-- Modern Categories Grid -->
+                @if (activeTab == "categories")
+                {
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        @foreach (var category in categories)
+                        {
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200 overflow-hidden">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div class="p-2 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg">
+                                            <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none">
+                                                <path d="M10 4H4c-1.11 0-2 .89-2 2v3h2V6h6V4zm6 2v2h4v3h2V6c0-1.11-.89-2-2-2h-6zm-6 7H4v3c0 1.11.89 2 2 2h6v-2H6v-3zm8 5h-6v2h6c1.11 0 2-.89 2-2v-3h-2v3z" fill="currentColor"/>
+                                            </svg>
+                                        </div>
+                                        <div class="relative">
+                                            <button class="p-1 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-100 transition-colors duration-150" 
+                                                    onclick="toggleDropdown('category-menu-@category.Id')">
+                                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                                                </svg>
+                                            </button>
+                                            <div id="category-menu-@category.Id" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
+                                                <div class="py-1">
+                                                    <button @onclick="() => EditCategory(category)" 
+                                                            class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150">
+                                                        <svg class="w-4 h-4 mr-3" viewBox="0 0 24 24" fill="none">
+                                                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/>
+                                                        </svg>
+                                                        Edit Category
+                                                    </button>
+                                                    <hr class="border-gray-100">
+                                                    <button @onclick="() => DeleteCategory(category)" 
+                                                            class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150">
+                                                        <svg class="w-4 h-4 mr-3" viewBox="0 0 24 24" fill="currentColor">
+                                                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                                                        </svg>
+                                                        Delete Category
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900 mb-1">@category.NameEn</h3>
+                                        @if (!string.IsNullOrEmpty(category.NameAr))
+                                        {
+                                            <p class="text-sm text-gray-600 mb-2" dir="rtl">@category.NameAr</p>
+                                        }
+                                        @if (!string.IsNullOrEmpty(category.Description))
+                                        {
+                                            <p class="text-sm text-gray-500 mb-3 line-clamp-2">@category.Description</p>
+                                        }
+                                        <div class="flex items-center justify-between">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                                <svg class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
+                                                </svg>
+                                                @category.FAQCount FAQs
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        
+                        @if (!categories.Any())
+                        {
+                            <div class="col-span-full">
+                                <div class="text-center py-12">
+                                    <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" viewBox="0 0 24 24" fill="none">
+                                        <path d="M10 4H4c-1.11 0-2 .89-2 2v3h2V6h6V4zm6 2v2h4v3h2V6c0-1.11-.89-2-2-2h-6zm-6 7H4v3c0 1.11.89 2 2 2h6v-2H6v-3zm8 5h-6v2h6c1.11 0 2-.89 2-2v-3h-2v3z" fill="currentColor"/>
+                                    </svg>
+                                    <h3 class="text-lg font-medium text-gray-900 mb-2">No Categories Yet</h3>
+                                    <p class="text-gray-500 mb-6">Create your first category to organize your FAQs</p>
+                                    <button @onclick="ShowAddCategoryModal" 
+                                            class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
+                                        <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none">
+                                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/>
+                                        </svg>
+                                        Add Category
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+
+                <!-- Modern Page Settings -->
+                @if (activeTab == "settings")
+                {
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2">
+                            <form @onsubmit="SavePageSettings" @onsubmit:preventDefault="true">
+                                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                                    <div class="px-6 py-4 border-b border-gray-200">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="p-2 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-lg">
+                                                <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none">
+                                                    <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" fill="currentColor"/>
+                                                </svg>
+                                            </div>
+                                            <h3 class="text-lg font-semibold text-gray-900">FAQ Page Settings</h3>
+                                        </div>
+                                    </div>
+                                    <div class="p-6 space-y-6">
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Page Title (English)</label>
+                                                <input type="text" 
+                                                       class="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200" 
+                                                       @bind="pageSettings.TitleEn" 
+                                                       placeholder="Frequently Asked Questions">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Page Title (Arabic)</label>
+                                                <input type="text" 
+                                                       class="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200" 
+                                                       dir="rtl" 
+                                                       @bind="pageSettings.TitleAr" 
+                                                       placeholder="الأسئلة الشائعة">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Description (English)</label>
+                                                <textarea rows="4" 
+                                                          class="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 resize-none" 
+                                                          @bind="pageSettings.DescriptionEn" 
+                                                          placeholder="Enter page description in English..."></textarea>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Description (Arabic)</label>
+                                                <textarea rows="4" 
+                                                          class="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 resize-none" 
+                                                          @bind="pageSettings.DescriptionAr" 
+                                                          placeholder="أدخل وصف الصفحة باللغة العربية..." 
+                                                          dir="rtl"></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-4">
+                                            <h4 class="text-sm font-medium text-gray-900">Display Options</h4>
+                                            <div class="space-y-3">
+                                                <div class="flex items-center">
+                                                    <input class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" 
+                                                           type="checkbox" 
+                                                           @bind="pageSettings.ShowSearch" 
+                                                           id="showSearch">
+                                                    <label class="ml-3 text-sm text-gray-700" for="showSearch">
+                                                        Show search functionality on public page
+                                                    </label>
+                                                </div>
+
+                                                <div class="flex items-center">
+                                                    <input class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" 
+                                                           type="checkbox" 
+                                                           @bind="pageSettings.ShowCategories" 
+                                                           id="showCategories">
+                                                    <label class="ml-3 text-sm text-gray-700" for="showCategories">
+                                                        Show category filters on public page
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                                        <button type="submit" 
+                                                class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
+                                                disabled="@isLoadingSettings">
+                                            @if (isLoadingSettings)
+                                            {
+                                                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                            }
+                                            else
+                                            {
+                                                <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none">
+                                                    <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                    <polyline points="17,21 17,13 7,13 7,21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                    <polyline points="7,3 7,8 15,8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                            }
+                                            Save Settings
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="lg:col-span-1">
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                                <div class="px-6 py-4 border-b border-gray-200">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="p-2 bg-gradient-to-r from-green-500 to-green-600 rounded-lg">
+                                            <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none">
+                                                <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </div>
+                                        <h3 class="text-lg font-semibold text-gray-900">Live Preview</h3>
+                                    </div>
+                                </div>
+                                <div class="p-6">
+                                    <div class="mb-4">
+                                        <h3 class="text-xl font-bold text-gray-900 mb-2">
+                                            @(!string.IsNullOrEmpty(pageSettings.TitleEn) ? pageSettings.TitleEn : "Frequently Asked Questions")
+                                        </h3>
+                                        @if (!string.IsNullOrEmpty(pageSettings.DescriptionEn))
+                                        {
+                                            <p class="text-gray-600 leading-relaxed">@((MarkupString)pageSettings.DescriptionEn)</p>
+                                        }
+                                    </div>
+                                    
+                                    <div class="border-t border-gray-200 pt-4">
+                                        <h4 class="text-sm font-medium text-gray-900 mb-3">Feature Status</h4>
+                                        <div class="space-y-2">
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-sm text-gray-600">Search Functionality</span>
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium @(pageSettings.ShowSearch ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800")">
+                                                    @if (pageSettings.ShowSearch)
+                                                    {
+                                                        <svg class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="currentColor">
+                                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                                        </svg>
+                                                        <span>Enabled</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <svg class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="currentColor">
+                                                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                                                        </svg>
+                                                        <span>Disabled</span>
+                                                    }
+                                                </span>
+                                            </div>
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-sm text-gray-600">Category Filter</span>
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium @(pageSettings.ShowCategories ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800")">
+                                                    @if (pageSettings.ShowCategories)
+                                                    {
+                                                        <svg class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="currentColor">
+                                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                                        </svg>
+                                                        <span>Shown</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <svg class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="currentColor">
+                                                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                                                        </svg>
+                                                        <span>Hidden</span>
+                                                    }
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<!-- FAQ Modal -->
+<div class="modal fade @(showFAQModal ? "show d-block" : "")" tabindex="-1" style="@(showFAQModal ? "background-color: rgba(0,0,0,0.5);" : "")">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-question-circle me-2"></i>
+                    @(editingFAQ?.Id > 0 ? "Edit FAQ" : "Add New FAQ")
+                </h5>
+                <button type="button" class="btn-close" @onclick="CloseFAQModal"></button>
+            </div>
+            <form @onsubmit="SaveFAQ" @onsubmit:preventDefault="true">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Question (English) *</label>
+                                <input type="text" class="form-control" @bind="editingFAQ.QuestionEn" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Question (Arabic)</label>
+                                <input type="text" class="form-control" dir="rtl" @bind="editingFAQ.QuestionAr">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Answer (English) *</label>
+                                <textarea class="form-control" rows="6" @bind="editingFAQ.AnswerEn" placeholder="Enter answer in English..."></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Answer (Arabic)</label>
+                                <textarea class="form-control" rows="6" @bind="editingFAQ.AnswerAr" placeholder="أدخل الإجابة باللغة العربية..." dir="rtl"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Category</label>
+                                <select class="form-select" @bind="editingFAQ.CategoryId" required>
+                                    <option value="">Select Category</option>
+                                    @foreach (var category in categories)
+                                    {
+                                        <option value="@category.Id">@category.NameEn</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Display Order</label>
+                                <input type="number" class="form-control" @bind="editingFAQ.Order" min="1">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Status</label>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" @bind="editingFAQ.IsActive" id="faqActive">
+                                    <label class="form-check-label" for="faqActive">
+                                        @(editingFAQ.IsActive ? "Active" : "Inactive")
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseFAQModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" disabled="@isLoadingFAQ">
+                        @if (isLoadingFAQ)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                        }
+                        <i class="fas fa-save me-2"></i>
+                        @(editingFAQ?.Id > 0 ? "Update FAQ" : "Create FAQ")
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Category Modal -->
+<div class="modal fade @(showCategoryModal ? "show d-block" : "")" tabindex="-1" style="@(showCategoryModal ? "background-color: rgba(0,0,0,0.5);" : "")">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-folder me-2"></i>
+                    @(editingCategory?.Id > 0 ? "Edit Category" : "Add New Category")
+                </h5>
+                <button type="button" class="btn-close" @onclick="CloseCategoryModal"></button>
+            </div>
+            <form @onsubmit="SaveCategory" @onsubmit:preventDefault="true">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Name (English) *</label>
+                        <input type="text" class="form-control" @bind="editingCategory.NameEn" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Name (Arabic)</label>
+                        <input type="text" class="form-control" dir="rtl" @bind="editingCategory.NameAr">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" rows="3" @bind="editingCategory.Description" placeholder="Optional category description"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseCategoryModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" disabled="@isLoadingCategory">
+                        @if (isLoadingCategory)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                        }
+                        <i class="fas fa-save me-2"></i>
+                        @(editingCategory?.Id > 0 ? "Update Category" : "Create Category")
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+
+@code {
+    // Lists and Data
+    private List<FAQDto> faqs = new();
+    private List<FAQCategoryDto> categories = new();
+    private List<FAQDto> filteredFAQs = new();
+    
+    // UI State
+    private string activeTab = "faqs";
+    private bool isLoading = true;
+    private bool isLoadingFAQ = false;
+    private bool isLoadingCategory = false;
+    private bool isLoadingSettings = false;
+    
+    // Modals
+    private bool showFAQModal = false;
+    private bool showCategoryModal = false;
+    
+    // Editing Objects
+    private FAQDto editingFAQ = new();
+    private FAQCategoryDto editingCategory = new();
+    
+    // Filters and Search
+    private string searchQuery = "";
+    private int? selectedCategoryFilter = null;
+    
+    // Page Settings
+    private FAQPageSettingsDto pageSettings = new()
+    {
+        TitleEn = "Frequently Asked Questions",
+        TitleAr = "الأسئلة الشائعة",
+        ShowSearch = true,
+        ShowCategories = true
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        isLoading = true;
+        try
+        {
+            categories = (await FAQService.GetAllCategoriesAsync()).ToList();
+            faqs = (await FAQService.GetAllFAQsAsync()).ToList();
+            filteredFAQs = faqs;
+            
+            // Load page settings - comment out until service method is available
+            // var settings = await FAQService.GetPageSettingsAsync();
+            // if (settings != null)
+            // {
+            //     pageSettings = settings;
+            // }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error loading data: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void SetActiveTab(string tab)
+    {
+        activeTab = tab;
+        StateHasChanged();
+    }
+
+    private void SetFAQsTab()
+    {
+        activeTab = "faqs";
+        StateHasChanged();
+    }
+
+    private void SetCategoriesTab()
+    {
+        activeTab = "categories";
+        StateHasChanged();
+    }
+
+    private void SetSettingsTab()
+    {
+        activeTab = "settings";
+        StateHasChanged();
+    }
+
+    private void OnSearchChanged(ChangeEventArgs e)
+    {
+        searchQuery = e.Value?.ToString() ?? "";
+        ApplyFilters();
+    }
+
+    private void OnCategoryFilterChanged(ChangeEventArgs e)
+    {
+        selectedCategoryFilter = string.IsNullOrEmpty(e.Value?.ToString()) ? null : int.Parse(e.Value.ToString());
+        ApplyFilters();
+    }
+
+    private void ClearFilters()
+    {
+        searchQuery = "";
+        selectedCategoryFilter = null;
+        ApplyFilters();
+    }
+
+    private void ApplyFilters()
+    {
+        filteredFAQs = faqs;
+
+        if (!string.IsNullOrEmpty(searchQuery))
+        {
+            filteredFAQs = filteredFAQs.Where(f => 
+                f.QuestionEn.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                f.AnswerEn.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                (!string.IsNullOrEmpty(f.QuestionAr) && f.QuestionAr.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)) ||
+                (!string.IsNullOrEmpty(f.AnswerAr) && f.AnswerAr.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+            ).ToList();
+        }
+
+        if (selectedCategoryFilter.HasValue)
+        {
+            filteredFAQs = filteredFAQs.Where(f => f.CategoryId == selectedCategoryFilter.Value).ToList();
+        }
+
+        StateHasChanged();
+    }
+
+    // FAQ Methods
+    private void ShowAddFAQModal()
+    {
+        editingFAQ = new FAQDto { IsActive = true, Order = faqs.Count + 1 };
+        showFAQModal = true;
+    }
+
+    private void EditFAQ(FAQDto faq)
+    {
+        editingFAQ = new FAQDto
+        {
+            Id = faq.Id,
+            QuestionEn = faq.QuestionEn,
+            QuestionAr = faq.QuestionAr,
+            AnswerEn = faq.AnswerEn,
+            AnswerAr = faq.AnswerAr,
+            CategoryId = faq.CategoryId,
+            Order = faq.Order,
+            IsActive = faq.IsActive
+        };
+        showFAQModal = true;
+    }
+
+    private void CloseFAQModal()
+    {
+        showFAQModal = false;
+        editingFAQ = new();
+    }
+
+    private async Task SaveFAQ()
+    {
+        if (string.IsNullOrWhiteSpace(editingFAQ.QuestionEn) || string.IsNullOrWhiteSpace(editingFAQ.AnswerEn))
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Please fill in required fields.");
+            return;
+        }
+
+        isLoadingFAQ = true;
+        try
+        {
+            if (editingFAQ.Id > 0)
+            {
+                var updateDto = new UpdateFAQDto
+                {
+                    Id = editingFAQ.Id,
+                    QuestionEn = editingFAQ.QuestionEn,
+                    QuestionAr = editingFAQ.QuestionAr,
+                    AnswerEn = editingFAQ.AnswerEn,
+                    AnswerAr = editingFAQ.AnswerAr,
+                    Order = editingFAQ.Order,
+                    IsActive = editingFAQ.IsActive,
+                    CategoryId = editingFAQ.CategoryId
+                };
+                await FAQService.UpdateFAQAsync(updateDto);
+                await JSRuntime.InvokeVoidAsync("alert", "FAQ updated successfully!");
+            }
+            else
+            {
+                var createDto = new CreateFAQDto
+                {
+                    QuestionEn = editingFAQ.QuestionEn,
+                    QuestionAr = editingFAQ.QuestionAr,
+                    AnswerEn = editingFAQ.AnswerEn,
+                    AnswerAr = editingFAQ.AnswerAr,
+                    Order = editingFAQ.Order,
+                    IsActive = editingFAQ.IsActive,
+                    CategoryId = editingFAQ.CategoryId
+                };
+                await FAQService.CreateFAQAsync(createDto);
+                await JSRuntime.InvokeVoidAsync("alert", "FAQ created successfully!");
+            }
+
+            await LoadData();
+            CloseFAQModal();
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error saving FAQ: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingFAQ = false;
+        }
+    }
+
+    private async Task ToggleFAQStatus(FAQDto faq)
+    {
+        try
+        {
+            var updateDto = new UpdateFAQDto
+            {
+                Id = faq.Id,
+                QuestionEn = faq.QuestionEn,
+                QuestionAr = faq.QuestionAr,
+                AnswerEn = faq.AnswerEn,
+                AnswerAr = faq.AnswerAr,
+                Order = faq.Order,
+                IsActive = !faq.IsActive,
+                CategoryId = faq.CategoryId
+            };
+            await FAQService.UpdateFAQAsync(updateDto);
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error updating FAQ status: {ex.Message}");
+        }
+    }
+
+    private async Task DeleteFAQ(FAQDto faq)
+    {
+        if (await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete the FAQ: {faq.QuestionEn}?"))
+        {
+            try
+            {
+                await FAQService.DeleteFAQAsync(faq.Id);
+                await JSRuntime.InvokeVoidAsync("alert", "FAQ deleted successfully!");
+                await LoadData();
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", $"Error deleting FAQ: {ex.Message}");
+            }
+        }
+    }
+
+    // Category Methods
+    private void ShowAddCategoryModal()
+    {
+        editingCategory = new FAQCategoryDto();
+        showCategoryModal = true;
+    }
+
+    private void EditCategory(FAQCategoryDto category)
+    {
+        editingCategory = new FAQCategoryDto
+        {
+            Id = category.Id,
+            NameEn = category.NameEn,
+            NameAr = category.NameAr,
+            Description = category.Description
+        };
+        showCategoryModal = true;
+    }
+
+    private void CloseCategoryModal()
+    {
+        showCategoryModal = false;
+        editingCategory = new();
+    }
+
+    private async Task SaveCategory()
+    {
+        if (string.IsNullOrWhiteSpace(editingCategory.NameEn))
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Please enter category name in English.");
+            return;
+        }
+
+        isLoadingCategory = true;
+        try
+        {
+            if (editingCategory.Id > 0)
+            {
+                var updateDto = new UpdateFAQCategoryDto
+                {
+                    Id = editingCategory.Id,
+                    NameEn = editingCategory.NameEn,
+                    NameAr = editingCategory.NameAr,
+                    Order = editingCategory.Order,
+                    IsActive = editingCategory.IsActive
+                };
+                await FAQService.UpdateCategoryAsync(updateDto);
+                await JSRuntime.InvokeVoidAsync("alert", "Category updated successfully!");
+            }
+            else
+            {
+                var createDto = new CreateFAQCategoryDto
+                {
+                    NameEn = editingCategory.NameEn,
+                    NameAr = editingCategory.NameAr,
+                    Order = editingCategory.Order,
+                    IsActive = editingCategory.IsActive
+                };
+                await FAQService.CreateCategoryAsync(createDto);
+                await JSRuntime.InvokeVoidAsync("alert", "Category created successfully!");
+            }
+
+            await LoadData();
+            CloseCategoryModal();
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error saving category: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingCategory = false;
+        }
+    }
+
+    private async Task DeleteCategory(FAQCategoryDto category)
+    {
+        if (category.FAQCount > 0)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Cannot delete category with existing FAQs. Please move or delete the FAQs first.");
+            return;
+        }
+
+        if (await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete the category: {category.NameEn}?"))
+        {
+            try
+            {
+                await FAQService.DeleteCategoryAsync(category.Id);
+                await JSRuntime.InvokeVoidAsync("alert", "Category deleted successfully!");
+                await LoadData();
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", $"Error deleting category: {ex.Message}");
+            }
+        }
+    }
+
+    // Page Settings Methods
+    private void ShowPageSettingsModal()
+    {
+        SetActiveTab("settings");
+    }
+
+    private async Task SavePageSettings()
+    {
+        isLoadingSettings = true;
+        try
+        {
+            // TODO: Implement SavePageSettingsAsync in service
+            // await FAQService.SavePageSettingsAsync(pageSettings);
+            await JSRuntime.InvokeVoidAsync("alert", "Page settings saved successfully!");
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error saving settings: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingSettings = false;
+        }
+    }
+}
+
+<style>
+    .border-left-primary {
+        border-left: 0.25rem solid #4e73df !important;
+    }
+    .border-left-success {
+        border-left: 0.25rem solid #1cc88a !important;
+    }
+    .border-left-info {
+        border-left: 0.25rem solid #36b9cc !important;
+    }
+    .border-left-warning {
+        border-left: 0.25rem solid #f6c23e !important;
+    }
+    
+    .text-xs {
+        font-size: .75rem;
+    }
+    
+    .nav-tabs .nav-link {
+        border: none;
+        border-bottom: 3px solid transparent;
+        color: #6c757d;
+    }
+    
+    .nav-tabs .nav-link.active {
+        border-bottom-color: #4e73df;
+        color: #4e73df;
+        background: none;
+    }
+    
+    .nav-tabs .nav-link:hover {
+        border-bottom-color: #4e73df;
+        color: #4e73df;
+    }
+    
+    .modal.show {
+        animation: fadeIn 0.15s ease-in;
+    }
+    
+    @@keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        color: #5a5c69;
+    }
+    
+    .badge {
+        font-size: 0.75rem;
+    }
+    
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>
+
+<script>
+    function toggleDropdown(id) {
+        const dropdown = document.getElementById(id);
+        if (dropdown) {
+            dropdown.classList.toggle('hidden');
+            
+            // Close other dropdowns
+            document.querySelectorAll('[id^="category-menu-"]').forEach(menu => {
+                if (menu.id !== id) {
+                    menu.classList.add('hidden');
+                }
+            });
+        }
+    }
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('[onclick*="toggleDropdown"]')) {
+            document.querySelectorAll('[id^="category-menu-"]').forEach(menu => {
+                menu.classList.add('hidden');
+            });
+        }
+    });
+</script>

@@ -5,7 +5,15 @@
   },
   "scripts": {
     "start": "dotnet run --project .",
+    "build": "dotnet build . -c Release",
     "build:css": "npx @tailwindcss/cli -i wwwroot/app.css -o wwwroot/dist.css",
-    "watch:css": "npx @tailwindcss/cli -i wwwroot/app.css -o wwwroot/dist.css --watch"
+    "watch:css": "npx @tailwindcss/cli -i wwwroot/app.css -o wwwroot/dist.css --watch",
+    "publish:linux": "npm run build:css && dotnet publish . -c Release -o ../publish/linux-x64 --self-contained true --runtime linux-x64",
+    "publish:windows": "npm run build:css && dotnet publish . -c Release -o ../publish/windows-x64 --self-contained true --runtime win-x64",
+    "publish:mac": "npm run build:css && dotnet publish . -c Release -o ../publish/osx-x64 --self-contained true --runtime osx-x64",
+    "publish:mac-arm": "npm run build:css && dotnet publish . -c Release -o ../publish/osx-arm64 --self-contained true --runtime osx-arm64",
+    "publish:all": "npm run publish:linux && npm run publish:windows && npm run publish:mac && npm run publish:mac-arm",
+    "publish:portable": "npm run build:css && dotnet publish . -c Release -o ../publish/portable --self-contained false",
+    "publish:docker": "docker build -t spirithubcofe:latest .."
   }
 }

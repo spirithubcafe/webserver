@@ -1,6 +1,13 @@
 {
   "scripts": {
-    "start": "dotnet run --project SpirithubCofe.Web"
+    "start": "dotnet run --project SpirithubCofe.Web",
+    "build": "dotnet build SpirithubCofe.Web/SpirithubCofe.Web.csproj -c Release",
+    "publish:linux": "dotnet publish SpirithubCofe.Web/SpirithubCofe.Web.csproj -c Release -o ./publish/linux-x64 --self-contained true --runtime linux-x64",
+    "publish:windows": "dotnet publish SpirithubCofe.Web/SpirithubCofe.Web.csproj -c Release -o ./publish/windows-x64 --self-contained true --runtime win-x64",
+    "publish:mac": "dotnet publish SpirithubCofe.Web/SpirithubCofe.Web.csproj -c Release -o ./publish/osx-x64 --self-contained true --runtime osx-x64",
+    "publish:mac-arm": "dotnet publish SpirithubCofe.Web/SpirithubCofe.Web.csproj -c Release -o ./publish/osx-arm64 --self-contained true --runtime osx-arm64",
+    "publish:all": "npm run publish:linux && npm run publish:windows && npm run publish:mac && npm run publish:mac-arm",
+    "publish:portable": "dotnet publish SpirithubCofe.Web/SpirithubCofe.Web.csproj -c Release -o ./publish/portable --self-contained false"
   },
   "devDependencies": {
     "daisyui": "^5.1.13"

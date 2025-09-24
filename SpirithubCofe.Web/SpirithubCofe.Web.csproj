@@ -9,6 +9,10 @@
 
   <ItemGroup>
     <!-- <None Update="Data\app.db" CopyToOutputDirectory="PreserveNewest" ExcludeFromSingleFile="true" /> -->
+    
+    <!-- Include specific additional files that might be missed -->
+    <Content Include="wwwroot\uploads\**\*" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="Data\**\*" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

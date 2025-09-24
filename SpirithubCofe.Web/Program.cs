@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using SpirithubCofe.Web.Components;
 using SpirithubCofe.Web.Components.Account;
 using SpirithubCofe.Web.Data;
+
 using SpirithubCofe.Web.Services;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
@@ -96,7 +97,11 @@ builder.Services.AddScoped<SpirithubCofe.Application.Services.ISlideService, Spi
 // Register setting service
 builder.Services.AddScoped<SpirithubCofe.Application.Services.ISettingService, SpirithubCofe.Infrastructure.Services.SettingService>();
 
+// Register FAQ service
+builder.Services.AddScoped<SpirithubCofe.Application.Services.IFAQService, SpirithubCofe.Infrastructure.Services.FAQService>();
 builder.Services.AddScoped<SpirithubCofe.Application.Interfaces.IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>()!);
+
+
 
 // Register data seeder service
 builder.Services.AddScoped<DataSeederService>();

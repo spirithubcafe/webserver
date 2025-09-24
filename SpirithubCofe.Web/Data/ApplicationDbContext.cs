@@ -15,6 +15,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<CategoryImage> CategoryImages { get; set; }
     public DbSet<ProductReview> ProductReviews { get; set; }
     public DbSet<Setting> Settings { get; set; }
+    public DbSet<FAQ> FAQs { get; set; }
+    public DbSet<FAQCategory> FAQCategories { get; set; }
+    public DbSet<FAQPage> FAQPages { get; set; }
     
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -410,6 +413,117 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .WithMany(e => e.Reviews)
                 .HasForeignKey(e => e.ProductId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Configure FAQ entities
+        builder.Entity<FAQCategory>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.NameEn)
+                .IsRequired()
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.NameAr)
+                .HasMaxLength(200);
+                
+            entity.HasIndex(e => e.Order)
+                .HasDatabaseName("IX_FAQCategories_Order");
+                
+            entity.HasIndex(e => e.IsActive)
+                .HasDatabaseName("IX_FAQCategories_IsActive");
+        });
+
+        builder.Entity<FAQ>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.QuestionEn)
+                .IsRequired()
+                .HasMaxLength(500);
+                
+            entity.Property(e => e.QuestionAr)
+                .HasMaxLength(500);
+                
+            entity.Property(e => e.AnswerEn)
+                .IsRequired();
+                
+            entity.Property(e => e.AnswerAr);
+                
+            entity.HasIndex(e => e.Order)
+                .HasDatabaseName("IX_FAQs_Order");
+                
+            entity.HasIndex(e => e.IsActive)
+                .HasDatabaseName("IX_FAQs_IsActive");
+                
+            entity.HasIndex(e => e.CategoryId)
+                .HasDatabaseName("IX_FAQs_CategoryId");
+                
+            entity.HasOne(e => e.Category)
+                .WithMany(e => e.FAQs)
+                .HasForeignKey(e => e.CategoryId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        builder.Entity<FAQPage>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.TitleEn)
+                .IsRequired()
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.TitleAr)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.MetaTitleEn)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.MetaTitleAr)
+                .HasMaxLength(200);
+        });
+
+        // FAQ Category configuration
+        builder.Entity<FAQCategory>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.NameAr).HasMaxLength(200);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
+            entity.HasIndex(e => e.Order);
+        });
+
+        // FAQ configuration
+        builder.Entity<FAQ>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.QuestionEn).IsRequired().HasMaxLength(500);
+            entity.Property(e => e.QuestionAr).HasMaxLength(500);
+            entity.Property(e => e.AnswerEn).IsRequired();
+            entity.Property(e => e.AnswerAr);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
+            entity.HasIndex(e => e.Order);
+            entity.HasIndex(e => new { e.CategoryId, e.Order });
+            
+            entity.HasOne(e => e.Category)
+                .WithMany(c => c.FAQs)
+                .HasForeignKey(e => e.CategoryId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // FAQ Page configuration
+        builder.Entity<FAQPage>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.TitleEn).IsRequired().HasMaxLength(300);
+            entity.Property(e => e.TitleAr).HasMaxLength(300);
+            entity.Property(e => e.DescriptionEn);
+            entity.Property(e => e.DescriptionAr);
+            entity.Property(e => e.MetaTitleEn).HasMaxLength(300);
+            entity.Property(e => e.MetaTitleAr).HasMaxLength(300);
+            entity.Property(e => e.MetaDescriptionEn).HasMaxLength(500);
+            entity.Property(e => e.MetaDescriptionAr).HasMaxLength(500);
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("datetime('now')");
         });
     }
 }
