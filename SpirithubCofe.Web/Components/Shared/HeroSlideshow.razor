@@ -3,6 +3,7 @@
 @inject IStringLocalizer<SpirithubCofe.Langs.Resources> Localizer
 @using SpirithubCofe.Application.DTOs
 @using System.Globalization
+@implements IDisposable
 
 <!-- Professional Hero Slideshow Section -->
 <div class="hero-slideshow" id="heroSlideshow">
@@ -13,13 +14,13 @@
             @for (int i = 0; i < slides.Count; i++)
             {
                 var slide = slides[i];
-                var isFirst = i == 0;
+                var isActive = i == currentSlideIndex;
                 
-                <div class="slide @(isFirst ? "active" : "")" data-slide="@i">
+                <div class="slide @(isActive ? "active" : "")" data-slide="@i">
                     <!-- Background Image -->
                     <div class="slide-background">
                         <img src="@slide.ImagePath" alt="@slide.GetLocalizedTitle(CultureInfo.CurrentUICulture.Name)" 
-                             class="slide-image" loading="@(isFirst ? "eager" : "lazy")" />
+                             class="slide-image" loading="@(isActive ? "eager" : "lazy")" />
                         <div class="slide-overlay"></div>
                     </div>
                     
@@ -57,14 +58,14 @@
         <!-- Navigation Controls -->
         <div class="slideshow-controls">
             <!-- Previous Button -->
-            <button class="nav-button prev-button" id="prevSlide" aria-label="Previous slide">
+            <button class="nav-button prev-button" @onclick="PrevSlide" aria-label="Previous slide">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                 </svg>
             </button>
             
             <!-- Next Button -->
-            <button class="nav-button next-button" id="nextSlide" aria-label="Next slide">
+            <button class="nav-button next-button" @onclick="NextSlide" aria-label="Next slide">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                 </svg>
@@ -75,15 +76,11 @@
         <div class="slide-indicators">
             @for (int i = 0; i < slides.Count; i++)
             {
-                var isActive = i == 0;
-                <button class="indicator @(isActive ? "active" : "")" data-slide="@i" aria-label="Go to slide @(i + 1)"></button>
+                var isActive = i == currentSlideIndex;
+                <button class="indicator @(isActive ? "active" : "")" @onclick="() => GoToSlide(i)" aria-label="Go to slide @(i + 1)"></button>
             }
         </div>
-        
-        <!-- Progress Bar -->
-        <div class="progress-bar">
-            <div class="progress-fill"></div>
-        </div>
+
     }
     else
     {
@@ -115,162 +112,7 @@
     }
 </div>
 
-<!-- Professional Slideshow JavaScript -->
-@if (slides.Count > 1)
-{
-    <script>
-        // Wait for Blazor component to fully render
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                initializeSlideshow();
-            }, 100);
-        });
-        
-        function initializeSlideshow() {
-            const slideshow = document.getElementById('heroSlideshow');
-            if (!slideshow) {
-                console.log('Slideshow not found, retrying...');
-                setTimeout(initializeSlideshow, 200);
-                return;
-            }
-            
-            const slides = slideshow.querySelectorAll('.slide');
-            const indicators = slideshow.querySelectorAll('.indicator');
-            const progressFill = slideshow.querySelector('.progress-fill');
-            const prevBtn = slideshow.querySelector('#prevSlide');
-            const nextBtn = slideshow.querySelector('#nextSlide');
-            
-            if (slides.length === 0) {
-                console.log('No slides found, retrying...');
-                setTimeout(initializeSlideshow, 200);
-                return;
-            }
-            
-            let currentSlide = 0;
-            let autoplayInterval = null;
-            const autoplayDuration = 6000;
-            let isTransitioning = false;
-            
-            console.log(`Initializing slideshow with ${slides.length} slides`);
-            
-            function goToSlide(index) {
-                if (isTransitioning || index === currentSlide) return;
-                
-                isTransitioning = true;
-                console.log(`Going to slide ${index}`);
-                
-                // Remove active class from current slide and indicator
-                slides[currentSlide].classList.remove('active');
-                if (indicators[currentSlide]) {
-                    indicators[currentSlide].classList.remove('active');
-                }
-                
-                // Update current slide
-                currentSlide = index;
-                
-                // Add active class to new slide and indicator
-                slides[currentSlide].classList.add('active');
-                if (indicators[currentSlide]) {
-                    indicators[currentSlide].classList.add('active');
-                }
-                
-                // Reset progress bar
-                updateProgressBar();
-                
-                // Allow next transition after animation completes
-                setTimeout(() => {
-                    isTransitioning = false;
-                }, 800);
-            }
-            
-            function nextSlide() {
-                const nextIndex = (currentSlide + 1) % slides.length;
-                goToSlide(nextIndex);
-            }
-            
-            function previousSlide() {
-                const prevIndex = (currentSlide - 1 + slides.length) % slides.length;
-                goToSlide(prevIndex);
-            }
-            
-            function startAutoplay() {
-                stopAutoplay();
-                autoplayInterval = setInterval(nextSlide, autoplayDuration);
-                updateProgressBar();
-            }
-            
-            function stopAutoplay() {
-                if (autoplayInterval) {
-                    clearInterval(autoplayInterval);
-                    autoplayInterval = null;
-                }
-                if (progressFill) {
-                    progressFill.style.animation = 'none';
-                }
-            }
-            
-            function updateProgressBar() {
-                if (progressFill) {
-                    progressFill.style.animation = 'none';
-                    // Force reflow
-                    progressFill.offsetHeight;
-                    progressFill.style.animation = `progress ${autoplayDuration}ms linear`;
-                }
-            }
-            
-            // Event listeners
-            if (nextBtn) {
-                nextBtn.addEventListener('click', nextSlide);
-            }
-            
-            if (prevBtn) {
-                prevBtn.addEventListener('click', previousSlide);
-            }
-            
-            // Indicators
-            indicators.forEach((indicator, index) => {
-                indicator.addEventListener('click', () => goToSlide(index));
-            });
-            
-            // Touch/swipe support
-            let startX = 0;
-            let endX = 0;
-            
-            slideshow.addEventListener('touchstart', e => {
-                startX = e.touches[0].clientX;
-            });
-            
-            slideshow.addEventListener('touchend', e => {
-                endX = e.changedTouches[0].clientX;
-                const threshold = 50;
-                const diff = startX - endX;
-                
-                if (Math.abs(diff) > threshold) {
-                    if (diff > 0) {
-                        nextSlide(); // Swipe left
-                    } else {
-                        previousSlide(); // Swipe right
-                    }
-                }
-            });
-            
-            // Pause on hover
-            slideshow.addEventListener('mouseenter', stopAutoplay);
-            slideshow.addEventListener('mouseleave', startAutoplay);
-            
-            // Keyboard navigation
-            document.addEventListener('keydown', e => {
-                if (e.key === 'ArrowLeft') previousSlide();
-                if (e.key === 'ArrowRight') nextSlide();
-            });
-            
-            // Start autoplay
-            startAutoplay();
-            
-            console.log('Slideshow initialized successfully');
-        }
-    </script>
-}
+<!-- Simple C# Slideshow - No JavaScript -->
 
 <style>
     /* Professional Hero Slideshow Styles */
@@ -631,6 +473,8 @@
 
 @code {
     private List<SlideDto> slides = new();
+    private int currentSlideIndex = 0;
+    private Timer? slideTimer;
 
     protected override async Task OnInitializedAsync()
     {
@@ -640,6 +484,10 @@
             if (result.Success)
             {
                 slides = result.Slides.ToList();
+                if (slides.Count > 1)
+                {
+                    StartSlideshow();
+                }
             }
         }
         catch (Exception ex)
@@ -647,5 +495,46 @@
             // Log error but don't break the component
             Console.WriteLine($"Error loading slides: {ex.Message}");
         }
+    }
+
+    private void StartSlideshow()
+    {
+        slideTimer = new Timer(async _ =>
+        {
+            currentSlideIndex = (currentSlideIndex + 1) % slides.Count;
+            await InvokeAsync(StateHasChanged);
+        }, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
+    }
+
+    private void NextSlide()
+    {
+        currentSlideIndex = (currentSlideIndex + 1) % slides.Count;
+        RestartTimer();
+    }
+
+    private void PrevSlide()
+    {
+        currentSlideIndex = (currentSlideIndex - 1 + slides.Count) % slides.Count;
+        RestartTimer();
+    }
+
+    private void GoToSlide(int index)
+    {
+        currentSlideIndex = index;
+        RestartTimer();
+    }
+
+    private void RestartTimer()
+    {
+        slideTimer?.Dispose();
+        if (slides.Count > 1)
+        {
+            StartSlideshow();
+        }
+    }
+
+    public void Dispose()
+    {
+        slideTimer?.Dispose();
     }
 }

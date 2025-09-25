@@ -1,4 +1,3 @@
-using Microsoft.JSInterop;
 using System.Text.Json;
 
 namespace SpirithubCofe.Web.Services;
@@ -14,19 +13,20 @@ public class CartItem
 
 public class CartService
 {
-    private readonly IJSRuntime _jsRuntime;
     private List<CartItem> _cartItems = new();
+    private readonly string _cartFilePath;
     
     public event Action? OnCartChanged;
     
-    public CartService(IJSRuntime jsRuntime)
+    public CartService()
     {
-        _jsRuntime = jsRuntime;
+        // Store cart data in temp directory
+        _cartFilePath = Path.Combine(Path.GetTempPath(), "spirithub-cart.json");
     }
     
     public async Task InitializeAsync()
     {
-        await LoadCartFromLocalStorage();
+        await LoadCartFromFile();
     }
     
     public IReadOnlyList<CartItem> Items => _cartItems.AsReadOnly();
@@ -55,14 +55,7 @@ public class CartService
             });
         }
         
-        await SaveCartToLocalStorage();
-        OnCartChanged?.Invoke();
-    }
-    
-    public async Task RemoveFromCartAsync(int productId)
-    {
-        _cartItems.RemoveAll(x => x.ProductId == productId);
-        await SaveCartToLocalStorage();
+        await SaveCartToFile();
         OnCartChanged?.Invoke();
     }
     
@@ -73,33 +66,58 @@ public class CartService
         {
             if (quantity <= 0)
             {
-                await RemoveFromCartAsync(productId);
+                _cartItems.Remove(item);
             }
             else
             {
                 item.Quantity = quantity;
-                await SaveCartToLocalStorage();
-                OnCartChanged?.Invoke();
             }
+            
+            await SaveCartToFile();
+            OnCartChanged?.Invoke();
+        }
+    }
+    
+    public async Task RemoveFromCartAsync(int productId)
+    {
+        var item = _cartItems.FirstOrDefault(x => x.ProductId == productId);
+        if (item != null)
+        {
+            _cartItems.Remove(item);
+            await SaveCartToFile();
+            OnCartChanged?.Invoke();
         }
     }
     
     public async Task ClearCartAsync()
     {
         _cartItems.Clear();
-        await SaveCartToLocalStorage();
+        await SaveCartToFile();
         OnCartChanged?.Invoke();
     }
     
-    private async Task LoadCartFromLocalStorage()
+    public bool HasItem(int productId)
+    {
+        return _cartItems.Any(x => x.ProductId == productId);
+    }
+    
+    public int GetItemQuantity(int productId)
+    {
+        return _cartItems.FirstOrDefault(x => x.ProductId == productId)?.Quantity ?? 0;
+    }
+    
+    private async Task LoadCartFromFile()
     {
         try
         {
-            var cartJson = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "spirithub-cart");
-            if (!string.IsNullOrEmpty(cartJson))
+            if (File.Exists(_cartFilePath))
             {
-                var items = JsonSerializer.Deserialize<List<CartItem>>(cartJson);
-                _cartItems = items ?? new List<CartItem>();
+                var cartJson = await File.ReadAllTextAsync(_cartFilePath);
+                if (!string.IsNullOrEmpty(cartJson))
+                {
+                    var items = JsonSerializer.Deserialize<List<CartItem>>(cartJson);
+                    _cartItems = items ?? new List<CartItem>();
+                }
             }
         }
         catch (Exception)
@@ -108,12 +126,15 @@ public class CartService
         }
     }
     
-    private async Task SaveCartToLocalStorage()
+    private async Task SaveCartToFile()
     {
         try
         {
-            var cartJson = JsonSerializer.Serialize(_cartItems);
-            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "spirithub-cart", cartJson);
+            var cartJson = JsonSerializer.Serialize(_cartItems, new JsonSerializerOptions 
+            { 
+                WriteIndented = true 
+            });
+            await File.WriteAllTextAsync(_cartFilePath, cartJson);
         }
         catch (Exception)
         {
