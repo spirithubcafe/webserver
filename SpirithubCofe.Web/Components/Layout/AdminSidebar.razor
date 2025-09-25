@@ -25,10 +25,10 @@
 }
 
 <!-- Sidebar -->
-<div class="@($"fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 text-white lg:translate-x-0 {(isMobileMenuOpen ? "translate-x-0" : "-translate-x-full")}")">
+<div class="@($"fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 text-white lg:translate-x-0 flex flex-col {(isMobileMenuOpen ? "translate-x-0" : "-translate-x-full")}")">
      
     <!-- Logo -->
-    <div class="flex items-center justify-between h-16 bg-gray-800 px-4">
+    <div class="flex items-center justify-between h-16 bg-gray-800 px-4 flex-shrink-0">
         <div class="flex items-center space-x-3">
             <svg class="w-8 h-8 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M3 7c0-1.1.9-2 2-2h14c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V7zm2 0v10h14V7H5z"/>
@@ -44,9 +44,10 @@
         </button>
     </div>
 
-    <!-- Navigation -->
-    <nav class="mt-8">
-        <ul class="space-y-2 px-4">
+    <!-- Navigation - Scrollable Area -->
+    <div class="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+        <nav class="mt-8 pb-20">
+            <ul class="space-y-2 px-4">
             <!-- Dashboard -->
             <li>
                 <a href="/admin" @onclick="OnMenuItemClick" class="flex items-center space-x-3 p-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
@@ -210,11 +211,12 @@
                     <span>@Localizer["Settings"]</span>
                 </a>
             </li>
-        </ul>
-    </nav>
+            </ul>
+        </nav>
+    </div>
 
     <!-- User info at bottom -->
-    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gray-800">
+    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gray-800 flex-shrink-0">
         <div class="flex items-center space-x-3">
             <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
                 <span class="text-white text-sm font-medium">A</span>
