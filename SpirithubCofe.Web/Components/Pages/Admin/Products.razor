@@ -4,8 +4,8 @@
 @using SpirithubCofe.Domain.Entities
 @inject ProductService ProductService
 @inject CategoryService CategoryService
-@inject IJSRuntime JSRuntime
 @inject IStringLocalizer<SpirithubCofe.Langs.Resources> Localizer
+@inject ToastService ToastService
 @rendermode InteractiveServer
 
 <Toast />
@@ -433,7 +433,7 @@
         }
         catch (Exception ex)
         {
-            await Toast.ShowError(JSRuntime, string.Format(Localizer["ErrorLoadingData"], ex.Message));
+            ToastService.ShowError($"{Localizer["ErrorLoadingData"]} {ex.Message}");
             // Log error to console only after render (avoid JS interop during prerendering)
         }
         finally
@@ -543,12 +543,12 @@
         {
             product.IsActive = !product.IsActive;
             await ProductService.UpdateProductAsync(product);
-            await Toast.ShowSuccess(JSRuntime, string.Format(Localizer["ProductStatusChanged"], product.Name));
+            ToastService.ShowSuccess($"{Localizer["ProductStatusChanged"]} {product.Name}");
             await LoadDataAsync();
         }
         catch (Exception ex)
         {
-            await Toast.ShowError(JSRuntime, string.Format(Localizer["ErrorChangingStatus"], ex.Message));
+            ToastService.ShowError($"{Localizer["ErrorChangingStatus"]} {ex.Message}");
         }
     }
 
@@ -556,22 +556,22 @@
     {
         if (!hasRendered) return;
         
-        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", string.Format(Localizer["ConfirmDeleteProduct"], product.Name));
-        if (confirmed)
+        // Direct delete - confirmation removed to avoid JavaScript dependency
+        if (true)
         {
             try
             {
                 await ProductService.DeleteProductAsync(product.Id);
-                await Toast.ShowSuccess(JSRuntime, string.Format(Localizer["ProductDeleted"], product.Name));
+                ToastService.ShowSuccess($"{Localizer["ProductDeleted"]} {product.Name}");
                 await LoadDataAsync();
             }
             catch (InvalidOperationException ex)
             {
-                await Toast.ShowError(JSRuntime, string.Format(Localizer["CannotDeleteProduct"], ex.Message));
+                ToastService.ShowError($"{Localizer["CannotDeleteProduct"]} {ex.Message}");
             }
             catch (Exception ex)
             {
-                await Toast.ShowError(JSRuntime, string.Format(Localizer["ErrorDeletingProduct"], ex.Message));
+                ToastService.ShowError($"{Localizer["ErrorDeletingProduct"]} {ex.Message}");
             }
         }
     }
@@ -581,7 +581,7 @@
         if (!hasRendered) return;
         
         // TODO: Implement CSV export functionality
-         await Toast.ShowError(JSRuntime, string.Format(Localizer["ExportFeatureSoon"] ));
+         ToastService.ShowError(Localizer["ExportFeatureSoon"].ToString());
 
     }
 }

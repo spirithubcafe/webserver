@@ -84,6 +84,7 @@ builder.Services.AddScoped<ILocalizationService, LocalizationService>();
 
 // Register cart service
 builder.Services.AddScoped<CartService>();
+builder.Services.AddScoped<ToastService>();
 
 // Register admin services
 builder.Services.AddScoped<UserManagementService>();

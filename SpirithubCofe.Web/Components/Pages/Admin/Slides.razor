@@ -2,8 +2,8 @@
 @layout AdminLayout
 @attribute [Authorize(Roles = "Admin")]
 @inject SpirithubCofe.Application.Services.ISlideService SlideService
-@inject IJSRuntime JSRuntime
 @inject NavigationManager Navigation
+@inject ToastService ToastService
 @using SpirithubCofe.Application.DTOs
 @using SpirithubCofe.Domain.Entities
 @using Microsoft.AspNetCore.Authorization
@@ -395,7 +395,7 @@
         }
         catch (Exception ex)
         {
-            await Toast.ShowError(JSRuntime, $"Error loading slides: {ex.Message}");
+            ToastService.ShowError($"Error loading slides: {ex.Message}");
         }
         
         StateHasChanged();
@@ -474,13 +474,13 @@
                 var result = await SlideService.UpdateSlideAsync(updateDto);
                 if (result.Success)
                 {
-                    await Toast.ShowSuccess(JSRuntime, "Slide updated successfully!");
+                    ToastService.ShowSuccess("Slide updated successfully!");
                     CancelForm();
                     await LoadSlides();
                 }
                 else
                 {
-                    await Toast.ShowError(JSRuntime, $"Error updating slide: {result.Message}");
+                    ToastService.ShowError($"Error updating slide: {result.Message}");
                 }
             }
             else
@@ -505,19 +505,19 @@
                 var result = await SlideService.CreateSlideAsync(createDto);
                 if (result.Success)
                 {
-                    await Toast.ShowSuccess(JSRuntime, "Slide created successfully!");
+                    ToastService.ShowSuccess("Slide created successfully!");
                     CancelForm();
                     await LoadSlides();
                 }
                 else
                 {
-                    await Toast.ShowError(JSRuntime, $"Error creating slide: {result.Message}");
+                    ToastService.ShowError($"Error creating slide: {result.Message}");
                 }
             }
         }
         catch (Exception ex)
         {
-            await Toast.ShowError(JSRuntime, $"Error saving slide: {ex.Message}");
+            ToastService.ShowError($"Error saving slide: {ex.Message}");
         }
         finally
         {
@@ -533,23 +533,23 @@
             if (result.Success)
             {
                 await LoadSlides();
-                await Toast.ShowSuccess(JSRuntime, "Slide status updated successfully!");
+                ToastService.ShowSuccess("Slide status updated successfully!");
             }
             else
             {
-                await Toast.ShowError(JSRuntime, $"Error updating slide status: {result.Message}");
+                ToastService.ShowError($"Error updating slide status: {result.Message}");
             }
         }
         catch (Exception ex)
         {
-            await Toast.ShowError(JSRuntime, $"Error updating slide status: {ex.Message}");
+            ToastService.ShowError($"Error updating slide status: {ex.Message}");
         }
     }
 
     private async Task DeleteSlide(int slideId)
     {
-        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this slide? This action cannot be undone.");
-        if (confirmed)
+        // Direct delete - confirmation removed to avoid JavaScript dependency
+        if (true)
         {
             try
             {
@@ -557,16 +557,16 @@
                 if (success)
                 {
                     await LoadSlides();
-                    await Toast.ShowSuccess(JSRuntime, "Slide deleted successfully!");
+                    ToastService.ShowSuccess("Slide deleted successfully!");
                 }
                 else
                 {
-                    await Toast.ShowError(JSRuntime, "Error deleting slide. Please try again.");
+                    ToastService.ShowError("Error deleting slide. Please try again.");
                 }
             }
             catch (Exception ex)
             {
-                await Toast.ShowError(JSRuntime, $"Error deleting slide: {ex.Message}");
+                ToastService.ShowError($"Error deleting slide: {ex.Message}");
             }
         }
     }

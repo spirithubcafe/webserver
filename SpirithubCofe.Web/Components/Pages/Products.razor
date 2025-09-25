@@ -9,9 +9,9 @@
 @inject CartService CartService
 @inject ProductService ProductService
 @inject CategoryService CategoryService
-@inject IJSRuntime JSRuntime
 @inject NavigationManager Navigation
 @inject IStringLocalizer<SpirithubCofe.Langs.Resources> Localizer
+@inject ToastService ToastService
 @implements IDisposable
 
 <PageTitle>Products - SpirithubCofe</PageTitle>
@@ -342,7 +342,7 @@
             try
             {
                 // Scroll to top of page when component is first rendered or when parameters changed
-                await JSRuntime.InvokeVoidAsync("window.scrollTo", 0, 0);
+                // Scroll to top - removed JavaScript dependency
                 shouldScrollToTop = false;
             }
             catch (InvalidOperationException)
@@ -416,7 +416,7 @@
         );
         
         // Show success message using Toast component
-        await Toast.ShowSuccess(JSRuntime, $"Added {quantity} x {product.Name} to cart!");
+        ToastService.ShowSuccess($"Added {quantity} x {product.Name} to cart!");
         
         // Reset quantity to 1 after adding to cart
         productQuantities[productId] = 1;
@@ -441,7 +441,7 @@
         );
         
         // Show quick success message
-        await Toast.ShowSuccess(JSRuntime, $"Added {product.Name} to cart!");
+        ToastService.ShowSuccess($"Added {product.Name} to cart!");
         StateHasChanged();
     }
     

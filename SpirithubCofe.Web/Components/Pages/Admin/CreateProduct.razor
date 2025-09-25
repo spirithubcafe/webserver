@@ -4,7 +4,7 @@
 @inject ProductService ProductService
 @inject CategoryService CategoryService
 @inject NavigationManager Navigation
-@inject IJSRuntime JSRuntime
+@inject ToastService ToastService
 @using SpirithubCofe.Domain.Entities
 @using Microsoft.AspNetCore.Components.Forms
 @rendermode InteractiveServer
@@ -974,12 +974,12 @@
 
             var createdProduct = await ProductService.CreateProductAsync(product);
             
-            await Toast.ShowSuccess(JSRuntime, "Product created successfully!");
+            ToastService.ShowSuccess("Product created successfully!");
             Navigation.NavigateTo($"/admin/products");
         }
         catch (Exception ex)
         {
-            await Toast.ShowError(JSRuntime, $"Error creating product: {ex.Message}");
+            ToastService.ShowError($"Error creating product: {ex.Message}");
         }
         finally
         {

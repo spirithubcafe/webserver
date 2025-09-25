@@ -296,20 +296,35 @@
                         </AuthorizeView>
 
                         <!-- Mobile menu button -->
-                        <button type="button"
-                            class="lg:hidden flex items-center justify-center w-10 h-10 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200"
-                            id="mobile-menu-toggle">
-                            <svg class="w-6 h-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 6h16M4 12h16M4 18h16"></path>
-                            </svg>
+                        <button type="button" @onclick="ToggleMobileMenu"
+                            class="lg:hidden flex items-center justify-center w-10 h-10 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200">
+                            @if (isMobileMenuOpen)
+                            {
+                                <svg class="w-6 h-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            }
+                            else
+                            {
+                                <svg class="w-6 h-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 6h16M4 12h16M4 18h16"></path>
+                                </svg>
+                            }
                         </button>
                     </div>
                 </div>
             </div>
 
+            <!-- Mobile menu overlay -->
+            @if (isMobileMenuOpen)
+            {
+                <div class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40" @onclick="CloseMobileMenu"></div>
+            }
+
             <!-- Mobile menu -->
-            <div class="lg:hidden hidden" id="mobile-menu">
+            <div class="lg:hidden @(isMobileMenuOpen ? "relative z-50" : "hidden")"
                 <div class="px-4 pt-4 pb-6 space-y-3 bg-white border-t border-gray-100 shadow-lg">
                     <!-- Mobile Navigation Links -->
  
@@ -336,13 +351,13 @@
                             @Localizer["Products"]
                         </div>
                         <div class="ml-8 space-y-1">
-                            <a href="/products"
+                            <a href="/products" @onclick="CloseMobileMenu"
                                 class="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-amber-600 hover:bg-amber-50 rounded-lg">
                                 @Localizer["AllProducts"]
                             </a>
                             @foreach (var category in categories)
                             {
-                                <a href="/products/@category.Slug"
+                                <a href="/products/@category.Slug" @onclick="CloseMobileMenu"
                                     class="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-amber-600 hover:bg-amber-50 rounded-lg">
                                     @(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar" && !string.IsNullOrEmpty(category.NameAr) ? category.NameAr : category.Name)
                                 </a>
@@ -350,7 +365,7 @@
                         </div>
                     </div>
 
-                    <a href="/about"
+                    <a href="/about" @onclick="CloseMobileMenu"
                         class="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200">
                         <svg class="w-5 h-5 mr-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd"
@@ -360,7 +375,7 @@
                         @Localizer["About"]
                     </a>
 
-                    <a href="/contact"
+                    <a href="/contact" @onclick="CloseMobileMenu"
                         class="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200">
                         <svg class="w-5 h-5 mr-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
@@ -388,7 +403,7 @@
 
                                 <a href="/cart"
                                     class="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg"
-                                    @onclick="NavigateToCart">
+                                    @onclick="NavigateToCartAndCloseMenu">
                                     <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -402,7 +417,7 @@
                                             class="ml-auto bg-amber-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">@mobileCartCount</span>
                                     }
                                 </a>
-                                <a href="/Account/Manage"
+                                <a href="/Account/Manage" @onclick="CloseMobileMenu"
                                     class="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg">
                                     <svg class="w-5 h-5 mr-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
@@ -411,7 +426,7 @@
                                     </svg>
                                     @Localizer["MyProfile"]
                                 </a>
-                                <a href="/orders"
+                                <a href="/orders" @onclick="CloseMobileMenu"
                                     class="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg">
                                     <svg class="w-5 h-5 mr-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
@@ -442,7 +457,7 @@
                                     <LanguageSwitcher />
                                 </div>
                                 
-                                <a href="/Account/Login"
+                                <a href="/Account/Login" @onclick="CloseMobileMenu"
                                     class="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg">
                                     <svg class="w-5 h-5 mr-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
@@ -451,7 +466,7 @@
                                     </svg>
                                     @Localizer["Login"]
                                 </a>
-                                <a href="/Account/Register"
+                                <a href="/Account/Register" @onclick="CloseMobileMenu"
                                     class="flex items-center px-4 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-medium rounded-lg shadow-sm">
                                     <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
                                         <path
@@ -528,6 +543,7 @@
         private string logoType = "text";
         private string logoText = "SpirithubCofe";
         private string logoImage = "";
+        private bool isMobileMenuOpen = false;
         private List<SpirithubCofe.Domain.Entities.Category> categories = new();
 
         protected override async Task OnInitializedAsync()
@@ -580,46 +596,29 @@
             Navigation.NavigateTo("/cart");
         }
 
+        private void NavigateToCartAndCloseMenu()
+        {
+            CloseMobileMenu();
+            Navigation.NavigateTo("/cart");
+        }
+
+        private void ToggleMobileMenu()
+        {
+            isMobileMenuOpen = !isMobileMenuOpen;
+        }
+
+        private void CloseMobileMenu()
+        {
+            isMobileMenuOpen = false;
+        }
+
         public void Dispose()
         {
             CartService.OnCartChanged -= UpdateMobileCartInfo;
         }
     }
 
-    <script>
-        // Mobile menu toggle
-        document.addEventListener('DOMContentLoaded', function () {
-            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-            const mobileMenu = document.getElementById('mobile-menu');
 
-            if (mobileMenuToggle && mobileMenu) {
-                mobileMenuToggle.addEventListener('click', function () {
-                    mobileMenu.classList.toggle('hidden');
-                });
-            }
-
-            // Close mobile menu when clicking outside
-            document.addEventListener('click', function (event) {
-                if (mobileMenu && !mobileMenu.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
-                    mobileMenu.classList.add('hidden');
-                }
-            });
-
-            // Smooth scrolling for anchor links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                });
-            });
-        });
-    </script>
 </body>
 
 </html>

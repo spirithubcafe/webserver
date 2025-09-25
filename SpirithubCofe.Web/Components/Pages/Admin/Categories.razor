@@ -5,9 +5,9 @@
 @using Microsoft.AspNetCore.Authorization
 @using SpirithubCofe.Web.Components.Shared
 @inject CategoryService CategoryService
-@inject IJSRuntime JSRuntime
 @inject HttpClient HttpClient
 @inject IStringLocalizer<SpirithubCofe.Langs.Resources> Localizer
+@inject ToastService ToastService
 @rendermode InteractiveServer
 
 <PageTitle>@Localizer["CategoryManagement"] - SpirithubCofe Admin</PageTitle>
@@ -429,7 +429,7 @@
         }
         catch (Exception ex)
         {
-            await Toast.ShowError(JSRuntime, string.Format(Localizer["ErrorLoadingCategories"], ex.Message));
+            ToastService.ShowError($"{Localizer["ErrorLoadingCategories"]} {ex.Message}");
         }
         
         StateHasChanged();
@@ -483,9 +483,6 @@
         currentCategory = new() { IsActive = true, IsDisplayedOnHomepage = true, DisplayOrder = allCategories.Count };
         editingCategory = null;
         showCreateForm = true;
-        
-        // Scroll to top to show the create form
-        await JSRuntime.InvokeVoidAsync("scrollToTop");
     }
 
     private async Task EditCategory(Category category)
@@ -505,9 +502,7 @@
             IsDisplayedOnHomepage = category.IsDisplayedOnHomepage
         };
         showCreateForm = true;
-        
-        // Scroll to top to show the edit form
-        await JSRuntime.InvokeVoidAsync("scrollToTop");
+
     }
 
     private void CancelForm()
@@ -536,7 +531,7 @@
                 // Update existing category
                 currentCategory.UpdatedAt = DateTime.UtcNow;
                 await CategoryService.UpdateCategoryAsync(currentCategory);
-                await Toast.ShowSuccess(JSRuntime, Localizer["CategoryUpdatedSuccess"]);
+                ToastService.ShowSuccess(Localizer["CategoryUpdatedSuccess"]);
             }
             else
             {
@@ -544,7 +539,7 @@
                 currentCategory.CreatedAt = DateTime.UtcNow;
                 currentCategory.UpdatedAt = DateTime.UtcNow;
                 await CategoryService.CreateCategoryAsync(currentCategory);
-                await Toast.ShowSuccess(JSRuntime, Localizer["CategoryCreatedSuccess"]);
+                ToastService.ShowSuccess(Localizer["CategoryCreatedSuccess"]);
             }
             
             CancelForm();
@@ -552,7 +547,7 @@
         }
         catch (Exception ex)
         {
-            await Toast.ShowError(JSRuntime, string.Format(Localizer["ErrorSavingCategory"], ex.Message));
+            ToastService.ShowError($"{Localizer["ErrorSavingCategory"]} {ex.Message}");
         }
         finally
         {
@@ -571,26 +566,26 @@
                 category.UpdatedAt = DateTime.UtcNow;
                 await CategoryService.UpdateCategoryAsync(category);
                 await LoadCategories();
-                await Toast.ShowSuccess(JSRuntime, Localizer["CategoryStatusUpdatedSuccess"]);
+                ToastService.ShowSuccess(Localizer["CategoryStatusUpdatedSuccess"]);
             }
         }
         catch (Exception ex)
         {
-            await Toast.ShowError(JSRuntime, string.Format(Localizer["ErrorUpdatingCategoryStatus"], ex.Message));
+            ToastService.ShowError($"{Localizer["ErrorUpdatingCategoryStatus"]} {ex.Message}");
         }
     }
 
     private async Task DeleteCategory(Category category)
     {
-        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", Localizer["ConfirmDeleteCategory"]);
-        if (confirmed)
+        // Direct delete - confirmation removed to avoid JavaScript dependency  
+        if (true)
         {
             try
             {
                 var canDeleteResult = await CategoryService.CanDeleteCategoryAsync(category.Id);
                 if (!canDeleteResult.CanDelete)
                 {
-                    await Toast.ShowError(JSRuntime, string.Format(Localizer["CannotDeleteCategoryWithProducts"], category.Name, canDeleteResult.ProductCount));
+                    ToastService.ShowError($"{Localizer["CannotDeleteCategoryWithProducts"]} {category.Name} ({canDeleteResult.ProductCount})");
                     return;
                 }
 
@@ -598,26 +593,18 @@
                 if (success)
                 {
                     await LoadCategories();
-                    await Toast.ShowSuccess(JSRuntime, Localizer["CategoryDeletedSuccess"]);
+                    ToastService.ShowSuccess(Localizer["CategoryDeletedSuccess"]);
                 }
                 else
                 {
-                    await Toast.ShowError(JSRuntime, Localizer["ErrorDeletingCategory"]);
+                    ToastService.ShowError(Localizer["ErrorDeletingCategory"]);
                 }
             }
             catch (Exception ex)
             {
-                await Toast.ShowError(JSRuntime, string.Format(Localizer["ErrorDeletingCategoryGeneral"], ex.Message));
+                ToastService.ShowError($"{Localizer["ErrorDeletingCategoryGeneral"]} {ex.Message}");
             }
         }
     }
 }
 
-<script>
-    window.scrollToTop = function() {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    };
-</script>

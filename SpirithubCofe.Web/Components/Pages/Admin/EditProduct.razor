@@ -4,9 +4,10 @@
 @inject ProductService ProductService
 @inject CategoryService CategoryService
 @inject NavigationManager Navigation
-@inject IJSRuntime JSRuntime
+@inject ToastService ToastService
 @using SpirithubCofe.Domain.Entities
 @using Microsoft.AspNetCore.Components.Forms
+@using SpirithubCofe.Web.Components.Shared
 @using System.Linq
 @using System.IO
 @rendermode InteractiveServer
@@ -891,12 +892,12 @@
             
             if (product == null)
             {
-                await Toast.ShowError(JSRuntime, "Product not found.");
+                ToastService.ShowError("Product not found.");
             }
         }
         catch (Exception ex)
         {
-            await Toast.ShowError(JSRuntime, $"Error loading product: {ex.Message}");
+            ToastService.ShowError($"Error loading product: {ex.Message}");
         }
         finally
         {
@@ -932,17 +933,17 @@
             var updatedProduct = await ProductService.UpdateProductAsync(product);
             if (updatedProduct != null)
             {
-                await Toast.ShowSuccess(JSRuntime, $"Product '{product.Name}' has been updated successfully.");
+                ToastService.ShowSuccess($"Product '{product.Name}' has been updated successfully.");
                 product = updatedProduct; // Update the local instance
             }
             else
             {
-                await Toast.ShowError(JSRuntime, "Failed to update product.");
+                ToastService.ShowError("Failed to update product.");
             }
         }
         catch (Exception ex)
         {
-            await Toast.ShowError(JSRuntime, $"Error updating product: {ex.Message}");
+            ToastService.ShowError($"Error updating product: {ex.Message}");
         }
         finally
         {
@@ -972,17 +973,17 @@
             var updatedProduct = await ProductService.UpdateProductAsync(product);
             if (updatedProduct != null)
             {
-                await Toast.ShowSuccess(JSRuntime, $"Product '{product.Name}' has been saved as draft.");
+                ToastService.ShowSuccess($"Product '{product.Name}' has been saved as draft.");
                 product = updatedProduct; // Update the local instance
             }
             else
             {
-                await Toast.ShowError(JSRuntime, "Failed to save product as draft.");
+                ToastService.ShowError("Failed to save product as draft.");
             }
         }
         catch (Exception ex)
         {
-            await Toast.ShowError(JSRuntime, $"Error saving product as draft: {ex.Message}");
+            ToastService.ShowError($"Error saving product as draft: {ex.Message}");
         }
         finally
         {
@@ -1029,12 +1030,12 @@
             
             // Update product in database
             await ProductService.UpdateProductAsync(product);
-            await Toast.ShowSuccess(JSRuntime, "Main image uploaded successfully!");
+            ToastService.ShowSuccess("Main image uploaded successfully!");
             StateHasChanged();
         }
         catch (Exception ex)
         {
-            await Toast.ShowError(JSRuntime, $"Error updating main image: {ex.Message}");
+            ToastService.ShowError($"Error updating main image: {ex.Message}");
         }
     }
 
@@ -1046,12 +1047,12 @@
         {
             product.MainImage = null;
             await ProductService.UpdateProductAsync(product);
-            await Toast.ShowSuccess(JSRuntime, "Main image removed successfully!");
+            ToastService.ShowSuccess("Main image removed successfully!");
             StateHasChanged();
         }
         catch (Exception ex)
         {
-            await Toast.ShowError(JSRuntime, $"Error removing main image: {ex.Message}");
+            ToastService.ShowError($"Error removing main image: {ex.Message}");
         }
     }
 
@@ -1067,7 +1068,7 @@
             // Check if we haven't exceeded the limit
             if (product.GalleryImages.Count >= 5)
             {
-                await Toast.ShowError(JSRuntime, "Maximum 5 gallery images allowed");
+                ToastService.ShowError("Maximum 5 gallery images allowed");
                 return;
             }
             
@@ -1086,12 +1087,12 @@
             
             // Update product in database
             await ProductService.UpdateProductAsync(product);
-            await Toast.ShowSuccess(JSRuntime, "Gallery image uploaded successfully!");
+            ToastService.ShowSuccess("Gallery image uploaded successfully!");
             StateHasChanged();
         }
         catch (Exception ex)
         {
-            await Toast.ShowError(JSRuntime, $"Error uploading gallery image: {ex.Message}");
+            ToastService.ShowError($"Error uploading gallery image: {ex.Message}");
         }
     }
 
@@ -1103,12 +1104,12 @@
         {
             product.GalleryImages.Remove(image);
             await ProductService.UpdateProductAsync(product);
-            await Toast.ShowSuccess(JSRuntime, "Image removed successfully");
+            ToastService.ShowSuccess("Image removed successfully");
             StateHasChanged();
         }
         catch (Exception ex)
         {
-            await Toast.ShowError(JSRuntime, $"Error removing image: {ex.Message}");
+            ToastService.ShowError($"Error removing image: {ex.Message}");
         }
     }
 
@@ -1169,13 +1170,13 @@
             // Validate variant
             if (string.IsNullOrEmpty(newVariant.VariantSku))
             {
-                await Toast.ShowError(JSRuntime, "SKU is required");
+                ToastService.ShowError("SKU is required");
                 return;
             }
             
             if (newVariant.Price <= 0)
             {
-                await Toast.ShowError(JSRuntime, "Price must be greater than 0");
+                ToastService.ShowError("Price must be greater than 0");
                 return;
             }
 
@@ -1205,7 +1206,7 @@
                     }
                 }
                 
-                await Toast.ShowSuccess(JSRuntime, "Variant updated successfully");
+                ToastService.ShowSuccess("Variant updated successfully");
             }
             else
             {
@@ -1224,7 +1225,7 @@
                 }
                 
                 product.Variants.Add(newVariant);
-                await Toast.ShowSuccess(JSRuntime, "Variant added successfully");
+                ToastService.ShowSuccess("Variant added successfully");
             }
             
             await ProductService.UpdateProductAsync(product);
@@ -1237,7 +1238,7 @@
         }
         catch (Exception ex)
         {
-            await Toast.ShowError(JSRuntime, $"Error saving variant: {ex.Message}");
+            ToastService.ShowError($"Error saving variant: {ex.Message}");
         }
     }
 
@@ -1245,19 +1246,19 @@
     {
         if (product?.Variants == null) return;
         
-        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete variant {variant.VariantSku}?");
-        if (confirmed)
+        // Direct delete - confirmation removed to avoid JavaScript dependency
+        if (true)
         {
             try
             {
                 product.Variants.Remove(variant);
                 await ProductService.UpdateProductAsync(product);
-                await Toast.ShowSuccess(JSRuntime, "Variant deleted successfully");
+                ToastService.ShowSuccess("Variant deleted successfully");
                 StateHasChanged();
             }
             catch (Exception ex)
             {
-                await Toast.ShowError(JSRuntime, $"Error deleting variant: {ex.Message}");
+                ToastService.ShowError($"Error deleting variant: {ex.Message}");
             }
         }
     }
@@ -1278,12 +1279,12 @@
             variant.IsDefault = true;
             
             await ProductService.UpdateProductAsync(product);
-            await Toast.ShowSuccess(JSRuntime, "Default variant updated");
+            ToastService.ShowSuccess("Default variant updated");
             StateHasChanged();
         }
         catch (Exception ex)
         {
-            await Toast.ShowError(JSRuntime, $"Error updating default variant: {ex.Message}");
+            ToastService.ShowError($"Error updating default variant: {ex.Message}");
         }
     }
 
@@ -1361,7 +1362,7 @@
         }
         catch (Exception ex)
         {
-            await Toast.ShowError(JSRuntime, $"Error updating gallery images: {ex.Message}");
+            ToastService.ShowError($"Error updating gallery images: {ex.Message}");
         }
     }
 }
