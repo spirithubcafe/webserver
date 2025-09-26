@@ -8,7 +8,7 @@
         <div class="flex items-center space-x-2 rtl:space-x-reverse">
             @if (FileType == "image")
             {
-                <img src="@CurrentFileUrl" alt="@AltText" class="w-16 h-16 object-cover rounded border" />
+                <img src="@CurrentFileUrl" alt="@AltText" class="w-auto h-16 object-cover rounded border border-2 border-dashed border-gray-300 rounded-lg" />
             }
             else
             {
