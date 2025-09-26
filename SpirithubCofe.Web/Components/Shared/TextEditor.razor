@@ -140,7 +140,7 @@
         }
     }
     
-    private async Task OnInput(ChangeEventArgs e)
+    private void OnInput(ChangeEventArgs e)
     {
         CurrentValue = e.Value?.ToString() ?? "";
     }
@@ -217,7 +217,7 @@
         CurrentValue = cleanText;
     }
     
-    private async Task<string> GetSelection()
+    private string GetSelection()
     {
         try
         {
@@ -231,7 +231,7 @@
         }
     }
     
-    private async Task InsertAtCursor(string text)
+    private void InsertAtCursor(string text)
     {
         try
         {

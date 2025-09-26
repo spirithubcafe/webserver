@@ -478,14 +478,14 @@
         categoriesWithProducts = allCategories.Count(c => c.Products?.Any() == true);
     }
 
-    private async Task ShowCreateForm()
+    private void ShowCreateForm()
     {
         currentCategory = new() { IsActive = true, IsDisplayedOnHomepage = true, DisplayOrder = allCategories.Count };
         editingCategory = null;
         showCreateForm = true;
     }
 
-    private async Task EditCategory(Category category)
+    private void EditCategory(Category category)
     {
         editingCategory = category;
         currentCategory = new Category
