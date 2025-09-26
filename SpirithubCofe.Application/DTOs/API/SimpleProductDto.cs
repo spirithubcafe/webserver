@@ -5,7 +5,7 @@ namespace SpirithubCofe.Application.DTOs.API;
 /// <summary>
 /// Simplified Product DTO for API that matches the existing entity structure
 /// </summary>
-public class SimpleProductDto
+public class ProductDto
 {
     public int Id { get; set; }
     
@@ -150,7 +150,7 @@ public class SimpleProductDto
 /// <summary>
 /// Create/Update request for simplified products
 /// </summary>
-public class CreateSimpleProductRequestDto
+public class CreateProductRequestDto
 {
     [Required]
     [StringLength(100)]
@@ -202,6 +202,6 @@ public class CreateSimpleProductRequestDto
 /// <summary>
 /// Update request for simplified products
 /// </summary>
-public class UpdateSimpleProductRequestDto : CreateSimpleProductRequestDto
+public class UpdateProductRequestDto : CreateProductRequestDto
 {
 }

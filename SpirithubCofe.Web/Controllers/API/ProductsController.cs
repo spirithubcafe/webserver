@@ -15,9 +15,9 @@ namespace SpirithubCofe.Web.Controllers.API;
 [Produces("application/json")]
 public class ProductsController : ControllerBase
 {
-    private readonly ISimpleProductApiService _productService;
+    private readonly IProductApiService _productService;
 
-    public ProductsController(ISimpleProductApiService productService)
+    public ProductsController(IProductApiService productService)
     {
         _productService = productService;
     }
@@ -35,10 +35,10 @@ public class ProductsController : ControllerBase
     /// <param name="pageSize">Items per page (max 100)</param>
     /// <returns>Paginated list of products</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(ApiResponse<PaginatedResponse<SimpleProductDto>>), 200)]
+    [ProducesResponseType(typeof(ApiResponse<PaginatedResponse<ProductDto>>), 200)]
     [ProducesResponseType(typeof(ApiResponse<object>), 400)]
     [ProducesResponseType(typeof(ApiResponse<object>), 500)]
-    public async Task<ActionResult<ApiResponse<PaginatedResponse<SimpleProductDto>>>> GetProducts(
+    public async Task<ActionResult<ApiResponse<PaginatedResponse<ProductDto>>>> GetProducts(
         [FromQuery] string? query = null,
         [FromQuery] int? categoryId = null,
         [FromQuery] string? categorySlug = null,
@@ -74,10 +74,10 @@ public class ProductsController : ControllerBase
     /// <param name="id">Product ID</param>
     /// <returns>Product details</returns>
     [HttpGet("{id:int}")]
-    [ProducesResponseType(typeof(ApiResponse<SimpleProductDto>), 200)]
+    [ProducesResponseType(typeof(ApiResponse<ProductDto>), 200)]
     [ProducesResponseType(typeof(ApiResponse<object>), 404)]
     [ProducesResponseType(typeof(ApiResponse<object>), 500)]
-    public async Task<ActionResult<ApiResponse<SimpleProductDto>>> GetProduct(int id)
+    public async Task<ActionResult<ApiResponse<ProductDto>>> GetProduct(int id)
     {
         var result = await _productService.GetProductByIdAsync(id);
         
@@ -96,10 +96,10 @@ public class ProductsController : ControllerBase
     /// <param name="sku">Product SKU</param>
     /// <returns>Product details</returns>
     [HttpGet("sku/{sku}")]
-    [ProducesResponseType(typeof(ApiResponse<SimpleProductDto>), 200)]
+    [ProducesResponseType(typeof(ApiResponse<ProductDto>), 200)]
     [ProducesResponseType(typeof(ApiResponse<object>), 404)]
     [ProducesResponseType(typeof(ApiResponse<object>), 500)]
-    public async Task<ActionResult<ApiResponse<SimpleProductDto>>> GetProductBySku(string sku)
+    public async Task<ActionResult<ApiResponse<ProductDto>>> GetProductBySku(string sku)
     {
         var result = await _productService.GetProductBySkuAsync(sku);
         
@@ -118,9 +118,9 @@ public class ProductsController : ControllerBase
     /// <param name="count">Number of products to return (max 50)</param>
     /// <returns>List of featured products</returns>
     [HttpGet("featured")]
-    [ProducesResponseType(typeof(ApiResponse<List<SimpleProductDto>>), 200)]
+    [ProducesResponseType(typeof(ApiResponse<List<ProductDto>>), 200)]
     [ProducesResponseType(typeof(ApiResponse<object>), 500)]
-    public async Task<ActionResult<ApiResponse<List<SimpleProductDto>>>> GetFeaturedProducts(
+    public async Task<ActionResult<ApiResponse<List<ProductDto>>>> GetFeaturedProducts(
         [FromQuery][Range(1, 50)] int count = 8)
     {
         var result = await _productService.GetFeaturedProductsAsync(count);
@@ -134,9 +134,9 @@ public class ProductsController : ControllerBase
     /// <param name="count">Number of products to return (max 100)</param>
     /// <returns>List of products in the category</returns>
     [HttpGet("category/{categoryId:int}")]
-    [ProducesResponseType(typeof(ApiResponse<List<SimpleProductDto>>), 200)]
+    [ProducesResponseType(typeof(ApiResponse<List<ProductDto>>), 200)]
     [ProducesResponseType(typeof(ApiResponse<object>), 500)]
-    public async Task<ActionResult<ApiResponse<List<SimpleProductDto>>>> GetProductsByCategory(
+    public async Task<ActionResult<ApiResponse<List<ProductDto>>>> GetProductsByCategory(
         int categoryId,
         [FromQuery][Range(1, 100)] int count = 20)
     {
@@ -151,17 +151,17 @@ public class ProductsController : ControllerBase
     /// <returns>Created product</returns>
     [HttpPost]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-    [ProducesResponseType(typeof(ApiResponse<SimpleProductDto>), 201)]
+    [ProducesResponseType(typeof(ApiResponse<ProductDto>), 201)]
     [ProducesResponseType(typeof(ApiResponse<object>), 400)]
     [ProducesResponseType(typeof(ApiResponse<object>), 401)]
     [ProducesResponseType(typeof(ApiResponse<object>), 403)]
     [ProducesResponseType(typeof(ApiResponse<object>), 500)]
-    public async Task<ActionResult<ApiResponse<SimpleProductDto>>> CreateProduct([FromBody] CreateSimpleProductRequestDto request)
+    public async Task<ActionResult<ApiResponse<ProductDto>>> CreateProduct([FromBody] CreateProductRequestDto request)
     {
         if (!ModelState.IsValid)
         {
             var errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
-            return BadRequest(ApiResponse<SimpleProductDto>.ErrorResponse(string.Join(", ", errors)));
+            return BadRequest(ApiResponse<ProductDto>.ErrorResponse(string.Join(", ", errors)));
         }
 
         var result = await _productService.CreateProductAsync(request);
@@ -180,18 +180,18 @@ public class ProductsController : ControllerBase
     /// <returns>Updated product</returns>
     [HttpPut("{id:int}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-    [ProducesResponseType(typeof(ApiResponse<SimpleProductDto>), 200)]
+    [ProducesResponseType(typeof(ApiResponse<ProductDto>), 200)]
     [ProducesResponseType(typeof(ApiResponse<object>), 400)]
     [ProducesResponseType(typeof(ApiResponse<object>), 401)]
     [ProducesResponseType(typeof(ApiResponse<object>), 403)]
     [ProducesResponseType(typeof(ApiResponse<object>), 404)]
     [ProducesResponseType(typeof(ApiResponse<object>), 500)]
-    public async Task<ActionResult<ApiResponse<SimpleProductDto>>> UpdateProduct(int id, [FromBody] UpdateSimpleProductRequestDto request)
+    public async Task<ActionResult<ApiResponse<ProductDto>>> UpdateProduct(int id, [FromBody] UpdateProductRequestDto request)
     {
         if (!ModelState.IsValid)
         {
             var errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
-            return BadRequest(ApiResponse<SimpleProductDto>.ErrorResponse(string.Join(", ", errors)));
+            return BadRequest(ApiResponse<ProductDto>.ErrorResponse(string.Join(", ", errors)));
         }
 
         var result = await _productService.UpdateProductAsync(id, request);

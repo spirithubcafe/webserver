@@ -8,15 +8,15 @@ namespace SpirithubCofe.Application.Services.API;
 /// <summary>
 /// Simplified service for handling product operations for API
 /// </summary>
-public interface ISimpleProductApiService
+public interface IProductApiService
 {
-    Task<ApiResponse<PaginatedResponse<SimpleProductDto>>> GetProductsAsync(ProductSearchDto searchDto);
-    Task<ApiResponse<SimpleProductDto>> GetProductByIdAsync(int id);
-    Task<ApiResponse<SimpleProductDto>> GetProductBySkuAsync(string sku);
-    Task<ApiResponse<List<SimpleProductDto>>> GetFeaturedProductsAsync(int count = 8);
-    Task<ApiResponse<List<SimpleProductDto>>> GetProductsByCategoryAsync(int categoryId, int count = 20);
-    Task<ApiResponse<SimpleProductDto>> CreateProductAsync(CreateSimpleProductRequestDto request);
-    Task<ApiResponse<SimpleProductDto>> UpdateProductAsync(int id, UpdateSimpleProductRequestDto request);
+    Task<ApiResponse<PaginatedResponse<ProductDto>>> GetProductsAsync(ProductSearchDto searchDto);
+    Task<ApiResponse<ProductDto>> GetProductByIdAsync(int id);
+    Task<ApiResponse<ProductDto>> GetProductBySkuAsync(string sku);
+    Task<ApiResponse<List<ProductDto>>> GetFeaturedProductsAsync(int count = 8);
+    Task<ApiResponse<List<ProductDto>>> GetProductsByCategoryAsync(int categoryId, int count = 20);
+    Task<ApiResponse<ProductDto>> CreateProductAsync(CreateProductRequestDto request);
+    Task<ApiResponse<ProductDto>> UpdateProductAsync(int id, UpdateProductRequestDto request);
     Task<ApiResponse<bool>> DeleteProductAsync(int id);
     Task<ApiResponse<bool>> ToggleProductStatusAsync(int id);
     Task<ApiResponse<bool>> UpdateStockAsync(int id, int quantity);
@@ -25,16 +25,16 @@ public interface ISimpleProductApiService
 /// <summary>
 /// Implementation of simplified product API service
 /// </summary>
-public class SimpleProductApiService : ISimpleProductApiService
+public class ProductApiService : IProductApiService
 {
     private readonly IApplicationDbContext _context;
 
-    public SimpleProductApiService(IApplicationDbContext context)
+    public ProductApiService(IApplicationDbContext context)
     {
         _context = context;
     }
 
-    public async Task<ApiResponse<PaginatedResponse<SimpleProductDto>>> GetProductsAsync(ProductSearchDto searchDto)
+    public async Task<ApiResponse<PaginatedResponse<ProductDto>>> GetProductsAsync(ProductSearchDto searchDto)
     {
         try
         {
@@ -87,9 +87,9 @@ public class SimpleProductApiService : ISimpleProductApiService
                 .Take(searchDto.PageSize)
                 .ToListAsync();
 
-            var productDtos = products.Select(p => MapToSimpleProductDto(p, p.Variants.FirstOrDefault())).ToList();
+            var productDtos = products.Select(p => MapToProductDto(p, p.Variants.FirstOrDefault())).ToList();
 
-            var paginatedResponse = new PaginatedResponse<SimpleProductDto>
+            var paginatedResponse = new PaginatedResponse<ProductDto>
             {
                 Items = productDtos,
                 TotalItems = totalCount,
@@ -98,15 +98,15 @@ public class SimpleProductApiService : ISimpleProductApiService
                 TotalPages = (int)Math.Ceiling((double)totalCount / searchDto.PageSize)
             };
 
-            return ApiResponse<PaginatedResponse<SimpleProductDto>>.SuccessResponse(paginatedResponse);
+            return ApiResponse<PaginatedResponse<ProductDto>>.SuccessResponse(paginatedResponse);
         }
         catch (Exception ex)
         {
-            return ApiResponse<PaginatedResponse<SimpleProductDto>>.ErrorResponse($"Failed to get products: {ex.Message}");
+            return ApiResponse<PaginatedResponse<ProductDto>>.ErrorResponse($"Failed to get products: {ex.Message}");
         }
     }
 
-    public async Task<ApiResponse<SimpleProductDto>> GetProductByIdAsync(int id)
+    public async Task<ApiResponse<ProductDto>> GetProductByIdAsync(int id)
     {
         try
         {
@@ -118,19 +118,19 @@ public class SimpleProductApiService : ISimpleProductApiService
 
             if (product == null)
             {
-                return ApiResponse<SimpleProductDto>.ErrorResponse("Product not found");
+                return ApiResponse<ProductDto>.ErrorResponse("Product not found");
             }
 
-            var productDto = MapToSimpleProductDto(product, product.Variants.FirstOrDefault());
-            return ApiResponse<SimpleProductDto>.SuccessResponse(productDto);
+            var productDto = MapToProductDto(product, product.Variants.FirstOrDefault());
+            return ApiResponse<ProductDto>.SuccessResponse(productDto);
         }
         catch (Exception ex)
         {
-            return ApiResponse<SimpleProductDto>.ErrorResponse($"Failed to get product: {ex.Message}");
+            return ApiResponse<ProductDto>.ErrorResponse($"Failed to get product: {ex.Message}");
         }
     }
 
-    public async Task<ApiResponse<SimpleProductDto>> GetProductBySkuAsync(string sku)
+    public async Task<ApiResponse<ProductDto>> GetProductBySkuAsync(string sku)
     {
         try
         {
@@ -142,19 +142,19 @@ public class SimpleProductApiService : ISimpleProductApiService
 
             if (product == null)
             {
-                return ApiResponse<SimpleProductDto>.ErrorResponse("Product not found");
+                return ApiResponse<ProductDto>.ErrorResponse("Product not found");
             }
 
-            var productDto = MapToSimpleProductDto(product, product.Variants.FirstOrDefault());
-            return ApiResponse<SimpleProductDto>.SuccessResponse(productDto);
+            var productDto = MapToProductDto(product, product.Variants.FirstOrDefault());
+            return ApiResponse<ProductDto>.SuccessResponse(productDto);
         }
         catch (Exception ex)
         {
-            return ApiResponse<SimpleProductDto>.ErrorResponse($"Failed to get product: {ex.Message}");
+            return ApiResponse<ProductDto>.ErrorResponse($"Failed to get product: {ex.Message}");
         }
     }
 
-    public async Task<ApiResponse<List<SimpleProductDto>>> GetFeaturedProductsAsync(int count = 8)
+    public async Task<ApiResponse<List<ProductDto>>> GetFeaturedProductsAsync(int count = 8)
     {
         try
         {
@@ -167,16 +167,16 @@ public class SimpleProductApiService : ISimpleProductApiService
                 .Take(count)
                 .ToListAsync();
 
-            var productDtos = products.Select(p => MapToSimpleProductDto(p, p.Variants.FirstOrDefault())).ToList();
-            return ApiResponse<List<SimpleProductDto>>.SuccessResponse(productDtos);
+            var productDtos = products.Select(p => MapToProductDto(p, p.Variants.FirstOrDefault())).ToList();
+            return ApiResponse<List<ProductDto>>.SuccessResponse(productDtos);
         }
         catch (Exception ex)
         {
-            return ApiResponse<List<SimpleProductDto>>.ErrorResponse($"Failed to get featured products: {ex.Message}");
+            return ApiResponse<List<ProductDto>>.ErrorResponse($"Failed to get featured products: {ex.Message}");
         }
     }
 
-    public async Task<ApiResponse<List<SimpleProductDto>>> GetProductsByCategoryAsync(int categoryId, int count = 20)
+    public async Task<ApiResponse<List<ProductDto>>> GetProductsByCategoryAsync(int categoryId, int count = 20)
     {
         try
         {
@@ -189,29 +189,29 @@ public class SimpleProductApiService : ISimpleProductApiService
                 .Take(count)
                 .ToListAsync();
 
-            var productDtos = products.Select(p => MapToSimpleProductDto(p, p.Variants.FirstOrDefault())).ToList();
-            return ApiResponse<List<SimpleProductDto>>.SuccessResponse(productDtos);
+            var productDtos = products.Select(p => MapToProductDto(p, p.Variants.FirstOrDefault())).ToList();
+            return ApiResponse<List<ProductDto>>.SuccessResponse(productDtos);
         }
         catch (Exception ex)
         {
-            return ApiResponse<List<SimpleProductDto>>.ErrorResponse($"Failed to get products by category: {ex.Message}");
+            return ApiResponse<List<ProductDto>>.ErrorResponse($"Failed to get products by category: {ex.Message}");
         }
     }
 
-    public async Task<ApiResponse<SimpleProductDto>> CreateProductAsync(CreateSimpleProductRequestDto request)
+    public async Task<ApiResponse<ProductDto>> CreateProductAsync(CreateProductRequestDto request)
     {
         try
         {
             var category = await _context.Categories.FindAsync(request.CategoryId);
             if (category == null)
             {
-                return ApiResponse<SimpleProductDto>.ErrorResponse("Category not found");
+                return ApiResponse<ProductDto>.ErrorResponse("Category not found");
             }
 
             // Check if SKU already exists
             if (await _context.Products.AnyAsync(p => p.Sku == request.Sku))
             {
-                return ApiResponse<SimpleProductDto>.ErrorResponse("SKU already exists");
+                return ApiResponse<ProductDto>.ErrorResponse("SKU already exists");
             }
 
             var product = new Product
@@ -251,16 +251,16 @@ public class SimpleProductApiService : ISimpleProductApiService
             _context.ProductVariants.Add(variant);
             await _context.SaveChangesAsync();
 
-            var productDto = MapToSimpleProductDto(product, variant);
-            return ApiResponse<SimpleProductDto>.SuccessResponse(productDto, "Product created successfully");
+            var productDto = MapToProductDto(product, variant);
+            return ApiResponse<ProductDto>.SuccessResponse(productDto, "Product created successfully");
         }
         catch (Exception ex)
         {
-            return ApiResponse<SimpleProductDto>.ErrorResponse($"Failed to create product: {ex.Message}");
+            return ApiResponse<ProductDto>.ErrorResponse($"Failed to create product: {ex.Message}");
         }
     }
 
-    public async Task<ApiResponse<SimpleProductDto>> UpdateProductAsync(int id, UpdateSimpleProductRequestDto request)
+    public async Task<ApiResponse<ProductDto>> UpdateProductAsync(int id, UpdateProductRequestDto request)
     {
         try
         {
@@ -270,19 +270,19 @@ public class SimpleProductApiService : ISimpleProductApiService
 
             if (product == null)
             {
-                return ApiResponse<SimpleProductDto>.ErrorResponse("Product not found");
+                return ApiResponse<ProductDto>.ErrorResponse("Product not found");
             }
 
             var category = await _context.Categories.FindAsync(request.CategoryId);
             if (category == null)
             {
-                return ApiResponse<SimpleProductDto>.ErrorResponse("Category not found");
+                return ApiResponse<ProductDto>.ErrorResponse("Category not found");
             }
 
             // Check if SKU already exists for other products
             if (await _context.Products.AnyAsync(p => p.Sku == request.Sku && p.Id != id))
             {
-                return ApiResponse<SimpleProductDto>.ErrorResponse("SKU already exists");
+                return ApiResponse<ProductDto>.ErrorResponse("SKU already exists");
             }
 
             // Update product
@@ -314,12 +314,12 @@ public class SimpleProductApiService : ISimpleProductApiService
 
             await _context.SaveChangesAsync();
 
-            var productDto = MapToSimpleProductDto(product, variant);
-            return ApiResponse<SimpleProductDto>.SuccessResponse(productDto, "Product updated successfully");
+            var productDto = MapToProductDto(product, variant);
+            return ApiResponse<ProductDto>.SuccessResponse(productDto, "Product updated successfully");
         }
         catch (Exception ex)
         {
-            return ApiResponse<SimpleProductDto>.ErrorResponse($"Failed to update product: {ex.Message}");
+            return ApiResponse<ProductDto>.ErrorResponse($"Failed to update product: {ex.Message}");
         }
     }
 
@@ -395,9 +395,9 @@ public class SimpleProductApiService : ISimpleProductApiService
         }
     }
 
-    private SimpleProductDto MapToSimpleProductDto(Product product, ProductVariant? variant = null)
+    private ProductDto MapToProductDto(Product product, ProductVariant? variant = null)
     {
-        return new SimpleProductDto
+        return new ProductDto
         {
             Id = product.Id,
             Sku = product.Sku,

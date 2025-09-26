@@ -132,7 +132,7 @@ builder.Services.AddScoped<SpirithubCofe.Application.Interfaces.IApplicationDbCo
 // Register API services
 builder.Services.AddScoped<IAuthApiService, AuthApiService<ApplicationUser>>();
 builder.Services.AddScoped<ICategoryApiService, CategoryApiService>();
-builder.Services.AddScoped<ISimpleProductApiService, SimpleProductApiService>();
+builder.Services.AddScoped<IProductApiService, ProductApiService>();
 
 // Add Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
