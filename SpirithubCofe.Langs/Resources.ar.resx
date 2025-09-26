@@ -656,6 +656,42 @@
   <data name="AddToCart" xml:space="preserve">
     <value>أضف للسلة</value>
   </data>
+  <data name="Adding" xml:space="preserve">
+    <value>جاري الإضافة</value>
+  </data>
+  <data name="AddedToCartSuccess" xml:space="preserve">
+    <value>تم إضافة المنتج للسلة بنجاح!</value>
+  </data>
+  <data name="AddToCartError" xml:space="preserve">
+    <value>خطأ في إضافة المنتج للسلة. يرجى المحاولة مرة أخرى.</value>
+  </data>
+  <data name="LowStock" xml:space="preserve">
+    <value>مخزون منخفض</value>
+  </data>
+  <data name="OutOfStock" xml:space="preserve">
+    <value>نفدت الكمية</value>
+  </data>
+  <data name="Remaining" xml:space="preserve">
+    <value>متبقي</value>
+  </data>
+  <data name="Selected" xml:space="preserve">
+    <value>محدد</value>
+  </data>
+  <data name="OnlyLeft" xml:space="preserve">
+    <value>فقط متبقي</value>
+  </data>
+  <data name="Items" xml:space="preserve">
+    <value>قطع</value>
+  </data>
+  <data name="InStock" xml:space="preserve">
+    <value>متوفر</value>
+  </data>
+  <data name="OutOfStockMessage" xml:space="preserve">
+    <value>عذراً، هذا المنتج غير متوفر حالياً.</value>
+  </data>
+  <data name="AddedToCartWithSizeSuccess" xml:space="preserve">
+    <value>تم إضافة {0} {1} للسلة بنجاح!</value>
+  </data>
   <data name="ViewAllProducts" xml:space="preserve">
     <value>عرض جميع المنتجات</value>
   </data>

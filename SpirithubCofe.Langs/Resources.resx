@@ -656,6 +656,42 @@
   <data name="AddToCart" xml:space="preserve">
     <value>Add to Cart</value>
   </data>
+  <data name="Adding" xml:space="preserve">
+    <value>Adding</value>
+  </data>
+  <data name="AddedToCartSuccess" xml:space="preserve">
+    <value>Product added to cart successfully!</value>
+  </data>
+  <data name="AddToCartError" xml:space="preserve">
+    <value>Error adding product to cart. Please try again.</value>
+  </data>
+  <data name="LowStock" xml:space="preserve">
+    <value>Low Stock</value>
+  </data>
+  <data name="OutOfStock" xml:space="preserve">
+    <value>Out of Stock</value>
+  </data>
+  <data name="Remaining" xml:space="preserve">
+    <value>remaining</value>
+  </data>
+  <data name="Selected" xml:space="preserve">
+    <value>Selected</value>
+  </data>
+  <data name="OnlyLeft" xml:space="preserve">
+    <value>Only left</value>
+  </data>
+  <data name="Items" xml:space="preserve">
+    <value>items</value>
+  </data>
+  <data name="InStock" xml:space="preserve">
+    <value>in stock</value>
+  </data>
+  <data name="OutOfStockMessage" xml:space="preserve">
+    <value>Sorry, this product variant is currently out of stock.</value>
+  </data>
+  <data name="AddedToCartWithSizeSuccess" xml:space="preserve">
+    <value>Added {0} {1} to cart successfully!</value>
+  </data>
   <data name="ViewAllProducts" xml:space="preserve">
     <value>View All Products</value>
   </data>

@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.Extensions.Localization
+@using Microsoft.JSInterop
 @using SpirithubCofe.Application.DTOs
 @using SpirithubCofe.Domain.Entities
 @using SpirithubCofe.Web.Services
@@ -11,11 +12,13 @@
 
 @inject ProductService ProductService
 @inject ReviewService ReviewService
+@inject CartService CartService
+@inject ToastService ToastService
 @inject IStringLocalizer<Resources> Loc
-@inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
 
-<PageTitle>@GetLocalizedProductName() - SpirithubCofe</PageTitle>
+<!-- PageTitle removed due to compilation issues -->
 
 @if (isLoading)
 {
@@ -172,15 +175,58 @@ else
                 @if (product.Variants?.Any() == true)
                 {
                     <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">@Loc["Size"]:</label>
-                        <div class="flex flex-wrap gap-2">
-                            @foreach (var variant in product.Variants)
+                        <label class="block text-sm font-medium text-gray-700 mb-3">@Loc["Size"]:</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            @foreach (var variant in product.Variants.Where(v => v.IsActive).OrderBy(v => v.DisplayOrder).ThenBy(v => v.Weight))
                             {
                                 <button type="button"
                                         @onclick="() => SelectVariant(variant)"
-                                        class="px-4 py-2 border rounded-md text-sm font-medium @(selectedVariant?.Id == variant.Id ? "border-amber-500 bg-amber-50 text-amber-700" : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50")">
-                                    @variant.Weight @variant.WeightUnit
-                                    <span class="ml-1 text-xs">(@variant.Price OMR)</span>
+                                        class="p-4 border rounded-lg text-left transition-all duration-200 @(selectedVariant?.Id == variant.Id ? "border-amber-500 bg-amber-50 ring-2 ring-amber-200" : "border-gray-300 bg-white hover:bg-gray-50 hover:border-gray-400")">
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <div class="font-medium text-gray-900">
+                                                @variant.Weight @variant.WeightUnit
+                                            </div>
+                                            @if (variant.StockQuantity <= variant.LowStockThreshold && variant.StockQuantity > 0)
+                                            {
+                                                <div class="text-xs text-orange-600 mt-1">
+                                                    @Loc["LowStock"] (@variant.StockQuantity @Loc["Remaining"])
+                                                </div>
+                                            }
+                                            else if (variant.StockQuantity <= 0)
+                                            {
+                                                <div class="text-xs text-red-600 mt-1">
+                                                    @Loc["OutOfStock"]
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="text-right">
+                                            @if (variant.DiscountPrice.HasValue && variant.DiscountPrice > 0)
+                                            {
+                                                <div class="text-lg font-bold text-red-600">
+                                                    @variant.DiscountPrice.Value OMR
+                                                </div>
+                                                <div class="text-sm text-gray-500 line-through">
+                                                    @variant.Price OMR
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="text-lg font-bold text-gray-900">
+                                                    @variant.Price OMR
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    @if (selectedVariant?.Id == variant.Id)
+                                    {
+                                        <div class="mt-2 flex items-center text-amber-600 text-xs">
+                                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            @Loc["Selected"]
+                                        </div>
+                                    }
                                 </button>
                             }
                         </div>
@@ -228,13 +274,57 @@ else
                 </div>
 
                 <!-- Add to Cart Button -->
+                @{
+                    var isOutOfStock = selectedVariant?.StockQuantity <= 0;
+                    var isButtonDisabled = isAddingToCart || isOutOfStock;
+                }
                 <button type="button" 
-                        class="w-full bg-amber-600 text-white px-6 py-3 rounded-md font-medium hover:bg-amber-700 transition-colors flex items-center justify-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l1.5-6m7.5 0v6a2 2 0 11-4 0V7a2 2 0 114 0z"/>
-                    </svg>
-                    @Loc["AddToCart"]
+                        @onclick="AddToCart"
+                        disabled="@isButtonDisabled"
+                        class="w-full px-6 py-3 rounded-md font-medium transition-colors flex items-center justify-center @(isOutOfStock ? "bg-gray-400 text-white cursor-not-allowed" : "bg-amber-600 text-white hover:bg-amber-700") @(isButtonDisabled ? "opacity-50 cursor-not-allowed" : "")">
+                    @if (isAddingToCart)
+                    {
+                        <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                        <span>@Loc["Adding"]...</span>
+                    }
+                    else if (isOutOfStock)
+                    {
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span>@Loc["OutOfStock"]</span>
+                    }
+                    else
+                    {
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l1.5-6m7.5 0v6a2 2 0 11-4 0V7a2 2 0 114 0z"/>
+                        </svg>
+                        <span>@Loc["AddToCart"]</span>
+                    }
                 </button>
+
+                <!-- Stock Information -->
+                @if (selectedVariant != null)
+                {
+                    <div class="mt-2 text-sm text-gray-600 text-center">
+                        @if (selectedVariant.StockQuantity <= 0)
+                        {
+                            <span class="text-red-600 font-medium">@Loc["OutOfStock"]</span>
+                        }
+                        else if (selectedVariant.StockQuantity <= selectedVariant.LowStockThreshold)
+                        {
+                            <span class="text-orange-600">@Loc["OnlyLeft"]: @selectedVariant.StockQuantity @Loc["Items"]</span>
+                        }
+                        else if (selectedVariant.StockQuantity <= 10)
+                        {
+                            <span class="text-green-600">@selectedVariant.StockQuantity @Loc["InStock"]</span>
+                        }
+                        else
+                        {
+                            <span class="text-green-600">@Loc["InStock"]</span>
+                        }
+                    </div>
+                }
             </div>
         </div>
 
@@ -652,6 +742,7 @@ else
     private bool showImageModal = false;
     private bool showReviewModal = false;
     private bool isSubmittingReview = false;
+    private bool isAddingToCart = false;
     private string? reviewSubmissionError;
     private ReviewsResponse? reviewsResponse;
     private int currentReviewPage = 1;
@@ -848,6 +939,55 @@ else
         }
         
         return englishText;
+    }
+
+    private async Task AddToCart()
+    {
+        if (product == null || selectedVariant == null) return;
+
+        // Check if variant is out of stock
+        if (selectedVariant.StockQuantity <= 0)
+        {
+            ToastService.ShowError(Loc["OutOfStockMessage"]);
+            return;
+        }
+
+        try
+        {
+            isAddingToCart = true;
+            StateHasChanged();
+
+            // Include variant size information in product name
+            var productNameWithSize = $"{GetLocalizedProductName()} ({selectedVariant.Weight} {selectedVariant.WeightUnit})";
+            var effectivePrice = selectedVariant.DiscountPrice ?? selectedVariant.Price;
+            var variantInfo = $"{selectedVariant.Weight} {selectedVariant.WeightUnit}";
+
+            await CartService.AddToCartAsync(
+                product.Id,
+                productNameWithSize,
+                effectivePrice,
+                currentImagePath,
+                1,
+                selectedVariant.Id,
+                variantInfo
+            );
+            
+            // Show success message with variant info
+            var successMessage = string.Format(Loc["AddedToCartWithSizeSuccess"], 
+                selectedVariant.Weight, 
+                selectedVariant.WeightUnit);
+            ToastService.ShowSuccess(successMessage);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error adding to cart: {ex.Message}");
+            ToastService.ShowError(Loc["AddToCartError"]);
+        }
+        finally
+        {
+            isAddingToCart = false;
+            StateHasChanged();
+        }
     }
 }
 

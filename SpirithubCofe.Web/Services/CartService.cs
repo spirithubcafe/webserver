@@ -5,10 +5,12 @@ namespace SpirithubCofe.Web.Services;
 public class CartItem
 {
     public int ProductId { get; set; }
+    public int? VariantId { get; set; }  
     public string Name { get; set; } = "";
     public decimal Price { get; set; }
     public int Quantity { get; set; }
     public string ImageUrl { get; set; } = "";
+    public string VariantInfo { get; set; } = "";  
 }
 
 public class CartService
@@ -35,9 +37,10 @@ public class CartService
     
     public decimal TotalPrice => _cartItems.Sum(item => item.Price * item.Quantity);
     
-    public async Task AddToCartAsync(int productId, string name, decimal price, string imageUrl = "", int quantity = 1)
+    public async Task AddToCartAsync(int productId, string name, decimal price, string imageUrl = "", int quantity = 1, int? variantId = null, string variantInfo = "")
     {
-        var existingItem = _cartItems.FirstOrDefault(x => x.ProductId == productId);
+        // اگر variant داریم، باید کلید unique بر اساس productId + variantId باشد
+        var existingItem = _cartItems.FirstOrDefault(x => x.ProductId == productId && x.VariantId == variantId);
         
         if (existingItem != null)
         {
@@ -48,10 +51,12 @@ public class CartService
             _cartItems.Add(new CartItem
             {
                 ProductId = productId,
+                VariantId = variantId,
                 Name = name,
                 Price = price,
                 Quantity = quantity,
-                ImageUrl = imageUrl
+                ImageUrl = imageUrl,
+                VariantInfo = variantInfo
             });
         }
         
@@ -59,9 +64,9 @@ public class CartService
         OnCartChanged?.Invoke();
     }
     
-    public async Task UpdateQuantityAsync(int productId, int quantity)
+    public async Task UpdateQuantityAsync(int productId, int quantity, int? variantId = null)
     {
-        var item = _cartItems.FirstOrDefault(x => x.ProductId == productId);
+        var item = _cartItems.FirstOrDefault(x => x.ProductId == productId && x.VariantId == variantId);
         if (item != null)
         {
             if (quantity <= 0)
@@ -78,9 +83,9 @@ public class CartService
         }
     }
     
-    public async Task RemoveFromCartAsync(int productId)
+    public async Task RemoveFromCartAsync(int productId, int? variantId = null)
     {
-        var item = _cartItems.FirstOrDefault(x => x.ProductId == productId);
+        var item = _cartItems.FirstOrDefault(x => x.ProductId == productId && x.VariantId == variantId);
         if (item != null)
         {
             _cartItems.Remove(item);
@@ -96,14 +101,14 @@ public class CartService
         OnCartChanged?.Invoke();
     }
     
-    public bool HasItem(int productId)
+    public bool HasItem(int productId, int? variantId = null)
     {
-        return _cartItems.Any(x => x.ProductId == productId);
+        return _cartItems.Any(x => x.ProductId == productId && x.VariantId == variantId);
     }
     
-    public int GetItemQuantity(int productId)
+    public int GetItemQuantity(int productId, int? variantId = null)
     {
-        return _cartItems.FirstOrDefault(x => x.ProductId == productId)?.Quantity ?? 0;
+        return _cartItems.FirstOrDefault(x => x.ProductId == productId && x.VariantId == variantId)?.Quantity ?? 0;
     }
     
     private async Task LoadCartFromFile()
