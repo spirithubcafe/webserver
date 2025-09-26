@@ -4,11 +4,13 @@
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
 @using SpirithubCofe.Web.Data
+@using SpirithubCofe.Web.Services
 
 @inject SignInManager<ApplicationUser> SignInManager
 @inject ILogger<Login> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+@inject UserLoginService UserLoginService
 
 <PageTitle>Login - SpirithubCofe</PageTitle>
 
@@ -201,6 +203,9 @@
         var result = await SignInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
         if (result.Succeeded)
         {
+            // Update last login date
+            await UserLoginService.UpdateLastLoginDateByEmailAsync(Input.Email);
+            
             Logger.LogInformation("User logged in.");
             RedirectManager.RedirectTo(ReturnUrl);
         }

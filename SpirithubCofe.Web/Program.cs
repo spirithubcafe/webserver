@@ -119,6 +119,9 @@ builder.Services.AddScoped<RoleManagementService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<CategoryService>();
 
+// Register user login service
+builder.Services.AddScoped<UserLoginService>();
+
 // Register slide service
 builder.Services.AddScoped<SpirithubCofe.Application.Services.ISlideService, SpirithubCofe.Infrastructure.Services.SlideService>();
 
