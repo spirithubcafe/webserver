@@ -295,6 +295,7 @@
     private System.Timers.Timer? searchTimer;
     private readonly Dictionary<int, int> productQuantities = new();
     private bool shouldScrollToTop = false;
+    private bool _disposed = false;
     
     private List<Category> categories = new();
     private List<Product> allProducts = new();
@@ -328,7 +329,13 @@
         
         // Initialize search timer
         searchTimer = new System.Timers.Timer(500); // 500ms delay
-        searchTimer.Elapsed += async (sender, e) => await InvokeAsync(StateHasChanged);
+        searchTimer.Elapsed += async (sender, e) => await InvokeAsync(() =>
+        {
+            if (!_disposed)
+            {
+                StateHasChanged();
+            }
+        });
         searchTimer.AutoReset = false;
 
         // Initialize CartService
@@ -542,6 +549,7 @@
     
     public void Dispose()
     {
+        _disposed = true;
         searchTimer?.Dispose();
     }
 }

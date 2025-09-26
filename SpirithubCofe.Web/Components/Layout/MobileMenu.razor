@@ -223,6 +223,7 @@
     private bool isAuthenticated = false;
     private bool isAdmin = false;
     private string? userName;
+    private bool _disposed = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -243,7 +244,13 @@
     private void UpdateCartInfo()
     {
         UpdateCartCount();
-        InvokeAsync(StateHasChanged);
+        InvokeAsync(() =>
+        {
+            if (!_disposed)
+            {
+                StateHasChanged();
+            }
+        });
     }
 
     private async Task UpdateAuthenticationState()
@@ -301,6 +308,7 @@
 
     public void Dispose()
     {
+        _disposed = true;
         CartService.OnCartChanged -= UpdateCartInfo;
     }
 }

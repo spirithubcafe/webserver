@@ -1,6 +1,7 @@
 @using SpirithubCofe.Web.Services
 @inject ToastService ToastService
 @rendermode InteractiveServer
+@implements IDisposable
 
 <!-- Android-style Toast Container - Center Bottom -->
 <div class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-[9999] flex flex-col items-center space-y-3">
@@ -23,6 +24,7 @@
 @code {
     private List<ToastService.ToastMessage> toasts = new();
     private Timer? cleanupTimer;
+    private bool _disposed = false;
     
     protected override void OnInitialized()
     {
@@ -34,23 +36,27 @@
     
     private void HandleToastAdded()
     {
+        if (_disposed) return;
+        
         var newToasts = ToastService.GetToasts();
         foreach (var toast in newToasts)
         {
             toasts.Add(toast);
-            
-            // Show animation after a small delay
-            Task.Delay(50).ContinueWith(_ =>
-            {
-                InvokeAsync(StateHasChanged);
-            });
         }
         
-        InvokeAsync(StateHasChanged);
+        InvokeAsync(() =>
+        {
+            if (!_disposed)
+            {
+                StateHasChanged();
+            }
+        });
     }
     
     private void CleanupToasts(object? state)
     {
+        if (_disposed) return;
+        
         var now = DateTime.Now;
         var toastsToRemove = toasts.Where(t => now.Subtract(t.CreatedAt).TotalMilliseconds > 3500).ToList();
         
@@ -60,7 +66,14 @@
             {
                 toasts.Remove(toast);
             }
-            InvokeAsync(StateHasChanged);
+            
+            InvokeAsync(() =>
+            {
+                if (!_disposed)
+                {
+                    StateHasChanged();
+                }
+            });
         }
     }
     
@@ -101,6 +114,7 @@
     
     public void Dispose()
     {
+        _disposed = true;
         ToastService.OnToastAdded -= HandleToastAdded;
         cleanupTimer?.Dispose();
     }

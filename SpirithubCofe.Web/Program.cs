@@ -21,14 +21,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// Configure Circuit Options for detailed errors in development
-if (builder.Environment.IsDevelopment())
+// Configure Circuit Options
+builder.Services.Configure<Microsoft.AspNetCore.Components.Server.CircuitOptions>(options =>
 {
-    builder.Services.Configure<Microsoft.AspNetCore.Components.Server.CircuitOptions>(options =>
-    {
-        options.DetailedErrors = true;
-    });
-}
+    options.DetailedErrors = builder.Environment.IsDevelopment();
+    options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(3);
+    options.JSInteropDefaultCallTimeout = TimeSpan.FromMinutes(1);
+    options.MaxBufferedUnacknowledgedRenderBatches = 10;
+});
 
 // Add MVC controllers for culture switching
 builder.Services.AddControllers();

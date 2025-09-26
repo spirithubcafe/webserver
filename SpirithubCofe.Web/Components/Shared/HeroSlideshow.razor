@@ -475,6 +475,7 @@
     private List<SlideDto> slides = new();
     private int currentSlideIndex = 0;
     private Timer? slideTimer;
+    private bool _disposed = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -502,7 +503,13 @@
         slideTimer = new Timer(async _ =>
         {
             currentSlideIndex = (currentSlideIndex + 1) % slides.Count;
-            await InvokeAsync(StateHasChanged);
+            await InvokeAsync(() =>
+            {
+                if (!_disposed)
+                {
+                    StateHasChanged();
+                }
+            });
         }, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
     }
 
@@ -535,6 +542,7 @@
 
     public void Dispose()
     {
+        _disposed = true;
         slideTimer?.Dispose();
     }
 }
