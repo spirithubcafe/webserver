@@ -4,12 +4,16 @@ using Microsoft.EntityFrameworkCore;
 using SpirithubCofe.Web.Components;
 using SpirithubCofe.Web.Components.Account;
 using SpirithubCofe.Web.Data;
-
 using SpirithubCofe.Web.Services;
+using SpirithubCofe.Application.Services.API;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,12 +60,34 @@ builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
-builder.Services.AddAuthentication(options =>
+// Configure JWT settings
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var secretKey = jwtSettings["SecretKey"] ?? "YourVeryLongSecretKeyThatIsAtLeast32CharactersLong!";
+var key = Encoding.ASCII.GetBytes(secretKey);
+
+var authBuilder = builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = IdentityConstants.ApplicationScheme;
         options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-    })
-    .AddIdentityCookies();
+    });
+
+authBuilder.AddIdentityCookies();
+authBuilder.AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = false; // Set to true in production
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+            ValidateIssuer = true,
+            ValidIssuer = jwtSettings["Issuer"] ?? "SpirithubCofe",
+            ValidateAudience = true,
+            ValidAudience = jwtSettings["Audience"] ?? "SpirithubCofe",
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -102,7 +128,60 @@ builder.Services.AddScoped<SpirithubCofe.Application.Services.ISettingService, S
 builder.Services.AddScoped<SpirithubCofe.Application.Services.IFAQService, SpirithubCofe.Infrastructure.Services.FAQService>();
 builder.Services.AddScoped<SpirithubCofe.Application.Interfaces.IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>()!);
 
+// Register API services
+builder.Services.AddScoped<IAuthApiService, AuthApiService<ApplicationUser>>();
+builder.Services.AddScoped<ICategoryApiService, CategoryApiService>();
+builder.Services.AddScoped<ISimpleProductApiService, SimpleProductApiService>();
 
+// Add Swagger/OpenAPI
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo 
+    { 
+        Title = "SpirithubCofe API", 
+        Version = "v1",
+        Description = "REST API for SpirithubCofe - Premium Coffee Shop",
+        Contact = new OpenApiContact
+        {
+            Name = "SpirithubCofe",
+            Email = "info@spirithubcofe.com"
+        }
+    });
+
+    // Add JWT Authentication to Swagger
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below.",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+
+    // Include XML comments
+    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    if (File.Exists(xmlPath))
+    {
+        c.IncludeXmlComments(xmlPath);
+    }
+});
 
 // Register data seeder service
 builder.Services.AddScoped<DataSeederService>();
@@ -113,6 +192,17 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
+    
+    // Enable Swagger in development
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "SpirithubCofe API v1");
+        c.RoutePrefix = "swagger"; // Swagger UI will be available at /swagger
+        c.DocumentTitle = "SpirithubCofe API Documentation";
+        c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+        c.DefaultModelsExpandDepth(-1);
+    });
 }
 else
 {

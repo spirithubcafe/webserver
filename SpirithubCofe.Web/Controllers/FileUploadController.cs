@@ -11,7 +11,7 @@ public class FileUploadController : ControllerBase
     private readonly IWebHostEnvironment _environment;
     private readonly ILogger<FileUploadController> _logger;
 
-    // تعریف انواع فایل‌های مجاز
+    // Define allowed file types
     private readonly Dictionary<string, AllowedFileType> _allowedFileTypes = new()
     {
         {
@@ -48,7 +48,7 @@ public class FileUploadController : ControllerBase
         }
     };
 
-    // تعریف مسیرهای ذخیره‌سازی
+    // Define storage paths
     private readonly Dictionary<string, string> _uploadPaths = new()
     {
         { "categories", "images/categories" },
@@ -70,12 +70,12 @@ public class FileUploadController : ControllerBase
     }
 
     /// <summary>
-    /// آپلود فایل عمومی
+    /// Upload file to server
     /// </summary>
-    /// <param name="file">فایل برای آپلود</param>
-    /// <param name="folder">پوشه مقصد (categories, products, slides, users, etc.)</param>
-    /// <param name="fileType">نوع فایل (image, document, video, audio)</param>
-    /// <param name="prefix">پیشوند نام فایل (اختیاری)</param>
+    /// <param name="file">File to upload</param>
+    /// <param name="folder">Target folder (categories, products, slides, users, etc.)</param>
+    /// <param name="fileType">File type (image, document, video, audio)</param>
+    /// <param name="prefix">File name prefix (optional)</param>
     /// <returns></returns>
     [HttpPost("upload")]
     public async Task<IActionResult> UploadFile(
