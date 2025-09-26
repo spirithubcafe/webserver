@@ -218,4 +218,9 @@ public class CategorySummaryDto
     /// Display order for sorting
     /// </summary>
     public int DisplayOrder { get; set; }
+
+    /// <summary>
+    /// Whether the category is active
+    /// </summary>
+    public bool IsActive { get; set; }
 }

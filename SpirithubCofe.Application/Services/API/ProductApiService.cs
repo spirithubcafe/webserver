@@ -42,6 +42,7 @@ public class ProductApiService : IProductApiService
                 .Include(p => p.Category)
                 .Include(p => p.Variants.Where(v => v.IsActive))
                 .Include(p => p.MainImage)
+                .Include(p => p.GalleryImages)
                 .AsQueryable();
 
             // Apply filters
@@ -87,7 +88,7 @@ public class ProductApiService : IProductApiService
                 .Take(searchDto.PageSize)
                 .ToListAsync();
 
-            var productDtos = products.Select(p => MapToProductDto(p, p.Variants.FirstOrDefault())).ToList();
+            var productDtos = products.Select(p => MapToProductDto(p)).ToList();
 
             var paginatedResponse = new PaginatedResponse<ProductDto>
             {
@@ -114,6 +115,7 @@ public class ProductApiService : IProductApiService
                 .Include(p => p.Category)
                 .Include(p => p.Variants.Where(v => v.IsActive))
                 .Include(p => p.MainImage)
+                .Include(p => p.GalleryImages)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             if (product == null)
@@ -121,7 +123,7 @@ public class ProductApiService : IProductApiService
                 return ApiResponse<ProductDto>.ErrorResponse("Product not found");
             }
 
-            var productDto = MapToProductDto(product, product.Variants.FirstOrDefault());
+            var productDto = MapToProductDto(product);
             return ApiResponse<ProductDto>.SuccessResponse(productDto);
         }
         catch (Exception ex)
@@ -138,6 +140,7 @@ public class ProductApiService : IProductApiService
                 .Include(p => p.Category)
                 .Include(p => p.Variants.Where(v => v.IsActive))
                 .Include(p => p.MainImage)
+                .Include(p => p.GalleryImages)
                 .FirstOrDefaultAsync(p => p.Sku == sku);
 
             if (product == null)
@@ -145,7 +148,7 @@ public class ProductApiService : IProductApiService
                 return ApiResponse<ProductDto>.ErrorResponse("Product not found");
             }
 
-            var productDto = MapToProductDto(product, product.Variants.FirstOrDefault());
+            var productDto = MapToProductDto(product);
             return ApiResponse<ProductDto>.SuccessResponse(productDto);
         }
         catch (Exception ex)
@@ -162,12 +165,13 @@ public class ProductApiService : IProductApiService
                 .Include(p => p.Category)
                 .Include(p => p.Variants.Where(v => v.IsActive))
                 .Include(p => p.MainImage)
+                .Include(p => p.GalleryImages)
                 .Where(p => p.IsActive && p.IsFeatured)
                 .OrderBy(p => p.DisplayOrder)
                 .Take(count)
                 .ToListAsync();
 
-            var productDtos = products.Select(p => MapToProductDto(p, p.Variants.FirstOrDefault())).ToList();
+            var productDtos = products.Select(p => MapToProductDto(p)).ToList();
             return ApiResponse<List<ProductDto>>.SuccessResponse(productDtos);
         }
         catch (Exception ex)
@@ -184,12 +188,13 @@ public class ProductApiService : IProductApiService
                 .Include(p => p.Category)
                 .Include(p => p.Variants.Where(v => v.IsActive))
                 .Include(p => p.MainImage)
+                .Include(p => p.GalleryImages)
                 .Where(p => p.IsActive && p.CategoryId == categoryId)
                 .OrderBy(p => p.DisplayOrder)
                 .Take(count)
                 .ToListAsync();
 
-            var productDtos = products.Select(p => MapToProductDto(p, p.Variants.FirstOrDefault())).ToList();
+            var productDtos = products.Select(p => MapToProductDto(p)).ToList();
             return ApiResponse<List<ProductDto>>.SuccessResponse(productDtos);
         }
         catch (Exception ex)
@@ -251,7 +256,7 @@ public class ProductApiService : IProductApiService
             _context.ProductVariants.Add(variant);
             await _context.SaveChangesAsync();
 
-            var productDto = MapToProductDto(product, variant);
+            var productDto = MapToProductDto(product);
             return ApiResponse<ProductDto>.SuccessResponse(productDto, "Product created successfully");
         }
         catch (Exception ex)
@@ -314,7 +319,7 @@ public class ProductApiService : IProductApiService
 
             await _context.SaveChangesAsync();
 
-            var productDto = MapToProductDto(product, variant);
+            var productDto = MapToProductDto(product);
             return ApiResponse<ProductDto>.SuccessResponse(productDto, "Product updated successfully");
         }
         catch (Exception ex)
@@ -395,8 +400,10 @@ public class ProductApiService : IProductApiService
         }
     }
 
-    private ProductDto MapToProductDto(Product product, ProductVariant? variant = null)
+    private ProductDto MapToProductDto(Product product)
     {
+        var defaultVariant = product.Variants.FirstOrDefault(v => v.IsDefault) ?? product.Variants.FirstOrDefault();
+        
         return new ProductDto
         {
             Id = product.Id,
@@ -450,14 +457,70 @@ public class ProductApiService : IProductApiService
             UpdatedAt = product.UpdatedAt,
             AverageRating = product.AverageRating,
             ReviewCount = product.ReviewCount,
-            // Variant info
-            Price = variant?.Price,
-            DiscountPrice = variant?.DiscountPrice,
-            Weight = variant?.Weight,
-            WeightUnit = variant?.WeightUnit,
-            StockQuantity = variant?.StockQuantity ?? 0,
-            // Image
-            ImageUrl = product.MainImage?.ImagePath
+            
+            // Legacy fields from default variant
+            Price = defaultVariant?.Price,
+            DiscountPrice = defaultVariant?.DiscountPrice,
+            Weight = defaultVariant?.Weight,
+            WeightUnit = defaultVariant?.WeightUnit,
+            StockQuantity = defaultVariant?.StockQuantity ?? 0,
+            
+            // Main image
+            ImageUrl = product.MainImage?.ImagePath,
+            
+            // Category summary
+            Category = product.Category != null ? new CategorySummaryDto
+            {
+                Id = product.Category.Id,
+                Name = product.Category.Name,
+                NameAr = product.Category.NameAr,
+                Slug = product.Category.Slug,
+                IsActive = product.Category.IsActive
+            } : new CategorySummaryDto(),
+            
+            // All variants list
+            Variants = product.Variants.OrderBy(v => v.DisplayOrder).Select(v => new ProductVariantDto
+            {
+                Id = v.Id,
+                VariantSku = v.VariantSku,
+                Weight = v.Weight,
+                WeightUnit = v.WeightUnit,
+                Price = v.Price,
+                DiscountPrice = v.DiscountPrice,
+                Length = v.Length,
+                Width = v.Width,
+                Height = v.Height,
+                StockQuantity = v.StockQuantity,
+                LowStockThreshold = v.LowStockThreshold,
+                IsActive = v.IsActive,
+                IsDefault = v.IsDefault,
+                DisplayOrder = v.DisplayOrder,
+                CreatedAt = v.CreatedAt,
+                UpdatedAt = v.UpdatedAt
+            }).ToList(),
+            
+            // All images list (main image + gallery images)
+            Images = new List<ProductImageDto>()
+                .Concat(product.MainImage != null ? new[] {
+                    new ProductImageDto
+                    {
+                        Id = product.MainImage.Id,
+                        ImageUrl = product.MainImage.ImagePath ?? string.Empty,
+                        AltText = product.MainImage.AltText,
+                        IsPrimary = true,
+                        DisplayOrder = 0
+                    }
+                } : Array.Empty<ProductImageDto>())
+                .Concat(product.GalleryImages.OrderBy(img => img.DisplayOrder).Select(img => new ProductImageDto
+                {
+                    Id = img.Id,
+                    ImageUrl = img.ImagePath ?? string.Empty,
+                    AltText = img.AltText,
+                    IsPrimary = false,
+                    DisplayOrder = img.DisplayOrder
+                }))
+                .OrderBy(img => img.DisplayOrder)
+                .ToList()
         };
     }
 }
