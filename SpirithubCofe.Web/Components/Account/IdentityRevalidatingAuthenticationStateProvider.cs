@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using SpirithubCofe.Web.Data;
+using SpirithubCofe.Domain.Entities;
 
 namespace SpirithubCofe.Web.Components.Account;
 

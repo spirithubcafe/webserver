@@ -9,6 +9,7 @@ using Microsoft.Extensions.Primitives;
 using SpirithubCofe.Web.Components.Account.Pages;
 using SpirithubCofe.Web.Components.Account.Pages.Manage;
 using SpirithubCofe.Web.Data;
+using SpirithubCofe.Domain.Entities;
 
 namespace Microsoft.AspNetCore.Routing;
 

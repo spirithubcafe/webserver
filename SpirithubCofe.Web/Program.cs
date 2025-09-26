@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using SpirithubCofe.Web.Components;
 using SpirithubCofe.Web.Components.Account;
 using SpirithubCofe.Web.Data;
+using SpirithubCofe.Domain.Entities;
 using SpirithubCofe.Web.Services;
 using SpirithubCofe.Application.Services.API;
 using System.Globalization;

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SpirithubCofe.Web.Data;
 using SpirithubCofe.Web.Services;
+using SpirithubCofe.Domain.Entities;
 using System.Security.Claims;
 
 namespace SpirithubCofe.Web.Controllers;

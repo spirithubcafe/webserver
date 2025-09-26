@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SpirithubCofe.Web.Data;
+using SpirithubCofe.Domain.Entities;
 
 namespace SpirithubCofe.Web.Services;
 
