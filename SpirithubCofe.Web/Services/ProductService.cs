@@ -10,10 +10,12 @@ namespace SpirithubCofe.Web.Services;
 public class ProductService
 {
     private readonly ApplicationDbContext _context;
+    private readonly ILogger<ProductService> _logger;
 
-    public ProductService(ApplicationDbContext context)
+    public ProductService(ApplicationDbContext context, ILogger<ProductService> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     /// <summary>
@@ -122,17 +124,31 @@ public class ProductService
             throw new InvalidOperationException("Cannot delete product that has variants with stock. Please clear stock first.");
         }
 
-        // Check if product has reviews (optional business rule)
-        var hasReviews = product.Reviews.Any();
-        if (hasReviews)
-        {
-            throw new InvalidOperationException($"Cannot delete product with {product.Reviews.Count} review(s). Consider deactivating instead.");
-        }
-
+        // Note: Reviews, variants, and images will be automatically deleted due to cascade delete configuration
+        // No need to manually delete them - EF Core will handle this automatically
+        
         try
         {
+            // Log what will be deleted for audit purposes
+            var reviewCount = product.Reviews.Count;
+            var variantCount = product.Variants.Count;
+            var imageCount = product.GalleryImages.Count;
+            
+            _logger.LogInformation("Attempting to delete product '{ProductName}' (ID: {ProductId}) with {ReviewCount} review(s), {VariantCount} variant(s), and {ImageCount} image(s)", 
+                product.Name, product.Id, reviewCount, variantCount, imageCount);
+            
+            // This will automatically cascade delete:
+            // - All ProductReviews (configured with DeleteBehavior.Cascade)
+            // - All ProductVariants (configured with DeleteBehavior.Cascade)
+            // - All ProductImages (configured with DeleteBehavior.Cascade)
+            // - Any other related entities with cascade delete configured
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
+            
+            // Log successful deletion with cascade information
+            _logger.LogInformation("Product '{ProductName}' (ID: {ProductId}) deleted successfully along with {ReviewCount} review(s), {VariantCount} variant(s), and {ImageCount} image(s)", 
+                product.Name, product.Id, reviewCount, variantCount, imageCount);
+            
             return true;
         }
         catch (DbUpdateException ex)
