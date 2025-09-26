@@ -1,0 +1,86 @@
+@using Microsoft.AspNetCore.Components.Web
+@inherits ErrorBoundaryBase
+@inject ILogger<CustomErrorBoundary> Logger
+
+@if (CurrentException is null)
+{
+    @ChildContent
+}
+else
+{
+    @if (ErrorContent is not null)
+    {
+        @ErrorContent(CurrentException)
+    }
+    else
+    {
+        <div class="blazor-error-boundary" role="alert">
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-800">
+                            Something went wrong
+                        </h3>
+                        <div class="mt-2 text-sm text-red-700">
+                            <p>
+                                We're sorry, but something unexpected happened. The page will try to recover automatically.
+                            </p>
+                            @if (Environment.IsDevelopment())
+                            {
+                                <details class="mt-2">
+                                    <summary class="cursor-pointer text-red-600 underline">Show technical details</summary>
+                                    <div class="mt-2 p-2 bg-red-100 rounded text-xs font-mono">
+                                        @CurrentException.ToString()
+                                    </div>
+                                </details>
+                            }
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex space-x-3">
+                                <button @onclick="Recover" 
+                                        class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                    Try again
+                                </button>
+                                <button @onclick="GoToHome" 
+                                        class="inline-flex items-center px-3 py-2 border border-red-300 text-sm leading-4 font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                    Go to home page
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@code {
+    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] private IWebHostEnvironment Environment { get; set; } = default!;
+
+    private void GoToHome()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+
+    protected override Task OnErrorAsync(Exception exception)
+    {
+        // Don't log DOM-related errors as they're usually harmless
+        if (exception.Message.Contains("removeChild") || 
+            exception.Message.Contains("Cannot read properties of null"))
+        {
+            Logger.LogDebug("DOM manipulation error caught in ErrorBoundary: {Message}", exception.Message);
+        }
+        else
+        {
+            Logger.LogError(exception, "Error caught in ErrorBoundary");
+        }
+        
+        return Task.CompletedTask;
+    }
+}

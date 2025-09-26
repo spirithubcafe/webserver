@@ -16,6 +16,7 @@
 @using SpirithubCofe.Web
 @using SpirithubCofe.Web.Components.Layout
 @using SpirithubCofe.Web.Components.Shared
+@using SpirithubCofe.Web.Components
 
 <!DOCTYPE html>
 <html data-theme="light" lang="@CultureInfo.CurrentUICulture.TwoLetterISOLanguageName"
@@ -310,7 +311,9 @@
 
         <!-- Main Content -->
         <main class="flex-1">
-            @Body
+            <CustomErrorBoundary>
+                @Body
+            </CustomErrorBoundary>  
         </main>
 
         <!-- Footer -->

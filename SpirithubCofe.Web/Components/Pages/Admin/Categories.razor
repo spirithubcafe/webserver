@@ -429,7 +429,7 @@
         }
         catch (Exception ex)
         {
-            ToastService.ShowError($"{Localizer["ErrorLoadingCategories"]} {ex.Message}");
+            ToastService.ShowError(string.Format(Localizer["ErrorLoadingCategories"], ex.Message));
         }
         
         StateHasChanged();
@@ -547,7 +547,7 @@
         }
         catch (Exception ex)
         {
-            ToastService.ShowError($"{Localizer["ErrorSavingCategory"]} {ex.Message}");
+            ToastService.ShowError(string.Format(Localizer["ErrorSavingCategory"], ex.Message));
         }
         finally
         {
@@ -571,7 +571,7 @@
         }
         catch (Exception ex)
         {
-            ToastService.ShowError($"{Localizer["ErrorUpdatingCategoryStatus"]} {ex.Message}");
+            ToastService.ShowError(string.Format(Localizer["ErrorUpdatingCategoryStatus"], ex.Message));
         }
     }
 
@@ -585,7 +585,7 @@
                 var canDeleteResult = await CategoryService.CanDeleteCategoryAsync(category.Id);
                 if (!canDeleteResult.CanDelete)
                 {
-                    ToastService.ShowError($"{Localizer["CannotDeleteCategoryWithProducts"]} {category.Name} ({canDeleteResult.ProductCount})");
+                    ToastService.ShowError(string.Format(Localizer["CannotDeleteCategoryWithProducts"], category.Name, canDeleteResult.ProductCount));
                     return;
                 }
 
@@ -602,7 +602,7 @@
             }
             catch (Exception ex)
             {
-                ToastService.ShowError($"{Localizer["ErrorDeletingCategoryGeneral"]} {ex.Message}");
+                ToastService.ShowError(string.Format(Localizer["ErrorDeletingCategoryGeneral"], ex.Message));
             }
         }
     }

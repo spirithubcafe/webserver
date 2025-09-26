@@ -543,12 +543,12 @@
         {
             product.IsActive = !product.IsActive;
             await ProductService.UpdateProductAsync(product);
-            ToastService.ShowSuccess($"{Localizer["ProductStatusChanged"]} {product.Name}");
+            ToastService.ShowSuccess(string.Format(Localizer["ProductStatusChanged"], product.Name));
             await LoadDataAsync();
         }
         catch (Exception ex)
         {
-            ToastService.ShowError($"{Localizer["ErrorChangingStatus"]} {ex.Message}");
+            ToastService.ShowError(string.Format(Localizer["ErrorChangingStatus"], ex.Message));
         }
     }
 
@@ -562,16 +562,16 @@
             try
             {
                 await ProductService.DeleteProductAsync(product.Id);
-                ToastService.ShowSuccess($"{Localizer["ProductDeleted"]} {product.Name}");
+                ToastService.ShowSuccess(string.Format(Localizer["ProductDeleted"], product.Name));
                 await LoadDataAsync();
             }
             catch (InvalidOperationException ex)
             {
-                ToastService.ShowError($"{Localizer["CannotDeleteProduct"]} {ex.Message}");
+                ToastService.ShowError(string.Format(Localizer["CannotDeleteProduct"], ex.Message));
             }
             catch (Exception ex)
             {
-                ToastService.ShowError($"{Localizer["ErrorDeletingProduct"]} {ex.Message}");
+                ToastService.ShowError(string.Format(Localizer["ErrorDeletingProduct"], ex.Message));
             }
         }
     }

@@ -21,7 +21,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// Configure Circuit Options
+// Configure Circuit Options for better error handling
 builder.Services.Configure<Microsoft.AspNetCore.Components.Server.CircuitOptions>(options =>
 {
     options.DetailedErrors = builder.Environment.IsDevelopment();
@@ -29,6 +29,16 @@ builder.Services.Configure<Microsoft.AspNetCore.Components.Server.CircuitOptions
     options.JSInteropDefaultCallTimeout = TimeSpan.FromMinutes(1);
     options.MaxBufferedUnacknowledgedRenderBatches = 10;
 });
+
+// Configure SignalR Hub options for better connection handling
+builder.Services.Configure<Microsoft.AspNetCore.SignalR.HubOptions>(options =>
+{
+    options.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
+    options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+    options.HandshakeTimeout = TimeSpan.FromSeconds(15);
+});
+
+// Circuit error handling will be done via global exception handling
 
 // Add MVC controllers for culture switching
 builder.Services.AddControllers();
@@ -222,6 +232,9 @@ else
     app.UseHsts();
     app.UseHttpsRedirection();
 }
+
+// Add global exception handling middleware
+app.UseMiddleware<SpirithubCofe.Web.Middleware.GlobalExceptionMiddleware>();
 
 // Add localization middleware
 var localizationOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>();
