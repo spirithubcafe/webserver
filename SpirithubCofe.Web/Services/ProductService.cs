@@ -96,9 +96,25 @@ public class ProductService
     {
         return await _context.Products
             .Include(p => p.Category)
+            .Include(p => p.MainImage)
+            .Include(p => p.GalleryImages)
             .Include(p => p.Variants)
             .Include(p => p.Reviews.Where(r => r.IsApproved))
-            .FirstOrDefaultAsync(p => p.Id == id);
+            .FirstOrDefaultAsync(p => p.Id == id && p.IsActive);
+    }
+
+    /// <summary>
+    /// Get product by slug
+    /// </summary>
+    public async Task<Product?> GetProductBySlugAsync(string slug)
+    {
+        return await _context.Products
+            .Include(p => p.Category)
+            .Include(p => p.MainImage)
+            .Include(p => p.GalleryImages)
+            .Include(p => p.Variants)
+            .Include(p => p.Reviews.Where(r => r.IsApproved))
+            .FirstOrDefaultAsync(p => p.Slug == slug && p.IsActive);
     }
 
     /// <summary>

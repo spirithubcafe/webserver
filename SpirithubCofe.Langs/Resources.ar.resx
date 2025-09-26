@@ -1274,4 +1274,181 @@
   <data name="ErrorLoadingCategories" xml:space="preserve">
     <value>خطأ في تحميل الفئات: {0}</value>
   </data>
+  <data name="ProductNotFound" xml:space="preserve">
+    <value>المنتج غير موجود</value>
+  </data>
+  <data name="ProductNotFoundDescription" xml:space="preserve">
+    <value>المنتج الذي تبحث عنه غير موجود أو تم حذفه.</value>
+  </data>
+  <data name="BackToProducts" xml:space="preserve">
+    <value>العودة إلى المنتجات</value>
+  </data>
+  <data name="Products" xml:space="preserve">
+    <value>المنتجات</value>
+  </data>
+  <data name="SKU" xml:space="preserve">
+    <value>رمز المنتج</value>
+  </data>
+  <data name="Reviews" xml:space="preserve">
+    <value>التقييمات</value>
+  </data>
+  <data name="Organic" xml:space="preserve">
+    <value>عضوي</value>
+  </data>
+  <data name="FairTrade" xml:space="preserve">
+    <value>تجارة عادلة</value>
+  </data>
+  <data name="Featured" xml:space="preserve">
+    <value>مميز</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>الحجم</value>
+  </data>
+  <data name="Origin" xml:space="preserve">
+    <value>المنشأ</value>
+  </data>
+  <data name="RoastLevel" xml:space="preserve">
+    <value>درجة التحميص</value>
+  </data>
+  <data name="Process" xml:space="preserve">
+    <value>طريقة المعالجة</value>
+  </data>
+  <data name="Intensity" xml:space="preserve">
+    <value>الكثافة</value>
+  </data>
+  <data name="TastingNotes" xml:space="preserve">
+    <value>ملاحظات التذوق</value>
+  </data>
+  <data name="BrewingInstructions" xml:space="preserve">
+    <value>تعليمات التحضير</value>
+  </data>
+  <data name="AddToCart" xml:space="preserve">
+    <value>أضف إلى السلة</value>
+  </data>
+  <data name="ProductDetails" xml:space="preserve">
+    <value>تفاصيل المنتج</value>
+  </data>
+  <data name="Shipping" xml:space="preserve">
+    <value>الشحن</value>
+  </data>
+  <data name="AdditionalNotes" xml:space="preserve">
+    <value>ملاحظات إضافية</value>
+  </data>
+  <data name="Specifications" xml:space="preserve">
+    <value>المواصفات</value>
+  </data>
+  <data name="Variety" xml:space="preserve">
+    <value>الصنف</value>
+  </data>
+  <data name="Farm" xml:space="preserve">
+    <value>المزرعة</value>
+  </data>
+  <data name="Altitude" xml:space="preserve">
+    <value>الارتفاع</value>
+  </data>
+  <data name="AromaticProfile" xml:space="preserve">
+    <value>الملف العطري</value>
+  </data>
+  <data name="Compatibility" xml:space="preserve">
+    <value>التوافق</value>
+  </data>
+  <data name="BestFor" xml:space="preserve">
+    <value>الأفضل لـ</value>
+  </data>
+  <data name="BasedOn" xml:space="preserve">
+    <value>بناءً على</value>
+  </data>
+  <data name="FeaturedReview" xml:space="preserve">
+    <value>تقييم مميز</value>
+  </data>
+  <data name="LoadMoreReviews" xml:space="preserve">
+    <value>عرض المزيد من التقييمات</value>
+  </data>
+  <data name="NoReviewsYet" xml:space="preserve">
+    <value>لا توجد تقييمات بعد</value>
+  </data>
+  <data name="BeTheFirstToReview" xml:space="preserve">
+    <value>كن أول من يكتب تقييماً لهذا المنتج</value>
+  </data>
+  <data name="WriteReview" xml:space="preserve">
+    <value>اكتب تقييماً</value>
+  </data>
+  <data name="FreeShipping" xml:space="preserve">
+    <value>شحن مجاني</value>
+  </data>
+  <data name="FreeShippingDescription" xml:space="preserve">
+    <value>شحن مجاني للطلبات التي تزيد عن 15 ريال عماني داخل عُمان</value>
+  </data>
+  <data name="FastDelivery" xml:space="preserve">
+    <value>تسليم سريع</value>
+  </data>
+  <data name="FastDeliveryDescription" xml:space="preserve">
+    <value>تسليم في نفس اليوم في مسقط، 2-4 أيام في جميع أنحاء السلطنة</value>
+  </data>
+  <data name="ShippingRates" xml:space="preserve">
+    <value>أسعار الشحن</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>الموقع</value>
+  </data>
+  <data name="StandardShipping" xml:space="preserve">
+    <value>الشحن العادي</value>
+  </data>
+  <data name="ExpressShipping" xml:space="preserve">
+    <value>الشحن السريع</value>
+  </data>
+  <data name="DeliveryTime" xml:space="preserve">
+    <value>وقت التسليم</value>
+  </data>
+  <data name="Muscat" xml:space="preserve">
+    <value>مسقط</value>
+  </data>
+  <data name="Days" xml:space="preserve">
+    <value>أيام</value>
+  </data>
+  <data name="OtherCities" xml:space="preserve">
+    <value>المدن الأخرى</value>
+  </data>
+  <data name="Rating" xml:space="preserve">
+    <value>التقييم</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>الاسم</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>البريد الإلكتروني</value>
+  </data>
+  <data name="EmailNotPublished" xml:space="preserve">
+    <value>لن يتم نشر بريدك الإلكتروني</value>
+  </data>
+  <data name="ReviewTitle" xml:space="preserve">
+    <value>عنوان التقييم</value>
+  </data>
+  <data name="ReviewTitlePlaceholder" xml:space="preserve">
+    <value>لخص تقييمك...</value>
+  </data>
+  <data name="YourReview" xml:space="preserve">
+    <value>تقييمك</value>
+  </data>
+  <data name="ReviewContentPlaceholder" xml:space="preserve">
+    <value>أخبرنا عن تجربتك مع هذا المنتج...</value>
+  </data>
+  <data name="Submitting" xml:space="preserve">
+    <value>جاري الإرسال</value>
+  </data>
+  <data name="SubmitReview" xml:space="preserve">
+    <value>إرسال التقييم</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="ReviewSubmittedSuccess" xml:space="preserve">
+    <value>شكراً لك! تم إرسال تقييمك وسيتم نشره بعد الموافقة عليه.</value>
+  </data>
+  <data name="ReviewSubmissionError" xml:space="preserve">
+    <value>عذراً، حدث خطأ أثناء إرسال تقييمك. يرجى المحاولة مرة أخرى.</value>
+  </data>
+  <data name="ViewDetails" xml:space="preserve">
+    <value>عرض التفاصيل</value>
+  </data>
 </root>

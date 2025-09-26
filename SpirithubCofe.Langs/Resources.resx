@@ -1250,4 +1250,181 @@
   <data name="ErrorLoadingCategories" xml:space="preserve">
     <value>Error loading categories: {0}</value>
   </data>
+  <data name="ProductNotFound" xml:space="preserve">
+    <value>Product Not Found</value>
+  </data>
+  <data name="ProductNotFoundDescription" xml:space="preserve">
+    <value>The product you're looking for doesn't exist or has been removed.</value>
+  </data>
+  <data name="BackToProducts" xml:space="preserve">
+    <value>Back to Products</value>
+  </data>
+  <data name="Products" xml:space="preserve">
+    <value>Products</value>
+  </data>
+  <data name="SKU" xml:space="preserve">
+    <value>SKU</value>
+  </data>
+  <data name="Reviews" xml:space="preserve">
+    <value>Reviews</value>
+  </data>
+  <data name="Organic" xml:space="preserve">
+    <value>Organic</value>
+  </data>
+  <data name="FairTrade" xml:space="preserve">
+    <value>Fair Trade</value>
+  </data>
+  <data name="Featured" xml:space="preserve">
+    <value>Featured</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="Origin" xml:space="preserve">
+    <value>Origin</value>
+  </data>
+  <data name="RoastLevel" xml:space="preserve">
+    <value>Roast Level</value>
+  </data>
+  <data name="Process" xml:space="preserve">
+    <value>Process</value>
+  </data>
+  <data name="Intensity" xml:space="preserve">
+    <value>Intensity</value>
+  </data>
+  <data name="TastingNotes" xml:space="preserve">
+    <value>Tasting Notes</value>
+  </data>
+  <data name="BrewingInstructions" xml:space="preserve">
+    <value>Brewing Instructions</value>
+  </data>
+  <data name="AddToCart" xml:space="preserve">
+    <value>Add to Cart</value>
+  </data>
+  <data name="ProductDetails" xml:space="preserve">
+    <value>Product Details</value>
+  </data>
+  <data name="Shipping" xml:space="preserve">
+    <value>Shipping</value>
+  </data>
+  <data name="AdditionalNotes" xml:space="preserve">
+    <value>Additional Notes</value>
+  </data>
+  <data name="Specifications" xml:space="preserve">
+    <value>Specifications</value>
+  </data>
+  <data name="Variety" xml:space="preserve">
+    <value>Variety</value>
+  </data>
+  <data name="Farm" xml:space="preserve">
+    <value>Farm</value>
+  </data>
+  <data name="Altitude" xml:space="preserve">
+    <value>Altitude</value>
+  </data>
+  <data name="AromaticProfile" xml:space="preserve">
+    <value>Aromatic Profile</value>
+  </data>
+  <data name="Compatibility" xml:space="preserve">
+    <value>Compatibility</value>
+  </data>
+  <data name="BestFor" xml:space="preserve">
+    <value>Best For</value>
+  </data>
+  <data name="BasedOn" xml:space="preserve">
+    <value>Based on</value>
+  </data>
+  <data name="FeaturedReview" xml:space="preserve">
+    <value>Featured Review</value>
+  </data>
+  <data name="LoadMoreReviews" xml:space="preserve">
+    <value>Load More Reviews</value>
+  </data>
+  <data name="NoReviewsYet" xml:space="preserve">
+    <value>No Reviews Yet</value>
+  </data>
+  <data name="BeTheFirstToReview" xml:space="preserve">
+    <value>Be the first to write a review for this product</value>
+  </data>
+  <data name="WriteReview" xml:space="preserve">
+    <value>Write a Review</value>
+  </data>
+  <data name="FreeShipping" xml:space="preserve">
+    <value>Free Shipping</value>
+  </data>
+  <data name="FreeShippingDescription" xml:space="preserve">
+    <value>Free shipping on orders over 15 OMR within Oman</value>
+  </data>
+  <data name="FastDelivery" xml:space="preserve">
+    <value>Fast Delivery</value>
+  </data>
+  <data name="FastDeliveryDescription" xml:space="preserve">
+    <value>Same-day delivery in Muscat, 2-4 days nationwide</value>
+  </data>
+  <data name="ShippingRates" xml:space="preserve">
+    <value>Shipping Rates</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="StandardShipping" xml:space="preserve">
+    <value>Standard Shipping</value>
+  </data>
+  <data name="ExpressShipping" xml:space="preserve">
+    <value>Express Shipping</value>
+  </data>
+  <data name="DeliveryTime" xml:space="preserve">
+    <value>Delivery Time</value>
+  </data>
+  <data name="Muscat" xml:space="preserve">
+    <value>Muscat</value>
+  </data>
+  <data name="Days" xml:space="preserve">
+    <value>Days</value>
+  </data>
+  <data name="OtherCities" xml:space="preserve">
+    <value>Other Cities</value>
+  </data>
+  <data name="Rating" xml:space="preserve">
+    <value>Rating</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="EmailNotPublished" xml:space="preserve">
+    <value>Your email will not be published</value>
+  </data>
+  <data name="ReviewTitle" xml:space="preserve">
+    <value>Review Title</value>
+  </data>
+  <data name="ReviewTitlePlaceholder" xml:space="preserve">
+    <value>Summarize your review...</value>
+  </data>
+  <data name="YourReview" xml:space="preserve">
+    <value>Your Review</value>
+  </data>
+  <data name="ReviewContentPlaceholder" xml:space="preserve">
+    <value>Tell us about your experience with this product...</value>
+  </data>
+  <data name="Submitting" xml:space="preserve">
+    <value>Submitting</value>
+  </data>
+  <data name="SubmitReview" xml:space="preserve">
+    <value>Submit Review</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ReviewSubmittedSuccess" xml:space="preserve">
+    <value>Thank you! Your review has been submitted and will be published after approval.</value>
+  </data>
+  <data name="ReviewSubmissionError" xml:space="preserve">
+    <value>Sorry, there was an error submitting your review. Please try again.</value>
+  </data>
+  <data name="ViewDetails" xml:space="preserve">
+    <value>View Details</value>
+  </data>
 </root>
