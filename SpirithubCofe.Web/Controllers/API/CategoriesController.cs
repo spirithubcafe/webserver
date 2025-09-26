@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using SpirithubCofe.Application.DTOs.API;
 using SpirithubCofe.Application.Services.API;
@@ -112,7 +113,7 @@ public class CategoriesController : ControllerBase
     /// <param name="request">Create category request</param>
     /// <returns>Created category</returns>
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     [ProducesResponseType(typeof(ApiResponse<CategoryDto>), 201)]
     [ProducesResponseType(typeof(ApiResponse<CategoryDto>), 400)]
     [ProducesResponseType(typeof(ApiResponse<CategoryDto>), 401)]
@@ -145,7 +146,7 @@ public class CategoriesController : ControllerBase
     /// <param name="request">Update category request</param>
     /// <returns>Updated category</returns>
     [HttpPut("{id:int}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     [ProducesResponseType(typeof(ApiResponse<CategoryDto>), 200)]
     [ProducesResponseType(typeof(ApiResponse<CategoryDto>), 400)]
     [ProducesResponseType(typeof(ApiResponse<CategoryDto>), 401)]
@@ -183,7 +184,7 @@ public class CategoriesController : ControllerBase
     /// <param name="id">Category ID</param>
     /// <returns>Success status</returns>
     [HttpDelete("{id:int}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     [ProducesResponseType(typeof(ApiResponse<bool>), 200)]
     [ProducesResponseType(typeof(ApiResponse<bool>), 400)]
     [ProducesResponseType(typeof(ApiResponse<bool>), 401)]
@@ -212,7 +213,7 @@ public class CategoriesController : ControllerBase
     /// <param name="id">Category ID</param>
     /// <returns>Success status</returns>
     [HttpPatch("{id:int}/toggle-status")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     [ProducesResponseType(typeof(ApiResponse<bool>), 200)]
     [ProducesResponseType(typeof(ApiResponse<bool>), 401)]
     [ProducesResponseType(typeof(ApiResponse<bool>), 403)]

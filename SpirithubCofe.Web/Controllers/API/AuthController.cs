@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using SpirithubCofe.Application.DTOs.API;
 using SpirithubCofe.Application.Services.API;
@@ -85,7 +86,7 @@ public class AuthController : ControllerBase
     /// </summary>
     /// <returns>User information</returns>
     [HttpGet("me")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ProducesResponseType(typeof(ApiResponse<UserInfoDto>), 200)]
     [ProducesResponseType(typeof(ApiResponse<UserInfoDto>), 401)]
     public async Task<ActionResult<ApiResponse<UserInfoDto>>> GetCurrentUser()
@@ -112,7 +113,7 @@ public class AuthController : ControllerBase
     /// <param name="request">Change password request</param>
     /// <returns>Success status</returns>
     [HttpPost("change-password")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ProducesResponseType(typeof(ApiResponse<bool>), 200)]
     [ProducesResponseType(typeof(ApiResponse<bool>), 400)]
     [ProducesResponseType(typeof(ApiResponse<bool>), 401)]
@@ -149,7 +150,7 @@ public class AuthController : ControllerBase
     /// <param name="request">Update profile request</param>
     /// <returns>Updated user information</returns>
     [HttpPut("profile")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ProducesResponseType(typeof(ApiResponse<UserInfoDto>), 200)]
     [ProducesResponseType(typeof(ApiResponse<UserInfoDto>), 400)]
     [ProducesResponseType(typeof(ApiResponse<UserInfoDto>), 401)]
@@ -185,7 +186,7 @@ public class AuthController : ControllerBase
     /// </summary>
     /// <returns>Success status</returns>
     [HttpPost("logout")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ProducesResponseType(typeof(ApiResponse<bool>), 200)]
     [ProducesResponseType(typeof(ApiResponse<bool>), 401)]
     public async Task<ActionResult<ApiResponse<bool>>> Logout()

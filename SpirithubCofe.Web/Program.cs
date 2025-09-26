@@ -69,10 +69,11 @@ var authBuilder = builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = IdentityConstants.ApplicationScheme;
         options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     });
 
 authBuilder.AddIdentityCookies();
-authBuilder.AddJwtBearer(options =>
+authBuilder.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
     {
         options.RequireHttpsMetadata = false; // Set to true in production
         options.SaveToken = true;
@@ -181,6 +182,13 @@ builder.Services.AddSwaggerGen(c =>
     {
         c.IncludeXmlComments(xmlPath);
     }
+
+    // Only include API controllers in Swagger documentation
+    c.DocInclusionPredicate((docName, apiDesc) =>
+    {
+        // Only include API routes that start with 'api/'
+        return apiDesc.RelativePath?.StartsWith("api/", StringComparison.OrdinalIgnoreCase) == true;
+    });
 });
 
 // Register data seeder service
@@ -215,6 +223,9 @@ else
 // Add localization middleware
 var localizationOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>();
 app.UseRequestLocalization(localizationOptions.Value);
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseAntiforgery();
 

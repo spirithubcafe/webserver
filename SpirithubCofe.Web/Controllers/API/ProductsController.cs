@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using SpirithubCofe.Application.DTOs.API;
 using SpirithubCofe.Application.Services.API;
@@ -149,7 +150,7 @@ public class ProductsController : ControllerBase
     /// <param name="request">Product creation data</param>
     /// <returns>Created product</returns>
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     [ProducesResponseType(typeof(ApiResponse<SimpleProductDto>), 201)]
     [ProducesResponseType(typeof(ApiResponse<object>), 400)]
     [ProducesResponseType(typeof(ApiResponse<object>), 401)]
@@ -178,7 +179,7 @@ public class ProductsController : ControllerBase
     /// <param name="request">Product update data</param>
     /// <returns>Updated product</returns>
     [HttpPut("{id:int}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     [ProducesResponseType(typeof(ApiResponse<SimpleProductDto>), 200)]
     [ProducesResponseType(typeof(ApiResponse<object>), 400)]
     [ProducesResponseType(typeof(ApiResponse<object>), 401)]
@@ -210,7 +211,7 @@ public class ProductsController : ControllerBase
     /// <param name="id">Product ID</param>
     /// <returns>Success status</returns>
     [HttpDelete("{id:int}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     [ProducesResponseType(typeof(ApiResponse<bool>), 200)]
     [ProducesResponseType(typeof(ApiResponse<object>), 401)]
     [ProducesResponseType(typeof(ApiResponse<object>), 403)]
@@ -235,7 +236,7 @@ public class ProductsController : ControllerBase
     /// <param name="id">Product ID</param>
     /// <returns>Success status</returns>
     [HttpPatch("{id:int}/toggle-status")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     [ProducesResponseType(typeof(ApiResponse<bool>), 200)]
     [ProducesResponseType(typeof(ApiResponse<object>), 401)]
     [ProducesResponseType(typeof(ApiResponse<object>), 403)]
@@ -261,7 +262,7 @@ public class ProductsController : ControllerBase
     /// <param name="request">Stock update data</param>
     /// <returns>Success status</returns>
     [HttpPatch("{id:int}/stock")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     [ProducesResponseType(typeof(ApiResponse<bool>), 200)]
     [ProducesResponseType(typeof(ApiResponse<object>), 400)]
     [ProducesResponseType(typeof(ApiResponse<object>), 401)]
