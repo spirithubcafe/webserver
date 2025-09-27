@@ -37,49 +37,74 @@
 <!-- Filters and Search -->
 <section class="py-8 bg-white border-b border-gray-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-            <!-- Search Bar -->
-            <div class="flex-1 max-w-md">
-                <div class="relative">
-                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                    <input
-                        type="text"
-                        @bind="searchQuery"
-                        @oninput="OnSearchInput"
-                        placeholder="@Localizer["SearchCoffee"]"
-                        class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors duration-200"
-                    />
+        @if (isLoading)
+        {
+            <!-- Loading Skeleton for Filters -->
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                <!-- Search Bar Skeleton -->
+                <div class="flex-1 max-w-md">
+                    <div class="h-12 bg-gray-300 rounded-lg animate-pulse"></div>
+                </div>
+                
+                <!-- Filter Skeletons -->
+                <div class="flex items-center space-x-4">
+                    <div class="h-4 bg-gray-300 rounded w-16 animate-pulse"></div>
+                    <div class="h-10 bg-gray-300 rounded-lg w-48 animate-pulse"></div>
+                </div>
+                
+                <!-- Sort Options Skeleton -->
+                <div class="flex items-center space-x-4">
+                    <div class="h-4 bg-gray-300 rounded w-12 animate-pulse"></div>
+                    <div class="h-10 bg-gray-300 rounded-lg w-32 animate-pulse"></div>
                 </div>
             </div>
-            
-            <!-- Category Filter -->
-            <div class="flex items-center space-x-4">
-                <label class="text-sm font-medium text-gray-700">@Localizer["Category"]:</label>
-                <select @bind="selectedCategory" class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 min-w-48">
-                    <option value="">@Localizer["AllCategories"]</option>
-                    @foreach (var cat in categories)
-                    {
-                        <option value="@cat.Name">@GetCategoryName(cat)</option>
-                    }
-                </select>
+        }
+        else
+        {
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                <!-- Search Bar -->
+                <div class="flex-1 max-w-md">
+                    <div class="relative">
+                        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <input
+                            type="text"
+                            @bind="searchQuery"
+                            @oninput="OnSearchInput"
+                            placeholder="@Localizer["SearchCoffee"]"
+                            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors duration-200"
+                        />
+                    </div>
+                </div>
+                
+                <!-- Category Filter -->
+                <div class="flex items-center space-x-4">
+                    <label class="text-sm font-medium text-gray-700">@Localizer["Category"]:</label>
+                    <select @bind="selectedCategory" class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 min-w-48">
+                        <option value="">@Localizer["AllCategories"]</option>
+                        @foreach (var cat in categories)
+                        {
+                            <option value="@cat.Name">@GetCategoryName(cat)</option>
+                        }
+                    </select>
+                </div>
+                
+                <!-- Sort Options -->
+                <div class="flex items-center space-x-4">
+                    <label class="text-sm font-medium text-gray-700">@Localizer["SortBy"]:</label>
+                    <select @bind="sortOption" class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                        <option value="name">@Localizer["NameAZ"]</option>
+                        <option value="price-low">@Localizer["PriceLowToHigh"]</option>
+                        <option value="price-high">@Localizer["PriceHighToLow"]</option>
+                        <option value="popular">@Localizer["MostPopular"]</option>
+                    </select>
+                </div>
             </div>
-            
-            <!-- Sort Options -->
-            <div class="flex items-center space-x-4">
-                <label class="text-sm font-medium text-gray-700">@Localizer["SortBy"]:</label>
-                <select @bind="sortOption" class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
-                    <option value="name">@Localizer["NameAZ"]</option>
-                    <option value="price-low">@Localizer["PriceLowToHigh"]</option>
-                    <option value="price-high">@Localizer["PriceHighToLow"]</option>
-                    <option value="popular">@Localizer["MostPopular"]</option>
-                </select>
-            </div>
-        </div>
+        }
         
         <!-- Active Filters -->
-        @if (!string.IsNullOrEmpty(selectedCategory) || !string.IsNullOrEmpty(searchQuery))
+        @if (!isLoading && (!string.IsNullOrEmpty(selectedCategory) || !string.IsNullOrEmpty(searchQuery)))
         {
             <div class="mt-4 flex flex-wrap items-center gap-2">
                 <span class="text-sm text-gray-600">@Localizer["ActiveFilters"]:</span>
@@ -114,7 +139,46 @@
 <!-- Products Grid -->
 <section class="py-16 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        @if (filteredProducts.Any())
+        @if (isLoading)
+        {
+            <!-- Loading Skeleton -->
+            <div class="mb-8">
+                <div class="h-6 bg-gray-300 rounded-md w-48 animate-pulse"></div>
+            </div>
+            
+            <!-- Products Grid Skeleton -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
+                @for (int i = 0; i < 9; i++)
+                {
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden animate-pulse">
+                        <!-- Image Skeleton -->
+                        <div class="aspect-square bg-gray-300"></div>
+                        
+                        <!-- Content Skeleton -->
+                        <div class="p-6 space-y-4">
+                            <!-- Title -->
+                            <div class="space-y-2">
+                                <div class="h-5 bg-gray-300 rounded w-3/4"></div>
+                                <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+                            </div>
+                            
+                            <!-- Price -->
+                            <div class="h-6 bg-gray-300 rounded w-1/3"></div>
+                            
+                            <!-- Buttons -->
+                            <div class="space-y-3 pt-4">
+                                <div class="flex items-center space-x-3">
+                                    <div class="h-10 bg-gray-300 rounded-lg w-32"></div>
+                                    <div class="h-10 bg-gray-300 rounded-lg flex-1"></div>
+                                </div>
+                                <div class="h-10 bg-gray-300 rounded-lg w-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else if (filteredProducts.Any())
         {
             <!-- Results Count -->
             <div class="mb-8">
@@ -256,40 +320,64 @@
     <div class="max-full mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-center">
             <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-900 mb-4">@Localizer["FeaturedCategories"]</h2>
-                <p class="text-xl text-gray-600">@Localizer["ExplorePremiumCollections"]</p>
+                @if (isLoading)
+                {
+                    <div class="h-8 bg-gray-300 rounded-md w-64 mx-auto mb-4 animate-pulse"></div>
+                    <div class="h-6 bg-gray-200 rounded-md w-96 mx-auto animate-pulse"></div>
+                }
+                else
+                {
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">@Localizer["FeaturedCategories"]</h2>
+                    <p class="text-xl text-gray-600">@Localizer["ExplorePremiumCollections"]</p>
+                }
             </div>
         </div>
         
         <div class="flex justify-center">
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 max-w-4xl">
-                @foreach (var category in categories.Take(8))
+                @if (isLoading)
                 {
-                    <button 
-                        @onclick="() => SetCategoryFilter(category.Name)"
-                        class="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden"
-                    >
-                        <div class="aspect-square bg-gradient-to-br from-amber-50 to-amber-100 p-6 flex items-center justify-center">
-                            @if (!string.IsNullOrEmpty(category.ImagePath))
-                            {
-                                <img 
-                                    src="@category.ImagePath" 
-                                    alt="@GetCategoryName(category)"
-                                    class="w-full h-full object-cover rounded-lg"
-                                />
-                            }
-                            else
-                            {
-                                <svg class="w-12 h-12 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
-                                </svg>
-                            }
+                    @for (int i = 0; i < 5; i++)
+                    {
+                        <div class="group bg-white rounded-xl shadow-md overflow-hidden animate-pulse">
+                            <div class="aspect-square bg-gray-300"></div>
+                            <div class="p-4 text-center space-y-2">
+                                <div class="h-4 bg-gray-300 rounded w-3/4 mx-auto"></div>
+                                <div class="h-3 bg-gray-200 rounded w-1/2 mx-auto"></div>
+                            </div>
                         </div>
-                        <div class="p-4 text-center">
-                            <h3 class="font-semibold text-gray-900 group-hover:text-amber-600 transition-colors">@GetCategoryName(category)</h3>
-                            <p class="text-sm text-gray-600 mt-1">@category.Products?.Count() @Localizer["Products"]</p>
-                        </div>
-                    </button>
+                    }
+                }
+                else
+                {
+                    @foreach (var category in categories.Take(8))
+                    {
+                        <button 
+                            @onclick="() => SetCategoryFilter(category.Name)"
+                            class="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden"
+                        >
+                            <div class="aspect-square bg-gradient-to-br from-amber-50 to-amber-100 p-6 flex items-center justify-center">
+                                @if (!string.IsNullOrEmpty(category.ImagePath))
+                                {
+                                    <img 
+                                        src="@category.ImagePath" 
+                                        alt="@GetCategoryName(category)"
+                                        class="w-full h-full object-cover rounded-lg"
+                                    />
+                                }
+                                else
+                                {
+                                    <svg class="w-12 h-12 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                                    </svg>
+                                }
+                            </div>
+                            <div class="p-4 text-center">
+                                <h3 class="font-semibold text-gray-900 group-hover:text-amber-600 transition-colors">@GetCategoryName(category)</h3>
+                                <p class="text-sm text-gray-600 mt-1">@category.Products?.Count() @Localizer["Products"]</p>
+                            </div>
+                        </button>
+                    }
                 }
             </div>
         </div>
@@ -309,47 +397,59 @@
     
     private List<Category> categories = new();
     private List<Product> allProducts = new();
+    private bool isLoading = true;
     
     private IEnumerable<Product> filteredProducts => GetFilteredProducts();
     
     protected override async Task OnInitializedAsync()
     {
-        // Load categories
-        categories = await CategoryService.GetAllCategoriesAsync();
-        
-        // Load products
-        allProducts = await ProductService.GetAllProductsAsync();
-        
-        // Check for category in route parameter
-        if (!string.IsNullOrEmpty(Category))
+        try
         {
-            var categoryFromRoute = categories.FirstOrDefault(c => 
-                c.Slug.Equals(Category, StringComparison.OrdinalIgnoreCase));
-            if (categoryFromRoute != null)
+            // Add a small delay to better demonstrate the loading skeleton
+            await Task.Delay(1500);
+            
+            // Load categories
+            categories = await CategoryService.GetAllCategoriesAsync();
+            
+            // Load products
+            allProducts = await ProductService.GetAllProductsAsync();
+            
+            // Check for category in route parameter
+            if (!string.IsNullOrEmpty(Category))
             {
-                selectedCategory = categoryFromRoute.Name;
+                var categoryFromRoute = categories.FirstOrDefault(c => 
+                    c.Slug.Equals(Category, StringComparison.OrdinalIgnoreCase));
+                if (categoryFromRoute != null)
+                {
+                    selectedCategory = categoryFromRoute.Name;
+                }
             }
-        }
-        
-        // Initialize quantities for all products
-        foreach (var product in allProducts)
-        {
-            productQuantities[product.Id] = 1;
-        }
-        
-        // Initialize search timer
-        searchTimer = new System.Timers.Timer(500); // 500ms delay
-        searchTimer.Elapsed += async (sender, e) => await InvokeAsync(() =>
-        {
-            if (!_disposed)
+            
+            // Initialize quantities for all products
+            foreach (var product in allProducts)
             {
-                StateHasChanged();
+                productQuantities[product.Id] = 1;
             }
-        });
-        searchTimer.AutoReset = false;
+            
+            // Initialize search timer
+            searchTimer = new System.Timers.Timer(500); // 500ms delay
+            searchTimer.Elapsed += async (sender, e) => await InvokeAsync(() =>
+            {
+                if (!_disposed)
+                {
+                    StateHasChanged();
+                }
+            });
+            searchTimer.AutoReset = false;
 
-        // Initialize CartService
-        await CartService.InitializeAsync();
+            // Initialize CartService
+            await CartService.InitializeAsync();
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
     }
 
     protected override void OnAfterRender(bool firstRender)
