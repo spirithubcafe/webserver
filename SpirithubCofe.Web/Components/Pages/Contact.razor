@@ -301,37 +301,53 @@
                 </div>
             </div>
             
-            <!-- Map Placeholder -->
+            <!-- Interactive Map -->
             <div>
                 <h2 class="text-3xl font-bold text-gray-900 mb-8">Find Us</h2>
-                <div class="aspect-w-16 aspect-h-12 rounded-2xl overflow-hidden shadow-lg">
-                    <div class="bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center">
-                        <div class="text-center text-gray-700">
-                            <svg class="w-16 h-16 mx-auto mb-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            </svg>
-                            <p class="text-lg font-medium">Interactive Map</p>
-                            <p class="text-sm text-gray-600 mt-1">
-                                Al Khuwair, Muscat<br/>
-                                Sultanate of Oman
-                            </p>
-                        </div>
-                    </div>
+                <div class="rounded-2xl overflow-hidden shadow-lg bg-white border border-gray-200" style="height: 400px;">
+                    <iframe 
+                        src="https://www.openstreetmap.org/export/embed.html?bbox=58.2465%2C23.6089%2C58.2666%2C23.6289&layer=mapnik&marker=23.618926%2C58.256566"
+                        width="100%" 
+                        height="400" 
+                        frameborder="0" 
+                        style="border: 0;"
+                        allowfullscreen=""
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        title="SpirithubCafe Location - Al Mouj St, Muscat, Oman">
+                    </iframe>
                 </div>
                 
-                <!-- Directions -->
-                <div class="mt-6 space-y-3">
-                    <a href="https://maps.google.com" target="_blank" class="flex items-center justify-center w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg transition-colors duration-200">
-                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
-                        </svg>
-                        Get Directions
-                    </a>
-                    <div class="text-center text-sm text-gray-500">
-                        <p>Parking available on-site</p>
-                        <p>Accessible entrance and facilities</p>
+                <!-- Map Info -->
+                <div class="mt-6 bg-amber-50 rounded-xl p-6">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                                    <div class="flex flex-col sm:flex-row gap-3">
+                                <a href="https://www.openstreetmap.org/?mlat=23.618926&mlon=58.256566&zoom=16#map=16/23.61893/58.25657" 
+                                   target="_blank" 
+                                   class="flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    View on OpenStreetMap
+                                </a>
+                                <a href="https://www.google.com/maps?q=23.618926,58.256566" 
+                                   target="_blank" 
+                                   class="flex items-center justify-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Get Directions
+                                </a>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
