@@ -9,7 +9,7 @@
 @using SpirithubCofe.Web.Services
 @using SpirithubCofe.Web.Components.Shared
 @using System.ComponentModel.DataAnnotations
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 @inject ProductService ProductService
 @inject ReviewService ReviewService

@@ -1,6 +1,6 @@
 @page "/products"
 @page "/products/{category?}"
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @layout SpirithubCofe.Web.Components.Layout.PublicLayout
 @using SpirithubCofe.Web.Services
 @using SpirithubCofe.Web.Components.Shared
@@ -129,7 +129,7 @@
                 {
                     <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col">
                         <!-- Product Image -->
-                        <a href="/product/@product.Id" class="block relative aspect-square bg-gradient-to-br from-amber-50 to-amber-100">
+                        <div @onclick="() => NavigateToProduct(product.Id)" class="block relative aspect-square bg-gradient-to-br from-amber-50 to-amber-100 cursor-pointer">
                             @if (product.GalleryImages?.Any() == true)
                             {
                                 <img 
@@ -146,7 +146,7 @@
                                     </svg>
                                 </div>
                             }
-                        </a>
+                        </div>
                         
                         <!-- Quick Add Button -->
                         <button 
@@ -163,9 +163,9 @@
                         <div class="p-6 flex flex-col h-full">
                             <div class="flex-grow">
                                 <div class="flex items-start justify-between mb-2">
-                                    <a href="/product/@product.Id" class="hover:text-amber-600 transition-colors">
+                                    <div @onclick="() => NavigateToProduct(product.Id)" class="hover:text-amber-600 transition-colors cursor-pointer">
                                         <h3 class="text-lg font-semibold text-gray-900 line-clamp-2">@GetProductName(product)</h3>
-                                    </a>
+                                    </div>
                                 </div>
                                 
                                 <p class="text-sm text-amber-600 mb-4">@(product.Category != null ? GetCategoryName(product.Category) : "")</p>
@@ -220,10 +220,10 @@
                                 
                                 <!-- View Details Button -->
                                 <div>
-                                    <a href="/product/@product.Id" 
+                                    <button @onclick="() => NavigateToProduct(product.Id)"
                                        class="block w-full text-center px-4 py-2 border border-amber-600 text-amber-600 hover:bg-amber-50 rounded-lg font-medium transition-colors duration-200">
                                         @Localizer["ViewDetails"]
-                                    </a>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -555,6 +555,11 @@
         return currentCulture.StartsWith("ar") && !string.IsNullOrEmpty(product.DescriptionAr) 
             ? product.DescriptionAr 
             : product.Description ?? "";
+    }
+    
+    private void NavigateToProduct(int productId)
+    {
+        Navigation.NavigateTo($"/product/{productId}");
     }
     
     public void Dispose()
