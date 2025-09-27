@@ -72,29 +72,31 @@
                         </div>
                     </div>
 
-                    <!-- Main Navigation - Desktop -->
-                    <div class="hidden lg:flex items-center space-x-1">
- 
+
+
+                    <!-- Right Side Actions -->
+                    <div class="flex items-center space-x-4">
+                        <!-- Products Dropdown - Always visible on all screen sizes -->
                         <div class="relative group">
                             <button
-                                class="flex items-center px-4 py-2 text-sm font-medium text-gray-600 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200">
-                            <svg class="w-4 h-4 mr-2 text-gray-400 group-hover:text-amber-600" viewBox="0 0 24 24"
-                                fill="none">
-                                <path d="M22 22L2 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                                <path d="M2 11L10.1259 4.49931C11.2216 3.62279 12.7784 3.62279 13.8741 4.49931L22 11"
-                                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                                <path d="M15.5 5.5V3.5C15.5 3.22386 15.7239 3 16 3H18.5C18.7761 3 19 3.22386 19 3.5V8.5"
-                                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                                <path d="M4 22V9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                                <path d="M20 22V9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                                <path
-                                    d="M15 22V17C15 15.5858 15 14.8787 14.5607 14.4393C14.1213 14 13.4142 14 12 14C10.5858 14 9.87868 14 9.43934 14.4393C9 14.8787 9 15.5858 9 17V22"
-                                    stroke="currentColor" stroke-width="1.5" />
-                                <path
-                                    d="M14 9.5C14 10.6046 13.1046 11.5 12 11.5C10.8954 11.5 10 10.6046 10 9.5C10 8.39543 10.8954 7.5 12 7.5C13.1046 7.5 14 8.39543 14 9.5Z"
-                                    stroke="currentColor" stroke-width="1.5" />
-                            </svg>
-                                @Localizer["Products"]
+                                class="flex items-center px-3 py-2 text-sm font-medium text-gray-600 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200">
+                                <svg class="w-4 h-4 mr-2 text-gray-400 group-hover:text-amber-600" viewBox="0 0 24 24"
+                                    fill="none">
+                                    <path d="M22 22L2 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                    <path d="M2 11L10.1259 4.49931C11.2216 3.62279 12.7784 3.62279 13.8741 4.49931L22 11"
+                                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                    <path d="M15.5 5.5V3.5C15.5 3.22386 15.7239 3 16 3H18.5C18.7761 3 19 3.22386 19 3.5V8.5"
+                                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                    <path d="M4 22V9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                    <path d="M20 22V9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                    <path
+                                        d="M15 22V17C15 15.5858 15 14.8787 14.5607 14.4393C14.1213 14 13.4142 14 12 14C10.5858 14 9.87868 14 9.43934 14.4393C9 14.8787 9 15.5858 9 17V22"
+                                        stroke="currentColor" stroke-width="1.5" />
+                                    <path
+                                        d="M14 9.5C14 10.6046 13.1046 11.5 12 11.5C10.8954 11.5 10 10.6046 10 9.5C10 8.39543 10.8954 7.5 12 7.5C13.1046 7.5 14 8.39543 14 9.5Z"
+                                        stroke="currentColor" stroke-width="1.5" />
+                                </svg>
+                                <span class="hidden sm:inline">@Localizer["Products"]</span>
                                 <svg class="w-4 h-4 ml-1 text-gray-400 group-hover:text-amber-600" fill="currentColor"
                                     viewBox="0 0 20 20">
                                     <path fill-rule="evenodd"
@@ -104,7 +106,7 @@
                             </button>
                             <!-- Dropdown Menu -->
                             <div
-                                class="absolute left-0 mt-2 w-64 bg-white border border-gray-100 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                                class="absolute right-0 mt-2 w-64 bg-white border border-gray-100 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                                 <div class="py-2">
                                     <NavLink href="/products"
                                         class="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-amber-600 hover:bg-amber-50 border-b border-gray-100 font-medium">
@@ -148,10 +150,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Right Side Actions -->
-                    <div class="flex items-center space-x-4">
                         <!-- Cart Button - Always visible -->
                         <CartIcon />
 
@@ -305,9 +304,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Mobile menu component includes button -->
-                        <MobileMenu IsOpen="isMobileMenuOpen" IsOpenChanged="OnMobileMenuToggled" />
                     </div>
                 </div>
             </div>
@@ -400,11 +396,9 @@
     </div>
 
     @code {
-        private int mobileCartCount = 0;
         private string logoType = "text";
         private string logoText = "SpirithubCofe";
         private string logoImage = "";
-        private bool isMobileMenuOpen = false;
         private List<SpirithubCofe.Domain.Entities.Category> categories = new();
 
         protected override async Task OnInitializedAsync()
@@ -412,8 +406,6 @@
             await LoadLogoSettings();
             await LoadCategories();
             await CartService.InitializeAsync();
-            UpdateMobileCartInfo();
-            CartService.OnCartChanged += UpdateMobileCartInfo;
         }
 
         private async Task LoadCategories()
@@ -446,41 +438,13 @@
             }
         }
 
-        private void UpdateMobileCartInfo()
-        {
-            mobileCartCount = CartService.ItemCount;
-            InvokeAsync(StateHasChanged);
-        }
-
         private void NavigateToCart()
         {
             Navigation.NavigateTo("/cart", forceLoad: true);
         }
 
-        private void NavigateToCartAndCloseMenu()
-        {
-            CloseMobileMenu();
-            Navigation.NavigateTo("/cart", forceLoad: true);
-        }
-
-        private void ToggleMobileMenu()
-        {
-            isMobileMenuOpen = !isMobileMenuOpen;
-        }
-
-        private void CloseMobileMenu()
-        {
-            isMobileMenuOpen = false;
-        }
-
-        private void OnMobileMenuToggled(bool isOpen)
-        {
-            isMobileMenuOpen = isOpen;
-        }
-
         public void Dispose()
         {
-            CartService.OnCartChanged -= UpdateMobileCartInfo;
         }
     }
 
