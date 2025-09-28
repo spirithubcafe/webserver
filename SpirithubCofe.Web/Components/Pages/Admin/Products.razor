@@ -2,6 +2,7 @@
 @layout AdminLayout
 @attribute [Authorize(Roles = "Admin")]
 @using SpirithubCofe.Domain.Entities
+@using SpirithubCofe.Web.Components.Shared
 @inject ProductService ProductService
 @inject CategoryService CategoryService
 @inject IStringLocalizer<SpirithubCofe.Langs.Resources> Localizer
@@ -10,12 +11,31 @@
 
 <Toast />
 
+<!-- Q                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg> View Modal -->
+<ProductQuickViewModal Product="selectedProduct" IsVisible="isQuickViewVisible" OnClose="CloseQuickView" />
+
 <div class="min-h-screen bg-gray-50 py-6">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <!-- Page Header -->
         <div class="bg-white shadow-sm rounded-lg mb-6">
             <div class="px-6 py-4 border-b border-gray-200">
+                <!-- DEBUG INFO -->
+                <div class="mb-4 p-3 bg-yellow-100 rounded-lg">
+                    <p><strong>DEBUG:</strong> Products Count: @(filteredProducts?.Count ?? 0) | Loading: @loading | HasRendered: @hasRendered</p>
+                    @if (filteredProducts?.Any() == true)
+                    {
+                        <button @onclick="() => ShowQuickView(filteredProducts.First())" 
+                                class="inline-flex items-center px-6 py-4 text-white bg-red-500 hover:bg-red-600 rounded-lg font-bold text-xl border-4 border-red-700 mt-2"
+                                style="min-width: 200px;">
+                            🔥 TEST QUICK VIEW BUTTON 🔥
+                        </button>
+                    }
+                </div>
+                
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h1 class="text-2xl font-bold text-gray-900">@Localizer["ProductManagement"]</h1>
@@ -261,7 +281,16 @@
                             </div>
                             
                             <div class="flex space-x-2">
-                                <a href="/admin/products/@product.Id/edit" 
+                                <!-- Quick View Button -->
+                                            <!-- Quick View Button -->
+                                            <button @onclick="() => ShowQuickView(product)" 
+                                                    class="inline-flex items-center px-2 py-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded border border-blue-300"
+                                                    title="Quick View / عرض سريع">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                </svg>
+                                            </button>                                <a href="/admin/products/@product.Id/edit" 
                                    class="flex-1 inline-flex justify-center items-center px-3 py-2 border border-gray-300 rounded-md text-xs font-medium text-gray-700 bg-white hover:bg-gray-50">
                                     @Localizer["Edit"]
                                 </a>
@@ -369,13 +398,23 @@
                                             @(product.IsActive ? Localizer["Active"] : Localizer["Inactive"])
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                                        <a href="/admin/products/@product.Id/edit" class="text-blue-600 hover:text-blue-900 ml-3">@Localizer["Edit"]</a>
-                                        <button @onclick="() => ToggleProductStatus(product)" 
-                                                class="@(product.IsActive ? "text-orange-600 hover:text-orange-900" : "text-green-600 hover:text-green-900") ml-3">
-                                            @(product.IsActive ? Localizer["Deactivate"] : Localizer["Activate"])
-                                        </button>
-                                        <button @onclick="() => DeleteProduct(product)" class="text-red-600 hover:text-red-900">@Localizer["Delete"]</button>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <div class="flex items-center justify-end space-x-2">
+                                <!-- Quick View Button -->
+                                <button @onclick="() => ShowQuickView(product)" 
+                                        class="inline-flex items-center px-3 py-2 border-2 border-blue-500 rounded-md text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 hover:border-blue-600"
+                                        title="Quick View / عرض سريع" style="min-width: 50px;">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 616 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </button>                                            <a href="/admin/products/@product.Id/edit" class="text-blue-600 hover:text-blue-900">@Localizer["Edit"]</a>
+                                            <button @onclick="() => ToggleProductStatus(product)" 
+                                                    class="@(product.IsActive ? "text-orange-600 hover:text-orange-900" : "text-green-600 hover:text-green-900")">
+                                                @(product.IsActive ? Localizer["Deactivate"] : Localizer["Activate"])
+                                            </button>
+                                            <button @onclick="() => DeleteProduct(product)" class="text-red-600 hover:text-red-900">@Localizer["Delete"]</button>
+                                        </div>
                                     </td>
                                 </tr>
                             }
@@ -406,6 +445,10 @@
     private int activeProducts = 0;
     private int outOfStockProducts = 0;
     private decimal averageRating = 0;
+    
+    // Quick View Modal
+    private bool isQuickViewVisible = false;
+    private Product? selectedProduct = null;
 
     protected override async Task OnInitializedAsync()
     {
@@ -583,5 +626,34 @@
         // TODO: Implement CSV export functionality
          ToastService.ShowError(Localizer["ExportFeatureSoon"].ToString());
 
+    }
+    
+    // Quick View Modal Methods
+    private async Task ShowQuickView(Product product)
+    {
+        if (!hasRendered) return;
+        
+        try
+        {
+            // Show a test message first to confirm the button works
+            ToastService.ShowSuccess($"Quick View clicked for: {product.Name}");
+            
+            // Get the full product details with all related data
+            selectedProduct = await ProductService.GetProductByIdAsync(product.Id);
+            isQuickViewVisible = true;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError($"Error loading product details: {ex.Message}");
+        }
+    }
+    
+    private async Task CloseQuickView()
+    {
+        isQuickViewVisible = false;
+        selectedProduct = null;
+        StateHasChanged();
+        await Task.CompletedTask;
     }
 }
