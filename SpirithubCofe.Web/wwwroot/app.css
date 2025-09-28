@@ -396,8 +396,19 @@
 
 /* Quick View Modal Enhancements */
 .quick-view-modal {
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* Enhanced site blur when modal is open */
+body.modal-open .blazor-app > *:not(.quick-view-modal) {
+    filter: blur(2px);
+    transition: filter 0.3s ease-in-out;
+}
+
+body.modal-open .blazor-app {
+    transition: filter 0.3s ease-in-out;
 }
 
 .quick-view-button {

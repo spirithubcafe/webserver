@@ -15,7 +15,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                     </svg> View Modal -->
-<ProductQuickViewModal Product="selectedProduct" IsVisible="isQuickViewVisible" OnClose="CloseQuickView" />
+<ProductQuickViewModal Product="selectedProduct" IsVisible="isQuickViewVisible" OnClose="CloseQuickView" IsAdminContext="true" />
 
 <div class="min-h-screen bg-gray-50 py-6">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -23,19 +23,6 @@
         <!-- Page Header -->
         <div class="bg-white shadow-sm rounded-lg mb-6">
             <div class="px-6 py-4 border-b border-gray-200">
-                <!-- DEBUG INFO -->
-                <div class="mb-4 p-3 bg-yellow-100 rounded-lg">
-                    <p><strong>DEBUG:</strong> Products Count: @(filteredProducts?.Count ?? 0) | Loading: @loading | HasRendered: @hasRendered</p>
-                    @if (filteredProducts?.Any() == true)
-                    {
-                        <button @onclick="() => ShowQuickView(filteredProducts.First())" 
-                                class="inline-flex items-center px-6 py-4 text-white bg-red-500 hover:bg-red-600 rounded-lg font-bold text-xl border-4 border-red-700 mt-2"
-                                style="min-width: 200px;">
-                            🔥 TEST QUICK VIEW BUTTON 🔥
-                        </button>
-                    }
-                </div>
-                
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h1 class="text-2xl font-bold text-gray-900">@Localizer["ProductManagement"]</h1>

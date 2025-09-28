@@ -2476,10 +2476,6 @@
     border-style: var(--tw-border-style);
     border-width: 2px;
   }
-  .border-4 {
-    border-style: var(--tw-border-style);
-    border-width: 4px;
-  }
   .border-t {
     border-top-style: var(--tw-border-style);
     border-top-width: 1px;
@@ -2569,9 +2565,6 @@
   }
   .border-red-400 {
     border-color: var(--color-red-400);
-  }
-  .border-red-700 {
-    border-color: var(--color-red-700);
   }
   .border-transparent {
     border-color: transparent;
@@ -3968,13 +3961,6 @@
       }
     }
   }
-  .hover\:bg-red-600 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-red-600);
-      }
-    }
-  }
   .hover\:bg-red-700 {
     &:hover {
       @media (hover: hover) {
@@ -5343,8 +5329,16 @@
   direction: ltr;
 }
 .quick-view-modal {
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background-color: rgba(0, 0, 0, 0.4);
+}
+body.modal-open .blazor-app > *:not(.quick-view-modal) {
+  filter: blur(2px);
+  transition: filter 0.3s ease-in-out;
+}
+body.modal-open .blazor-app {
+  transition: filter 0.3s ease-in-out;
 }
 .quick-view-button {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);

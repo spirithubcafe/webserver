@@ -19,6 +19,9 @@
 <!-- Toast Component -->
 <Toast />
 
+<!-- Quick View Modal -->
+<ProductQuickViewModal Product="selectedProduct" IsVisible="isQuickViewVisible" OnClose="CloseQuickView" />
+
 <!-- Hero Section -->
 <section class="relative bg-gradient-to-br from-amber-50 to-amber-100 py-16">
     <div class="absolute inset-0 bg-black bg-opacity-5"></div>
@@ -212,16 +215,31 @@
                             }
                         </div>
                         
-                        <!-- Quick Add Button -->
-                        <button 
-                            @onclick="() => QuickAddToCart(product.Id)"
-                            class="absolute top-4 right-4 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110 z-10"
-                            title="Quick add to cart"
-                        >
-                            <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                            </svg>
-                        </button>
+                        <!-- Quick Action Buttons -->
+                        <div class="absolute top-4 right-4 flex flex-col space-y-2 z-10">
+                            <!-- Quick View Button -->
+                            <button 
+                                @onclick="() => ShowQuickView(product.Id)"
+                                class="bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110"
+                                title="Quick view"
+                            >
+                                <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            </button>
+                            
+                            <!-- Quick Add Button -->
+                            <button 
+                                @onclick="() => QuickAddToCart(product.Id)"
+                                class="bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110"
+                                title="Quick add to cart"
+                            >
+                                <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                            </button>
+                        </div>
                         
                         <!-- Product Info -->
                         <div class="p-6 flex flex-col h-full">
@@ -398,6 +416,10 @@
     private List<Category> categories = new();
     private List<Product> allProducts = new();
     private bool isLoading = true;
+    
+    // Quick View Modal properties
+    private Product? selectedProduct = null;
+    private bool isQuickViewVisible = false;
     
     private IEnumerable<Product> filteredProducts => GetFilteredProducts();
     
@@ -652,6 +674,30 @@
         return currentCulture.StartsWith("ar") && !string.IsNullOrEmpty(product.DescriptionAr) 
             ? product.DescriptionAr 
             : product.Description ?? "";
+    }
+    
+    private async Task ShowQuickView(int productId)
+    {
+        try
+        {
+            selectedProduct = await ProductService.GetProductByIdAsync(productId);
+            if (selectedProduct != null)
+            {
+                isQuickViewVisible = true;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError($"Error loading product: {ex.Message}");
+        }
+    }
+    
+    private void CloseQuickView()
+    {
+        isQuickViewVisible = false;
+        selectedProduct = null;
+        StateHasChanged();
     }
     
     private void NavigateToProduct(int productId)
