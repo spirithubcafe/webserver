@@ -16,6 +16,8 @@ public interface IApplicationDbContext
     DbSet<ProductImage> ProductImages { get; }
     DbSet<CategoryImage> CategoryImages { get; }
     DbSet<ProductReview> ProductReviews { get; }
+    DbSet<Country> Countries { get; }
+    DbSet<City> Cities { get; }
     DbSet<FAQ> FAQs { get; }
     DbSet<FAQCategory> FAQCategories { get; }
     DbSet<FAQPage> FAQPages { get; }

@@ -22,6 +22,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     // Cart entities
     public DbSet<Cart> Carts { get; set; }
     public DbSet<CartItem> CartItems { get; set; }
+    public DbSet<Country> Countries { get; set; }
+    public DbSet<City> Cities { get; set; }
     
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -397,6 +399,63 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 
             entity.Property(e => e.AdminNotes)
                 .HasMaxLength(1000);
+
+        // Configure Country entity
+        builder.Entity<Country>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Code)
+                .IsRequired()
+                .HasMaxLength(10);
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.Property(e => e.NameAr)
+                .HasMaxLength(200);
+
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+
+            entity.HasIndex(e => e.Code)
+                .IsUnique()
+                .HasDatabaseName("IX_Countries_Code");
+
+            entity.HasIndex(e => e.IsActive)
+                .HasDatabaseName("IX_Countries_IsActive");
+        });
+
+        // Configure City entity
+        builder.Entity<City>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Code)
+                .HasMaxLength(50);
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.Property(e => e.NameAr)
+                .HasMaxLength(200);
+
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+
+            entity.HasIndex(e => e.CountryId)
+                .HasDatabaseName("IX_Cities_CountryId");
+
+            entity.HasIndex(e => e.IsActive)
+                .HasDatabaseName("IX_Cities_IsActive");
+
+            entity.HasOne(e => e.Country)
+                .WithMany(e => e.Cities)
+                .HasForeignKey(e => e.CountryId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
                 
             entity.Property(e => e.ApprovedByUserId)
                 .HasMaxLength(450);
