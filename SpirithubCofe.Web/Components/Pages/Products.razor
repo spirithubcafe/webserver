@@ -405,9 +405,7 @@
     {
         try
         {
-            // Add a small delay to better demonstrate the loading skeleton
-            await Task.Delay(1500);
-            
+           
             // Load categories
             categories = await CategoryService.GetAllCategoriesAsync();
             
@@ -459,7 +457,6 @@
             try
             {
                 // Scroll to top of page when component is first rendered or when parameters changed
-                // Scroll to top - removed JavaScript dependency
                 shouldScrollToTop = false;
             }
             catch (InvalidOperationException)

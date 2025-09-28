@@ -19,6 +19,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<FAQCategory> FAQCategories { get; set; }
     public DbSet<FAQPage> FAQPages { get; set; }
     
+    // Shipping entities
+    public DbSet<Country> Countries { get; set; }
+    public DbSet<City> Cities { get; set; }
+    public DbSet<ShippingMethod> ShippingMethods { get; set; }
+    public DbSet<ShippingZone> ShippingZones { get; set; }
+    public DbSet<ShippingRate> ShippingRates { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -524,6 +531,99 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.Property(e => e.MetaDescriptionEn).HasMaxLength(500);
             entity.Property(e => e.MetaDescriptionAr).HasMaxLength(500);
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("datetime('now')");
+        });
+
+        // Shipping configuration
+        builder.Entity<Country>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameAr).HasMaxLength(100);
+            entity.Property(e => e.Code).IsRequired().HasMaxLength(3);
+            entity.Property(e => e.Code2).IsRequired().HasMaxLength(2);
+            entity.HasIndex(e => e.Code).IsUnique();
+            entity.HasIndex(e => e.Code2).IsUnique();
+            entity.HasIndex(e => e.IsActive);
+            entity.HasIndex(e => e.DisplayOrder);
+        });
+
+        builder.Entity<City>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameAr).HasMaxLength(100);
+            entity.Property(e => e.NoolCode).HasMaxLength(50);
+            entity.Property(e => e.AramexCode).HasMaxLength(50);
+            entity.HasIndex(e => e.CountryId);
+            entity.HasIndex(e => e.IsActive);
+            entity.HasIndex(e => e.DisplayOrder);
+            
+            entity.HasOne(e => e.Country)
+                .WithMany(c => c.Cities)
+                .HasForeignKey(e => e.CountryId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<ShippingMethod>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameAr).HasMaxLength(100);
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.DescriptionAr).HasMaxLength(500);
+            entity.Property(e => e.Type).IsRequired();
+            entity.Property(e => e.NoolApiKey).HasMaxLength(200);
+            entity.Property(e => e.NoolAccountNumber).HasMaxLength(100);
+            entity.Property(e => e.AramexAccountNumber).HasMaxLength(100);
+            entity.Property(e => e.AramexUsername).HasMaxLength(100);
+            entity.Property(e => e.AramexPassword).HasMaxLength(200);
+            entity.Property(e => e.AramexVersion).HasMaxLength(20);
+            entity.Property(e => e.AramexAccountPin).HasMaxLength(50);
+            entity.Property(e => e.AramexAccountEntity).HasMaxLength(100);
+            entity.Property(e => e.AramexAccountCountryCode).HasMaxLength(5);
+            entity.Property(e => e.AramexApiUrl).HasMaxLength(500);
+            entity.HasIndex(e => e.Type);
+            entity.HasIndex(e => e.IsActive);
+            entity.HasIndex(e => e.DisplayOrder);
+        });
+
+        builder.Entity<ShippingZone>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameAr).HasMaxLength(100);
+            entity.HasIndex(e => new { e.ShippingMethodId, e.CountryId }).IsUnique();
+            entity.HasIndex(e => e.IsActive);
+            entity.HasIndex(e => e.DisplayOrder);
+            
+            entity.HasOne(e => e.ShippingMethod)
+                .WithMany(sm => sm.ShippingZones)
+                .HasForeignKey(e => e.ShippingMethodId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
+            entity.HasOne(e => e.Country)
+                .WithMany(c => c.ShippingZones)
+                .HasForeignKey(e => e.CountryId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<ShippingRate>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Rate).HasColumnType("decimal(18,3)");
+            entity.Property(e => e.MinOrderAmount).HasColumnType("decimal(18,3)");
+            entity.HasIndex(e => new { e.ShippingZoneId, e.CityId }).IsUnique();
+            entity.HasIndex(e => e.IsActive);
+            
+            entity.HasOne(e => e.ShippingZone)
+                .WithMany(sz => sz.ShippingRates)
+                .HasForeignKey(e => e.ShippingZoneId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
+            entity.HasOne(e => e.City)
+                .WithMany(c => c.ShippingRates)
+                .HasForeignKey(e => e.CityId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

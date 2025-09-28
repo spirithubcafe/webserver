@@ -19,5 +19,13 @@ public interface IApplicationDbContext
     DbSet<FAQ> FAQs { get; }
     DbSet<FAQCategory> FAQCategories { get; }
     DbSet<FAQPage> FAQPages { get; }
+    
+    // Shipping entities
+    DbSet<Country> Countries { get; }
+    DbSet<City> Cities { get; }
+    DbSet<ShippingMethod> ShippingMethods { get; }
+    DbSet<ShippingZone> ShippingZones { get; }
+    DbSet<ShippingRate> ShippingRates { get; }
+    
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
