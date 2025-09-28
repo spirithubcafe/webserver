@@ -130,7 +130,6 @@ builder.Services.AddScoped<RoleManagementService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ReviewService>();
-builder.Services.AddScoped<OrderService>();
 
 // Register user login service
 builder.Services.AddScoped<UserLoginService>();
@@ -143,7 +142,6 @@ builder.Services.AddScoped<SpirithubCofe.Application.Services.ISettingService, S
 
 // Register FAQ service
 builder.Services.AddScoped<SpirithubCofe.Application.Services.IFAQService, SpirithubCofe.Infrastructure.Services.FAQService>();
-builder.Services.AddScoped<SpirithubCofe.Application.Interfaces.IShippingService, SpirithubCofe.Web.Services.ShippingService>();
 builder.Services.AddScoped<SpirithubCofe.Application.Interfaces.IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>()!);
 
 // Register API services
@@ -272,9 +270,6 @@ await SeedAdminUser(app);
 // Seed sample data for categories and products
  await SeedSampleData(app); // Commented out for testing
 
-// Seed shipping data
-await SeedShippingData(app);
-
 app.Run();
 
 async Task SeedAdminUser(WebApplication app)
@@ -321,9 +316,4 @@ async Task SeedSampleData(WebApplication app)
     await seederService.SeedSampleDataAsync();
 }
 
-async Task SeedShippingData(WebApplication app)
-{
-    using var scope = app.Services.CreateScope();
-    var shippingService = scope.ServiceProvider.GetRequiredService<SpirithubCofe.Application.Interfaces.IShippingService>();
-    await shippingService.SeedDefaultDataAsync();
-}
+
