@@ -1,18 +1,23 @@
 @page "/checkout"
 @using Microsoft.AspNetCore.Authorization
 @using SpirithubCofe.Web.Services
+@using SpirithubCofe.Application.Interfaces
+@using SpirithubCofe.Domain.Entities
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Web
+@using Microsoft.Extensions.Localization
 @attribute [Authorize]
 @layout PublicLayout
 @inject CartService CartService
+@inject IShippingService ShippingService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
+@inject IStringLocalizer<SpirithubCofe.Langs.Resources> Localizer
 @implements IDisposable
 @rendermode InteractiveServer
 
 <div>
-    <title>Checkout - SpirithubCofe</title>
+    <title>@Localizer["Checkout"] - SpirithubCofe</title>
 </div>
 
 <!-- Check if cart is empty -->
@@ -25,13 +30,13 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5-6m0 0h14.5M17 21a2 2 0 100-4 2 2 0 000 4zM9 21a2 2 0 100-4 2 2 0 000 4z"/>
                 </svg>
             </div>
-            <h2 class="text-2xl font-bold text-gray-900 mb-4">Your cart is empty</h2>
-            <p class="text-gray-600 mb-8">Add some coffee to your cart before proceeding to checkout.</p>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">@Localizer["CartEmpty"]</h2>
+            <p class="text-gray-600 mb-8">@Localizer["AddProductsToCart"]</p>
             <a href="/products" class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-orange-600 to-orange-700 text-white font-semibold rounded-xl hover:from-orange-700 hover:to-orange-800 transition-all duration-300 transform hover:scale-105 shadow-lg">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>
-                Browse Products
+                @Localizer["BrowseProducts"]
             </a>
         </div>
     </div>
@@ -44,14 +49,14 @@ else
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                 <div class="flex items-center justify-between mb-6">
                     <div>
-                        <h1 class="text-3xl font-bold text-gray-900">Secure Checkout</h1>
-                        <p class="text-gray-600 mt-1">Complete your coffee order securely</p>
+                        <h1 class="text-3xl font-bold text-gray-900">@Localizer["SecureCheckout"]</h1>
+                        <p class="text-gray-600 mt-1">@Localizer["CompleteOrderSecurely"]</p>
                     </div>
                     <div class="hidden md:flex items-center space-x-2 text-sm text-gray-500">
                         <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        <span>SSL Secured</span>
+                        <span>@Localizer["SSLSecured"]</span>
                     </div>
                 </div>
 
@@ -72,7 +77,7 @@ else
                                         <span class="text-white font-semibold">1</span>
                                     }
                                 </div>
-                                <span class="ml-3 text-sm font-medium @(currentStep >= 1 ? "text-orange-600" : "text-gray-500")">Shipping</span>
+                                <span class="ml-3 text-sm font-medium @(currentStep >= 1 ? "text-orange-600" : "text-gray-500")">@Localizer["Shipping"]</span>
                             </div>
                             @if (currentStep > 1)
                             {
@@ -97,7 +102,7 @@ else
                                         <span class="text-white font-semibold">2</span>
                                     }
                                 </div>
-                                <span class="ml-3 text-sm font-medium @(currentStep >= 2 ? "text-orange-600" : "text-gray-500")">Payment</span>
+                                <span class="ml-3 text-sm font-medium @(currentStep >= 2 ? "text-orange-600" : "text-gray-500")">@Localizer["Payment"]</span>
                             </div>
                             @if (currentStep > 2)
                             {
@@ -121,7 +126,7 @@ else
                                     <span class="text-white font-semibold">3</span>
                                 }
                             </div>
-                            <span class="ml-3 text-sm font-medium @(currentStep >= 3 ? "text-orange-600" : "text-gray-500")">Review</span>
+                            <span class="ml-3 text-sm font-medium @(currentStep >= 3 ? "text-orange-600" : "text-gray-500")">@Localizer["Review"]</span>
                         </li>
                     </ol>
                 </div>
@@ -143,103 +148,170 @@ else
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                                     </svg>
-                                    Shipping Information
+                                    @Localizer["ShippingInformation"]
                                 </h2>
                             </div>
                             
                             <div class="p-6">
-                                <EditForm Model="shippingAddress" OnValidSubmit="HandleShippingSubmit">
-                                    <DataAnnotationsValidator />
-                                    
+                                <form @onsubmit="HandleShippingSubmit" @onsubmit:preventDefault="true">
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div class="md:col-span-2">
-                                            <label class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
-                                            <InputText @bind-Value="shippingAddress.FullName" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="Enter your full name" />
-                                            <ValidationMessage For="() => shippingAddress.FullName" class="text-red-600 text-sm mt-1" />
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["FullName"] *</label>
+                                            <input @bind="shippingAddress.FullName" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="@Localizer["EnterFullName"]" required />
                                         </div>
                                         
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
-                                            <InputText @bind-Value="shippingAddress.Phone" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="+968 XX XXX XXX" />
-                                            <ValidationMessage For="() => shippingAddress.Phone" class="text-red-600 text-sm mt-1" />
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["PhoneNumber"] *</label>
+                                            <input @bind="shippingAddress.Phone" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="+968 XX XXX XXX" required />
                                         </div>
                                         
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-2">Email *</label>
-                                            <InputText @bind-Value="shippingAddress.Email" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="your@email.com" />
-                                            <ValidationMessage For="() => shippingAddress.Email" class="text-red-600 text-sm mt-1" />
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["Email"] *</label>
+                                            <input @bind="shippingAddress.Email" type="email" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="your@email.com" required />
+                                        </div>
+                                        
+                                        <!-- Country Selection -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["Country"] *</label>
+                                            <select @bind="selectedCountryId" @bind:after="OnCountryChanged" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" required>
+                                                <option value="">@Localizer["SelectCountry"]</option>
+                                                @foreach (var country in availableCountries)
+                                                {
+                                                    <option value="@country.Id">@country.Name</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        
+                                        <!-- City Selection -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["City"] *</label>
+                                            <select @bind="selectedCityId" @bind:after="OnCityChanged" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" disabled="@(availableCities.Count == 0)" required>
+                                                <option value="">@Localizer["SelectCity"]</option>
+                                                @foreach (var city in availableCities)
+                                                {
+                                                    <option value="@city.Id">@city.Name</option>
+                                                }
+                                            </select>
                                         </div>
                                         
                                         <div class="md:col-span-2">
-                                            <label class="block text-sm font-medium text-gray-700 mb-2">Address Line 1 *</label>
-                                            <InputText @bind-Value="shippingAddress.Line1" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="Street address, building number" />
-                                            <ValidationMessage For="() => shippingAddress.Line1" class="text-red-600 text-sm mt-1" />
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["AddressLine1"] *</label>
+                                            <input @bind="shippingAddress.Line1" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="@Localizer["StreetAddress"]" required />
                                         </div>
                                         
                                         <div class="md:col-span-2">
-                                            <label class="block text-sm font-medium text-gray-700 mb-2">Address Line 2 (Optional)</label>
-                                            <InputText @bind-Value="shippingAddress.Line2" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="Apartment, suite, etc." />
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["AddressLine2"] (@Localizer["Optional"])</label>
+                                            <input @bind="shippingAddress.Line2" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="@Localizer["ApartmentSuite"]" />
                                         </div>
                                         
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-2">City *</label>
-                                            <InputSelect @bind-Value="shippingAddress.City" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors">
-                                                <option value="">Select City</option>
-                                                <option value="Muscat">Muscat</option>
-                                                <option value="Salalah">Salalah</option>
-                                                <option value="Nizwa">Nizwa</option>
-                                                <option value="Sur">Sur</option>
-                                                <option value="Sohar">Sohar</option>
-                                                <option value="Rustaq">Rustaq</option>
-                                                <option value="Buraimi">Buraimi</option>
-                                                <option value="Ibri">Ibri</option>
-                                            </InputSelect>
-                                            <ValidationMessage For="() => shippingAddress.City" class="text-red-600 text-sm mt-1" />
-                                        </div>
-                                        
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-2">Governorate *</label>
-                                            <InputSelect @bind-Value="shippingAddress.State" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors">
-                                                <option value="">Select Governorate</option>
-                                                <option value="Muscat">Muscat</option>
-                                                <option value="Dhofar">Dhofar</option>
-                                                <option value="Ad Dakhiliyah">Ad Dakhiliyah</option>
-                                                <option value="Ash Sharqiyah North">Ash Sharqiyah North</option>
-                                                <option value="Ash Sharqiyah South">Ash Sharqiyah South</option>
-                                                <option value="Al Batinah North">Al Batinah North</option>
-                                                <option value="Al Batinah South">Al Batinah South</option>
-                                                <option value="Al Buraimi">Al Buraimi</option>
-                                                <option value="Ad Dhahirah">Ad Dhahirah</option>
-                                                <option value="Al Wusta">Al Wusta</option>
-                                                <option value="Musandam">Musandam</option>
-                                            </InputSelect>
-                                            <ValidationMessage For="() => shippingAddress.State" class="text-red-600 text-sm mt-1" />
-                                        </div>
-                                        
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-2">Postal Code</label>
-                                            <InputText @bind-Value="shippingAddress.PostalCode" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="XXX" />
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["PostalCode"]</label>
+                                            <input @bind="shippingAddress.PostalCode" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="12345" />
                                         </div>
                                     </div>
                                     
-                                    <div class="mt-6 flex items-center justify-between">
-                                        <div class="flex items-center">
-                                            <input type="checkbox" @bind="saveAddress" class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded">
-                                            <label class="ml-2 block text-sm text-gray-900">Save this address for future orders</label>
-                                        </div>
-                                        
-                                        <button type="submit" class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-orange-600 to-orange-700 text-white font-semibold rounded-xl hover:from-orange-700 hover:to-orange-800 transition-all duration-300 transform hover:scale-105 shadow-lg">
-                                            <span>Continue to Payment</span>
-                                            <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                                            </svg>
+                                    <div class="mt-6 pt-6 border-t border-gray-200">
+                                        <button type="submit" class="w-full md:w-auto bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                            @Localizer["ContinueToShipping"]
                                         </button>
                                     </div>
-                                </EditForm>
+                                </form>
                             </div>
                         </div>
                     }
                     else if (currentStep == 2)
+                    {
+                        <!-- Shipping Options -->
+                        <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
+                            <div class="px-6 py-4 bg-gradient-to-r from-orange-600 to-orange-700 text-white">
+                                <h2 class="text-xl font-bold flex items-center">
+                                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                                    </svg>
+                                    @Localizer["SelectShippingMethod"]
+                                </h2>
+                            </div>
+                            
+                            <div class="p-6">
+                                @if (loadingShippingOptions)
+                                {
+                                    <div class="text-center py-8">
+                                        <div class="animate-pulse">
+                                            <div class="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+                                            <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+                                        </div>
+                                        <p class="text-gray-500 mt-4">@Localizer["LoadingShippingOptions"]...</p>
+                                    </div>
+                                }
+                                else if (availableShippingRates.Any())
+                                {
+                                    <div class="space-y-4">
+                                        @foreach (var rate in availableShippingRates)
+                                        {
+                                            <div class="border border-gray-200 rounded-xl p-4 hover:border-orange-300 transition-colors @(selectedShippingRateId == rate.Id ? "border-orange-500 bg-orange-50" : "")">
+                                                <label class="flex items-center cursor-pointer">
+                                                    <input type="radio" name="shippingRate" value="@rate.Id" checked="@(selectedShippingRateId == rate.Id)" @onchange="() => SelectShippingRate(rate)" class="w-4 h-4 text-orange-600 border-gray-300 focus:ring-orange-500" />
+                                                    <div class="ml-3 flex-1">
+                                                        <div class="flex items-center justify-between">
+                                                            <div>
+                                                                <h3 class="font-semibold text-gray-900">@rate.ShippingZone?.ShippingMethod?.Name</h3>
+                                                                <p class="text-sm text-gray-600">
+                                                                    @if (rate.EstimatedDays > 0)
+                                                                    {
+                                                                        <span>@rate.EstimatedDays @Localizer["Days"] - </span>
+                                                                    }
+                                                                    @rate.ShippingZone?.ShippingMethod?.Description
+                                                                </p>
+                                                                @if (rate.MinOrderAmount > 0)
+                                                                {
+                                                                    <p class="text-xs text-gray-500 mt-1">@Localizer["MinOrderAmount"]: @rate.MinOrderAmount.ToString("F3") @Localizer["OMR"]</p>
+                                                                }
+                                                            </div>
+                                                            <div class="text-right">
+                                                                @if (rate.Rate == 0)
+                                                                {
+                                                                    <span class="text-green-600 font-bold">@Localizer["Free"]</span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span class="text-gray-900 font-bold">@rate.Rate.ToString("F3") @Localizer["OMR"]</span>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        }
+                                    </div>
+                                    
+                                    <div class="mt-6 pt-6 border-t border-gray-200 flex justify-between">
+                                        <button type="button" @onclick="() => SetStep(1)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-8 rounded-xl transition-colors">
+                                            @Localizer["Back"]
+                                        </button>
+                                        <button type="button" @onclick="() => SetStep(3)" disabled="@(selectedShippingRateId == null)" class="bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                            @Localizer["ContinueToPayment"]
+                                        </button>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="text-center py-8">
+                                        <div class="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2 2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-2.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 009.586 13H7"/>
+                                            </svg>
+                                        </div>
+                                        <h3 class="text-lg font-medium text-gray-900 mb-2">@Localizer["NoShippingOptions"]</h3>
+                                        <p class="text-gray-600">@Localizer["NoShippingOptionsDesc"]</p>
+                                        <button type="button" @onclick="() => SetStep(1)" class="mt-4 bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-6 rounded-xl transition-colors">
+                                            @Localizer["ChangeAddress"]
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                    else if (currentStep == 3)
                     {
                         <!-- Payment Information -->
                         <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
@@ -248,69 +320,62 @@ else
                                     <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                                     </svg>
-                                    Payment Method
+                                    @Localizer["PaymentInformation"]
                                 </h2>
                             </div>
                             
                             <div class="p-6">
-                                <!-- Bank Muscat Option -->
-                                <div class="border border-gray-200 rounded-xl p-4 mb-4 @(paymentMethod == "bankmuscat" ? "ring-2 ring-orange-500 border-orange-500" : "")">
-                                    <label class="flex items-center cursor-pointer">
-                                        <input type="radio" name="payment" value="bankmuscat" @onchange="@(() => paymentMethod = "bankmuscat")" class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300">
-                                        <div class="ml-3 flex items-center justify-between w-full">
-                                            <div class="flex items-center">
-                                                <div class="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center mr-3">
-                                                    <span class="text-white text-xs font-bold">BM</span>
-                                                </div>
-                                                <div>
-                                                    <div class="text-sm font-medium text-gray-900">Bank Muscat</div>
-                                                    <div class="text-xs text-gray-500">Secure online banking payment</div>
-                                                </div>
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4">@Localizer["SelectPaymentMethod"]</h3>
+                                    <div class="space-y-3">
+                                        <!-- Cash on Delivery (for pickup) -->
+                                        @if (selectedShippingRate?.ShippingZone?.ShippingMethod?.Type == ShippingMethodType.Pickup)
+                                        {
+                                            <div class="border border-gray-200 rounded-xl p-4 border-orange-500 bg-orange-50">
+                                                <label class="flex items-center cursor-pointer">
+                                                    <input type="radio" name="paymentMethod" value="cash" checked="true" class="w-4 h-4 text-orange-600 border-gray-300 focus:ring-orange-500" />
+                                                    <div class="ml-3">
+                                                        <h4 class="font-semibold text-gray-900">@Localizer["CashOnPickup"]</h4>
+                                                        <p class="text-sm text-gray-600">@Localizer["PayWhenYouPickup"]</p>
+                                                    </div>
+                                                </label>
                                             </div>
-                                            <div class="flex items-center text-xs text-green-600 font-medium">
-                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                </svg>
-                                                Recommended
+                                        }
+                                        else
+                                        {
+                                            <!-- Bank Muscat Payment -->
+                                            <div class="border border-gray-200 rounded-xl p-4 border-orange-500 bg-orange-50">
+                                                <label class="flex items-center cursor-pointer">
+                                                    <input type="radio" name="paymentMethod" value="bankmuscat" checked="true" class="w-4 h-4 text-orange-600 border-gray-300 focus:ring-orange-500" />
+                                                    <div class="ml-3">
+                                                        <h4 class="font-semibold text-gray-900">@Localizer["BankMuscatPayment"]</h4>
+                                                        <p class="text-sm text-gray-600">@Localizer["SecureOnlinePayment"]</p>
+                                                    </div>
+                                                </label>
                                             </div>
-                                        </div>
-                                    </label>
+                                        }
+                                    </div>
                                 </div>
-
-                                <!-- Cash on Delivery Option -->
-                                <div class="border border-gray-200 rounded-xl p-4 mb-6 @(paymentMethod == "cod" ? "ring-2 ring-orange-500 border-orange-500" : "")">
-                                    <label class="flex items-center cursor-pointer">
-                                        <input type="radio" name="payment" value="cod" @onchange="@(() => paymentMethod = "cod")" class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300">
-                                        <div class="ml-3 flex items-center justify-between w-full">
-                                            <div class="flex items-center">
-                                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                                                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                                    </svg>
-                                                </div>
-                                                <div>
-                                                    <div class="text-sm font-medium text-gray-900">Cash on Delivery</div>
-                                                    <div class="text-xs text-gray-500">Pay when you receive your order</div>
-                                                </div>
-                                            </div>
-                                            <div class="text-xs text-gray-500">+ 0.500 OMR</div>
-                                        </div>
-                                    </label>
-                                </div>
-
-                                <div class="flex items-center justify-between">
-                                    <button @onclick="PreviousStep" class="inline-flex items-center px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-all duration-300">
-                                        <svg class="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"/>
-                                        </svg>
-                                        Back to Shipping
+                                
+                                <div class="mt-6 pt-6 border-t border-gray-200 flex justify-between">
+                                    <button type="button" @onclick="() => SetStep(2)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-8 rounded-xl transition-colors">
+                                        @Localizer["Back"]
                                     </button>
-                                    
-                                    <button @onclick="NextStep" disabled="@(string.IsNullOrEmpty(paymentMethod))" class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-orange-600 to-orange-700 text-white font-semibold rounded-xl hover:from-orange-700 hover:to-orange-800 transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
-                                        <span>Review Order</span>
-                                        <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                                        </svg>
+                                    <button type="button" @onclick="PlaceOrder" disabled="@isProcessingOrder" class="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                        @if (isProcessingOrder)
+                                        {
+                                            <span class="flex items-center">
+                                                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                                @Localizer["Processing"]...
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span>@Localizer["PlaceOrder"] (@GetOrderTotal().ToString("F3") @Localizer["OMR"])</span>
+                                        }
                                     </button>
                                 </div>
                             </div>
@@ -509,43 +574,87 @@ else
 @code {
     private int currentStep = 1;
     private ShippingAddress shippingAddress = new();
-    private string paymentMethod = "";
-    private bool saveAddress = false;
-    private bool isProcessing = false;
+    private bool loadingShippingOptions = false;
+    private bool isProcessingOrder = false;
+
+    // Shipping data
+    private List<Country> availableCountries = new();
+    private List<City> availableCities = new();
+    private List<ShippingRate> availableShippingRates = new();
+    private ShippingRate? selectedShippingRate;
+    private int? selectedShippingRateId;
+    private int? selectedCountryId;
+    private int? selectedCityId;
 
     protected override async Task OnInitializedAsync()
     {
-        await CartService.InitializeAsync();
+        CartService.OnChange += StateHasChanged;
         
-        // Redirect if cart is empty
-        if (!CartService.Items.Any())
+        if (CartService.Items.Any())
         {
-            return; // Let the UI handle the empty cart display
+            await LoadCountries();
         }
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private async Task LoadCountries()
     {
-        if (firstRender)
+        try
+        {
+            availableCountries = await ShippingService.GetCountriesAsync();
+            // Set Oman as default
+            var oman = availableCountries.FirstOrDefault(c => c.Code == "OM");
+            if (oman != null)
+            {
+                selectedCountryId = oman.Id;
+                shippingAddress.Country = oman.Code;
+                await OnCountryChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error loading countries: {ex.Message}");
+        }
+    }
+
+    private async Task OnCountryChanged()
+    {
+        if (selectedCountryId.HasValue)
         {
             try
             {
-                // Scroll to top of page when component is first rendered
-                await JSRuntime.InvokeVoidAsync("window.scrollTo", 0, 0);
+                availableCities = await ShippingService.GetCitiesByCountryAsync(selectedCountryId.Value);
+                var selectedCountry = availableCountries.FirstOrDefault(c => c.Id == selectedCountryId.Value);
+                shippingAddress.Country = selectedCountry?.Code ?? "";
+                shippingAddress.State = selectedCountry?.Name ?? "";
+                
+                // Reset city selection
+                selectedCityId = null;
+                shippingAddress.City = "";
+                StateHasChanged();
             }
-            catch (InvalidOperationException)
+            catch (Exception ex)
             {
-                // Ignore JS interop exceptions during prerendering
+                await JSRuntime.InvokeVoidAsync("alert", $"Error loading cities: {ex.Message}");
             }
+        }
+    }
+
+    private async Task OnCityChanged()
+    {
+        if (selectedCityId.HasValue)
+        {
+            var selectedCity = availableCities.FirstOrDefault(c => c.Id == selectedCityId.Value);
+            shippingAddress.City = selectedCity?.Name ?? "";
+            StateHasChanged();
         }
     }
 
     private async Task HandleShippingSubmit()
     {
-        if (IsValidShippingAddress())
+        if (selectedCityId.HasValue && IsValidShippingAddress())
         {
-            currentStep = 2;
-            await InvokeAsync(StateHasChanged);
+            await LoadShippingOptions();
+            SetStep(2);
         }
     }
 
@@ -554,106 +663,125 @@ else
         return !string.IsNullOrWhiteSpace(shippingAddress.FullName) &&
                !string.IsNullOrWhiteSpace(shippingAddress.Phone) &&
                !string.IsNullOrWhiteSpace(shippingAddress.Email) &&
-               !string.IsNullOrWhiteSpace(shippingAddress.Line1) &&
-               !string.IsNullOrWhiteSpace(shippingAddress.City) &&
-               !string.IsNullOrWhiteSpace(shippingAddress.State);
+               !string.IsNullOrWhiteSpace(shippingAddress.Line1);
     }
 
-    private async Task NextStep()
+    private async Task LoadShippingOptions()
     {
-        if (currentStep < 3)
-        {
-            currentStep++;
-            await InvokeAsync(StateHasChanged);
-        }
-    }
+        if (!selectedCityId.HasValue) return;
 
-    private async Task PreviousStep()
-    {
-        if (currentStep > 1)
-        {
-            currentStep--;
-            await InvokeAsync(StateHasChanged);
-        }
-    }
-
-    private async Task EditShipping()
-    {
-        currentStep = 1;
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task EditPayment()
-    {
-        currentStep = 2;
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task PlaceOrder()
-    {
-        if (isProcessing) return;
-        
-        isProcessing = true;
+        loadingShippingOptions = true;
         StateHasChanged();
-        
+
         try
         {
-            // Simulate order processing
-            await Task.Delay(2000);
+            availableShippingRates = await ShippingService.GetShippingRatesByCityAsync(selectedCityId.Value);
             
-            // Clear cart after successful order
-            await CartService.ClearCartAsync();
-            
-            // Show success message and redirect
-            await JSRuntime.InvokeVoidAsync("alert", "🎉 Order placed successfully! You will receive a confirmation email shortly.");
-            Navigation.NavigateTo("/");
+            // Filter out rates that don't meet minimum order amount
+            var subtotal = CartService.Subtotal;
+            availableShippingRates = availableShippingRates
+                .Where(r => r.MinOrderAmount <= subtotal)
+                .OrderBy(r => r.Rate)
+                .ToList();
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("alert", $"❌ Error placing order: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("alert", $"Error loading shipping options: {ex.Message}");
         }
         finally
         {
-            isProcessing = false;
+            loadingShippingOptions = false;
             StateHasChanged();
         }
     }
 
-    private decimal GetShippingCost()
+    private void SelectShippingRate(ShippingRate rate)
     {
-        return 2.500m; // Standard shipping cost
+        selectedShippingRate = rate;
+        selectedShippingRateId = rate.Id;
+        StateHasChanged();
     }
 
-    private decimal GetTax()
+    private void SetStep(int step)
     {
-        return CartService.TotalPrice * 0.05m; // 5% tax
+        currentStep = step;
+        StateHasChanged();
     }
 
-    private decimal GetCODFee()
+    private void EditShipping()
     {
-        return paymentMethod == "cod" ? 0.500m : 0m;
+        SetStep(1);
+    }
+
+    private void EditPayment()
+    {
+        SetStep(2);
+    }
+
+    private void PreviousStep()
+    {
+        if (currentStep > 1)
+        {
+            SetStep(currentStep - 1);
+        }
+    }
+    
+    private string paymentMethod = "bankmuscat";
+
+    private decimal GetOrderTotal()
+    {
+        var subtotal = CartService.Subtotal;
+        var shipping = selectedShippingRate?.Rate ?? 0;
+        return subtotal + shipping;
     }
 
     private decimal GetFinalTotal()
     {
-        return CartService.TotalPrice + GetShippingCost() + GetTax() + GetCODFee();
+        return GetOrderTotal();
+    }
+
+    private decimal GetShippingCost()
+    {
+        return selectedShippingRate?.Rate ?? 0;
+    }
+
+    private decimal GetTax()
+    {
+        return 0; // No tax for now
+    }
+    
+    private bool isProcessing => isProcessingOrder;
+
+    private async Task PlaceOrder()
+    {
+        if (selectedShippingRate == null) return;
+
+        isProcessingOrder = true;
+        StateHasChanged();
+
+        try
+        {
+            // TODO: Implement order creation logic
+            await Task.Delay(2000); // Simulate processing
+
+            // For now, just clear cart and redirect
+            CartService.ClearCart();
+            await JSRuntime.InvokeVoidAsync("alert", "🎉 Order placed successfully! You will receive a confirmation email shortly.");
+            Navigation.NavigateTo("/my-orders");
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error placing order: {ex.Message}");
+        }
+        finally
+        {
+            isProcessingOrder = false;
+            StateHasChanged();
+        }
     }
 
     public void Dispose()
     {
-        // Cleanup if needed
-    }
-
-    public class ShippingAddress
-    {
-        public string FullName { get; set; } = "";
-        public string Phone { get; set; } = "";
-        public string Email { get; set; } = "";
-        public string Line1 { get; set; } = "";
-        public string Line2 { get; set; } = "";
-        public string City { get; set; } = "";
-        public string State { get; set; } = "";
-        public string PostalCode { get; set; } = "";
-        public string Country { get; set; } = "OM";
+        CartService.OnChange -= StateHasChanged;
     }
 }

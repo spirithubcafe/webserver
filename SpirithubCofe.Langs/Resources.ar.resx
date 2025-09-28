@@ -271,14 +271,131 @@
   <data name="Checkout" xml:space="preserve">
     <value>الدفع</value>
   </data>
+  <data name="SecureCheckout" xml:space="preserve">
+    <value>الدفع الآمن</value>
+  </data>
+  <data name="CompleteOrderSecurely" xml:space="preserve">
+    <value>أكمل طلبك بأمان</value>
+  </data>
+  <data name="SSLSecured" xml:space="preserve">
+    <value>محمي بـ SSL</value>
+  </data>
   <data name="ShippingAddress" xml:space="preserve">
     <value>عنوان التوصيل</value>
+  </data>
+  <data name="ShippingInformation" xml:space="preserve">
+    <value>معلومات الشحن</value>
+  </data>
+  <data name="FullName" xml:space="preserve">
+    <value>الاسم الكامل</value>
+  </data>
+  <data name="EnterFullName" xml:space="preserve">
+    <value>أدخل اسمك الكامل</value>
+  </data>
+  <data name="PhoneNumber" xml:space="preserve">
+    <value>رقم الهاتف</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>البريد الإلكتروني</value>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>البلد</value>
+  </data>
+  <data name="SelectCountry" xml:space="preserve">
+    <value>اختر البلد</value>
+  </data>
+  <data name="City" xml:space="preserve">
+    <value>المدينة</value>
+  </data>
+  <data name="SelectCity" xml:space="preserve">
+    <value>اختر المدينة</value>
+  </data>
+  <data name="AddressLine1" xml:space="preserve">
+    <value>العنوان الأول</value>
+  </data>
+  <data name="StreetAddress" xml:space="preserve">
+    <value>عنوان الشارع، رقم المبنى</value>
+  </data>
+  <data name="AddressLine2" xml:space="preserve">
+    <value>العنوان الثاني</value>
+  </data>
+  <data name="Optional" xml:space="preserve">
+    <value>اختياري</value>
+  </data>
+  <data name="ApartmentSuite" xml:space="preserve">
+    <value>شقة، جناح، إلخ</value>
+  </data>
+  <data name="PostalCode" xml:space="preserve">
+    <value>الرمز البريدي</value>
+  </data>
+  <data name="ContinueToShipping" xml:space="preserve">
+    <value>المتابعة إلى الشحن</value>
+  </data>
+  <data name="SelectShippingMethod" xml:space="preserve">
+    <value>اختر طريقة الشحن</value>
+  </data>
+  <data name="LoadingShippingOptions" xml:space="preserve">
+    <value>جاري تحميل خيارات الشحن</value>
+  </data>
+  <data name="Free" xml:space="preserve">
+    <value>مجاني</value>
+  </data>
+  <data name="ContinueToPayment" xml:space="preserve">
+    <value>المتابعة إلى الدفع</value>
+  </data>
+  <data name="NoShippingOptions" xml:space="preserve">
+    <value>لا توجد خيارات شحن متاحة</value>
+  </data>
+  <data name="NoShippingOptionsDesc" xml:space="preserve">
+    <value>لم نتمكن من العثور على خيارات شحن لموقعك</value>
+  </data>
+  <data name="ChangeAddress" xml:space="preserve">
+    <value>تغيير العنوان</value>
   </data>
   <data name="PaymentMethod" xml:space="preserve">
     <value>طريقة الدفع</value>
   </data>
+  <data name="PaymentInformation" xml:space="preserve">
+    <value>معلومات الدفع</value>
+  </data>
+  <data name="SelectPaymentMethod" xml:space="preserve">
+    <value>اختر طريقة الدفع</value>
+  </data>
+  <data name="CashOnPickup" xml:space="preserve">
+    <value>دفع عند الاستلام</value>
+  </data>
+  <data name="PayWhenYouPickup" xml:space="preserve">
+    <value>ادفع عند استلام طلبك</value>
+  </data>
+  <data name="BankMuscatPayment" xml:space="preserve">
+    <value>دفع بنك مسقط</value>
+  </data>
+  <data name="SecureOnlinePayment" xml:space="preserve">
+    <value>دفع آمن عبر الإنترنت</value>
+  </data>
+  <data name="Processing" xml:space="preserve">
+    <value>جاري المعالجة</value>
+  </data>
   <data name="OrderSummary" xml:space="preserve">
     <value>ملخص الطلب</value>
+  </data>
+  <data name="Shipping" xml:space="preserve">
+    <value>الشحن</value>
+  </data>
+  <data name="ShippingMethod" xml:space="preserve">
+    <value>طريقة الشحن</value>
+  </data>
+  <data name="Delivery" xml:space="preserve">
+    <value>التوصيل</value>
+  </data>
+  <data name="CartEmpty" xml:space="preserve">
+    <value>سلة التسوق فارغة</value>
+  </data>
+  <data name="AddProductsToCart" xml:space="preserve">
+    <value>أضف بعض المنتجات اللذيذة إلى سلتك للمتابعة</value>
+  </data>
+  <data name="BrowseProducts" xml:space="preserve">
+    <value>تصفح المنتجات</value>
   </data>
   <data name="PlaceOrder" xml:space="preserve">
     <value>تأكيد الطلب</value>
@@ -745,9 +862,6 @@
   <data name="ShowLocked" xml:space="preserve">
     <value>عرض المحظورين فقط</value>
   </data>
-  <data name="Email" xml:space="preserve">
-    <value>البريد الإلكتروني</value>
-  </data>
   <data name="Status" xml:space="preserve">
     <value>الحالة</value>
   </data>
@@ -884,9 +998,6 @@
   <data name="ConfirmPassword" xml:space="preserve">
     <value>تأكيد كلمة المرور</value>
   </data>
-  <data name="PhoneNumber" xml:space="preserve">
-    <value>رقم الهاتف</value>
-  </data>
   <data name="EnterPhoneNumber" xml:space="preserve">
     <value>أدخل رقم الهاتف</value>
   </data>
@@ -967,9 +1078,6 @@
   </data>
   <data name="LogoTextArabic" xml:space="preserve">
     <value>نص الشعار بالعربية</value>
-  </data>
-  <data name="Optional" xml:space="preserve">
-    <value>اختياري</value>
   </data>
   <data name="Preview" xml:space="preserve">
     <value>معاينة</value>
@@ -1133,5 +1241,179 @@
   </data>
   <data name="Product" xml:space="preserve">
     <value>منتج</value>
+  </data>
+
+  <!-- Shipping Management -->
+  <data name="ShippingManagement" xml:space="preserve">
+    <value>إدارة الشحن</value>
+  </data>
+  <data name="ShippingMethods" xml:space="preserve">
+    <value>طرق الشحن</value>
+  </data>
+  <data name="ShippingZones" xml:space="preserve">
+    <value>مناطق الشحن</value>
+  </data>
+  <data name="ShippingRates" xml:space="preserve">
+    <value>أسعار الشحن</value>
+  </data>
+  <data name="LoadingShippingData" xml:space="preserve">
+    <value>تحميل بيانات الشحن</value>
+  </data>
+  <data name="CarrierCode" xml:space="preserve">
+    <value>رمز الناقل</value>
+  </data>
+  <data name="DeliveryDays" xml:space="preserve">
+    <value>أيام التسليم</value>
+  </data>
+  <data name="Days" xml:space="preserve">
+    <value>أيام</value>
+  </data>
+  <data name="NotSpecified" xml:space="preserve">
+    <value>غير محدد</value>
+  </data>
+  <data name="Pickup" xml:space="preserve">
+    <value>استلام</value>
+  </data>
+  <data name="Courier" xml:space="preserve">
+    <value>كوريير</value>
+  </data>
+  <data name="Standard" xml:space="preserve">
+    <value>عادي</value>
+  </data>
+  <data name="Zone" xml:space="preserve">
+    <value>المنطقة</value>
+  </data>
+  <data name="AllCountries" xml:space="preserve">
+    <value>جميع البلدان</value>
+  </data>
+  <data name="AllMethods" xml:space="preserve">
+    <value>جميع الطرق</value>
+  </data>
+  <data name="AllZones" xml:space="preserve">
+    <value>جميع المناطق</value>
+  </data>
+  <data name="ViewRates" xml:space="preserve">
+    <value>عرض الأسعار</value>
+  </data>
+  <data name="Rate" xml:space="preserve">
+    <value>السعر</value>
+  </data>
+  <data name="MinOrderAmount" xml:space="preserve">
+    <value>الحد الأدنى للطلب</value>
+  </data>
+  <data name="EstimatedDays" xml:space="preserve">
+    <value>الأيام المتوقعة</value>
+  </data>
+  <data name="OMR" xml:space="preserve">
+    <value>ر.ع</value>
+  </data>
+  <data name="NoMinimum" xml:space="preserve">
+    <value>لا يوجد حد أدنى</value>
+  </data>
+  <data name="BulkUpdate" xml:space="preserve">
+    <value>تحديث جماعي</value>
+  </data>
+  <data name="ShowingFirst50" xml:space="preserve">
+    <value>عرض أول 50 نتيجة</value>
+  </data>
+  <data name="ShowingFirst100" xml:space="preserve">
+    <value>عرض أول 100 نتيجة</value>
+  </data>
+  <data name="SearchCities" xml:space="preserve">
+    <value>البحث في المدن...</value>
+  </data>
+  <data name="NoolCode" xml:space="preserve">
+    <value>رمز نول</value>
+  </data>
+  <data name="AramexCode" xml:space="preserve">
+    <value>رمز أرامكس</value>
+  </data>
+  
+  <!-- Product Shipping Section -->
+  <data name="EstimateShipping" xml:space="preserve">
+    <value>تقدير الشحن</value>
+  </data>
+  <data name="SelectCountryForShipping" xml:space="preserve">
+    <value>اختر بلدك لرؤية خيارات الشحن</value>
+  </data>
+  <data name="CalculateShipping" xml:space="preserve">
+    <value>حساب الشحن</value>
+  </data>
+  <data name="ShippingCalculation" xml:space="preserve">
+    <value>حساب الشحن</value>
+  </data>
+  <data name="EstimatedDeliveryTime" xml:space="preserve">
+    <value>الوقت المقدر للتسليم</value>
+  </data>
+  <data name="WorkingDays" xml:space="preserve">
+    <value>أيام عمل</value>
+  </data>
+  <data name="ShippingNotAvailable" xml:space="preserve">
+    <value>الشحن غير متاح إلى هذا الموقع</value>
+  </data>
+  <data name="Note" xml:space="preserve">
+    <value>ملاحظة</value>
+  </data>
+  <data name="ShippingCalculatedAtCheckout" xml:space="preserve">
+    <value>سيتم حساب تكاليف الشحن النهائية أثناء إتمام الطلب بناءً على موقعك</value>
+  </data>
+  <data name="ViewShippingRates" xml:space="preserve">
+    <value>عرض أسعار الشحن</value>
+  </data>
+  <data name="PickupDesc" xml:space="preserve">
+    <value>استلم طلبك من موقع متجرنا</value>
+  </data>
+  
+  <!-- Order Management -->
+  <data name="OrderManagement" xml:space="preserve">
+    <value>إدارة الطلبات</value>
+  </data>
+  <data name="ManageCustomerOrders" xml:space="preserve">
+    <value>إدارة طلبات العملاء والشحن</value>
+  </data>
+  <data name="TotalOrders" xml:space="preserve">
+    <value>إجمالي الطلبات</value>
+  </data>
+  <data name="PendingOrders" xml:space="preserve">
+    <value>الطلبات المعلقة</value>
+  </data>
+  <data name="CompletedOrders" xml:space="preserve">
+    <value>الطلبات المكتملة</value>
+  </data>
+  <data name="TotalRevenue" xml:space="preserve">
+    <value>إجمالي الإيرادات</value>
+  </data>
+  <data name="OrderId" xml:space="preserve">
+    <value>رقم الطلب</value>
+  </data>
+  <data name="CustomerInfo" xml:space="preserve">
+    <value>معلومات العميل</value>
+  </data>
+  <data name="TrackingNumber" xml:space="preserve">
+    <value>رقم التتبع</value>
+  </data>
+  <data name="ShippingProvider" xml:space="preserve">
+    <value>مقدم الشحن</value>
+  </data>
+  <data name="OrderItems" xml:space="preserve">
+    <value>عناصر الطلب</value>
+  </data>
+  <data name="OrderTotal" xml:space="preserve">
+    <value>إجمالي الطلب</value>
+  </data>
+  <data name="UpdateTracking" xml:space="preserve">
+    <value>تحديث التتبع</value>
+  </data>
+  <data name="EnterTrackingNumber" xml:space="preserve">
+    <value>أدخل رقم التتبع</value>
+  </data>
+  <data name="LoadingOrders" xml:space="preserve">
+    <value>تحميل الطلبات...</value>
+  </data>
+  <data name="NoOrdersFound" xml:space="preserve">
+    <value>لم يتم العثور على طلبات</value>
+  </data>
+  <data name="SearchOrders" xml:space="preserve">
+    <value>البحث في الطلبات...</value>
   </data>
 </root>

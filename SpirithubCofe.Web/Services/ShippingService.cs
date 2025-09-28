@@ -383,6 +383,18 @@ public class ShippingService(IApplicationDbContext context) : IShippingService
 
     #region Calculate Shipping
 
+    public async Task<List<ShippingRate>> GetShippingRatesByCityAsync(int cityId)
+    {
+        return await _context.ShippingRates
+            .Where(sr => sr.CityId == cityId && sr.IsActive)
+            .Include(sr => sr.ShippingZone)
+            .ThenInclude(sz => sz!.ShippingMethod)
+            .Include(sr => sr.City)
+            .ThenInclude(c => c!.Country)
+            .OrderBy(sr => sr.Rate)
+            .ToListAsync();
+    }
+
     public async Task<List<ShippingOption>> CalculateShippingAsync(int cityId, decimal orderTotal, decimal orderWeight = 0)
     {
         var city = await GetCityByIdAsync(cityId);

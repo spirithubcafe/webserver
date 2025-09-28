@@ -53,6 +53,7 @@ public interface IShippingService
 
     // Calculate shipping
     Task<List<ShippingOption>> CalculateShippingAsync(int cityId, decimal orderTotal, decimal orderWeight = 0);
+    Task<List<ShippingRate>> GetShippingRatesByCityAsync(int cityId);
     Task<bool> SeedDefaultDataAsync();
 }
 

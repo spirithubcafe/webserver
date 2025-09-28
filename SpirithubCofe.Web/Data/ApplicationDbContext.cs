@@ -26,6 +26,15 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<ShippingZone> ShippingZones { get; set; }
     public DbSet<ShippingRate> ShippingRates { get; set; }
     
+    // Order entities
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderItem> OrderItems { get; set; }
+    public DbSet<ShippingAddress> ShippingAddresses { get; set; }
+    
+    // Cart entities
+    public DbSet<Cart> Carts { get; set; }
+    public DbSet<CartItem> CartItems { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -624,6 +633,90 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .WithMany(c => c.ShippingRates)
                 .HasForeignKey(e => e.CityId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Configure Order entity
+        builder.Entity<Order>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Subtotal).HasColumnType("decimal(18,3)");
+            entity.Property(e => e.ShippingCost).HasColumnType("decimal(18,3)");
+            entity.Property(e => e.Total).HasColumnType("decimal(18,3)");
+            entity.Property(e => e.UserId).IsRequired();
+            entity.Property(e => e.Currency).HasMaxLength(3).IsRequired();
+            
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => e.Status);
+            entity.HasIndex(e => e.CreatedAt);
+            
+            entity.HasOne(e => e.ShippingAddress)
+                .WithMany(sa => sa.Orders)
+                .HasForeignKey(e => e.ShippingAddressId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // Configure OrderItem entity
+        builder.Entity<OrderItem>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UnitPrice).HasColumnType("decimal(18,3)");
+            entity.Property(e => e.ProductName).IsRequired().HasMaxLength(200);
+            
+            entity.HasOne(e => e.Order)
+                .WithMany(o => o.Items)
+                .HasForeignKey(e => e.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
+            entity.HasOne(e => e.Product)
+                .WithMany()
+                .HasForeignKey(e => e.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // Configure ShippingAddress entity
+        builder.Entity<ShippingAddress>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.FullName).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Phone).IsRequired().HasMaxLength(20);
+            entity.Property(e => e.Email).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Line1).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Line2).HasMaxLength(200);
+            entity.Property(e => e.City).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.State).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Country).IsRequired().HasMaxLength(10);
+            entity.Property(e => e.PostalCode).HasMaxLength(20);
+        });
+
+        // Configure Cart entity
+        builder.Entity<Cart>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UserId).IsRequired();
+            
+            entity.HasIndex(e => e.UserId).IsUnique();
+        });
+
+        // Configure CartItem entity
+        builder.Entity<CartItem>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UnitPrice).HasColumnType("decimal(18,3)");
+            
+            entity.HasOne(e => e.Cart)
+                .WithMany(c => c.Items)
+                .HasForeignKey(e => e.CartId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
+            entity.HasOne(e => e.Product)
+                .WithMany()
+                .HasForeignKey(e => e.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
+            entity.HasOne(e => e.ProductVariant)
+                .WithMany()
+                .HasForeignKey(e => e.ProductVariantId)
+                .OnDelete(DeleteBehavior.SetNull);
         });
     }
 }

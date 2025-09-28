@@ -1,5 +1,437 @@
 @page "/admin/orders"
 @layout AdminLayout
 @attribute [Authorize(Roles = "Admin")]
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.Extensions.Localization 
+@using SpirithubCofe.Application.DTOs
+@using SpirithubCofe.Domain.Entities
+@using SpirithubCofe.Web.Services
+@using SpirithubCofe.Langs
+@using Microsoft.AspNetCore.Authorization
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
-<PageTitle>Orders Management - SpirithubCofe</PageTitle>
+@inject OrderService OrderService
+@inject IStringLocalizer<Resources> Loc
+
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">@Loc["OrderManagement"]</h1>
+        <p class="text-gray-600">@Loc["ManageCustomerOrders"]</p>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="flex justify-center items-center py-12">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600"></div>
+            <span class="ml-3 text-gray-600">@Loc["LoadingOrders"]</span>
+        </div>
+    }
+    else
+    {
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">@Loc["TotalOrders"]</p>
+                        <p class="text-2xl font-bold text-gray-900">@orderStats.TotalOrders</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">@Loc["PendingOrders"]</p>
+                        <p class="text-2xl font-bold text-gray-900">@orderStats.PendingOrders</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">@Loc["CompletedOrders"]</p>
+                        <p class="text-2xl font-bold text-gray-900">@orderStats.CompletedOrders</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">@Loc["TotalRevenue"]</p>
+                        <p class="text-2xl font-bold text-gray-900">@orderStats.TotalRevenue.ToString("F3") @Loc["OMR"]</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters and Search -->
+        <div class="bg-white rounded-lg shadow mb-6">
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label for="search" class="block text-sm font-medium text-gray-700 mb-2">@Loc["Search"]</label>
+                        <input type="text" 
+                               @bind="searchTerm" 
+                               @oninput="OnSearchInput"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
+                               placeholder="@Loc["SearchOrders"]" />
+                    </div>
+                    <div>
+                        <label for="status" class="block text-sm font-medium text-gray-700 mb-2">@Loc["Status"]</label>
+                        <select @bind="statusFilter" @bind:after="OnFilterChange" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                            <option value="">@Loc["AllStatuses"]</option>
+                            <option value="Pending">@Loc["Pending"]</option>
+                            <option value="Processing">@Loc["Processing"]</option>
+                            <option value="Shipped">@Loc["Shipped"]</option>
+                            <option value="Delivered">@Loc["Delivered"]</option>
+                            <option value="Cancelled">@Loc["Cancelled"]</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="shipping" class="block text-sm font-medium text-gray-700 mb-2">@Loc["ShippingProvider"]</label>
+                        <select @bind="shippingFilter" @bind:after="OnFilterChange" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                            <option value="">@Loc["AllMethods"]</option>
+                            <option value="Pickup">@Loc["Pickup"]</option>
+                            <option value="Standard">@Loc["Standard"]</option>
+                            <option value="Courier">@Loc["Courier"]</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            @if (filteredOrders?.Any() == true)
+            {
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">@Loc["OrderId"]</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">@Loc["CustomerInfo"]</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">@Loc["OrderDate"]</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">@Loc["OrderTotal"]</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">@Loc["Status"]</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">@Loc["ShippingMethod"]</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">@Loc["Actions"]</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach (var order in filteredOrders.Take(50))
+                            {
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        #@order.Id.ToString("D6")
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div>
+                                            <div class="text-sm font-medium text-gray-900">@order.ShippingAddress?.FullName</div>
+                                            <div class="text-sm text-gray-500">@order.ShippingAddress?.Email</div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        @order.CreatedAt.ToString("MMM dd, yyyy")
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        @order.Total.ToString("F3") @Loc["OMR"]
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
+                                            @GetStatusClass(order.Status.ToString())">
+                                            @Loc[order.Status.ToString()]
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        @if (string.IsNullOrEmpty(order.ShippingProvider))
+                                        {
+                                            <span class="text-gray-400">@Loc["NotSpecified"]</span>
+                                        }
+                                        else
+                                        {
+                                            @Loc[order.ShippingProvider]
+                                        }
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                        <button @onclick="() => ViewOrder(order.Id)" 
+                                                class="text-amber-600 hover:text-amber-700">
+                                            @Loc["ViewOrder"]
+                                        </button>
+                                        <button @onclick="() => ShowUpdateStatusModal(order)" 
+                                                class="text-blue-600 hover:text-blue-700">
+                                            @Loc["UpdateStatus"]
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                
+                @if (filteredOrders.Count() > 50)
+                {
+                    <div class="px-6 py-4 bg-gray-50 text-sm text-gray-600">
+                        @Loc["ShowingFirst50"] - @Loc["Total"]: @filteredOrders.Count()
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-center py-12">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">@Loc["NoOrdersFound"]</h3>
+                </div>
+            }
+        </div>
+    }
+}
+
+<!-- Update Status Modal -->
+@if (showStatusModal && selectedOrder != null)
+{
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">
+                @Loc["UpdateStatus"] - @Loc["Order"] #@selectedOrder.Id.ToString("D6")
+            </h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">@Loc["Status"]</label>
+                    <select @bind="newStatus" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <option value="Pending">@Loc["Pending"]</option>
+                        <option value="Processing">@Loc["Processing"]</option>
+                        <option value="Shipped">@Loc["Shipped"]</option>
+                        <option value="Delivered">@Loc["Delivered"]</option>
+                        <option value="Cancelled">@Loc["Cancelled"]</option>
+                    </select>
+                </div>
+                
+                @if (newStatus == "Shipped")
+                {
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">@Loc["TrackingNumber"]</label>
+                        <input type="text" 
+                               @bind="newTrackingNumber" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                               placeholder="@Loc["EnterTrackingNumber"]" />
+                    </div>
+                }
+            </div>
+            
+            <div class="flex space-x-3 mt-6">
+                <button @onclick="UpdateOrderStatus" 
+                        disabled="@isUpdatingStatus"
+                        class="flex-1 bg-amber-600 text-white px-4 py-2 rounded-md hover:bg-amber-700 disabled:opacity-50 transition-colors">
+                    @if (isUpdatingStatus)
+                    {
+                        <span>@Loc["Updating"]...</span>
+                    }
+                    else
+                    {
+                        <span>@Loc["Update"]</span>
+                    }
+                </button>
+                <button @onclick="CloseStatusModal" 
+                        class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors">
+                    @Loc["Cancel"]
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+
+</div>
+
+@code {
+    private List<Order> orders = new();
+    private IEnumerable<Order> filteredOrders = new List<Order>();
+    private OrderStats orderStats = new();
+    private bool isLoading = true;
+    private string searchTerm = string.Empty;
+    private string statusFilter = string.Empty;
+    private string shippingFilter = string.Empty;
+    
+    // Modal state
+    private bool showStatusModal = false;
+    private Order? selectedOrder = null;
+    private string newStatus = string.Empty;
+    private string newTrackingNumber = string.Empty;
+    private bool isUpdatingStatus = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadOrders();
+        await LoadOrderStats();
+    }
+
+    private async Task LoadOrders()
+    {
+        try
+        {
+            isLoading = true;
+            orders = await OrderService.GetAllOrdersAsync();
+            ApplyFilters();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading orders: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadOrderStats()
+    {
+        try
+        {
+            orderStats = await OrderService.GetOrderStatsAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading order stats: {ex.Message}");
+        }
+    }
+
+    private void OnSearchInput(ChangeEventArgs e)
+    {
+        searchTerm = e.Value?.ToString() ?? string.Empty;
+        ApplyFilters();
+    }
+
+    private void OnFilterChange()
+    {
+        ApplyFilters();
+    }
+
+    private void ApplyFilters()
+    {
+        filteredOrders = orders.AsEnumerable();
+
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            filteredOrders = filteredOrders.Where(o => 
+                o.Id.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                (o.ShippingAddress?.FullName?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) == true) ||
+                (o.ShippingAddress?.Email?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) == true));
+        }
+
+        if (!string.IsNullOrEmpty(statusFilter))
+        {
+            filteredOrders = filteredOrders.Where(o => o.Status.ToString() == statusFilter);
+        }
+
+        if (!string.IsNullOrEmpty(shippingFilter))
+        {
+            filteredOrders = filteredOrders.Where(o => o.ShippingProvider == shippingFilter);
+        }
+
+        filteredOrders = filteredOrders.OrderByDescending(o => o.CreatedAt);
+        StateHasChanged();
+    }
+
+    private string GetStatusClass(string status) => status switch
+    {
+        "Pending" => "bg-yellow-100 text-yellow-800",
+        "Processing" => "bg-blue-100 text-blue-800",
+        "Shipped" => "bg-purple-100 text-purple-800",
+        "Delivered" => "bg-green-100 text-green-800",
+        "Cancelled" => "bg-red-100 text-red-800",
+        _ => "bg-gray-100 text-gray-800"
+    };
+
+    private void ViewOrder(int orderId)
+    {
+        // Navigate to order details page (to be implemented)
+        // NavigationManager.NavigateTo($"/admin/orders/{orderId}");
+    }
+
+    private void ShowUpdateStatusModal(Order order)
+    {
+        selectedOrder = order;
+        newStatus = order.Status.ToString();
+        newTrackingNumber = order.TrackingNumber ?? string.Empty;
+        showStatusModal = true;
+        StateHasChanged();
+    }
+
+    private void CloseStatusModal()
+    {
+        showStatusModal = false;
+        selectedOrder = null;
+        newStatus = string.Empty;
+        newTrackingNumber = string.Empty;
+        StateHasChanged();
+    }
+
+    private async Task UpdateOrderStatus()
+    {
+        if (selectedOrder == null) return;
+
+        try
+        {
+            isUpdatingStatus = true;
+            StateHasChanged();
+
+            await OrderService.UpdateOrderStatusAsync(selectedOrder.Id, newStatus, newTrackingNumber);
+            
+            // Update local order
+            selectedOrder.Status = Enum.Parse<OrderStatus>(newStatus);
+            if (!string.IsNullOrEmpty(newTrackingNumber))
+            {
+                selectedOrder.TrackingNumber = newTrackingNumber;
+            }
+
+            CloseStatusModal();
+            ApplyFilters(); // Refresh the filtered list
+            await LoadOrderStats(); // Refresh stats
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating order status: {ex.Message}");
+        }
+        finally
+        {
+            isUpdatingStatus = false;
+            StateHasChanged();
+        }
+    }
+}

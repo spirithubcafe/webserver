@@ -8,6 +8,7 @@
 @using SpirithubCofe.Domain.Entities
 @using SpirithubCofe.Web.Services
 @using SpirithubCofe.Web.Components.Shared
+@using SpirithubCofe.Langs
 @using System.ComponentModel.DataAnnotations
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
@@ -576,23 +577,39 @@ else
                         <div>
                             <h4 class="text-lg font-medium mb-4">@Loc["DeliveryOptions"]</h4>
                             <div class="space-y-4">
-                                <div class="flex items-start">
+                                <!-- Pickup Option -->
+                                <div class="flex items-start p-4 border rounded-lg bg-green-50 border-green-200">
                                     <svg class="w-6 h-6 text-green-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                                     </svg>
                                     <div>
-                                        <h5 class="font-medium">@Loc["StandardDelivery"]</h5>
-                                        <p class="text-sm text-gray-600">@Loc["StandardDeliveryDesc"]</p>
+                                        <h5 class="font-medium text-green-800">@Loc["Pickup"]</h5>
+                                        <p class="text-sm text-green-700">@Loc["PickupDesc"]</p>
+                                        <div class="text-xs text-green-600 mt-1 font-medium">@Loc["Free"]</div>
                                     </div>
                                 </div>
                                 
-                                <div class="flex items-start">
+                                <!-- Standard Delivery -->
+                                <div class="flex items-start p-4 border rounded-lg bg-blue-50 border-blue-200">
                                     <svg class="w-6 h-6 text-blue-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2v0a2 2 0 01-2-2v-2a2 2 0 00-2-2H8z"/>
+                                    </svg>
+                                    <div>
+                                        <h5 class="font-medium text-blue-800">@Loc["Standard"]</h5>
+                                        <p class="text-sm text-blue-700">@Loc["StandardDeliveryDesc"]</p>
+                                        <div class="text-xs text-blue-600 mt-1">3-5 @Loc["WorkingDays"]</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Express Delivery -->
+                                <div class="flex items-start p-4 border rounded-lg bg-amber-50 border-amber-200">
+                                    <svg class="w-6 h-6 text-amber-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                                     </svg>
                                     <div>
-                                        <h5 class="font-medium">@Loc["ExpressDelivery"]</h5>
-                                        <p class="text-sm text-gray-600">@Loc["ExpressDeliveryDesc"]</p>
+                                        <h5 class="font-medium text-amber-800">@Loc["Courier"]</h5>
+                                        <p class="text-sm text-amber-700">@Loc["ExpressDeliveryDesc"]</p>
+                                        <div class="text-xs text-amber-600 mt-1">1-2 @Loc["WorkingDays"]</div>
                                     </div>
                                 </div>
                             </div>
@@ -601,12 +618,44 @@ else
                         <div>
                             <h4 class="text-lg font-medium mb-4">@Loc["ShippingPolicy"]</h4>
                             <div class="prose prose-sm max-w-none text-gray-600">
-                                <ul>
-                                    <li>@Loc["FreeShippingOver50"]</li>
-                                    <li>@Loc["ProcessingTime"]</li>
-                                    <li>@Loc["TrackingProvided"]</li>
-                                    <li>@Loc["InsuredShipping"]</li>
+                                <ul class="space-y-2">
+                                    <li class="flex items-start">
+                                        <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                        </svg>
+                                        @Loc["FreeShippingOver50"]
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                        </svg>
+                                        @Loc["ProcessingTime"]
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                        </svg>
+                                        @Loc["TrackingProvided"]
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                        </svg>
+                                        @Loc["InsuredShipping"]
+                                    </li>
                                 </ul>
+                            </div>
+                            
+                            <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                                <p class="text-sm text-gray-600 mb-2">
+                                    <strong>@Loc["Note"]:</strong> @Loc["ShippingCalculatedAtCheckout"]
+                                </p>
+                                <a href="/checkout" class="inline-flex items-center text-sm text-amber-600 hover:text-amber-700 font-medium">
+                                    @Loc["ViewShippingRates"]
+                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </a>
                             </div>
                         </div>
                     </div>

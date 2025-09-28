@@ -5,8 +5,10 @@ namespace SpirithubCofe.Domain.Entities;
 public enum ShippingMethodType
 {
     Pickup = 1,
-    NoolOman = 2,
-    Aramex = 3
+    Standard = 2,
+    Courier = 3,
+    NoolOman = 4,
+    Aramex = 5
 }
 
 public class ShippingMethod

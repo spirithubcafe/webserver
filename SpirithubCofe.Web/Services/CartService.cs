@@ -1,8 +1,9 @@
 using System.Text.Json;
+using SpirithubCofe.Domain.Entities;
 
 namespace SpirithubCofe.Web.Services;
 
-public class CartItem
+public class CartItemDto
 {
     public int ProductId { get; set; }
     public int? VariantId { get; set; }  
@@ -15,7 +16,7 @@ public class CartItem
 
 public class CartService
 {
-    private List<CartItem> _cartItems = new();
+    private List<CartItemDto> _cartItems = new();
     private readonly string _cartFilePath;
     
     public event Action? OnCartChanged;
@@ -31,11 +32,18 @@ public class CartService
         await LoadCartFromFile();
     }
     
-    public IReadOnlyList<CartItem> Items => _cartItems.AsReadOnly();
+    public IReadOnlyList<CartItemDto> Items => _cartItems.AsReadOnly();
     
     public int ItemCount => _cartItems.Sum(item => item.Quantity);
     
     public decimal TotalPrice => _cartItems.Sum(item => item.Price * item.Quantity);
+    public decimal Subtotal => TotalPrice;
+    
+    public event Action? OnChange
+    {
+        add => OnCartChanged += value;
+        remove => OnCartChanged -= value;
+    }
     
     public async Task AddToCartAsync(int productId, string name, decimal price, string imageUrl = "", int quantity = 1, int? variantId = null, string variantInfo = "")
     {
@@ -48,7 +56,7 @@ public class CartService
         }
         else
         {
-            _cartItems.Add(new CartItem
+            _cartItems.Add(new CartItemDto
             {
                 ProductId = productId,
                 VariantId = variantId,
@@ -94,6 +102,13 @@ public class CartService
         }
     }
     
+    public async Task ClearCart()
+    {
+        _cartItems.Clear();
+        await SaveCartToFile();
+        OnCartChanged?.Invoke();
+    }
+    
     public async Task ClearCartAsync()
     {
         _cartItems.Clear();
@@ -120,14 +135,14 @@ public class CartService
                 var cartJson = await File.ReadAllTextAsync(_cartFilePath);
                 if (!string.IsNullOrEmpty(cartJson))
                 {
-                    var items = JsonSerializer.Deserialize<List<CartItem>>(cartJson);
-                    _cartItems = items ?? new List<CartItem>();
+                    var items = JsonSerializer.Deserialize<List<CartItemDto>>(cartJson);
+                    _cartItems = items ?? new List<CartItemDto>();
                 }
             }
         }
         catch (Exception)
         {
-            _cartItems = new List<CartItem>();
+            _cartItems = new List<CartItemDto>();
         }
     }
     

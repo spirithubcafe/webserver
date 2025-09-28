@@ -1,0 +1,637 @@
+@page "/admin/shipping"
+@using SpirithubCofe.Domain.Entities
+@using SpirithubCofe.Web.Services
+@using SpirithubCofe.Application.Interfaces
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@using Microsoft.AspNetCore.Components
+@inject IShippingService ShippingService
+@inject IStringLocalizer<SpirithubCofe.Langs.Resources> Localizer
+@inject IJSRuntime JSRuntime
+@attribute [Authorize(Roles = "Admin")]
+
+<div class="container-fluid px-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0 fw-bold">
+                    <i class="fas fa-shipping-fast text-primary me-2"></i>
+                    @Localizer["ShippingManagement"]
+                </h1>
+                <div class="btn-group">
+                    <button class="btn btn-primary" @onclick="RefreshData">
+                        <i class="fas fa-sync-alt"></i> @Localizer["Refresh"]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (loading)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">@Localizer["Loading"]...</span>
+            </div>
+            <div class="mt-2">@Localizer["LoadingShippingData"]...</div>
+        </div>
+    }
+    else
+    {
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+                                    <i class="fas fa-truck text-primary fa-lg"></i>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="text-muted small">@Localizer["ShippingMethods"]</div>
+                                <div class="fs-4 fw-bold">@shippingMethods.Count</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <div class="bg-success bg-opacity-10 p-3 rounded-circle">
+                                    <i class="fas fa-map-marked-alt text-success fa-lg"></i>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="text-muted small">@Localizer["ShippingZones"]</div>
+                                <div class="fs-4 fw-bold">@shippingZones.Count</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <div class="bg-info bg-opacity-10 p-3 rounded-circle">
+                                    <i class="fas fa-city text-info fa-lg"></i>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="text-muted small">@Localizer["Cities"]</div>
+                                <div class="fs-4 fw-bold">@cities.Count</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <div class="bg-warning bg-opacity-10 p-3 rounded-circle">
+                                    <i class="fas fa-dollar-sign text-warning fa-lg"></i>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="text-muted small">@Localizer["ShippingRates"]</div>
+                                <div class="fs-4 fw-bold">@shippingRates.Count</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <ul class="nav nav-tabs mb-4" id="shippingTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link @(activeTab == "methods" ? "active" : "")" 
+                        @onclick='() => SetActiveTab("methods")' type="button">
+                    <i class="fas fa-truck me-2"></i>@Localizer["ShippingMethods"]
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link @(activeTab == "zones" ? "active" : "")" 
+                        @onclick='() => SetActiveTab("zones")' type="button">
+                    <i class="fas fa-map-marked-alt me-2"></i>@Localizer["ShippingZones"]
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link @(activeTab == "rates" ? "active" : "")" 
+                        @onclick='() => SetActiveTab("rates")' type="button">
+                    <i class="fas fa-dollar-sign me-2"></i>@Localizer["ShippingRates"]
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link @(activeTab == "cities" ? "active" : "")" 
+                        @onclick='() => SetActiveTab("cities")' type="button">
+                    <i class="fas fa-city me-2"></i>@Localizer["Cities"]
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+            <!-- Shipping Methods Tab -->
+            @if (activeTab == "methods")
+            {
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 fw-bold">@Localizer["ShippingMethods"]</h5>
+                            <button class="btn btn-success btn-sm" @onclick="AddShippingMethod">
+                                <i class="fas fa-plus"></i> @Localizer["AddNew"]
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>@Localizer["Name"]</th>
+                                        <th>@Localizer["CarrierCode"]</th>
+                                        <th>@Localizer["Type"]</th>
+                                        <th>@Localizer["DeliveryDays"]</th>
+                                        <th>@Localizer["Status"]</th>
+                                        <th>@Localizer["Actions"]</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var method in shippingMethods)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div>
+                                                    <strong>@method.Name</strong>
+                                                    @if (!string.IsNullOrEmpty(method.NameAr))
+                                                    {
+                                                        <br><small class="text-muted">@method.NameAr</small>
+                                                    }
+                                                </div>
+                                            </td>
+                                            <td><span class="badge bg-info">@method.CarrierCode</span></td>
+                                            <td>
+                                                @switch (method.Type)
+                                                {
+                                                    case ShippingMethodType.Pickup:
+                                                        <span class="badge bg-success">@Localizer["Pickup"]</span>
+                                                        break;
+                                                    case ShippingMethodType.Courier:
+                                                        <span class="badge bg-primary">@Localizer["Courier"]</span>
+                                                        break;
+                                                    case ShippingMethodType.Standard:
+                                                        <span class="badge bg-secondary">@Localizer["Standard"]</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (method.DeliveryDays > 0)
+                                                {
+                                                    <span>@method.DeliveryDays @Localizer["Days"]</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">@Localizer["NotSpecified"]</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (method.IsActive)
+                                                {
+                                                    <span class="badge bg-success">@Localizer["Active"]</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">@Localizer["Inactive"]</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <button class="btn btn-sm btn-outline-primary" @onclick="() => EditShippingMethod(method)">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteShippingMethod(method)">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Shipping Zones Tab -->
+            @if (activeTab == "zones")
+            {
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 fw-bold">@Localizer["ShippingZones"]</h5>
+                            <div class="d-flex gap-2">
+                                <select class="form-select form-select-sm" @bind="selectedCountryFilter" @bind:after="FilterZones">
+                                    <option value="">@Localizer["AllCountries"]</option>
+                                    @foreach (var country in countries)
+                                    {
+                                        <option value="@country.Id">@country.Name</option>
+                                    }
+                                </select>
+                                <select class="form-select form-select-sm" @bind="selectedMethodFilter" @bind:after="FilterZones">
+                                    <option value="">@Localizer["AllMethods"]</option>
+                                    @foreach (var method in shippingMethods)
+                                    {
+                                        <option value="@method.Id">@method.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>@Localizer["Zone"]</th>
+                                        <th>@Localizer["Country"]</th>
+                                        <th>@Localizer["ShippingMethod"]</th>
+                                        <th>@Localizer["Status"]</th>
+                                        <th>@Localizer["Actions"]</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var zone in filteredZones)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div>
+                                                    <strong>@zone.Name</strong>
+                                                    @if (!string.IsNullOrEmpty(zone.NameAr))
+                                                    {
+                                                        <br><small class="text-muted">@zone.NameAr</small>
+                                                    }
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <span class="flag-icon flag-icon-@zone.Country?.Code?.ToLower() me-2"></span>
+                                                    @zone.Country?.Name
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">@zone.ShippingMethod?.Name</span>
+                                            </td>
+                                            <td>
+                                                @if (zone.IsActive)
+                                                {
+                                                    <span class="badge bg-success">@Localizer["Active"]</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">@Localizer["Inactive"]</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <button class="btn btn-sm btn-outline-info" @onclick="() => ViewZoneRates(zone)">
+                                                        <i class="fas fa-dollar-sign"></i> @Localizer["ViewRates"]
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-primary" @onclick="() => EditShippingZone(zone)">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Shipping Rates Tab -->
+            @if (activeTab == "rates")
+            {
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 fw-bold">@Localizer["ShippingRates"]</h5>
+                            <div class="d-flex gap-2">
+                                <select class="form-select form-select-sm" @bind="selectedZoneFilter" @bind:after="FilterRates">
+                                    <option value="">@Localizer["AllZones"]</option>
+                                    @foreach (var zone in shippingZones)
+                                    {
+                                        <option value="@zone.Id">@zone.Name (@zone.Country?.Name)</option>
+                                    }
+                                </select>
+                                <button class="btn btn-primary btn-sm" @onclick="BulkUpdateRates">
+                                    <i class="fas fa-edit"></i> @Localizer["BulkUpdate"]
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>@Localizer["City"]</th>
+                                        <th>@Localizer["Zone"]</th>
+                                        <th>@Localizer["Rate"]</th>
+                                        <th>@Localizer["MinOrderAmount"]</th>
+                                        <th>@Localizer["EstimatedDays"]</th>
+                                        <th>@Localizer["Status"]</th>
+                                        <th>@Localizer["Actions"]</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var rate in filteredRates.Take(50)) // Limit to 50 for performance
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div>
+                                                    <strong>@rate.City?.Name</strong>
+                                                    @if (!string.IsNullOrEmpty(rate.City?.NameAr))
+                                                    {
+                                                        <br><small class="text-muted">@rate.City?.NameAr</small>
+                                                    }
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">
+                                                    @rate.ShippingZone?.Name<br>
+                                                    @rate.ShippingZone?.ShippingMethod?.Name
+                                                </small>
+                                            </td>
+                                            <td>
+                                                <strong class="text-primary">@rate.Rate.ToString("F3") @Localizer["OMR"]</strong>
+                                            </td>
+                                            <td>
+                                                @if (rate.MinOrderAmount > 0)
+                                                {
+                                                    <span>@rate.MinOrderAmount.ToString("F2") @Localizer["OMR"]</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">@Localizer["NoMinimum"]</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (rate.EstimatedDays > 0)
+                                                {
+                                                    <span>@rate.EstimatedDays @Localizer["Days"]</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">@Localizer["NotSpecified"]</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (rate.IsActive)
+                                                {
+                                                    <span class="badge bg-success">@Localizer["Active"]</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">@Localizer["Inactive"]</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary" @onclick="() => EditShippingRate(rate)">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        @if (filteredRates.Count > 50)
+                        {
+                            <div class="p-3 text-center text-muted">
+                                @Localizer["ShowingFirst50"] (@filteredRates.Count @Localizer["Total"])
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            <!-- Cities Tab -->
+            @if (activeTab == "cities")
+            {
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 fw-bold">@Localizer["Cities"]</h5>
+                            <div class="d-flex gap-2">
+                                <select class="form-select form-select-sm" @bind="selectedCityCountryFilter" @bind:after="FilterCities">
+                                    <option value="">@Localizer["AllCountries"]</option>
+                                    @foreach (var country in countries)
+                                    {
+                                        <option value="@country.Id">@country.Name</option>
+                                    }
+                                </select>
+                                <input type="text" class="form-control form-control-sm" placeholder="@Localizer["SearchCities"]" @bind="citySearchTerm" @bind:after="FilterCities" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>@Localizer["City"]</th>
+                                        <th>@Localizer["Country"]</th>
+                                        <th>@Localizer["NoolCode"]</th>
+                                        <th>@Localizer["AramexCode"]</th>
+                                        <th>@Localizer["Status"]</th>
+                                        <th>@Localizer["Actions"]</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var city in filteredCities.Take(100))
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div>
+                                                    <strong>@city.Name</strong>
+                                                    @if (!string.IsNullOrEmpty(city.NameAr))
+                                                    {
+                                                        <br><small class="text-muted">@city.NameAr</small>
+                                                    }
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <span class="flag-icon flag-icon-@city.Country?.Code?.ToLower() me-2"></span>
+                                                    @city.Country?.Name
+                                                </div>
+                                            </td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(city.NoolCode))
+                                                {
+                                                    <code>@city.NoolCode</code>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">-</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(city.AramexCode))
+                                                {
+                                                    <code>@city.AramexCode</code>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">-</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (city.IsActive)
+                                                {
+                                                    <span class="badge bg-success">@Localizer["Active"]</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">@Localizer["Inactive"]</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary" @onclick="() => EditCity(city)">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        @if (filteredCities.Count > 100)
+                        {
+                            <div class="p-3 text-center text-muted">
+                                @Localizer["ShowingFirst100"] (@filteredCities.Count @Localizer["Total"])
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private bool loading = true;
+    private string activeTab = "methods";
+
+    private List<ShippingMethod> shippingMethods = new();
+    private List<ShippingZone> shippingZones = new();
+    private List<ShippingRate> shippingRates = new();
+    private List<City> cities = new();
+    private List<Country> countries = new();
+
+    // Filtered lists
+    private List<ShippingZone> filteredZones = new();
+    private List<ShippingRate> filteredRates = new();
+    private List<City> filteredCities = new();
+
+    // Filter parameters
+    private string selectedCountryFilter = "";
+    private string selectedMethodFilter = "";
+    private string selectedZoneFilter = "";
+    private string selectedCityCountryFilter = "";
+    private string citySearchTerm = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        loading = true;
+        StateHasChanged();
+
+        try
+        {
+            shippingMethods = await ShippingService.GetShippingMethodsAsync();
+            shippingZones = await ShippingService.GetShippingZonesAsync();
+            shippingRates = await ShippingService.GetShippingRatesAsync();
+            cities = await ShippingService.GetCitiesAsync();
+            countries = await ShippingService.GetCountriesAsync();
+
+            FilterZones();
+            FilterRates();
+            FilterCities();
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error loading data: {ex.Message}");
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void SetActiveTab(string tab)
+    {
+        activeTab = tab;
+        StateHasChanged();
+    }
+
+    private void FilterZones()
+    {
+        filteredZones = shippingZones.Where(z =>
+            (string.IsNullOrEmpty(selectedCountryFilter) || z.CountryId.ToString() == selectedCountryFilter) &&
+            (string.IsNullOrEmpty(selectedMethodFilter) || z.ShippingMethodId.ToString() == selectedMethodFilter)
+        ).ToList();
+        StateHasChanged();
+    }
+
+    private void FilterRates()
+    {
+        filteredRates = shippingRates.Where(r =>
+            string.IsNullOrEmpty(selectedZoneFilter) || r.ShippingZoneId.ToString() == selectedZoneFilter
+        ).ToList();
+        StateHasChanged();
+    }
+
+    private void FilterCities()
+    {
+        filteredCities = cities.Where(c =>
+            (string.IsNullOrEmpty(selectedCityCountryFilter) || c.CountryId.ToString() == selectedCityCountryFilter) &&
+            (string.IsNullOrEmpty(citySearchTerm) || 
+             c.Name.Contains(citySearchTerm, StringComparison.OrdinalIgnoreCase) ||
+             (!string.IsNullOrEmpty(c.NameAr) && c.NameAr.Contains(citySearchTerm, StringComparison.OrdinalIgnoreCase)))
+        ).ToList();
+        StateHasChanged();
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadData();
+    }
+
+    // Method placeholders - implement as needed
+    private async Task AddShippingMethod() { /* TODO */ }
+    private async Task EditShippingMethod(ShippingMethod method) { /* TODO */ }
+    private async Task DeleteShippingMethod(ShippingMethod method) { /* TODO */ }
+    private async Task EditShippingZone(ShippingZone zone) { /* TODO */ }
+    private async Task ViewZoneRates(ShippingZone zone) { /* TODO */ }
+    private async Task EditShippingRate(ShippingRate rate) { /* TODO */ }
+    private async Task BulkUpdateRates() { /* TODO */ }
+    private async Task EditCity(City city) { /* TODO */ }
+}

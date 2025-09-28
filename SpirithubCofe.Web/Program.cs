@@ -130,6 +130,7 @@ builder.Services.AddScoped<RoleManagementService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ReviewService>();
+builder.Services.AddScoped<OrderService>();
 
 // Register user login service
 builder.Services.AddScoped<UserLoginService>();
