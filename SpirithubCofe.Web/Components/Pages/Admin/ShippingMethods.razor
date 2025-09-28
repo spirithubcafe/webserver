@@ -194,79 +194,166 @@
 <!-- Edit Method Modal -->
 @if (showEditModal && currentMethod != null)
 {
-    <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" @onclick="CloseEditModal">
-        <div class="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white" @onclick:stopPropagation="true">
-            <div class="mt-3">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-medium text-gray-900">Edit @currentMethod.Name</h3>
-                    <button type="button" @onclick="CloseEditModal" class="text-gray-400 hover:text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="fixed inset-0 backdrop-blur-sm bg-black/20 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4" @onclick="CloseEditModal">
+        <div class="relative bg-white rounded-xl shadow-2xl max-w-3xl w-full border border-gray-100 transform transition-all max-h-[90vh] overflow-y-auto" @onclick:stopPropagation="true">
+            <!-- Header -->
+            <div class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-xl">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                            @if (currentMethod.Type == "Pickup")
+                            {
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                </svg>
+                            }
+                            else if (currentMethod.Type == "NoolOman")
+                            {
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2"/>
+                                </svg>
+                            }
+                            else
+                            {
+                                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2v0"/>
+                                </svg>
+                            }
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Edit @currentMethod.Name</h3>
+                            <p class="text-sm text-gray-600">Configure shipping method settings</p>
+                        </div>
+                    </div>
+                    <button type="button" @onclick="CloseEditModal" class="p-2 hover:bg-white/50 rounded-lg transition-colors">
+                        <svg class="w-5 h-5 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
                     </button>
                 </div>
-                
-                <EditForm Model="currentMethod" OnValidSubmit="SaveMethod">
+            </div>
+            
+            <!-- Form Content -->
+            <div class="px-6 py-6">
+                <EditForm Model="currentMethod" OnValidSubmit="SaveMethod" id="method-form">
                     <DataAnnotationsValidator />
                     
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Name (English)</label>
-                            <InputText @bind-Value="currentMethod.Name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-                            <ValidationMessage For="() => currentMethod.Name" class="text-red-600 text-sm" />
+                    <div class="space-y-6">
+                        <!-- Basic Information Section -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">
+                                    <span class="flex items-center">
+                                        <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                                        </svg>
+                                        Name (English)
+                                    </span>
+                                </label>
+                                <InputText @bind-Value="currentMethod.Name" class="w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" placeholder="Enter method name" />
+                                <ValidationMessage For="() => currentMethod.Name" class="text-red-600 text-sm mt-1" />
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">
+                                    <span class="flex items-center">
+                                        <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                                        </svg>
+                                        Name (Arabic)
+                                    </span>
+                                </label>
+                                <InputText @bind-Value="currentMethod.NameAr" class="w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" dir="rtl" placeholder="أدخل اسم الطريقة" />
+                            </div>
                         </div>
                         
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Name (Arabic)</label>
-                            <InputText @bind-Value="currentMethod.NameAr" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" dir="rtl" />
+                        <!-- Description Section -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">
+                                    <span class="flex items-center">
+                                        <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
+                                        </svg>
+                                        Description (English)
+                                    </span>
+                                </label>
+                                <InputTextArea @bind-Value="currentMethod.Description" class="w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 resize-none" rows="3" placeholder="Enter method description" />
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">
+                                    <span class="flex items-center">
+                                        <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
+                                        </svg>
+                                        Description (Arabic)
+                                    </span>
+                                </label>
+                                <InputTextArea @bind-Value="currentMethod.DescriptionAr" class="w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 resize-none" rows="3" dir="rtl" placeholder="أدخل وصف الطريقة" />
+                            </div>
                         </div>
                         
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Description (English)</label>
-                            <InputTextArea @bind-Value="currentMethod.Description" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" rows="3" />
+                        <!-- Display Order -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-gray-700">
+                                <span class="flex items-center">
+                                    <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                                    </svg>
+                                    Display Order
+                                </span>
+                            </label>
+                            <InputNumber @bind-Value="currentMethod.DisplayOrder" class="w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 max-w-xs" placeholder="1" />
                         </div>
                         
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Description (Arabic)</label>
-                            <InputTextArea @bind-Value="currentMethod.DescriptionAr" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" rows="3" dir="rtl" />
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Display Order</label>
-                            <InputNumber @bind-Value="currentMethod.DisplayOrder" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-                        </div>
-                        
+                        <!-- Aramex API Configuration -->
                         @if (currentMethod.Type == "Aramex")
                         {
-                            <div class="border-t pt-4">
-                                <h4 class="text-md font-medium text-gray-900 mb-3">Aramex API Configuration</h4>
-                                <div class="space-y-3">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">Username</label>
-                                        <input type="text" @bind="aramexConfig.Username" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                            <div class="border-t border-gray-200 pt-6">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                                        <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        </svg>
                                     </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">Password</label>
-                                        <input type="password" @bind="aramexConfig.Password" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                                    <h4 class="text-lg font-semibold text-gray-900">Aramex API Configuration</h4>
+                                </div>
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4 bg-purple-50 rounded-lg">
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Username</label>
+                                        <input type="text" @bind="aramexConfig.Username" class="w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-200" placeholder="API Username" />
                                     </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">Account Number</label>
-                                        <input type="text" @bind="aramexConfig.AccountNumber" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Password</label>
+                                        <input type="password" @bind="aramexConfig.Password" class="w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-200" placeholder="API Password" />
+                                    </div>
+                                    <div class="space-y-2 lg:col-span-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Account Number</label>
+                                        <input type="text" @bind="aramexConfig.AccountNumber" class="w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-200" placeholder="Aramex Account Number" />
                                     </div>
                                 </div>
                             </div>
                         }
                     </div>
-                    
-                    <div class="mt-6 flex justify-end space-x-3">
-                        <button type="button" @onclick="CloseEditModal" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Cancel
-                        </button>
-                        <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Save Changes
-                        </button>
-                    </div>
                 </EditForm>
+            </div>
+            
+            <!-- Footer -->
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 rounded-b-xl flex justify-end space-x-3">
+                <button type="button" @onclick="CloseEditModal" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition duration-200">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                    Cancel
+                </button>
+                <button type="submit" form="method-form" class="inline-flex items-center px-6 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Save Changes
+                </button>
             </div>
         </div>
     </div>
