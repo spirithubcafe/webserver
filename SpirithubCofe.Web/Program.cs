@@ -239,6 +239,15 @@ else
 // Add global exception handling middleware
 app.UseMiddleware<SpirithubCofe.Web.Middleware.GlobalExceptionMiddleware>();
 
+// Seed sample data when running in development
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var seeder = scope.ServiceProvider.GetRequiredService<DataSeederService>();
+    // Fire-and-forget during startup; ensure any exceptions bubble during development
+    await seeder.SeedSampleDataAsync();
+}
+
 // Add localization middleware
 var localizationOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>();
 app.UseRequestLocalization(localizationOptions.Value);
