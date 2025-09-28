@@ -24,6 +24,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<CartItem> CartItems { get; set; }
     public DbSet<Country> Countries { get; set; }
     public DbSet<City> Cities { get; set; }
+    public DbSet<ShippingMethod> ShippingMethods { get; set; }
+    public DbSet<NoolShippingRate> NoolShippingRates { get; set; }
     
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -624,6 +626,78 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .WithMany()
                 .HasForeignKey(e => e.ProductVariantId)
                 .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // Configure ShippingMethod entity
+        builder.Entity<ShippingMethod>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Type)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.Property(e => e.NameAr)
+                .HasMaxLength(200);
+
+            entity.Property(e => e.Description)
+                .HasMaxLength(1000);
+
+            entity.Property(e => e.DescriptionAr)
+                .HasMaxLength(1000);
+
+            entity.Property(e => e.ApiConfiguration)
+                .HasColumnType("TEXT");
+
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+
+            entity.Property(e => e.DisplayOrder)
+                .HasDefaultValue(0);
+
+            entity.HasIndex(e => e.Type)
+                .IsUnique()
+                .HasDatabaseName("IX_ShippingMethods_Type");
+
+            entity.HasIndex(e => e.IsActive)
+                .HasDatabaseName("IX_ShippingMethods_IsActive");
+
+            entity.HasIndex(e => e.DisplayOrder)
+                .HasDatabaseName("IX_ShippingMethods_DisplayOrder");
+        });
+
+        // Configure NoolShippingRate entity
+        builder.Entity<NoolShippingRate>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Rate)
+                .HasColumnType("decimal(10,3)")
+                .IsRequired();
+
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+
+            entity.HasOne(e => e.ShippingMethod)
+                .WithMany(s => s.NoolRates)
+                .HasForeignKey(e => e.ShippingMethodId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.City)
+                .WithMany()
+                .HasForeignKey(e => e.CityId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(e => new { e.ShippingMethodId, e.CityId })
+                .IsUnique()
+                .HasDatabaseName("IX_NoolShippingRates_ShippingMethod_City");
+
+            entity.HasIndex(e => e.IsActive)
+                .HasDatabaseName("IX_NoolShippingRates_IsActive");
         });
     }
 }

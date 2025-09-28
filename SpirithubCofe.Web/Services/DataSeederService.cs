@@ -34,13 +34,18 @@ public class DataSeederService
             {
                 await SeedGccCountriesAsync();
             }
+
+            // Seed shipping methods if they don't exist
+            if (!await _context.ShippingMethods.AnyAsync())
+            {
+                await SeedShippingMethodsAsync();
+            }
         }
         catch (Exception ex)
         {
-            // If Countries table doesn't exist, create it via migration
+            // If tables don't exist, create them via raw SQL as fallback
             if (ex.Message.Contains("no such table: Countries"))
             {
-                // Create tables manually using raw SQL as fallback
                 await CreateCountriesTableAsync();
                 await CreateCitiesTableAsync();
                 
@@ -48,6 +53,16 @@ public class DataSeederService
                 if (!await _context.Countries.AnyAsync())
                 {
                     await SeedGccCountriesAsync();
+                }
+            }
+            else if (ex.Message.Contains("no such table: ShippingMethods"))
+            {
+                await CreateShippingTablesAsync();
+                
+                // Try seeding again
+                if (!await _context.ShippingMethods.AnyAsync())
+                {
+                    await SeedShippingMethodsAsync();
                 }
             }
             else
@@ -93,6 +108,52 @@ public class DataSeederService
         
         await _context.Database.ExecuteSqlRawAsync(@"
             CREATE INDEX IF NOT EXISTS IX_Cities_IsActive ON Cities (IsActive)");
+    }
+
+    private async Task CreateShippingTablesAsync()
+    {
+        await _context.Database.ExecuteSqlRawAsync(@"
+            CREATE TABLE IF NOT EXISTS ShippingMethods (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Type TEXT NOT NULL UNIQUE,
+                Name TEXT NOT NULL,
+                NameAr TEXT,
+                Description TEXT,
+                DescriptionAr TEXT,
+                IsActive INTEGER NOT NULL DEFAULT 1,
+                ApiConfiguration TEXT,
+                DisplayOrder INTEGER NOT NULL DEFAULT 0,
+                CreatedAt TEXT NOT NULL,
+                UpdatedAt TEXT NOT NULL
+            )");
+        
+        await _context.Database.ExecuteSqlRawAsync(@"
+            CREATE UNIQUE INDEX IF NOT EXISTS IX_ShippingMethods_Type ON ShippingMethods (Type)");
+        
+        await _context.Database.ExecuteSqlRawAsync(@"
+            CREATE INDEX IF NOT EXISTS IX_ShippingMethods_IsActive ON ShippingMethods (IsActive)");
+        
+        await _context.Database.ExecuteSqlRawAsync(@"
+            CREATE INDEX IF NOT EXISTS IX_ShippingMethods_DisplayOrder ON ShippingMethods (DisplayOrder)");
+
+        await _context.Database.ExecuteSqlRawAsync(@"
+            CREATE TABLE IF NOT EXISTS NoolShippingRates (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                ShippingMethodId INTEGER NOT NULL,
+                CityId INTEGER NOT NULL,
+                Rate DECIMAL(10,3) NOT NULL,
+                IsActive INTEGER NOT NULL DEFAULT 1,
+                CreatedAt TEXT NOT NULL,
+                UpdatedAt TEXT NOT NULL,
+                FOREIGN KEY (ShippingMethodId) REFERENCES ShippingMethods (Id) ON DELETE CASCADE,
+                FOREIGN KEY (CityId) REFERENCES Cities (Id) ON DELETE CASCADE
+            )");
+        
+        await _context.Database.ExecuteSqlRawAsync(@"
+            CREATE UNIQUE INDEX IF NOT EXISTS IX_NoolShippingRates_ShippingMethod_City ON NoolShippingRates (ShippingMethodId, CityId)");
+        
+        await _context.Database.ExecuteSqlRawAsync(@"
+            CREATE INDEX IF NOT EXISTS IX_NoolShippingRates_IsActive ON NoolShippingRates (IsActive)");
     }
 
     private async Task SeedCategoriesAsync()
@@ -580,6 +641,95 @@ public class DataSeederService
             };
 
         _context.Countries.AddRange(gccCountries);
+        await _context.SaveChangesAsync();
+    }
+
+    private async Task SeedShippingMethodsAsync()
+    {
+        // Create the three shipping methods
+        var shippingMethods = new List<ShippingMethod>
+        {
+            // Pickup from Store - Always free
+            new ShippingMethod
+            {
+                Type = "Pickup",
+                Name = "Pickup from Store",
+                NameAr = "الاستلام من المتجر",
+                Description = "Free pickup from our store location",
+                DescriptionAr = "استلام مجاني من موقع متجرنا",
+                IsActive = true,
+                DisplayOrder = 1
+            },
+
+            // Nool Oman - Only for Oman
+            new ShippingMethod
+            {
+                Type = "NoolOman",
+                Name = "Nool Oman",
+                NameAr = "نول عُمان",
+                Description = "Delivery within Oman",
+                DescriptionAr = "التوصيل داخل عُمان",
+                IsActive = true,
+                DisplayOrder = 2
+            },
+
+            // Aramex - API-based calculation
+            new ShippingMethod
+            {
+                Type = "Aramex",
+                Name = "Aramex Shipping",
+                NameAr = "شحن أرامكس",
+                Description = "International shipping via Aramex",
+                DescriptionAr = "الشحن الدولي عبر أرامكس",
+                IsActive = true,
+                DisplayOrder = 3,
+                ApiConfiguration = "{\"username\":\"\",\"password\":\"\",\"accountNumber\":\"\",\"version\":\"v1.0\"}"
+            }
+        };
+
+        _context.ShippingMethods.AddRange(shippingMethods);
+        await _context.SaveChangesAsync();
+
+        // Get the Nool Oman method for rates seeding
+        var noolMethod = shippingMethods.FirstOrDefault(s => s.Type == "NoolOman");
+        if (noolMethod != null)
+        {
+            await SeedNoolShippingRatesAsync(noolMethod.Id);
+        }
+    }
+
+    private async Task SeedNoolShippingRatesAsync(int noolShippingMethodId)
+    {
+        // Get Oman country and its cities
+        var oman = await _context.Countries
+            .Include(c => c.Cities)
+            .FirstOrDefaultAsync(c => c.Code == "OM");
+
+        if (oman == null) return;
+
+        var noolRates = new List<NoolShippingRate>();
+
+        foreach (var city in oman.Cities)
+        {
+            decimal rate = 2.000m; // Default rate for all Oman cities: 2 OMR
+
+            // Special rate for Khasab: 3 OMR
+            if (city.Name.Equals("Khasab", StringComparison.OrdinalIgnoreCase) ||
+                city.NameAr?.Contains("خصب") == true)
+            {
+                rate = 3.000m;
+            }
+
+            noolRates.Add(new NoolShippingRate
+            {
+                ShippingMethodId = noolShippingMethodId,
+                CityId = city.Id,
+                Rate = rate,
+                IsActive = true
+            });
+        }
+
+        _context.NoolShippingRates.AddRange(noolRates);
         await _context.SaveChangesAsync();
     }
 }

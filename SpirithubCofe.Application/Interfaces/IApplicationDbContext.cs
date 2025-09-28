@@ -18,6 +18,8 @@ public interface IApplicationDbContext
     DbSet<ProductReview> ProductReviews { get; }
     DbSet<Country> Countries { get; }
     DbSet<City> Cities { get; }
+    DbSet<ShippingMethod> ShippingMethods { get; }
+    DbSet<NoolShippingRate> NoolShippingRates { get; }
     DbSet<FAQ> FAQs { get; }
     DbSet<FAQCategory> FAQCategories { get; }
     DbSet<FAQPage> FAQPages { get; }
