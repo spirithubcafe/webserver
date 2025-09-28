@@ -1,6 +1,8 @@
 @using SpirithubCofe.Domain.Entities
 @using Microsoft.JSInterop
 @inject IStringLocalizer<SpirithubCofe.Langs.Resources> Localizer
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
 
 @if (IsVisible)
 {
@@ -227,16 +229,6 @@
                                 </div>
                             }
 
-                            <!-- Description -->
-                            @if (!string.IsNullOrEmpty(Product.Description))
-                            {
-                                <div class="mb-6">
-                                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Description</h3>
-                                    <div class="text-sm text-gray-700 leading-relaxed">
-                                        @((MarkupString)Product.Description.Replace("\n", "<br>"))
-                                    </div>
-                                </div>
-                            }
 
                             <!-- Tasting Notes -->
                             @if (!string.IsNullOrEmpty(Product.TastingNotes))
@@ -265,13 +257,13 @@
                                 else
                                 {
                                     <!-- Customer Actions -->
-                                    <button @onclick="GoToProductPage" 
-                                            class="flex-1 inline-flex justify-center items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200">
+                                    <a href="/product/@Product.Id" 
+                                       class="flex-1 inline-flex justify-center items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200 no-underline">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2M7 13l3 3 7-7"></path>
                                         </svg>
                                         @Localizer["ViewDetails"]
-                                    </button>
+                                    </a>
                                 }
                                 <button @onclick="CloseModal" 
                                         class="flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200">
@@ -293,7 +285,6 @@
     [Parameter] public bool IsAdminContext { get; set; } = false;
     
     [Inject] private IJSRuntime JSRuntime { get; set; } = null!;
-    [Inject] private NavigationManager Navigation { get; set; } = null!;
 
     private async Task CloseModal()
     {
@@ -302,14 +293,7 @@
         await OnClose.InvokeAsync();
     }
     
-    private async Task GoToProductPage()
-    {
-        if (Product != null)
-        {
-            await CloseModal();
-            Navigation.NavigateTo($"/product/{Product.Id}");
-        }
-    }
+
 
     protected override async Task OnParametersSetAsync()
     {
