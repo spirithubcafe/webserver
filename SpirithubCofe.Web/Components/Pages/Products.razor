@@ -219,6 +219,7 @@
                                 <!-- Quick View Button (Left) -->
                                 <button 
                                     @onclick="() => ShowQuickView(product.Id)"
+                                    @onclick:stopPropagation="true"
                                     class="bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110"
                                     title="Quick view"
                                 >
@@ -231,6 +232,7 @@
                                 <!-- Quick Add Button (Right) -->
                                 <button 
                                     @onclick="() => QuickAddToCart(product.Id)"
+                                    @onclick:stopPropagation="true"
                                     class="bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110"
                                     title="Quick add to cart"
                                 >
