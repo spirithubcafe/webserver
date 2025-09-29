@@ -9,195 +9,224 @@
 
 <PageTitle>@Localizer["Home"] - @Localizer["SiteTitle"]</PageTitle>
 
-<!-- Hero Slideshow Section -->
-@if (homePageSettings?.ShowSlideshow == true)
-{
-    <HeroSlideshow />
+<!-- Dynamic Sections based on Order -->
+@{
+    var orderedSections = GetOrderedSections();
 }
 
-<!-- Categories Section -->
-@if (homePageSettings?.ShowCategories == true && homepageCategories.Any())
+@foreach (var section in orderedSections.Where(s => s.IsEnabled))
 {
-    <section class="py-16 @GetCategoriesSectionStyle()" style="@GetCategoriesBackgroundStyle()">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-900 mb-4">@GetCategoriesTitle()</h2>
-                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                    @GetCategoriesSubtitle()
-                </p>
-            </div>
+    @if (section.Name == "Slideshow")
+    {
+        <HeroSlideshow />
+    }
+    else if (section.Name == "Categories" && homepageCategories.Any())
+    {
+        <section class="py-16 @GetCategoriesSectionStyle()" style="@GetCategoriesBackgroundStyle()">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">@GetCategoriesTitle()</h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                        @GetCategoriesSubtitle()
+                    </p>
+                </div>
 
-            <div class="flex justify-center">
-                <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-4">
-                    @foreach (var category in homepageCategories)
+                <div class="flex justify-center">
+                    <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-4">
+                        @foreach (var category in homepageCategories)
+                        {
+                            <a href="/products/@category.Slug" class="block text-center">
+                                <div class="aspect-square bg-gray-50 rounded-xl shadow-sm border border-gray-100 hover:shadow-md mb-3">
+                                    @if (!string.IsNullOrEmpty(category.ImagePath))
+                                    {
+                                        <img src="@category.ImagePath" 
+                                             alt="@GetCategoryName(category)" 
+                                             class="w-full h-full object-cover rounded-xl" />
+                                    }
+                                    else
+                                    {
+                                        <div class="w-full h-full bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center rounded-xl">
+                                            <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                            </svg>
+                                        </div>
+                                    }
+                                </div>
+                                <h3 class="font-medium text-gray-900 text-sm hover:text-amber-600">
+                                    @GetCategoryName(category)
+                                </h3>
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+    }
+    else if (section.Name == "Mission")
+    {
+        <section class="relative py-24 overflow-hidden">
+            <!-- Background with fixed attachment -->
+            <div class="absolute inset-0 @GetMissionBackgroundClass()" style="@GetMissionBackgroundStyle()">
+                <!-- Overlay for better text readability -->
+                <div class="absolute inset-0 bg-opacity-40"></div>
+            </div>
+            
+            <!-- Content -->
+            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <div class="bg-white bg-opacity-95 backdrop-blur-sm rounded-2xl p-12 shadow-2xl">
+                    <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                        @GetMissionTitle()
+                    </h2>
+                    <p class="text-xl text-gray-700 mb-8 leading-relaxed">
+                        @GetMissionSubtitle()
+                    </p>
+                    @if (!string.IsNullOrEmpty(GetMissionText()))
                     {
-                        <a href="/products/@category.Slug" class="block text-center">
-                            <div class="aspect-square bg-gray-50 rounded-xl shadow-sm border border-gray-100 hover:shadow-md mb-3">
-                                @if (!string.IsNullOrEmpty(category.ImagePath))
-                                {
-                                    <img src="@category.ImagePath" 
-                                         alt="@GetCategoryName(category)" 
-                                         class="w-full h-full object-cover rounded-xl" />
-                                }
-                                else
-                                {
-                                    <div class="w-full h-full bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center rounded-xl">
-                                        <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                                        </svg>
-                                    </div>
-                                }
-                            </div>
-                            <h3 class="font-medium text-gray-900 text-sm hover:text-amber-600">
-                                @GetCategoryName(category)
-                            </h3>
-                        </a>
+                        <div class="prose prose-lg mx-auto text-gray-600 leading-relaxed">
+                            @((MarkupString)GetMissionText().Replace("\n", "<br>"))
+                        </div>
                     }
                 </div>
             </div>
-        </div>
-    </section>
-}
-
-<!-- Mission Section -->
-@if (homePageSettings?.ShowMission == true)
-{
-<section class="relative py-24 overflow-hidden">
-    <!-- Background with fixed attachment -->
-    <div class="absolute inset-0 @GetMissionBackgroundClass()" style="@GetMissionBackgroundStyle()">
-        <!-- Overlay for better text readability -->
-        <div class="absolute inset-0 bg-opacity-40"></div>
-    </div>
-    
-    <!-- Content -->
-    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <div class="bg-white bg-opacity-95 backdrop-blur-sm rounded-2xl p-12 shadow-2xl">
-            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                @GetMissionTitle()
-            </h2>
-            <p class="text-xl text-gray-700 mb-8 leading-relaxed">
-                @GetMissionSubtitle()
-            </p>
-            @if (!string.IsNullOrEmpty(GetMissionText()))
-            {
-                <div class="prose prose-lg mx-auto text-gray-600 leading-relaxed">
-                    @((MarkupString)GetMissionText().Replace("\n", "<br>"))
+        </section>
+    }
+    else if (section.Name == "LatestProducts")
+    {
+        <section class="py-16 @GetLatestProductsSectionStyle()" style="@GetLatestProductsBackgroundStyle()">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">@GetLatestProductsTitle()</h2>
+                    <p class="text-lg text-gray-600">@GetLatestProductsSubtitle()</p>
                 </div>
-            }
-        </div>
-    </div>
-</section>
-}
 
-<!-- Product Showcase -->
-@if (homePageSettings?.ShowLatestProducts == true)
-{
-<section class="py-16 @GetLatestProductsSectionStyle()" style="@GetLatestProductsBackgroundStyle()">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-gray-900 mb-4">@GetLatestProductsTitle()</h2>
-            <p class="text-lg text-gray-600">@GetLatestProductsSubtitle()</p>
-        </div>
-
-        @if (latestProducts.Any())
-        {
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                @foreach (var product in latestProducts)
+                @if (latestProducts.Any())
                 {
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                        <div class="aspect-square bg-gray-100 relative">
-                            @if (product.MainImage?.ImagePath != null)
-                            {
-                                <img src="@product.MainImage.ImagePath" 
-                                     alt="@GetProductName(product)" 
-                                     class="w-full h-full object-cover" />
-                            }
-                            else
-                            {
-                                <div class="w-full h-full bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center">
-                                    <svg class="w-12 h-12 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                                    </svg>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        @foreach (var product in latestProducts)
+                        {
+                            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                                <div class="aspect-square bg-gray-100 relative">
+                                    @if (product.MainImage?.ImagePath != null)
+                                    {
+                                        <img src="@product.MainImage.ImagePath" 
+                                             alt="@GetProductName(product)" 
+                                             class="w-full h-full object-cover" />
+                                    }
+                                    else
+                                    {
+                                        <div class="w-full h-full bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center">
+                                            <svg class="w-12 h-12 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                            </svg>
+                                        </div>
+                                    }
                                 </div>
-                            }
+                                <div class="p-6">
+                                    <h3 class="text-lg font-semibold mb-2 line-clamp-1">@GetProductName(product)</h3>
+                                    <p class="text-gray-600 text-sm mb-4 line-clamp-2">@GetProductNotes(product)</p>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xl font-bold text-amber-600">@GetProductPrice(product)</span>
+                                        <a href="/product/@product.Slug" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-md text-sm transition-colors">
+                                            @Localizer["ViewProduct"]
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-12">
+                        <div class="text-gray-400 mb-4">
+                            <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                            </svg>
                         </div>
-                        <div class="p-6">
-                            <h3 class="text-lg font-semibold mb-2 line-clamp-1">@GetProductName(product)</h3>
-                            <p class="text-gray-600 text-sm mb-4 line-clamp-2">@GetProductNotes(product)</p>
-                            <div class="flex items-center justify-between">
-                                <span class="text-xl font-bold text-amber-600">@GetProductPrice(product)</span>
-                                <a href="/product/@product.Slug" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-md text-sm transition-colors">
-                                    @Localizer["ViewProduct"]
-                                </a>
+                        <p class="text-gray-500 text-lg">@Localizer["NoProductsAvailable"]</p>
+                    </div>
+                }
+
+                <div class="text-center mt-8">
+                    <a href="/products" class="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+                        @Localizer["ViewAllProducts"]
+                    </a>
+                </div>
+            </div>
+        </section>
+    }
+    else if (section.Name == "Newsletter")
+    {
+        <section class="py-16 @GetNewsletterBackgroundClass()" style="@GetNewsletterBackgroundStyle()">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <!-- Newsletter Image -->
+                    @if (!string.IsNullOrEmpty(homePageSettings.NewsletterImage))
+                    {
+                        <div class="order-2 lg:order-1">
+                            <img src="@homePageSettings.NewsletterImage" 
+                                 alt="@GetNewsletterTitle()" 
+                                 class="w-full h-auto rounded-lg shadow-lg object-cover" />
+                        </div>
+                    }
+                    
+                    <!-- Newsletter Content -->
+                    <div class="order-1 lg:order-2 @(string.IsNullOrEmpty(homePageSettings.NewsletterImage) ? "col-span-2 text-center max-w-4xl mx-auto" : "")">
+                        <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">@GetNewsletterTitle()</h2>
+                        <p class="text-xl text-gray-600 mb-8">
+                            @GetNewsletterSubtitle()
+                        </p>
+                        <div class="max-w-md @(string.IsNullOrEmpty(homePageSettings.NewsletterImage) ? "mx-auto" : "")">
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <input type="email" 
+                                       placeholder="@Localizer["EnterYourEmail"]" 
+                                       class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/90" />
+                                <button class="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                                    @Localizer["Subscribe"]
+                                </button>
                             </div>
                         </div>
                     </div>
-                }
-            </div>
-        }
-        else
-        {
-            <div class="text-center py-12">
-                <div class="text-gray-400 mb-4">
-                    <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                    </svg>
                 </div>
-                <p class="text-gray-500 text-lg">@Localizer["NoProductsAvailable"]</p>
             </div>
-        }
-
-        <div class="text-center mt-8">
-            <a href="/products" class="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
-                @Localizer["ViewAllProducts"]
-            </a>
-        </div>
-    </div>
-</section>
-}
-
-<!-- Newsletter Section -->
-@if (homePageSettings?.ShowNewsletter == true)
-{
-<section class="py-16 @GetNewsletterBackgroundClass()" style="@GetNewsletterBackgroundStyle()">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <!-- Newsletter Image -->
-            @if (!string.IsNullOrEmpty(homePageSettings.NewsletterImage))
-            {
-                <div class="order-2 lg:order-1">
-                    <img src="@homePageSettings.NewsletterImage" 
-                         alt="@GetNewsletterTitle()" 
-                         class="w-full h-auto rounded-lg shadow-lg object-cover" />
-                </div>
-            }
-            
-            <!-- Newsletter Content -->
-            <div class="order-1 lg:order-2 @(string.IsNullOrEmpty(homePageSettings.NewsletterImage) ? "col-span-2 text-center max-w-4xl mx-auto" : "")">
-                <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">@GetNewsletterTitle()</h2>
-                <p class="text-xl text-gray-600 mb-8">
-                    @GetNewsletterSubtitle()
-                </p>
-                <div class="max-w-md @(string.IsNullOrEmpty(homePageSettings.NewsletterImage) ? "mx-auto" : "")">
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <input type="email" 
-                               placeholder="@Localizer["EnterYourEmail"]" 
-                               class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/90" />
-                        <button class="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
-                            @Localizer["Subscribe"]
-                        </button>
+        </section>
+    }
+    else if (section.Name == "AboutUs")
+    {
+        <section class="py-16 @GetAboutUsBackgroundClass()" style="@GetAboutUsBackgroundStyle()">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <!-- About Us Content -->
+                    <div class="@(string.IsNullOrEmpty(homePageSettings.AboutUsImage) ? "col-span-2 text-center max-w-4xl mx-auto" : "")">
+                        <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">@GetAboutUsTitle()</h2>
+                        <p class="text-xl text-gray-600 mb-6">
+                            @GetAboutUsSubtitle()
+                        </p>
+                        @if (!string.IsNullOrEmpty(GetAboutUsText()))
+                        {
+                            <div class="prose prose-lg max-w-none text-gray-700">
+                                @((MarkupString)GetAboutUsText().Replace("\n", "<br>"))
+                            </div>
+                        }
                     </div>
+                    
+                    <!-- About Us Image -->
+                    @if (!string.IsNullOrEmpty(homePageSettings.AboutUsImage))
+                    {
+                        <div class="order-first lg:order-last">
+                            <img src="@homePageSettings.AboutUsImage" 
+                                 alt="@GetAboutUsTitle()" 
+                                 class="w-full h-auto rounded-lg shadow-lg object-cover" />
+                        </div>
+                    }
                 </div>
             </div>
-        </div>
-    </div>
-</section>
+        </section>
+    }
 }
-
-
 @code {
     private List<Category> homepageCategories = new();
     private List<Product> latestProducts = new();
@@ -426,6 +455,56 @@
         };
     }
 
+    // About Us Section Methods
+    private string GetAboutUsTitle()
+    {
+        if (homePageSettings == null) return Localizer["AboutUs"];
+        return IsArabic && !string.IsNullOrEmpty(homePageSettings.AboutUsTitleAr) 
+            ? homePageSettings.AboutUsTitleAr 
+            : (!string.IsNullOrEmpty(homePageSettings.AboutUsTitle) ? homePageSettings.AboutUsTitle : Localizer["AboutUs"]);
+    }
+
+    private string GetAboutUsSubtitle()
+    {
+        if (homePageSettings == null) return "";
+        return IsArabic && !string.IsNullOrEmpty(homePageSettings.AboutUsSubtitleAr) 
+            ? homePageSettings.AboutUsSubtitleAr 
+            : (!string.IsNullOrEmpty(homePageSettings.AboutUsSubtitle) ? homePageSettings.AboutUsSubtitle : "");
+    }
+
+    private string GetAboutUsText()
+    {
+        if (homePageSettings == null) return "";
+        return IsArabic && !string.IsNullOrEmpty(homePageSettings.AboutUsTextAr) 
+            ? homePageSettings.AboutUsTextAr 
+            : (!string.IsNullOrEmpty(homePageSettings.AboutUsText) ? homePageSettings.AboutUsText : "");
+    }
+
+    private string GetAboutUsBackgroundClass()
+    {
+        if (homePageSettings?.AboutUsBgType == "color")
+        {
+            return "";
+        }
+        return "bg-gray-100";
+    }
+
+    private string GetAboutUsBackgroundStyle()
+    {
+        if (homePageSettings == null) return "";
+        
+        return homePageSettings.AboutUsBgType switch
+        {
+            "color" when !string.IsNullOrEmpty(homePageSettings.AboutUsBgValue) => 
+                $"background-color: {homePageSettings.AboutUsBgValue};",
+            "image" when !string.IsNullOrEmpty(homePageSettings.AboutUsBgValue) => 
+                $"background-image: url('{homePageSettings.AboutUsBgValue}'); background-size: cover; background-position: center;",
+            "video" when !string.IsNullOrEmpty(homePageSettings.AboutUsBgValue) => 
+                $"background: url('{homePageSettings.AboutUsBgValue}') center/cover;",
+            _ => ""
+        };
+    }
+
     // Product Helper Methods
     private string GetProductName(Product product)
     {
@@ -457,4 +536,23 @@
         }
         return Localizer["PriceNotAvailable"];
     }
+
+    private List<(string Name, int Order, bool IsEnabled)> GetOrderedSections()
+    {
+        if (homePageSettings == null) return new List<(string, int, bool)>();
+
+        var sections = new List<(string Name, int Order, bool IsEnabled)>
+        {
+            ("Slideshow", homePageSettings.SlideshowOrder, homePageSettings.ShowSlideshow),
+            ("Categories", homePageSettings.CategoriesOrder, homePageSettings.ShowCategories),
+            ("Mission", homePageSettings.MissionOrder, homePageSettings.ShowMission),
+            ("LatestProducts", homePageSettings.LatestProductsOrder, homePageSettings.ShowLatestProducts),
+            ("Newsletter", homePageSettings.NewsletterOrder, homePageSettings.ShowNewsletter),
+            ("AboutUs", homePageSettings.AboutUsOrder, homePageSettings.ShowAboutUs)
+        };
+
+        return sections.OrderBy(s => s.Order).ToList();
+    }
+
+
 }

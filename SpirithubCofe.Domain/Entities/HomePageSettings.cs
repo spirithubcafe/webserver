@@ -69,6 +69,33 @@ namespace SpirithubCofe.Domain.Entities
         [MaxLength(1000)]
         public string? NewsletterImage { get; set; } // Image path for newsletter section
         
+        // About Us Section
+        public bool ShowAboutUs { get; set; } = false;
+        [MaxLength(200)]
+        public string? AboutUsTitle { get; set; } = "About Us";
+        [MaxLength(200)]
+        public string? AboutUsTitleAr { get; set; } = "من نحن";
+        [MaxLength(500)]
+        public string? AboutUsSubtitle { get; set; } = "Learn more about our story";
+        [MaxLength(500)]
+        public string? AboutUsSubtitleAr { get; set; } = "تعرف على قصتنا";
+        [MaxLength(2000)]
+        public string? AboutUsText { get; set; }
+        [MaxLength(2000)]
+        public string? AboutUsTextAr { get; set; }
+        public string? AboutUsBgType { get; set; } = "color"; // color, image, video
+        public string? AboutUsBgValue { get; set; } = "#ffffff"; // color code, image path, or video path
+        [MaxLength(1000)]
+        public string? AboutUsImage { get; set; } // Image path for about us section
+        
+        // Section Display Order
+        public int SlideshowOrder { get; set; } = 1;
+        public int CategoriesOrder { get; set; } = 2;
+        public int MissionOrder { get; set; } = 3;
+        public int LatestProductsOrder { get; set; } = 4;
+        public int AboutUsOrder { get; set; } = 5;
+        public int NewsletterOrder { get; set; } = 6;
+        
         // Metadata
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

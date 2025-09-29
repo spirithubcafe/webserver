@@ -1766,6 +1766,9 @@
   .order-2 {
     order: 2;
   }
+  .order-first {
+    order: -9999;
+  }
   .col-12 {
     grid-column: 12;
   }
@@ -3341,6 +3344,9 @@
   }
   .object-center {
     object-position: center;
+  }
+  .p-1 {
+    padding: calc(var(--spacing) * 1);
   }
   .p-2 {
     padding: calc(var(--spacing) * 2);
@@ -4931,6 +4937,11 @@
       cursor: not-allowed;
     }
   }
+  .disabled\:opacity-30 {
+    &:disabled {
+      opacity: 30%;
+    }
+  }
   .disabled\:opacity-50 {
     &:disabled {
       opacity: 50%;
@@ -5091,6 +5102,11 @@
   .lg\:order-2 {
     @media (width >= 64rem) {
       order: 2;
+    }
+  }
+  .lg\:order-last {
+    @media (width >= 64rem) {
+      order: 9999;
     }
   }
   .lg\:col-span-2 {
