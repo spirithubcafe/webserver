@@ -23,12 +23,12 @@
 <ProductQuickViewModal Product="selectedProduct" IsVisible="isQuickViewVisible" OnClose="CloseQuickView" />
 
 <!-- Hero Section -->
-<section class="relative bg-gradient-to-br from-amber-50 to-amber-100 py-16">
+<section class="relative bg-gradient-to-br from-stone-50 to-stone-100 py-16">
     <div class="absolute inset-0 bg-black bg-opacity-5"></div>
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
             <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                Premium <span class="text-amber-600">Coffee</span> Collection
+                Premium <span class="text-stone-600">Coffee</span> Collection
             </h1>
             <p class="text-xl text-gray-600 max-w-2xl mx-auto">
                 Discover our carefully curated selection of single-origin beans and signature blends from around the world.
@@ -76,7 +76,7 @@
                             @bind="searchQuery"
                             @oninput="OnSearchInput"
                             placeholder="@Localizer["SearchCoffee"]"
-                            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors duration-200"
+                            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-stone-500 focus:border-stone-500 transition-colors duration-200"
                         />
                     </div>
                 </div>
@@ -84,7 +84,7 @@
                 <!-- Category Filter -->
                 <div class="flex items-center space-x-4">
                     <label class="text-sm font-medium text-gray-700">@Localizer["Category"]:</label>
-                    <select @bind="selectedCategory" class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 min-w-48">
+                    <select @bind="selectedCategory" class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-stone-500 focus:border-stone-500 min-w-48">
                         <option value="">@Localizer["AllCategories"]</option>
                         @foreach (var cat in categories)
                         {
@@ -96,7 +96,7 @@
                 <!-- Sort Options -->
                 <div class="flex items-center space-x-4">
                     <label class="text-sm font-medium text-gray-700">@Localizer["SortBy"]:</label>
-                    <select @bind="sortOption" class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                    <select @bind="sortOption" class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-stone-500 focus:border-stone-500">
                         <option value="name">@Localizer["NameAZ"]</option>
                         <option value="price-low">@Localizer["PriceLowToHigh"]</option>
                         <option value="price-high">@Localizer["PriceHighToLow"]</option>
@@ -113,9 +113,9 @@
                 <span class="text-sm text-gray-600">@Localizer["ActiveFilters"]:</span>
                 @if (!string.IsNullOrEmpty(selectedCategory))
                 {
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-amber-100 text-amber-800">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-stone-100 text-stone-800">
                         @Localizer["Category"]: @GetCategoryDisplayName(selectedCategory)
-                        <button @onclick="() => ClearCategoryFilter()" class="ml-2 hover:text-amber-900">
+                        <button @onclick="() => ClearCategoryFilter()" class="ml-2 hover:text-stone-900">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                             </svg>
@@ -124,16 +124,16 @@
                 }
                 @if (!string.IsNullOrEmpty(searchQuery))
                 {
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-amber-100 text-amber-800">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-stone-100 text-stone-800">
                         @Localizer["Search"]: "@searchQuery"
-                        <button @onclick="ClearSearch" class="ml-2 hover:text-amber-900">
+                        <button @onclick="ClearSearch" class="ml-2 hover:text-stone-900">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                             </svg>
                         </button>
                     </span>
                 }
-                <button @onclick="ClearAllFilters" class="text-sm text-amber-600 hover:text-amber-700 font-medium">@Localizer["ClearAll"]</button>
+                <button @onclick="ClearAllFilters" class="text-sm text-stone-600 hover:text-stone-700 font-medium">@Localizer["ClearAll"]</button>
             </div>
         }
     </div>
@@ -196,7 +196,7 @@
                 {
                     <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col">
                         <!-- Product Image -->
-                        <div @onclick="() => NavigateToProduct(product.Id)" class="block relative aspect-square bg-gradient-to-br from-amber-50 to-amber-100 cursor-pointer">
+                        <div @onclick="() => NavigateToProduct(product.Id)" class="block relative aspect-square bg-gradient-to-br from-stone-50 to-stone-100 cursor-pointer">
                             @if (product.GalleryImages?.Any() == true)
                             {
                                 <img 
@@ -208,7 +208,7 @@
                             else
                             {
                                 <div class="w-full h-full flex items-center justify-center">
-                                    <svg class="w-20 h-20 text-amber-300" fill="currentColor" viewBox="0 0 20 20">
+                                    <svg class="w-20 h-20 text-stone-400" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
                                     </svg>
                                 </div>
@@ -223,7 +223,7 @@
                                 class="bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110"
                                 title="Quick view"
                             >
-                                <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-stone-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                 </svg>
@@ -236,7 +236,7 @@
                                 title="Quick add to cart"
                             >
  
-                                            <svg class="w-5 h-5 text-amber-600" viewBox="0 0 24 24" fill="none">
+                                            <svg class="w-5 h-5 text-stone-600" viewBox="0 0 24 24" fill="none">
                 <path
                     d="M7.5 18C8.32843 18 9 18.6716 9 19.5C9 20.3284 8.32843 21 7.5 21C6.67157 21 6 20.3284 6 19.5C6 18.6716 6.67157 18 7.5 18Z"
                     stroke="currentColor" stroke-width="1.5" />
@@ -254,12 +254,12 @@
                         <div class="p-6 flex flex-col h-full">
                             <div class="flex-grow">
                                 <div class="flex items-start justify-between mb-2">
-                                    <div @onclick="() => NavigateToProduct(product.Id)" class="hover:text-amber-600 transition-colors cursor-pointer">
+                                    <div @onclick="() => NavigateToProduct(product.Id)" class="hover:text-stone-700 transition-colors cursor-pointer">
                                         <h3 class="text-lg font-semibold text-gray-900 line-clamp-2">@GetProductName(product)</h3>
                                     </div>
                                 </div>
                                 
-                                <p class="text-sm text-amber-600 mb-4">@(product.Category != null ? GetCategoryName(product.Category) : "")</p>
+                                <p class="text-sm text-stone-600 mb-4">@(product.Category != null ? GetCategoryName(product.Category) : "")</p>
                                 
                                 <!-- Price -->
                                 <div class="mb-4">
@@ -300,7 +300,7 @@
                                     
                                     <button 
                                         @onclick="() => AddToCart(product.Id)"
-                                        class="flex-1 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2"
+                                        class="flex-1 bg-stone-600 hover:bg-stone-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2"
                                     >
 
 
