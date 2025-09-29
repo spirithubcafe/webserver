@@ -10,6 +10,7 @@
 @using SpirithubCofe.Web.Components.Shared
 @using SpirithubCofe.Langs
 @using System.ComponentModel.DataAnnotations
+@layout SpirithubCofe.Web.Components.Layout.PublicLayout
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 @inject ProductService ProductService
@@ -48,20 +49,27 @@ else if (product == null)
 }
 else
 {
-    <!-- Breadcrumb -->
-    <nav class="bg-gray-50 px-4 py-3">
-        <div class="container mx-auto">
-            <ol class="flex items-center space-x-2 text-sm text-gray-600">
-                <li>
-                    <a href="/" class="hover:text-amber-600">@Loc["Home"]</a>
-                </li>
-                <li>
-                    <a href="/products" class="hover:text-amber-600">@Loc["Products"]</a>
-                </li>
-                <li class="text-gray-400">@GetLocalizedProductName()</li>
-            </ol>
+    <!-- Product Header Section -->
+    <div class="bg-gradient-to-r from-amber-600 to-amber-700 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center">
+                <div class="flex-1">
+                    <div class="flex items-center space-x-2 text-amber-100 text-sm">
+                        <a href="/" class="hover:text-white transition-colors">@Loc["Home"]</a>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <a href="/products" class="hover:text-white transition-colors">@Loc["Products"]</a>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>@GetLocalizedProductName()</span>
+                    </div>
+                </div>
+
+            </div>
         </div>
-    </nav>
+    </div>
 
     <div class="container mx-auto px-4 py-8">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">

@@ -216,8 +216,8 @@
                         </div>
                         
                         <!-- Quick Action Buttons -->
-                        <div class="absolute top-4 right-4 flex flex-col space-y-2 z-10">
-                            <!-- Quick View Button -->
+                        <div class="absolute top-4 flex justify-between w-full px-4 z-10">
+                            <!-- Quick View Button (Left) -->
                             <button 
                                 @onclick="() => ShowQuickView(product.Id)"
                                 class="bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110"
@@ -229,14 +229,14 @@
                                 </svg>
                             </button>
                             
-                            <!-- Quick Add Button -->
+                            <!-- Quick Add Button (Right) -->
                             <button 
                                 @onclick="() => QuickAddToCart(product.Id)"
                                 class="bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110"
                                 title="Quick add to cart"
                             >
                                 <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v5m0-5h4m-4 0V8m0 5H9"></path>
                                 </svg>
                             </button>
                         </div>
