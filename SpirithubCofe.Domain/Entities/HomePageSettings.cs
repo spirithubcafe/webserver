@@ -64,6 +64,10 @@ namespace SpirithubCofe.Domain.Entities
         public string? NewsletterSubtitle { get; set; } = "Subscribe to get the latest news and offers";
         [MaxLength(500)]
         public string? NewsletterSubtitleAr { get; set; } = "اشترك للحصول على آخر الأخبار والعروض";
+        public string? NewsletterBgType { get; set; } = "color"; // color, image, video
+        public string? NewsletterBgValue { get; set; } = "#f8f9fa"; // color code, image path, or video path
+        [MaxLength(1000)]
+        public string? NewsletterImage { get; set; } // Image path for newsletter section
         
         // Metadata
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

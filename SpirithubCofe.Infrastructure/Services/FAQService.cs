@@ -304,7 +304,9 @@ public class FAQService : IFAQService
     // FAQ Page Settings
     public async Task<FAQPageDto> GetFAQPageSettingsAsync()
     {
-        var settings = await _context.FAQPages.FirstOrDefaultAsync();
+        var settings = await _context.FAQPages
+            .OrderBy(f => f.Id)
+            .FirstOrDefaultAsync();
         
         if (settings == null)
         {
@@ -341,7 +343,9 @@ public class FAQService : IFAQService
 
     public async Task<FAQPageDto> UpdateFAQPageSettingsAsync(FAQPageDto updateDto)
     {
-        var settings = await _context.FAQPages.FirstOrDefaultAsync();
+        var settings = await _context.FAQPages
+            .OrderBy(f => f.Id)
+            .FirstOrDefaultAsync();
         
         if (settings == null)
         {

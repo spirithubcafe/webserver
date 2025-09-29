@@ -282,4 +282,19 @@ public class ProductService
         await _context.SaveChangesAsync();
         return product;
     }
+
+    /// <summary>
+    /// Get latest products for homepage display
+    /// </summary>
+    public async Task<List<Product>> GetLatestProductsAsync(int count = 6)
+    {
+        return await _context.Products
+            .Include(p => p.Category)
+            .Include(p => p.MainImage)
+            .Include(p => p.Variants.Where(v => v.IsActive))
+            .Where(p => p.IsActive)
+            .OrderByDescending(p => p.CreatedAt)
+            .Take(count)
+            .ToListAsync();
+    }
 }

@@ -156,9 +156,25 @@
                                     </div>
                                     <div class="space-y-2">
                                         <label class="block text-sm font-semibold text-gray-700">Background Value</label>
-                                        <InputText @bind-Value="settings.CategoriesBgValue" 
-                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
-                                            placeholder="@(settings.CategoriesBgType == "color" ? "#f8f9fa" : "/images/background.jpg")" />
+                                        @if (settings.CategoriesBgType == "color")
+                                        {
+                                            <div class="flex items-center space-x-3">
+                                                <input type="color" @bind="settings.CategoriesBgValue" 
+                                                    class="w-16 h-12 border border-gray-200 rounded-lg cursor-pointer" />
+                                                <InputText @bind-Value="settings.CategoriesBgValue" 
+                                                    class="flex-1 px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                                    placeholder="#f8f9fa" />
+                                            </div>
+                                        }
+                                        else if (settings.CategoriesBgType == "image" || settings.CategoriesBgType == "video")
+                                        {
+                                            <FileUpload 
+                                                FileType="@(settings.CategoriesBgType == "image" ? "image" : "video")"
+                                                Folder="homepage/categories"
+                                                Prefix="categories-bg"
+                                                @bind-CurrentFileUrl="settings.CategoriesBgValue"
+                                                AltText="Categories Background" />
+                                        }
                                     </div>
                                 </div>
                             </div>
@@ -251,9 +267,25 @@
                                     </div>
                                     <div class="space-y-2">
                                         <label class="block text-sm font-semibold text-gray-700">Background Value</label>
-                                        <InputText @bind-Value="settings.MissionBgValue" 
-                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
-                                            placeholder="@(settings.MissionBgType == "color" ? "#ffffff" : "/images/mission-bg.jpg")" />
+                                        @if (settings.MissionBgType == "color")
+                                        {
+                                            <div class="flex items-center space-x-3">
+                                                <input type="color" @bind="settings.MissionBgValue" 
+                                                    class="w-16 h-12 border border-gray-200 rounded-lg cursor-pointer" />
+                                                <InputText @bind-Value="settings.MissionBgValue" 
+                                                    class="flex-1 px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                                    placeholder="#ffffff" />
+                                            </div>
+                                        }
+                                        else if (settings.MissionBgType == "image" || settings.MissionBgType == "video")
+                                        {
+                                            <FileUpload 
+                                                FileType="@(settings.MissionBgType == "image" ? "image" : "video")"
+                                                Folder="homepage/mission"
+                                                Prefix="mission-bg"
+                                                @bind-CurrentFileUrl="settings.MissionBgValue"
+                                                AltText="Mission Background" />
+                                        }
                                     </div>
                                 </div>
                             </div>
@@ -336,9 +368,25 @@
                                     </div>
                                     <div class="space-y-2">
                                         <label class="block text-sm font-semibold text-gray-700">Background Value</label>
-                                        <InputText @bind-Value="settings.LatestProductsBgValue" 
-                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
-                                            placeholder="@(settings.LatestProductsBgType == "color" ? "#f8f9fa" : "/images/products-bg.jpg")" />
+                                        @if (settings.LatestProductsBgType == "color")
+                                        {
+                                            <div class="flex items-center space-x-3">
+                                                <input type="color" @bind="settings.LatestProductsBgValue" 
+                                                    class="w-16 h-12 border border-gray-200 rounded-lg cursor-pointer" />
+                                                <InputText @bind-Value="settings.LatestProductsBgValue" 
+                                                    class="flex-1 px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                                    placeholder="#f8f9fa" />
+                                            </div>
+                                        }
+                                        else if (settings.LatestProductsBgType == "image" || settings.LatestProductsBgType == "video")
+                                        {
+                                            <FileUpload 
+                                                FileType="@(settings.LatestProductsBgType == "image" ? "image" : "video")"
+                                                Folder="homepage/products"
+                                                Prefix="products-bg"
+                                                @bind-CurrentFileUrl="settings.LatestProductsBgValue"
+                                                AltText="Latest Products Background" />
+                                        }
                                     </div>
                                 </div>
                             </div>
@@ -401,6 +449,60 @@
                                             placeholder="اشترك للحصول على آخر الأخبار والعروض" dir="rtl" />
                                     </div>
                                 </div>
+
+                                <!-- Background Settings -->
+                                <div class="space-y-4">
+                                    <h4 class="text-md font-semibold text-gray-800">Background Settings</h4>
+                                    
+                                    <!-- Background Type Selection -->
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Background Type</label>
+                                        <select @onchange="OnNewsletterBgTypeChanged" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white">
+                                            <option value="color" selected="@(settings.NewsletterBgType == "color")">Color</option>
+                                            <option value="image" selected="@(settings.NewsletterBgType == "image")">Image</option>
+                                            <option value="video" selected="@(settings.NewsletterBgType == "video")">Video</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Color Picker (when color is selected) -->
+                                    @if (settings.NewsletterBgType == "color")
+                                    {
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-semibold text-gray-700">Background Color</label>
+                                            <div class="flex gap-2">
+                                                <input type="color" @bind="settings.NewsletterBgValue" 
+                                                       class="w-12 h-10 border border-gray-200 rounded cursor-pointer" />
+                                                <InputText @bind-Value="settings.NewsletterBgValue" 
+                                                           class="flex-1 px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                                           placeholder="#ffffff" />
+                                            </div>
+                                        </div>
+                                    }
+
+                                    <!-- File Upload (when image or video is selected) -->
+                                    @if (settings.NewsletterBgType == "image" || settings.NewsletterBgType == "video")
+                                    {
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-semibold text-gray-700">
+                                                @(settings.NewsletterBgType == "image" ? "Background Image" : "Background Video")
+                                            </label>
+                                            <FileUpload FileType="@(settings.NewsletterBgType == "image" ? "image" : "video")"
+                                                        Folder="backgrounds"
+                                                        Prefix="@($"newsletter-{settings.NewsletterBgType}")"
+                                                        @bind-CurrentFileUrl="settings.NewsletterBgValue" />
+                                        </div>
+                                    }
+                                </div>
+
+                                <!-- Newsletter Section Image -->
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-semibold text-gray-700">Newsletter Section Image</label>
+                                    <p class="text-sm text-gray-600">This image will be displayed alongside the email input form</p>
+                                    <FileUpload FileType="image"
+                                                Folder="newsletter"
+                                                Prefix="newsletter-section"
+                                                @bind-CurrentFileUrl="settings.NewsletterImage" />
+                                </div>
                             </div>
                         }
                     </div>
@@ -454,5 +556,21 @@
         }
         
         StateHasChanged();
+    }
+
+    private void OnNewsletterBgTypeChanged(ChangeEventArgs e)
+    {
+        if (settings != null && e.Value != null)
+        {
+            settings.NewsletterBgType = e.Value.ToString();
+            // Reset the background value when type changes
+            settings.NewsletterBgValue = settings.NewsletterBgType switch
+            {
+                "color" => "#f8f9fa",
+                "image" => "",
+                "video" => "",
+                _ => "#f8f9fa"
+            };
+        }
     }
 }

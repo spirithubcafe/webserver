@@ -19,7 +19,9 @@ namespace SpirithubCofe.Web.Services
         {
             try
             {
-                var settings = await _context.HomePageSettings.FirstOrDefaultAsync();
+                var settings = await _context.HomePageSettings
+                    .OrderBy(h => h.Id)
+                    .FirstOrDefaultAsync();
                 
                 if (settings == null)
                 {
@@ -42,7 +44,9 @@ namespace SpirithubCofe.Web.Services
         {
             try
             {
-                var existingSettings = await _context.HomePageSettings.FirstOrDefaultAsync();
+                var existingSettings = await _context.HomePageSettings
+                    .OrderBy(h => h.Id)
+                    .FirstOrDefaultAsync();
                 
                 if (existingSettings == null)
                 {
