@@ -26,9 +26,12 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
                     <h2 class="text-3xl font-bold text-gray-900 mb-4">@GetCategoriesTitle()</h2>
-                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                        @GetCategoriesSubtitle()
-                    </p>
+                    @if (!IsEmptySubtitle(GetCategoriesSubtitle()))
+                    {
+                        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                            @GetCategoriesSubtitle()
+                        </p>
+                    }
                 </div>
 
                 <div class="flex justify-center">
@@ -78,9 +81,12 @@
                     <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
                         @GetMissionTitle()
                     </h2>
-                    <p class="text-xl text-gray-700 mb-8 leading-relaxed">
-                        @GetMissionSubtitle()
-                    </p>
+                    @if (!IsEmptySubtitle(GetMissionSubtitle()))
+                    {
+                        <p class="text-xl text-gray-700 mb-8 leading-relaxed">
+                            @GetMissionSubtitle()
+                        </p>
+                    }
                     @if (!string.IsNullOrEmpty(GetMissionText()))
                     {
                         <div class="prose prose-lg mx-auto text-gray-600 leading-relaxed">
@@ -97,7 +103,10 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
                     <h2 class="text-3xl font-bold text-gray-900 mb-4">@GetLatestProductsTitle()</h2>
-                    <p class="text-lg text-gray-600">@GetLatestProductsSubtitle()</p>
+                    @if (!IsEmptySubtitle(GetLatestProductsSubtitle()))
+                    {
+                        <p class="text-lg text-gray-600">@GetLatestProductsSubtitle()</p>
+                    }
                 </div>
 
                 @if (latestProducts.Any())
@@ -176,9 +185,12 @@
                     <!-- Newsletter Content -->
                     <div class="order-1 lg:order-2 @(string.IsNullOrEmpty(homePageSettings.NewsletterImage) ? "col-span-2 text-center max-w-4xl mx-auto" : "")">
                         <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">@GetNewsletterTitle()</h2>
-                        <p class="text-xl text-gray-600 mb-8">
-                            @GetNewsletterSubtitle()
-                        </p>
+                        @if (!IsEmptySubtitle(GetNewsletterSubtitle()))
+                        {
+                            <p class="text-xl text-gray-600 mb-8">
+                                @GetNewsletterSubtitle()
+                            </p>
+                        }
                         <div class="max-w-md @(string.IsNullOrEmpty(homePageSettings.NewsletterImage) ? "mx-auto" : "")">
                             <div class="flex flex-col sm:flex-row gap-3">
                                 <input type="email" 
@@ -202,9 +214,12 @@
                     <!-- About Us Content -->
                     <div class="@(string.IsNullOrEmpty(homePageSettings.AboutUsImage) ? "col-span-2 text-center max-w-4xl mx-auto" : "")">
                         <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">@GetAboutUsTitle()</h2>
-                        <p class="text-xl text-gray-600 mb-6">
-                            @GetAboutUsSubtitle()
-                        </p>
+                        @if (!IsEmptySubtitle(GetAboutUsSubtitle()))
+                        {
+                            <p class="text-xl text-gray-600 mb-6">
+                                @GetAboutUsSubtitle()
+                            </p>
+                        }
                         @if (!string.IsNullOrEmpty(GetAboutUsText()))
                         {
                             <div class="prose prose-lg max-w-none text-gray-700">
@@ -554,5 +569,56 @@
         return sections.OrderBy(s => s.Order).ToList();
     }
 
+    // Helper methods to check if subtitles have custom content
+    private bool HasCategoriesSubtitle()
+    {
+        if (homePageSettings == null) return false;
+        return IsArabic ? !string.IsNullOrWhiteSpace(homePageSettings.CategoriesSubtitleAr) 
+                        : !string.IsNullOrWhiteSpace(homePageSettings.CategoriesSubtitle);
+    }
+
+    private bool HasMissionSubtitle()
+    {
+        if (homePageSettings == null) return false;
+        return IsArabic ? !string.IsNullOrWhiteSpace(homePageSettings.MissionSubtitleAr) 
+                        : !string.IsNullOrWhiteSpace(homePageSettings.MissionSubtitle);
+    }
+
+    private bool HasLatestProductsSubtitle()
+    {
+        if (homePageSettings == null) return false;
+        return IsArabic ? !string.IsNullOrWhiteSpace(homePageSettings.LatestProductsSubtitleAr) 
+                        : !string.IsNullOrWhiteSpace(homePageSettings.LatestProductsSubtitle);
+    }
+
+    private bool HasNewsletterSubtitle()
+    {
+        if (homePageSettings == null) return false;
+        return IsArabic ? !string.IsNullOrWhiteSpace(homePageSettings.NewsletterSubtitleAr) 
+                        : !string.IsNullOrWhiteSpace(homePageSettings.NewsletterSubtitle);
+    }
+
+    private bool HasAboutUsSubtitle()
+    {
+        if (homePageSettings == null) return false;
+        return IsArabic ? !string.IsNullOrWhiteSpace(homePageSettings.AboutUsSubtitleAr) 
+                        : !string.IsNullOrWhiteSpace(homePageSettings.AboutUsSubtitle);
+    }
+
+    private bool IsEmptySubtitle(string subtitle)
+    {
+        // Check if subtitle is empty or contains only default localized text
+        if (string.IsNullOrWhiteSpace(subtitle)) return true;
+        
+        // Check against common default values
+        var defaultValues = new[] { 
+            Localizer["DiscoverCoffeeCategories"], 
+            Localizer["PerfectCoffeeExperience"], 
+            Localizer["DiscoverPopularSelections"], 
+            Localizer["StayUpdated"] 
+        };
+        
+        return defaultValues.Any(defaultVal => string.Equals(subtitle, defaultVal, StringComparison.OrdinalIgnoreCase));
+    }
 
 }
