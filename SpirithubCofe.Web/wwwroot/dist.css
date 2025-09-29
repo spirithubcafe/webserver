@@ -1760,11 +1760,20 @@
   .z-\[9999\] {
     z-index: 9999;
   }
+  .order-1 {
+    order: 1;
+  }
+  .order-2 {
+    order: 2;
+  }
   .col-12 {
     grid-column: 12;
   }
   .col-span-1 {
     grid-column: span 1 / span 1;
+  }
+  .col-span-2 {
+    grid-column: span 2 / span 2;
   }
   .col-span-full {
     grid-column: 1 / -1;
@@ -2191,6 +2200,9 @@
   }
   .h-96 {
     height: calc(var(--spacing) * 96);
+  }
+  .h-auto {
+    height: auto;
   }
   .h-full {
     height: 100%;
@@ -2971,6 +2983,12 @@
     background-color: color-mix(in srgb, #fff 80%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
       background-color: color-mix(in oklab, var(--color-white) 80%, transparent);
+    }
+  }
+  .bg-white\/90 {
+    background-color: color-mix(in srgb, #fff 90%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-white) 90%, transparent);
     }
   }
   .bg-yellow-50 {
@@ -5065,6 +5083,16 @@
       line-height: var(--tw-leading, var(--text-6xl--line-height));
     }
   }
+  .lg\:order-1 {
+    @media (width >= 64rem) {
+      order: 1;
+    }
+  }
+  .lg\:order-2 {
+    @media (width >= 64rem) {
+      order: 2;
+    }
+  }
   .lg\:col-span-2 {
     @media (width >= 64rem) {
       grid-column: span 2 / span 2;
@@ -5193,6 +5221,12 @@
   .lg\:pl-0 {
     @media (width >= 64rem) {
       padding-left: calc(var(--spacing) * 0);
+    }
+  }
+  .lg\:text-4xl {
+    @media (width >= 64rem) {
+      font-size: var(--text-4xl);
+      line-height: var(--tw-leading, var(--text-4xl--line-height));
     }
   }
   .xl\:grid-cols-3 {

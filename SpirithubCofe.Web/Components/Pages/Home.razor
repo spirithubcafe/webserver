@@ -162,20 +162,35 @@
 <!-- Newsletter Section -->
 @if (homePageSettings?.ShowNewsletter == true)
 {
-<section class="py-16 bg-gray-100">
-    <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-bold text-gray-900 mb-4">@GetNewsletterTitle()</h2>
-        <p class="text-xl text-gray-600 mb-8">
-            @GetNewsletterSubtitle()
-        </p>
-        <div class="max-w-md mx-auto">
-            <div class="flex flex-col sm:flex-row gap-3">
-                <input type="email" 
-                       placeholder="@Localizer["EnterYourEmail"]" 
-                       class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent" />
-                <button class="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
-                    @Localizer["Subscribe"]
-                </button>
+<section class="py-16 @GetNewsletterBackgroundClass()" style="@GetNewsletterBackgroundStyle()">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <!-- Newsletter Image -->
+            @if (!string.IsNullOrEmpty(homePageSettings.NewsletterImage))
+            {
+                <div class="order-2 lg:order-1">
+                    <img src="@homePageSettings.NewsletterImage" 
+                         alt="@GetNewsletterTitle()" 
+                         class="w-full h-auto rounded-lg shadow-lg object-cover" />
+                </div>
+            }
+            
+            <!-- Newsletter Content -->
+            <div class="order-1 lg:order-2 @(string.IsNullOrEmpty(homePageSettings.NewsletterImage) ? "col-span-2 text-center max-w-4xl mx-auto" : "")">
+                <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">@GetNewsletterTitle()</h2>
+                <p class="text-xl text-gray-600 mb-8">
+                    @GetNewsletterSubtitle()
+                </p>
+                <div class="max-w-md @(string.IsNullOrEmpty(homePageSettings.NewsletterImage) ? "mx-auto" : "")">
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <input type="email" 
+                               placeholder="@Localizer["EnterYourEmail"]" 
+                               class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/90" />
+                        <button class="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                            @Localizer["Subscribe"]
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -384,6 +399,31 @@
         return IsArabic && !string.IsNullOrEmpty(homePageSettings.NewsletterSubtitleAr) 
             ? homePageSettings.NewsletterSubtitleAr 
             : (!string.IsNullOrEmpty(homePageSettings.NewsletterSubtitle) ? homePageSettings.NewsletterSubtitle : Localizer["StayUpdated"]);
+    }
+
+    private string GetNewsletterBackgroundClass()
+    {
+        if (homePageSettings?.NewsletterBgType == "color")
+        {
+            return "";
+        }
+        return "bg-gray-100";
+    }
+
+    private string GetNewsletterBackgroundStyle()
+    {
+        if (homePageSettings == null) return "";
+        
+        return homePageSettings.NewsletterBgType switch
+        {
+            "color" when !string.IsNullOrEmpty(homePageSettings.NewsletterBgValue) => 
+                $"background-color: {homePageSettings.NewsletterBgValue};",
+            "image" when !string.IsNullOrEmpty(homePageSettings.NewsletterBgValue) => 
+                $"background-image: url('{homePageSettings.NewsletterBgValue}'); background-size: cover; background-position: center;",
+            "video" when !string.IsNullOrEmpty(homePageSettings.NewsletterBgValue) => 
+                $"background: url('{homePageSettings.NewsletterBgValue}') center/cover;",
+            _ => ""
+        };
     }
 
     // Product Helper Methods
