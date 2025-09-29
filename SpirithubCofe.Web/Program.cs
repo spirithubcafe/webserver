@@ -132,6 +132,7 @@ builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ReviewService>();
 builder.Services.AddScoped<ShippingService>();
 builder.Services.AddScoped<ShippingMethodService>();
+builder.Services.AddScoped<HomePageSettingsService>();
 
 // Register user login service
 builder.Services.AddScoped<UserLoginService>();

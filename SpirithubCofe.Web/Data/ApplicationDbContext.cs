@@ -26,6 +26,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<City> Cities { get; set; }
     public DbSet<ShippingMethod> ShippingMethods { get; set; }
     public DbSet<NoolShippingRate> NoolShippingRates { get; set; }
+    public DbSet<HomePageSettings> HomePageSettings { get; set; }
     
     protected override void OnModelCreating(ModelBuilder builder)
     {

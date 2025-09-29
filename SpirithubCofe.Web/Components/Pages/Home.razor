@@ -1,23 +1,28 @@
 ﻿@page "/"
 @inject IStringLocalizer<Resources> Localizer
 @inject CategoryService CategoryService
+@inject HomePageSettingsService HomePageSettingsService
 @using SpirithubCofe.Web.Components.Shared
 @using SpirithubCofe.Domain.Entities
+@using SpirithubCofe.Web.Services
 
 <PageTitle>@Localizer["Home"] - @Localizer["SiteTitle"]</PageTitle>
 
 <!-- Hero Slideshow Section -->
-<HeroSlideshow />
+@if (homePageSettings?.ShowSlideshow == true)
+{
+    <HeroSlideshow />
+}
 
 <!-- Categories Section -->
-@if (homepageCategories.Any())
+@if (homePageSettings?.ShowCategories == true && homepageCategories.Any())
 {
-    <section class="py-16 bg-white border-b border-gray-100">
+    <section class="py-16 @GetCategoriesSectionStyle()" style="@GetCategoriesBackgroundStyle()">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-900 mb-4">@Localizer["ExploreCategories"]</h2>
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">@GetCategoriesTitle()</h2>
                 <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                    @Localizer["DiscoverCoffeeCategories"]
+                    @GetCategoriesSubtitle()
                 </p>
             </div>
 
@@ -54,13 +59,15 @@
     </section>
 }
 
-<!-- Features Section -->
-<section class="py-16 bg-white">
+<!-- Mission Section -->
+@if (homePageSettings?.ShowMission == true)
+{
+<section class="py-16 @GetMissionSectionStyle()" style="@GetMissionBackgroundStyle()">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-gray-900 mb-4">@Localizer["WhyChoose"]</h2>
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">@GetMissionTitle()</h2>
             <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                @Localizer["PerfectCoffeeExperience"]
+                @GetMissionSubtitle()
             </p>
         </div>
 
@@ -106,13 +113,16 @@
         </div>
     </div>
 </section>
+}
 
 <!-- Product Showcase -->
-<section class="py-16 bg-gray-50">
+@if (homePageSettings?.ShowLatestProducts == true)
+{
+<section class="py-16 @GetLatestProductsSectionStyle()" style="@GetLatestProductsBackgroundStyle()">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-gray-900 mb-4">@Localizer["FeaturedCoffee"]</h2>
-            <p class="text-lg text-gray-600">@Localizer["DiscoverPopularSelections"]</p>
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">@GetLatestProductsTitle()</h2>
+            <p class="text-lg text-gray-600">@GetLatestProductsSubtitle()</p>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -169,6 +179,30 @@
         </div>
     </div>
 </section>
+}
+
+<!-- Newsletter Section -->
+@if (homePageSettings?.ShowNewsletter == true)
+{
+<section class="py-16 bg-gray-100">
+    <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">@GetNewsletterTitle()</h2>
+        <p class="text-xl text-gray-600 mb-8">
+            @GetNewsletterSubtitle()
+        </p>
+        <div class="max-w-md mx-auto">
+            <div class="flex flex-col sm:flex-row gap-3">
+                <input type="email" 
+                       placeholder="@Localizer["EnterYourEmail"]" 
+                       class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent" />
+                <button class="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                    @Localizer["Subscribe"]
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+}
 
 <!-- CTA Section -->
 <section class="py-16 bg-amber-600 text-white">
@@ -190,18 +224,31 @@
 
 @code {
     private List<Category> homepageCategories = new();
+    private HomePageSettings? homePageSettings;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            homepageCategories = await CategoryService.GetHomepageCategoriesAsync();
+            homePageSettings = await HomePageSettingsService.GetSettingsAsync();
+            
+            if (homePageSettings?.ShowCategories == true)
+            {
+                homepageCategories = await CategoryService.GetHomepageCategoriesAsync();
+                
+                // Limit categories based on settings
+                if (homePageSettings.CategoriesDisplayCount > 0)
+                {
+                    homepageCategories = homepageCategories.Take(homePageSettings.CategoriesDisplayCount).ToList();
+                }
+            }
         }
         catch (Exception ex)
         {
             // Log error in production
-            Console.WriteLine($"Error loading homepage categories: {ex.Message}");
+            Console.WriteLine($"Error loading homepage data: {ex.Message}");
             homepageCategories = new();
+            homePageSettings = null;
         }
     }
 
@@ -211,5 +258,144 @@
         return currentCulture.StartsWith("ar") && !string.IsNullOrEmpty(category.NameAr) 
             ? category.NameAr 
             : category.Name;
+    }
+
+    private bool IsArabic => System.Globalization.CultureInfo.CurrentUICulture.Name.StartsWith("ar");
+
+    // Categories Section Methods
+    private string GetCategoriesTitle()
+    {
+        if (homePageSettings == null) return Localizer["ExploreCategories"];
+        return IsArabic && !string.IsNullOrEmpty(homePageSettings.CategoriesTitleAr) 
+            ? homePageSettings.CategoriesTitleAr 
+            : (!string.IsNullOrEmpty(homePageSettings.CategoriesTitle) ? homePageSettings.CategoriesTitle : Localizer["ExploreCategories"]);
+    }
+
+    private string GetCategoriesSubtitle()
+    {
+        if (homePageSettings == null) return Localizer["DiscoverCoffeeCategories"];
+        return IsArabic && !string.IsNullOrEmpty(homePageSettings.CategoriesSubtitleAr) 
+            ? homePageSettings.CategoriesSubtitleAr 
+            : (!string.IsNullOrEmpty(homePageSettings.CategoriesSubtitle) ? homePageSettings.CategoriesSubtitle : Localizer["DiscoverCoffeeCategories"]);
+    }
+
+    private string GetCategoriesSectionStyle()
+    {
+        if (homePageSettings?.CategoriesBgType == "color" && !string.IsNullOrEmpty(homePageSettings.CategoriesBgValue))
+            return "";
+        return "bg-white border-b border-gray-100";
+    }
+
+    private string GetCategoriesBackgroundStyle()
+    {
+        if (homePageSettings == null) return "";
+        
+        return homePageSettings.CategoriesBgType switch
+        {
+            "color" when !string.IsNullOrEmpty(homePageSettings.CategoriesBgValue) => 
+                $"background-color: {homePageSettings.CategoriesBgValue};",
+            "image" when !string.IsNullOrEmpty(homePageSettings.CategoriesBgValue) => 
+                $"background-image: url('{homePageSettings.CategoriesBgValue}'); background-size: cover; background-position: center;",
+            "video" when !string.IsNullOrEmpty(homePageSettings.CategoriesBgValue) => 
+                $"background: url('{homePageSettings.CategoriesBgValue}') center/cover;",
+            _ => ""
+        };
+    }
+
+    // Mission Section Methods
+    private string GetMissionTitle()
+    {
+        if (homePageSettings == null) return Localizer["WhyChoose"];
+        return IsArabic && !string.IsNullOrEmpty(homePageSettings.MissionTitleAr) 
+            ? homePageSettings.MissionTitleAr 
+            : (!string.IsNullOrEmpty(homePageSettings.MissionTitle) ? homePageSettings.MissionTitle : Localizer["WhyChoose"]);
+    }
+
+    private string GetMissionSubtitle()
+    {
+        if (homePageSettings == null) return Localizer["PerfectCoffeeExperience"];
+        return IsArabic && !string.IsNullOrEmpty(homePageSettings.MissionSubtitleAr) 
+            ? homePageSettings.MissionSubtitleAr 
+            : (!string.IsNullOrEmpty(homePageSettings.MissionSubtitle) ? homePageSettings.MissionSubtitle : Localizer["PerfectCoffeeExperience"]);
+    }
+
+    private string GetMissionSectionStyle()
+    {
+        if (homePageSettings?.MissionBgType == "color" && !string.IsNullOrEmpty(homePageSettings.MissionBgValue))
+            return "";
+        return "bg-white";
+    }
+
+    private string GetMissionBackgroundStyle()
+    {
+        if (homePageSettings == null) return "";
+        
+        return homePageSettings.MissionBgType switch
+        {
+            "color" when !string.IsNullOrEmpty(homePageSettings.MissionBgValue) => 
+                $"background-color: {homePageSettings.MissionBgValue};",
+            "image" when !string.IsNullOrEmpty(homePageSettings.MissionBgValue) => 
+                $"background-image: url('{homePageSettings.MissionBgValue}'); background-size: cover; background-position: center;",
+            "video" when !string.IsNullOrEmpty(homePageSettings.MissionBgValue) => 
+                $"background: url('{homePageSettings.MissionBgValue}') center/cover;",
+            _ => ""
+        };
+    }
+
+    // Latest Products Section Methods
+    private string GetLatestProductsTitle()
+    {
+        if (homePageSettings == null) return Localizer["FeaturedCoffee"];
+        return IsArabic && !string.IsNullOrEmpty(homePageSettings.LatestProductsTitleAr) 
+            ? homePageSettings.LatestProductsTitleAr 
+            : (!string.IsNullOrEmpty(homePageSettings.LatestProductsTitle) ? homePageSettings.LatestProductsTitle : Localizer["FeaturedCoffee"]);
+    }
+
+    private string GetLatestProductsSubtitle()
+    {
+        if (homePageSettings == null) return Localizer["DiscoverPopularSelections"];
+        return IsArabic && !string.IsNullOrEmpty(homePageSettings.LatestProductsSubtitleAr) 
+            ? homePageSettings.LatestProductsSubtitleAr 
+            : (!string.IsNullOrEmpty(homePageSettings.LatestProductsSubtitle) ? homePageSettings.LatestProductsSubtitle : Localizer["DiscoverPopularSelections"]);
+    }
+
+    private string GetLatestProductsSectionStyle()
+    {
+        if (homePageSettings?.LatestProductsBgType == "color" && !string.IsNullOrEmpty(homePageSettings.LatestProductsBgValue))
+            return "";
+        return "bg-gray-50";
+    }
+
+    private string GetLatestProductsBackgroundStyle()
+    {
+        if (homePageSettings == null) return "";
+        
+        return homePageSettings.LatestProductsBgType switch
+        {
+            "color" when !string.IsNullOrEmpty(homePageSettings.LatestProductsBgValue) => 
+                $"background-color: {homePageSettings.LatestProductsBgValue};",
+            "image" when !string.IsNullOrEmpty(homePageSettings.LatestProductsBgValue) => 
+                $"background-image: url('{homePageSettings.LatestProductsBgValue}'); background-size: cover; background-position: center;",
+            "video" when !string.IsNullOrEmpty(homePageSettings.LatestProductsBgValue) => 
+                $"background: url('{homePageSettings.LatestProductsBgValue}') center/cover;",
+            _ => ""
+        };
+    }
+
+    // Newsletter Section Methods
+    private string GetNewsletterTitle()
+    {
+        if (homePageSettings == null) return Localizer["Newsletter"];
+        return IsArabic && !string.IsNullOrEmpty(homePageSettings.NewsletterTitleAr) 
+            ? homePageSettings.NewsletterTitleAr 
+            : (!string.IsNullOrEmpty(homePageSettings.NewsletterTitle) ? homePageSettings.NewsletterTitle : Localizer["Newsletter"]);
+    }
+
+    private string GetNewsletterSubtitle()
+    {
+        if (homePageSettings == null) return Localizer["StayUpdated"];
+        return IsArabic && !string.IsNullOrEmpty(homePageSettings.NewsletterSubtitleAr) 
+            ? homePageSettings.NewsletterSubtitleAr 
+            : (!string.IsNullOrEmpty(homePageSettings.NewsletterSubtitle) ? homePageSettings.NewsletterSubtitle : Localizer["StayUpdated"]);
     }
 }
