@@ -102,33 +102,33 @@
 
                 @if (latestProducts.Any())
                 {
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 md:gap-6">
                         @foreach (var product in latestProducts)
                         {
-                            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                                <div class="aspect-square bg-gray-100 relative">
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md hover:border-stone-200 transition-all duration-300 transform hover:-translate-y-1">
+                                <div class="aspect-square bg-gray-50 relative overflow-hidden">
                                     @if (product.MainImage?.ImagePath != null)
                                     {
                                         <img src="@product.MainImage.ImagePath" 
                                              alt="@GetProductName(product)" 
-                                             class="w-full h-full object-cover" />
+                                             class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                                     }
                                     else
                                     {
-                                        <div class="w-full h-full bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center">
-                                            <svg class="w-12 h-12 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <div class="w-full h-full bg-gradient-to-br from-stone-50 to-stone-100 flex items-center justify-center">
+                                            <svg class="w-8 h-8 md:w-10 md:h-10 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                                                       d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                                             </svg>
                                         </div>
                                     }
                                 </div>
-                                <div class="p-6">
-                                    <h3 class="text-lg font-semibold mb-2 line-clamp-1">@GetProductName(product)</h3>
-                                    <p class="text-gray-600 text-sm mb-4 line-clamp-2">@GetProductNotes(product)</p>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-xl font-bold text-amber-600">@GetProductPrice(product)</span>
-                                        <a href="/product/@product.Slug" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-md text-sm transition-colors">
+                                <div class="p-3 md:p-4">
+                                    <h3 class="text-sm md:text-base font-semibold mb-1 md:mb-2 line-clamp-1 text-gray-900">@GetProductName(product)</h3>
+                                    <p class="text-gray-500 text-xs md:text-sm mb-2 md:mb-3 line-clamp-1">@GetProductNotes(product)</p>
+                                    <div class="flex flex-col gap-2">
+                                        <span class="text-lg md:text-xl font-bold text-stone-700">@GetProductPrice(product)</span>
+                                        <a href="/product/@product.Slug" class="bg-stone-600 hover:bg-stone-700 text-white px-3 py-2 rounded-lg text-xs md:text-sm font-medium transition-colors text-center">
                                             @Localizer["ViewProduct"]
                                         </a>
                                     </div>
@@ -140,13 +140,13 @@
                 else
                 {
                     <div class="text-center py-12">
-                        <div class="text-gray-400 mb-4">
+                        <div class="text-stone-400 mb-4">
                             <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                                       d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                             </svg>
                         </div>
-                        <p class="text-gray-500 text-lg">@Localizer["NoProductsAvailable"]</p>
+                        <p class="text-stone-500 text-lg">@Localizer["NoProductsAvailable"]</p>
                     </div>
                 }
 
