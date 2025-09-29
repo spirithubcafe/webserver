@@ -71,72 +71,96 @@ else
         </div>
     </div>
 
-    <div class="container mx-auto px-4 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12">
             <!-- Product Images -->
-            <div>
-                <!-- Main Image -->
-                <div class="relative mb-4">
-                    <img src="@currentImagePath" 
-                         alt="@GetLocalizedText(product.ImageAlt, product.ImageAltAr)"
-                         class="w-full h-96 object-cover rounded-lg cursor-pointer shadow-lg"
-                         @onclick="OpenImageModal" />
+            <div class="space-y-4">
+                <!-- Main Image - Square with proper aspect ratio -->
+                <div class="relative bg-white rounded-2xl shadow-xl overflow-hidden">
+                    <div class="aspect-square">
+                        <img src="@currentImagePath" 
+                             alt="@GetLocalizedText(product.ImageAlt, product.ImageAltAr)"
+                             class="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-500"
+                             @onclick="OpenImageModal" />
+                    </div>
                     
-                    @if (product.IsOrganic)
-                    {
-                        <div class="absolute top-4 left-4">
-                            <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                </svg>
-                                @Loc["Organic"]
-                            </div>
+                    <!-- Product Badges -->
+                    <div class="absolute top-4 left-4 right-4 flex justify-between items-start">
+                        <div class="flex flex-col space-y-2">
+                            @if (product.IsOrganic)
+                            {
+                                <div class="bg-green-500 text-white px-3 py-1.5 rounded-full text-sm font-medium flex items-center shadow-lg">
+                                    <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                    @Loc["Organic"]
+                                </div>
+                            }
+                            @if (product.IsFairTrade)
+                            {
+                                <div class="bg-blue-500 text-white px-3 py-1.5 rounded-full text-sm font-medium shadow-lg">
+                                    @Loc["FairTrade"]
+                                </div>
+                            }
                         </div>
-                    }
+                        
+                        @if (product.IsFeatured)
+                        {
+                            <div class="bg-amber-500 text-white px-3 py-1.5 rounded-full text-sm font-medium shadow-lg">
+                                ⭐ @Loc["Featured"]
+                            </div>
+                        }
+                    </div>
 
-                    @if (product.IsFairTrade)
-                    {
-                        <div class="absolute top-4 right-4">
-                            <div class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                                @Loc["FairTrade"]
-                            </div>
-                        </div>
-                    }
-
-                    @if (product.IsFeatured)
-                    {
-                        <div class="absolute top-16 right-4">
-                            <div class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm font-medium">
-                                @Loc["Featured"]
-                            </div>
-                        </div>
-                    }
+                    <!-- Zoom Icon -->
+                    <div class="absolute bottom-4 right-4">
+                        <button @onclick="OpenImageModal" 
+                                class="bg-white/90 hover:bg-white text-gray-700 p-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-200">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Thumbnail Gallery -->
+                <!-- Thumbnail Gallery - Responsive Square Thumbnails -->
                 @if (product.GalleryImages?.Any() == true)
                 {
-                    <div class="grid grid-cols-4 gap-2 mt-4">
-                        @foreach (var image in product.GalleryImages.Take(4))
+                    <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-4 gap-3">
+                        @foreach (var image in product.GalleryImages.Take(8))
                         {
-                            <img src="@image.ImagePath" 
-                                 alt="@image.AltText"
-                                 class="w-full h-20 object-cover rounded cursor-pointer border-2 @(currentImagePath == image.ImagePath ? "border-amber-500" : "border-gray-200")"
-                                 @onclick="() => SelectImage(image.ImagePath)" />
+                            <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden cursor-pointer transform hover:scale-105 transition-transform duration-200 @(currentImagePath == image.ImagePath ? "ring-3 ring-amber-500 ring-offset-2" : "")"
+                                 @onclick="() => SelectImage(image.ImagePath)">
+                                <img src="@image.ImagePath" 
+                                     alt="@image.AltText"
+                                     class="w-full h-full object-cover" />
+                            </div>
                         }
                     </div>
                 }
             </div>
 
             <!-- Product Info -->
-            <div>
-                <h1 class="text-3xl font-bold text-gray-900 mb-4">@GetLocalizedProductName()</h1>
+            <div class="bg-white rounded-2xl shadow-xl p-6 lg:p-8 h-fit">
+                <!-- Product Title & Category -->
+                <div class="mb-6">
+                    <div class="flex items-center gap-3 mb-3">
+                        @if (product.Category != null)
+                        {
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-amber-100 text-amber-800">
+                                ☕ @GetLocalizedText(product.Category.Name, product.Category.NameAr)
+                            </span>
+                        }
+                        <span class="text-sm text-gray-500">@Loc["SKU"]: @product.Sku</span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 leading-tight">@GetLocalizedProductName()</h1>
+                </div>
                 
                 <!-- Rating & Reviews -->
                 @if (reviewsResponse != null)
                 {
-                    <div class="flex items-center mb-4">
-                        <div class="flex items-center mr-4">
+                    <div class="flex items-center gap-4 mb-6 p-4 bg-gray-50 rounded-xl">
+                        <div class="flex items-center">
                             @for (int i = 1; i <= 5; i++)
                             {
                                 <svg class="w-5 h-5 @(i <= reviewsResponse.AverageRating ? "text-yellow-400" : "text-gray-300")" 
@@ -145,30 +169,40 @@ else
                                 </svg>
                             }
                         </div>
-                        <span class="text-sm text-gray-600">
-                            @reviewsResponse.AverageRating.ToString("F1") (@reviewsResponse.TotalCount @Loc["Reviews"])
-                        </span>
+                        <div class="flex flex-col">
+                            <span class="text-lg font-semibold text-gray-900">@reviewsResponse.AverageRating.ToString("F1")</span>
+                            <span class="text-sm text-gray-600">@reviewsResponse.TotalCount @Loc["Reviews"]</span>
+                        </div>
                     </div>
                 }
-                
-                <div class="mb-6">
-                    <span class="text-sm text-gray-500">@Loc["SKU"]: @product.Sku</span>
-                </div>
 
-                <!-- Price -->
-                <div class="mb-6">
+                <!-- Price Section -->
+                <div class="mb-8 p-6 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-100">
                     @if (selectedVariant != null)
                     {
-                        <div class="flex items-baseline space-x-2">
-                            @if (selectedVariant.DiscountPrice.HasValue && selectedVariant.DiscountPrice > 0)
-                            {
-                                <span class="text-2xl font-bold text-red-600">@selectedVariant.DiscountPrice.Value OMR</span>
-                                <span class="text-lg text-gray-500 line-through">@selectedVariant.Price OMR</span>
-                            }
-                            else
-                            {
-                                <span class="text-2xl font-bold text-gray-900">@selectedVariant.Price OMR</span>
-                            }
+                        <div class="flex items-center justify-between">
+                            <div>
+                                @if (selectedVariant.DiscountPrice.HasValue && selectedVariant.DiscountPrice > 0)
+                                {
+                                    <div class="flex items-baseline gap-3">
+                                        <span class="text-3xl font-bold text-red-600">@selectedVariant.DiscountPrice.Value.ToString("F3") OMR</span>
+                                        <span class="text-xl text-gray-500 line-through">@selectedVariant.Price.ToString("F3") OMR</span>
+                                    </div>
+                                    <div class="mt-1">
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            Save @((selectedVariant.Price - selectedVariant.DiscountPrice.Value).ToString("F3")) OMR
+                                        </span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="text-3xl font-bold text-gray-900">@selectedVariant.Price.ToString("F3") OMR</span>
+                                }
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm text-gray-600">@Loc["Size"]</div>
+                                <div class="text-lg font-semibold">@selectedVariant.Weight @selectedVariant.WeightUnit</div>
+                            </div>
                         </div>
                     }
                     else
@@ -176,142 +210,202 @@ else
                         var defaultVariant = product.Variants?.FirstOrDefault(v => v.IsDefault) ?? product.Variants?.FirstOrDefault();
                         if (defaultVariant != null)
                         {
-                            <span class="text-2xl font-bold text-gray-900">@defaultVariant.Price OMR</span>
+                            <span class="text-3xl font-bold text-gray-900">@defaultVariant.Price.ToString("F3") OMR</span>
                         }
                     }
                 </div>
 
-                <!-- Variants -->
+                <!-- Size Selection -->
                 @if (product.Variants?.Any() == true)
                 {
-                    <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-3">@Loc["Size"]:</label>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7L9 18l-7-7"/>
+                            </svg>
+                            @Loc["ChooseSize"]
+                        </h3>
+                        <div class="space-y-3">
                             @foreach (var variant in product.Variants.Where(v => v.IsActive).OrderBy(v => v.DisplayOrder).ThenBy(v => v.Weight))
                             {
                                 <button type="button"
                                         @onclick="() => SelectVariant(variant)"
-                                        class="p-4 border rounded-lg text-left transition-all duration-200 @(selectedVariant?.Id == variant.Id ? "border-amber-500 bg-amber-50 ring-2 ring-amber-200" : "border-gray-300 bg-white hover:bg-gray-50 hover:border-gray-400")">
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <div class="font-medium text-gray-900">
-                                                @variant.Weight @variant.WeightUnit
+                                        disabled="@(variant.StockQuantity <= 0)"
+                                        class="w-full p-4 border-2 rounded-xl text-left transition-all duration-200 group
+                                               @(selectedVariant?.Id == variant.Id ? "border-amber-500 bg-amber-50 shadow-lg ring-1 ring-amber-200" : 
+                                                 variant.StockQuantity <= 0 ? "border-gray-200 bg-gray-50 cursor-not-allowed opacity-60" :
+                                                 "border-gray-200 bg-white hover:bg-gray-50 hover:border-amber-300 hover:shadow-md")">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <div class="flex items-center gap-3">
+                                                <div class="flex-shrink-0">
+                                                    @if (selectedVariant?.Id == variant.Id)
+                                                    {
+                                                        <div class="w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center">
+                                                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                                            </svg>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="w-6 h-6 border-2 border-gray-300 rounded-full group-hover:border-amber-400"></div>
+                                                    }
+                                                </div>
+                                                <div>
+                                                    <div class="text-lg font-semibold text-gray-900">
+                                                        @variant.Weight @variant.WeightUnit
+                                                    </div>
+                                                    <div class="flex items-center gap-2 mt-1">
+                                                        @if (variant.StockQuantity <= 0)
+                                                        {
+                                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                                ❌ @Loc["OutOfStock"]
+                                                            </span>
+                                                        }
+                                                        else if (variant.StockQuantity <= variant.LowStockThreshold)
+                                                        {
+                                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                                                ⚠️ @Loc["LowStock"] (@variant.StockQuantity @Loc["Remaining"])
+                                                            </span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                                ✅ @Loc["InStock"]
+                                                            </span>
+                                                        }
+                                                    </div>
+                                                </div>
                                             </div>
-                                            @if (variant.StockQuantity <= variant.LowStockThreshold && variant.StockQuantity > 0)
-                                            {
-                                                <div class="text-xs text-orange-600 mt-1">
-                                                    @Loc["LowStock"] (@variant.StockQuantity @Loc["Remaining"])
-                                                </div>
-                                            }
-                                            else if (variant.StockQuantity <= 0)
-                                            {
-                                                <div class="text-xs text-red-600 mt-1">
-                                                    @Loc["OutOfStock"]
-                                                </div>
-                                            }
                                         </div>
                                         <div class="text-right">
                                             @if (variant.DiscountPrice.HasValue && variant.DiscountPrice > 0)
                                             {
-                                                <div class="text-lg font-bold text-red-600">
-                                                    @variant.DiscountPrice.Value OMR
+                                                <div class="text-xl font-bold text-red-600">
+                                                    @variant.DiscountPrice.Value.ToString("F3") OMR
                                                 </div>
                                                 <div class="text-sm text-gray-500 line-through">
-                                                    @variant.Price OMR
+                                                    @variant.Price.ToString("F3") OMR
                                                 </div>
                                             }
                                             else
                                             {
-                                                <div class="text-lg font-bold text-gray-900">
-                                                    @variant.Price OMR
+                                                <div class="text-xl font-bold text-gray-900">
+                                                    @variant.Price.ToString("F3") OMR
                                                 </div>
                                             }
                                         </div>
                                     </div>
-                                    @if (selectedVariant?.Id == variant.Id)
-                                    {
-                                        <div class="mt-2 flex items-center text-amber-600 text-xs">
-                                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                            </svg>
-                                            @Loc["Selected"]
-                                        </div>
-                                    }
                                 </button>
                             }
                         </div>
                     </div>
                 }
 
-                <!-- Quick Info -->
-                <div class="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg mb-6">
-                    @if (!string.IsNullOrEmpty(product.Origin))
-                    {
-                        <div>
-                            <h4 class="font-medium text-gray-800 mb-1">@Loc["Origin"]</h4>
-                            <p class="text-sm text-gray-600">@product.Origin</p>
-                        </div>
-                    }
-
-                    @if (!string.IsNullOrEmpty(product.RoastLevel))
-                    {
-                        <div>
-                            <h4 class="font-medium text-gray-800 mb-1">@Loc["RoastLevel"]</h4>
-                            <p class="text-sm text-gray-600">@product.RoastLevel</p>
-                        </div>
-                    }
-
-                    @if (!string.IsNullOrEmpty(product.Process))
-                    {
-                        <div>
-                            <h4 class="font-medium text-gray-800 mb-1">@Loc["Process"]</h4>
-                            <p class="text-sm text-gray-600">@product.Process</p>
-                        </div>
-                    }
-
-                    @if (product.Intensity.HasValue)
-                    {
-                        <div>
-                            <h4 class="font-medium text-gray-800 mb-1">@Loc["Intensity"]</h4>
-                            <div class="flex items-center">
-                                @for (int i = 1; i <= 5; i++)
-                                {
-                                    <div class="w-3 h-3 rounded-full mr-1 @(i <= product.Intensity.Value ? "bg-amber-400" : "bg-gray-300")"></div>
-                                }
+                <!-- Product Characteristics -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        @Loc["ProductCharacteristics"]
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        @if (!string.IsNullOrEmpty(product.Origin))
+                        {
+                            <div class="bg-gradient-to-r from-amber-50 to-orange-50 p-4 rounded-xl border border-amber-100">
+                                <h4 class="font-semibold text-gray-800 mb-2 flex items-center">
+                                    <svg class="w-4 h-4 mr-2 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                                    </svg>
+                                    @Loc["Origin"]
+                                </h4>
+                                <p class="text-gray-700 font-medium">@product.Origin</p>
                             </div>
-                        </div>
-                    }
+                        }
+
+                        @if (!string.IsNullOrEmpty(product.RoastLevel))
+                        {
+                            <div class="bg-gradient-to-r from-amber-50 to-orange-50 p-4 rounded-xl border border-amber-100">
+                                <h4 class="font-semibold text-gray-800 mb-2 flex items-center">
+                                    <svg class="w-4 h-4 mr-2 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+                                    </svg>
+                                    @Loc["RoastLevel"]
+                                </h4>
+                                <p class="text-gray-700 font-medium">@product.RoastLevel</p>
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(product.Process))
+                        {
+                            <div class="bg-gradient-to-r from-amber-50 to-orange-50 p-4 rounded-xl border border-amber-100">
+                                <h4 class="font-semibold text-gray-800 mb-2 flex items-center">
+                                    <svg class="w-4 h-4 mr-2 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                                    </svg>
+                                    @Loc["Process"]
+                                </h4>
+                                <p class="text-gray-700 font-medium">@product.Process</p>
+                            </div>
+                        }
+
+                        @if (product.Intensity.HasValue)
+                        {
+                            <div class="bg-gradient-to-r from-amber-50 to-orange-50 p-4 rounded-xl border border-amber-100">
+                                <h4 class="font-semibold text-gray-800 mb-2 flex items-center">
+                                    <svg class="w-4 h-4 mr-2 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                    @Loc["Intensity"]
+                                </h4>
+                                <div class="flex items-center gap-1">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <div class="w-4 h-4 rounded-full @(i <= product.Intensity.Value ? "bg-amber-500" : "bg-gray-300")"></div>
+                                    }
+                                    <span class="ml-2 text-sm text-gray-600">(@product.Intensity.Value/5)</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
                 </div>
 
-                <!-- Add to Cart Button -->
-                @{
-                    var isOutOfStock = selectedVariant?.StockQuantity <= 0;
-                    var isButtonDisabled = isAddingToCart || isOutOfStock;
-                }
-                <button type="button" 
-                        @onclick="AddToCart"
-                        disabled="@isButtonDisabled"
-                        class="w-full px-6 py-3 rounded-md font-medium transition-colors flex items-center justify-center @(isOutOfStock ? "bg-gray-400 text-white cursor-not-allowed" : "bg-amber-600 text-white hover:bg-amber-700") @(isButtonDisabled ? "opacity-50 cursor-not-allowed" : "")">
-                    @if (isAddingToCart)
-                    {
-                        <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                        <span>@Loc["Adding"]...</span>
+                <!-- Add to Cart Section -->
+                <div class="sticky bottom-0 bg-white pt-6 border-t border-gray-200">
+                    @{
+                        var isOutOfStock = selectedVariant?.StockQuantity <= 0;
+                        var isButtonDisabled = isAddingToCart || isOutOfStock;
                     }
-                    else if (isOutOfStock)
-                    {
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <span>@Loc["OutOfStock"]</span>
-                    }
-                    else
-                    {
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l1.5-6m7.5 0v6a2 2 0 11-4 0V7a2 2 0 114 0z"/>
-                        </svg>
-                        <span>@Loc["AddToCart"]</span>
-                    }
-                </button>
+                    <button type="button" 
+                            @onclick="AddToCart"
+                            disabled="@isButtonDisabled"
+                            class="w-full px-8 py-4 rounded-xl font-bold text-lg transition-all duration-200 flex items-center justify-center shadow-lg
+                                   @(isOutOfStock ? "bg-gray-400 text-white cursor-not-allowed" : 
+                                     "bg-gradient-to-r from-amber-600 to-orange-600 text-white hover:from-amber-700 hover:to-orange-700 hover:shadow-xl transform hover:scale-105") 
+                                   @(isButtonDisabled ? "opacity-50 cursor-not-allowed" : "")">
+                        @if (isAddingToCart)
+                        {
+                            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-3"></div>
+                            <span>@Loc["Adding"]...</span>
+                        }
+                        else if (isOutOfStock)
+                        {
+                            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span>@Loc["OutOfStock"]</span>
+                        }
+                        else
+                        {
+                            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v5m0-5h4m-4 0V8m0 5H9"/>
+                            </svg>
+                            <span>@Loc["AddToCart"]</span>
+                        }
+                    </button>
+                </div>
 
                 <!-- Stock Information -->
                 @if (selectedVariant != null)
