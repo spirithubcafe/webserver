@@ -1,0 +1,220 @@
+using Microsoft.EntityFrameworkCore;
+using SpirithubCofe.Domain.Entities;
+using SpirithubCofe.Web.Data;
+
+namespace SpirithubCofe.Web.Services;
+
+/// <summary>
+/// Service for managing orders
+/// </summary>
+public class OrderService
+{
+    private readonly ApplicationDbContext _context;
+    private readonly CartService _cartService;
+    private readonly ProductService _productService;
+
+    public OrderService(ApplicationDbContext context, CartService cartService, ProductService productService)
+    {
+        _context = context;
+        _cartService = cartService;
+        _productService = productService;
+    }
+
+    /// <summary>
+    /// Create a new order from current cart
+    /// </summary>
+    public async Task<Order> CreateOrderAsync(CreateOrderRequest request)
+    {
+        // Get current cart items
+        var cartItems = _cartService.Items;
+        if (!cartItems.Any())
+        {
+            throw new InvalidOperationException("Cart is empty");
+        }
+
+        // Generate unique order number
+        var orderNumber = await GenerateOrderNumberAsync();
+
+        // Create order
+        var order = new Order
+        {
+            OrderNumber = orderNumber,
+            UserId = request.UserId ?? "guest",
+            Status = "Pending",
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            Email = request.Email,
+            Phone = request.Phone,
+            AddressLine1 = request.AddressLine1,
+            AddressLine2 = request.AddressLine2,
+            CountryId = request.CountryId,
+            CityId = request.CityId,
+            PostalCode = request.PostalCode,
+            ShippingMethodId = request.ShippingMethodId,
+            Notes = request.Notes,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        // Calculate amounts
+        decimal subtotal = 0;
+        decimal totalTax = 0;
+
+        // Add order items
+        foreach (var cartItem in cartItems)
+        {
+            var product = await _productService.GetProductByIdAsync(cartItem.ProductId);
+            if (product == null) continue;
+
+            // Get product variant if specified
+            ProductVariant? variant = null;
+            if (cartItem.VariantId.HasValue)
+            {
+                variant = product.Variants?.FirstOrDefault(v => v.Id == cartItem.VariantId.Value);
+            }
+
+            // Determine price and variant info
+            var unitPrice = variant?.Price ?? product.Variants?.FirstOrDefault()?.Price ?? 0;
+            var variantInfo = variant != null ? $"Variant: {variant.VariantSku}" : null;
+
+            // Calculate tax for this item
+            var taxPercentage = product.Category?.TaxPercentage ?? 0;
+            var itemSubtotal = unitPrice * cartItem.Quantity;
+            var itemTaxAmount = itemSubtotal * (taxPercentage / 100);
+
+            var orderItem = new OrderItem
+            {
+                ProductId = cartItem.ProductId,
+                ProductVariantId = cartItem.VariantId,
+                ProductName = product.Name,
+                VariantInfo = variantInfo,
+                Quantity = cartItem.Quantity,
+                UnitPrice = unitPrice,
+                TaxPercentage = taxPercentage,
+                TaxAmount = itemTaxAmount,
+                TotalAmount = itemSubtotal + itemTaxAmount
+            };
+
+            order.OrderItems.Add(orderItem);
+            subtotal += itemSubtotal;
+            totalTax += itemTaxAmount;
+        }
+
+        // Set order totals
+        order.SubTotal = subtotal;
+        order.TaxAmount = totalTax;
+        order.ShippingCost = request.ShippingCost;
+        order.TotalAmount = subtotal + totalTax + request.ShippingCost;
+
+        // Save order to database
+        _context.Orders.Add(order);
+        await _context.SaveChangesAsync();
+
+        return order;
+    }
+
+    /// <summary>
+    /// Get order by ID
+    /// </summary>
+    public async Task<Order?> GetOrderByIdAsync(int orderId)
+    {
+        return await _context.Orders
+            .Include(o => o.OrderItems)
+            .Include(o => o.Country)
+            .Include(o => o.City)
+            .Include(o => o.ShippingMethod)
+            .FirstOrDefaultAsync(o => o.Id == orderId);
+    }
+
+    /// <summary>
+    /// Get order by order number
+    /// </summary>
+    public async Task<Order?> GetOrderByNumberAsync(string orderNumber)
+    {
+        return await _context.Orders
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                    .ThenInclude(p => p.MainImage)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.ProductVariant)
+            .Include(o => o.Country)
+            .Include(o => o.City)
+            .Include(o => o.ShippingMethod)
+            .FirstOrDefaultAsync(o => o.OrderNumber == orderNumber);
+    }
+
+    /// <summary>
+    /// Get orders for a specific user
+    /// </summary>
+    public async Task<List<Order>> GetOrdersByUserIdAsync(string userId)
+    {
+        return await _context.Orders
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.ProductVariant)
+            .Include(o => o.Country)
+            .Include(o => o.City)
+            .Include(o => o.ShippingMethod)
+            .Where(o => o.UserId == userId)
+            .OrderByDescending(o => o.CreatedAt)
+            .ToListAsync();
+    }
+
+    /// <summary>
+    /// Update order status
+    /// </summary>
+    public async Task<bool> UpdateOrderStatusAsync(int orderId, string status)
+    {
+        var order = await _context.Orders.FindAsync(orderId);
+        if (order == null) return false;
+
+        order.Status = status;
+        order.UpdatedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    /// <summary>
+    /// Generate unique order number
+    /// </summary>
+    private async Task<string> GenerateOrderNumberAsync()
+    {
+        string orderNumber;
+        bool exists;
+
+        do
+        {
+            // Format: SH-YYYYMMDD-XXXX (SH = SpiritHub)
+            var datePart = DateTime.Now.ToString("yyyyMMdd");
+            var randomPart = new Random().Next(1000, 9999);
+            orderNumber = $"SH-{datePart}-{randomPart}";
+
+            exists = await _context.Orders.AnyAsync(o => o.OrderNumber == orderNumber);
+        }
+        while (exists);
+
+        return orderNumber;
+    }
+}
+
+/// <summary>
+/// Request model for creating an order
+/// </summary>
+public class CreateOrderRequest
+{
+    public string? UserId { get; set; }
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string Phone { get; set; } = string.Empty;
+    public string AddressLine1 { get; set; } = string.Empty;
+    public string? AddressLine2 { get; set; }
+    public int CountryId { get; set; }
+    public int CityId { get; set; }
+    public string? PostalCode { get; set; }
+    public int ShippingMethodId { get; set; }
+    public decimal ShippingCost { get; set; }
+    public string? Notes { get; set; }
+}

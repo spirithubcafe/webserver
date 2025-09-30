@@ -6,6 +6,7 @@
 @using Microsoft.AspNetCore.Components.Web
 @using SpirithubCofe.Domain.Entities
 @using System.ComponentModel.DataAnnotations
+@using System.Security.Claims
 @attribute [Authorize]
 @layout PublicLayout
 @inject CartService CartService
@@ -13,8 +14,10 @@
 @inject ShippingMethodService ShippingMethodService
 @inject IAramexRateService AramexRateService
 @inject ProductService ProductService
+@inject OrderService OrderService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @implements IDisposable
 @rendermode InteractiveServer
 
@@ -643,20 +646,73 @@ else
     {
         if (isProcessing) return;
         
+        // Validate that shipping address is complete
+        if (string.IsNullOrEmpty(shippingAddress.FullName) || 
+            string.IsNullOrEmpty(shippingAddress.Email) || 
+            string.IsNullOrEmpty(shippingAddress.Phone) ||
+            string.IsNullOrEmpty(shippingAddress.Line1) ||
+            shippingAddress.CountryId <= 0 ||
+            shippingAddress.CityId <= 0)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "❌ Please complete all shipping address fields before placing your order.");
+            return;
+        }
+
+        // Validate that shipping method is selected
+        if (string.IsNullOrEmpty(selectedShippingMethod))
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "❌ Please select a shipping method before placing your order.");
+            return;
+        }
+        
         isProcessing = true;
         StateHasChanged();
         
         try
         {
-            // Simulate order processing
-            await Task.Delay(2000);
+            // Get current user ID
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var userId = authState.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            
+            // Find selected shipping method
+            var selectedMethod = shippingMethods.FirstOrDefault(sm => sm.Type == selectedShippingMethod);
+            if (selectedMethod == null)
+            {
+                throw new InvalidOperationException("Selected shipping method not found");
+            }
+
+            // Split full name into first and last name
+            var nameParts = shippingAddress.FullName.Split(' ', 2);
+            var firstName = nameParts[0];
+            var lastName = nameParts.Length > 1 ? nameParts[1] : "";
+
+            // Create order request
+            var orderRequest = new CreateOrderRequest
+            {
+                UserId = userId,
+                FirstName = firstName,
+                LastName = lastName,
+                Email = shippingAddress.Email,
+                Phone = shippingAddress.Phone,
+                AddressLine1 = shippingAddress.Line1,
+                AddressLine2 = shippingAddress.Line2,
+                CountryId = shippingAddress.CountryId,
+                CityId = shippingAddress.CityId,
+                PostalCode = shippingAddress.PostalCode,
+                ShippingMethodId = selectedMethod.Id,
+                ShippingCost = calculatedShippingCost,
+                Notes = null // Could add a notes field to the form if needed
+            };
+
+            // Create the order
+            var order = await OrderService.CreateOrderAsync(orderRequest);
             
             // Clear cart after successful order
             await CartService.ClearCartAsync();
             
-            // Show success message and redirect
-            await JSRuntime.InvokeVoidAsync("alert", "🎉 Order placed successfully! You will receive a confirmation email shortly.");
-            Navigation.NavigateTo("/");
+            // Show success message and redirect to order confirmation
+            await JSRuntime.InvokeVoidAsync("alert", $"🎉 Order #{order.OrderNumber} placed successfully! You will receive a confirmation email shortly.");
+            Navigation.NavigateTo($"/order-confirmation/{order.OrderNumber}");
         }
         catch (Exception ex)
         {
