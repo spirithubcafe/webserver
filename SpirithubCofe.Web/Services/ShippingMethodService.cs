@@ -107,8 +107,8 @@ public class ShippingMethodService
             .Include(r => r.City)
                 .ThenInclude(c => c.Country)
             .Where(r => r.ShippingMethodId == shippingMethodId)
-            .OrderBy(r => r.City.Country.Name)
-            .ThenBy(r => r.City.Name)
+            .OrderBy(r => r.City!.Country!.Name)
+            .ThenBy(r => r.City!.Name)
             .ToListAsync();
     }
 

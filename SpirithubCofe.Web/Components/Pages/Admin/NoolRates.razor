@@ -145,13 +145,13 @@
                                                 </svg>
                                             </div>
                                             <div class="ml-3">
-                                                <div class="text-sm font-medium text-gray-900">@rate.City.Name</div>
-                                                <div class="text-sm text-gray-500">@rate.City.Country.Name</div>
+                                                <div class="text-sm font-medium text-gray-900">@rate.City?.Name</div>
+                                                <div class="text-sm text-gray-500">@rate.City?.Country?.Name</div>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" dir="rtl">
-                                        @rate.City.NameAr
+                                        @rate.City?.NameAr
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-lg font-bold text-green-600">@rate.Rate.ToString("F3")</div>

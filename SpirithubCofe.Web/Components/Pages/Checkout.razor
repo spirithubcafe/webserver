@@ -3,9 +3,13 @@
 @using SpirithubCofe.Web.Services
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Web
+@using SpirithubCofe.Domain.Entities
+@using System.ComponentModel.DataAnnotations
 @attribute [Authorize]
 @layout PublicLayout
 @inject CartService CartService
+@inject LocationService LocationService
+@inject ShippingMethodService ShippingMethodService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
 @implements IDisposable
@@ -169,6 +173,30 @@ else
                                             <InputText @bind-Value="shippingAddress.Email" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="your@email.com" />
                                             <ValidationMessage For="() => shippingAddress.Email" class="text-red-600 text-sm mt-1" />
                                         </div>
+
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Country *</label>
+                                            <select @onchange="OnCountryChanged" value="@shippingAddress.CountryId" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors">
+                                                <option value="0">Select Country</option>
+                                                @foreach (var country in countries)
+                                                {
+                                                    <option value="@country.Id">@country.Name</option>
+                                                }
+                                            </select>
+                                            <ValidationMessage For="() => shippingAddress.CountryId" class="text-red-600 text-sm mt-1" />
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">City *</label>
+                                            <select @onchange="OnCityChanged" value="@shippingAddress.CityId" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" disabled="@(shippingAddress.CountryId == 0)">
+                                                <option value="0">@(shippingAddress.CountryId == 0 ? "First select a country" : "Select City")</option>
+                                                @foreach (var city in availableCities)
+                                                {
+                                                    <option value="@city.Id">@city.Name</option>
+                                                }
+                                            </select>
+                                            <ValidationMessage For="() => shippingAddress.CityId" class="text-red-600 text-sm mt-1" />
+                                        </div>
                                         
                                         <div class="md:col-span-2">
                                             <label class="block text-sm font-medium text-gray-700 mb-2">Address Line 1 *</label>
@@ -181,40 +209,9 @@ else
                                             <InputText @bind-Value="shippingAddress.Line2" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="Apartment, suite, etc." />
                                         </div>
                                         
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-2">City *</label>
-                                            <InputSelect @bind-Value="shippingAddress.City" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors">
-                                                <option value="">Select City</option>
-                                                <option value="Muscat">Muscat</option>
-                                                <option value="Salalah">Salalah</option>
-                                                <option value="Nizwa">Nizwa</option>
-                                                <option value="Sur">Sur</option>
-                                                <option value="Sohar">Sohar</option>
-                                                <option value="Rustaq">Rustaq</option>
-                                                <option value="Buraimi">Buraimi</option>
-                                                <option value="Ibri">Ibri</option>
-                                            </InputSelect>
-                                            <ValidationMessage For="() => shippingAddress.City" class="text-red-600 text-sm mt-1" />
-                                        </div>
                                         
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-2">Governorate *</label>
-                                            <InputSelect @bind-Value="shippingAddress.State" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors">
-                                                <option value="">Select Governorate</option>
-                                                <option value="Muscat">Muscat</option>
-                                                <option value="Dhofar">Dhofar</option>
-                                                <option value="Ad Dakhiliyah">Ad Dakhiliyah</option>
-                                                <option value="Ash Sharqiyah North">Ash Sharqiyah North</option>
-                                                <option value="Ash Sharqiyah South">Ash Sharqiyah South</option>
-                                                <option value="Al Batinah North">Al Batinah North</option>
-                                                <option value="Al Batinah South">Al Batinah South</option>
-                                                <option value="Al Buraimi">Al Buraimi</option>
-                                                <option value="Ad Dhahirah">Ad Dhahirah</option>
-                                                <option value="Al Wusta">Al Wusta</option>
-                                                <option value="Musandam">Musandam</option>
-                                            </InputSelect>
-                                            <ValidationMessage For="() => shippingAddress.State" class="text-red-600 text-sm mt-1" />
-                                        </div>
+                                        
+
                                         
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-2">Postal Code</label>
@@ -253,49 +250,97 @@ else
                             </div>
                             
                             <div class="p-6">
-                                <!-- Bank Muscat Option -->
-                                <div class="border border-gray-200 rounded-xl p-4 mb-4 @(paymentMethod == "bankmuscat" ? "ring-2 ring-orange-500 border-orange-500" : "")">
-                                    <label class="flex items-center cursor-pointer">
-                                        <input type="radio" name="payment" value="bankmuscat" @onchange="@(() => paymentMethod = "bankmuscat")" class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300">
-                                        <div class="ml-3 flex items-center justify-between w-full">
-                                            <div class="flex items-center">
-                                                <div class="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center mr-3">
-                                                    <span class="text-white text-xs font-bold">BM</span>
+                                <!-- Shipping Methods -->
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Select Shipping Method</h3>
+                                    @foreach (var shipping in shippingMethods)
+                                    {
+                                        <div class="border border-gray-200 rounded-xl p-4 mb-4 @(selectedShippingMethod == shipping.Type.ToLower() ? "ring-2 ring-orange-500 border-orange-500" : "")">
+                                            <label class="flex items-center cursor-pointer">
+                                                <input type="radio" name="shipping" value="@shipping.Type.ToLower()" @onchange="@(() => selectedShippingMethod = shipping.Type.ToLower())" class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300">
+                                                <div class="ml-3 flex items-center justify-between w-full">
+                                                    <div class="flex items-center">
+                                                        <div class="w-8 h-8 bg-gradient-to-br from-orange-100 to-orange-200 rounded-lg flex items-center justify-center mr-3">
+                                                            @if (shipping.Type.ToLower() == "pickup")
+                                                            {
+                                                                <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                                                </svg>
+                                                            }
+                                                            else
+                                                            {
+                                                                <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                                                                </svg>
+                                                            }
+                                                        </div>
+                                                        <div>
+                                                            <div class="text-sm font-medium text-gray-900">@shipping.Name</div>
+                                                            <div class="text-xs text-gray-500">@shipping.Description</div>
+                                                        </div>
+                                                    </div>
+                                                    @if (shipping.Type.ToLower() == "pickup")
+                                                    {
+                                                        <div class="text-xs text-green-600 font-medium">Free</div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="text-xs text-gray-500">Calculated</div>
+                                                    }
                                                 </div>
-                                                <div>
-                                                    <div class="text-sm font-medium text-gray-900">Bank Muscat</div>
-                                                    <div class="text-xs text-gray-500">Secure online banking payment</div>
-                                                </div>
-                                            </div>
-                                            <div class="flex items-center text-xs text-green-600 font-medium">
-                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                </svg>
-                                                Recommended
-                                            </div>
+                                            </label>
                                         </div>
-                                    </label>
+                                    }
                                 </div>
-
-                                <!-- Cash on Delivery Option -->
-                                <div class="border border-gray-200 rounded-xl p-4 mb-6 @(paymentMethod == "cod" ? "ring-2 ring-orange-500 border-orange-500" : "")">
-                                    <label class="flex items-center cursor-pointer">
-                                        <input type="radio" name="payment" value="cod" @onchange="@(() => paymentMethod = "cod")" class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300">
-                                        <div class="ml-3 flex items-center justify-between w-full">
-                                            <div class="flex items-center">
-                                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                                                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                                    </svg>
+                                
+                                <!-- Payment Methods -->
+                                <div class="border-t border-gray-200 pt-6">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Payment Method</h3>
+                                    
+                                    <!-- Bank Muscat Option -->
+                                    <div class="border border-gray-200 rounded-xl p-4 mb-4">
+                                        <label class="flex items-center cursor-pointer">
+                                            <input type="radio" name="payment-method" value="bankmuscat" @onchange="@(() => selectedPaymentMethod = "bankmuscat")" class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300">
+                                            <div class="ml-3 flex items-center justify-between w-full">
+                                                <div class="flex items-center">
+                                                    <div class="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center mr-3">
+                                                        <span class="text-white text-xs font-bold">BM</span>
+                                                    </div>
+                                                    <div>
+                                                        <div class="text-sm font-medium text-gray-900">Bank Muscat</div>
+                                                        <div class="text-xs text-gray-500">Secure online banking payment</div>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <div class="text-sm font-medium text-gray-900">Cash on Delivery</div>
-                                                    <div class="text-xs text-gray-500">Pay when you receive your order</div>
+                                                <div class="flex items-center text-xs text-green-600 font-medium">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                    </svg>
+                                                    Recommended
                                                 </div>
                                             </div>
-                                            <div class="text-xs text-gray-500">+ 0.500 OMR</div>
-                                        </div>
-                                    </label>
+                                        </label>
+                                    </div>
+
+                                    <!-- Cash on Delivery Option -->
+                                    <div class="border border-gray-200 rounded-xl p-4 mb-6">
+                                        <label class="flex items-center cursor-pointer">
+                                            <input type="radio" name="payment-method" value="cod" @onchange="@(() => selectedPaymentMethod = "cod")" class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300">
+                                            <div class="ml-3 flex items-center justify-between w-full">
+                                                <div class="flex items-center">
+                                                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <div class="text-sm font-medium text-gray-900">Cash on Delivery</div>
+                                                        <div class="text-xs text-gray-500">Pay when you receive your order</div>
+                                                    </div>
+                                                </div>
+                                                <div class="text-xs text-gray-500">+ 0.500 OMR</div>
+                                            </div>
+                                        </label>
+                                    </div>
                                 </div>
 
                                 <div class="flex items-center justify-between">
@@ -343,7 +388,7 @@ else
                                         {
                                             <p>@shippingAddress.Line2</p>
                                         }
-                                        <p>@shippingAddress.City, @shippingAddress.State @shippingAddress.PostalCode</p>
+                                        <p>@shippingAddress.CityName, @shippingAddress.CountryName @shippingAddress.PostalCode</p>
                                         <p>@shippingAddress.Phone</p>
                                         <p>@shippingAddress.Email</p>
                                     </div>
@@ -512,6 +557,16 @@ else
     private string paymentMethod = "";
     private bool saveAddress = false;
     private bool isProcessing = false;
+    
+    // Database data
+    private List<Country> countries = new();
+    private List<City> cities = new();
+    private List<City> availableCities = new();
+    private List<ShippingMethod> shippingMethods = new();
+    
+    // Selected options
+    private string selectedShippingMethod = "";
+    private string selectedPaymentMethod = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -521,6 +576,64 @@ else
         if (!CartService.Items.Any())
         {
             return; // Let the UI handle the empty cart display
+        }
+        
+        // Load countries, cities, and shipping methods
+        await LoadDataAsync();
+    }
+    
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            countries = await LocationService.GetAllCountriesAsync();
+            cities = await LocationService.GetAllCitiesAsync();
+            shippingMethods = await ShippingMethodService.GetActiveShippingMethodsAsync();
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", $"Error loading data: {ex.Message}");
+        }
+    }
+    
+    private async Task OnCountryChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int countryId) && countryId > 0)
+        {
+            shippingAddress.CountryId = countryId;
+            shippingAddress.CityId = 0; // Reset city selection
+            
+            availableCities = await LocationService.GetCitiesByCountryIdAsync(countryId);
+            
+            // Update country name for display
+            var selectedCountry = countries.FirstOrDefault(c => c.Id == countryId);
+            shippingAddress.CountryName = selectedCountry?.Name ?? "";
+        }
+        else
+        {
+            shippingAddress.CountryId = 0;
+            shippingAddress.CityId = 0;
+            availableCities.Clear();
+            shippingAddress.CountryName = "";
+        }
+        
+        StateHasChanged();
+    }
+    
+    private void OnCityChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int cityId) && cityId > 0)
+        {
+            shippingAddress.CityId = cityId;
+            
+            // Update city name for display
+            var selectedCity = availableCities.FirstOrDefault(c => c.Id == cityId);
+            shippingAddress.CityName = selectedCity?.Name ?? "";
+        }
+        else
+        {
+            shippingAddress.CityId = 0;
+            shippingAddress.CityName = "";
         }
     }
 
@@ -555,8 +668,8 @@ else
                !string.IsNullOrWhiteSpace(shippingAddress.Phone) &&
                !string.IsNullOrWhiteSpace(shippingAddress.Email) &&
                !string.IsNullOrWhiteSpace(shippingAddress.Line1) &&
-               !string.IsNullOrWhiteSpace(shippingAddress.City) &&
-               !string.IsNullOrWhiteSpace(shippingAddress.State);
+               shippingAddress.CountryId > 0 &&
+               shippingAddress.CityId > 0;
     }
 
     private async Task NextStep()
@@ -646,14 +759,31 @@ else
 
     public class ShippingAddress
     {
+        [Required]
         public string FullName { get; set; } = "";
+        
+        [Required]
         public string Phone { get; set; } = "";
+        
+        [Required]
+        [EmailAddress]
         public string Email { get; set; } = "";
+        
+        [Required]
         public string Line1 { get; set; } = "";
+        
         public string Line2 { get; set; } = "";
-        public string City { get; set; } = "";
-        public string State { get; set; } = "";
+        
+        [Required]
+        public int CountryId { get; set; }
+        
+        [Required]
+        public int CityId { get; set; }
+        
         public string PostalCode { get; set; } = "";
-        public string Country { get; set; } = "OM";
+        
+        // Navigation properties
+        public string CountryName { get; set; } = "";
+        public string CityName { get; set; } = "";
     }
 }

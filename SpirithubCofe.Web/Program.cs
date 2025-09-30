@@ -132,6 +132,7 @@ builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ReviewService>();
 builder.Services.AddScoped<ShippingService>();
 builder.Services.AddScoped<ShippingMethodService>();
+builder.Services.AddScoped<LocationService>();
 builder.Services.AddScoped<HomePageSettingsService>();
 builder.Services.AddScoped<SpirithubCofe.Application.Services.ICheckoutService, SpirithubCofe.Application.Services.CheckoutService>();
 builder.Services.AddScoped<SpirithubCofe.Application.Services.IAramexApiService, SpirithubCofe.Application.Services.AramexApiService>();
