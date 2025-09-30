@@ -76,7 +76,7 @@ else
                                         <span class="text-white font-semibold">1</span>
                                     }
                                 </div>
-                                <span class="ml-3 text-sm font-medium @(currentStep >= 1 ? "text-orange-600" : "text-gray-500")">Basic</span>
+                                <span class="ml-3 text-sm font-medium @(currentStep >= 1 ? "text-orange-600" : "text-gray-500")">Address</span>
                             </div>
                             @if (currentStep > 1)
                             {
@@ -257,7 +257,7 @@ else
                                     {
                                         <div class="border border-gray-200 rounded-xl p-4 mb-4 @(selectedShippingMethod == shipping.Type.ToLower() ? "ring-2 ring-orange-500 border-orange-500" : "")">
                                             <label class="flex items-center cursor-pointer">
-                                                <input type="radio" name="shipping" value="@shipping.Type.ToLower()" @onchange="@(() => selectedShippingMethod = shipping.Type.ToLower())" class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300">
+                                                <input type="radio" name="shipping" value="@shipping.Type.ToLower()" @onchange="@(() => OnShippingMethodChanged(shipping.Type.ToLower()))" class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300">
                                                 <div class="ml-3 flex items-center justify-between w-full">
                                                     <div class="flex items-center">
                                                         <div class="w-8 h-8 bg-gradient-to-br from-orange-100 to-orange-200 rounded-lg flex items-center justify-center mr-3">
@@ -283,9 +283,13 @@ else
                                                     {
                                                         <div class="text-xs text-green-600 font-medium">Free</div>
                                                     }
+                                                    else if (selectedShippingMethod == shipping.Type.ToLower() && calculatedShippingCost > 0)
+                                                    {
+                                                        <div class="text-xs text-orange-600 font-medium">@calculatedShippingCost.ToString("F3") OMR</div>
+                                                    }
                                                     else
                                                     {
-                                                        <div class="text-xs text-gray-500">Calculated</div>
+                                                        <div class="text-xs text-gray-500">@(shippingAddress.CityId > 0 ? "Select to calculate" : "Select city first")</div>
                                                     }
                                                 </div>
                                             </label>
@@ -484,6 +488,7 @@ else
     
     // Selected options
     private string selectedShippingMethod = "";
+    private decimal calculatedShippingCost = 0;
  
     protected override async Task OnInitializedAsync()
     {
@@ -519,6 +524,7 @@ else
         {
             shippingAddress.CountryId = countryId;
             shippingAddress.CityId = 0; // Reset city selection
+            calculatedShippingCost = 0; // Reset shipping cost
             
             availableCities = await LocationService.GetCitiesByCountryIdAsync(countryId);
             
@@ -530,6 +536,7 @@ else
         {
             shippingAddress.CountryId = 0;
             shippingAddress.CityId = 0;
+            calculatedShippingCost = 0;
             availableCities.Clear();
             shippingAddress.CountryName = "";
         }
@@ -537,7 +544,7 @@ else
         StateHasChanged();
     }
     
-    private void OnCityChanged(ChangeEventArgs e)
+    private async Task OnCityChanged(ChangeEventArgs e)
     {
         if (int.TryParse(e.Value?.ToString(), out int cityId) && cityId > 0)
         {
@@ -546,12 +553,18 @@ else
             // Update city name for display
             var selectedCity = availableCities.FirstOrDefault(c => c.Id == cityId);
             shippingAddress.CityName = selectedCity?.Name ?? "";
+            
+            // Calculate shipping cost if shipping method is selected
+            await CalculateShippingCostAsync();
         }
         else
         {
             shippingAddress.CityId = 0;
             shippingAddress.CityName = "";
+            calculatedShippingCost = 0;
         }
+        
+        StateHasChanged();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -649,9 +662,31 @@ else
         }
     }
 
+    private async Task OnShippingMethodChanged(string shippingType)
+    {
+        selectedShippingMethod = shippingType;
+        await CalculateShippingCostAsync();
+        StateHasChanged();
+    }
+
+    private async Task CalculateShippingCostAsync()
+    {
+        if (!string.IsNullOrEmpty(selectedShippingMethod) && shippingAddress.CityId > 0)
+        {
+            calculatedShippingCost = await ShippingMethodService.CalculateShippingCostAsync(
+                selectedShippingMethod, 
+                shippingAddress.CountryId, 
+                shippingAddress.CityId);
+        }
+        else
+        {
+            calculatedShippingCost = 0;
+        }
+    }
+
     private decimal GetShippingCost()
     {
-        return 2.500m; // Standard shipping cost
+        return calculatedShippingCost;
     }
 
     private decimal GetTax()
