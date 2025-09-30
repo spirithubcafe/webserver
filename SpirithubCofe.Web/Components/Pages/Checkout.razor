@@ -253,7 +253,7 @@ else
                                 <!-- Shipping Methods -->
                                 <div class="mb-6">
                                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Select Shipping Method</h3>
-                                    @foreach (var shipping in shippingMethods)
+                                    @foreach (var shipping in GetAvailableShippingMethods())
                                     {
                                         <div class="border border-gray-200 rounded-xl p-4 mb-4 @(selectedShippingMethod == shipping.Type.ToLower() ? "ring-2 ring-orange-500 border-orange-500" : "")">
                                             <label class="flex items-center cursor-pointer">
@@ -429,7 +429,7 @@ else
                                     <span class="font-medium">@CartService.TotalPrice.ToString("F3") OMR</span>
                                 </div>
                                 <div class="flex justify-between text-sm">
-                                    <span class="text-gray-600">Shipping</span>
+                                    <span class="text-gray-600">@GetShippingMethodDisplayName()</span>
                                     <span class="font-medium">@GetShippingCost().ToString("F3") OMR</span>
                                 </div>
                                 <div class="flex justify-between text-sm">
@@ -525,6 +525,7 @@ else
             shippingAddress.CountryId = countryId;
             shippingAddress.CityId = 0; // Reset city selection
             calculatedShippingCost = 0; // Reset shipping cost
+            selectedShippingMethod = ""; // Reset shipping method selection
             
             availableCities = await LocationService.GetCitiesByCountryIdAsync(countryId);
             
@@ -537,6 +538,7 @@ else
             shippingAddress.CountryId = 0;
             shippingAddress.CityId = 0;
             calculatedShippingCost = 0;
+            selectedShippingMethod = "";
             availableCities.Clear();
             shippingAddress.CountryName = "";
         }
@@ -687,6 +689,47 @@ else
     private decimal GetShippingCost()
     {
         return calculatedShippingCost;
+    }
+
+    private string GetShippingMethodDisplayName()
+    {
+        if (string.IsNullOrEmpty(selectedShippingMethod))
+        {
+            return "Shipping";
+        }
+
+        var method = shippingMethods.FirstOrDefault(s => s.Type.ToLower() == selectedShippingMethod.ToLower());
+        return method?.Name ?? "Shipping";
+    }
+
+    private List<ShippingMethod> GetAvailableShippingMethods()
+    {
+        var availableMethods = new List<ShippingMethod>();
+        
+        foreach (var method in shippingMethods)
+        {
+            // Always show pickup
+            if (method.Type.ToLower() == "pickup")
+            {
+                availableMethods.Add(method);
+                continue;
+            }
+            
+            // Show Nool only for Oman (country ID = 4)
+            if (method.Type.ToLower().Contains("nool"))
+            {
+                if (shippingAddress.CountryId == 4) // Oman country ID
+                {
+                    availableMethods.Add(method);
+                }
+                continue;
+            }
+            
+            // Show other methods (like Aramex) for all countries
+            availableMethods.Add(method);
+        }
+        
+        return availableMethods;
     }
 
     private decimal GetTax()

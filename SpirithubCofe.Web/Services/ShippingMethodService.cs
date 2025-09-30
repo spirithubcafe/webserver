@@ -56,7 +56,7 @@ public class ShippingMethodService
             .Include(s => s.NoolRates)
                 .ThenInclude(r => r.City)
                     .ThenInclude(c => c.Country)
-            .FirstOrDefaultAsync(s => s.Type == type);
+            .FirstOrDefaultAsync(s => s.Type.ToLower() == type.ToLower());
     }
 
     public async Task<ShippingMethod> CreateShippingMethodAsync(ShippingMethod shippingMethod)
