@@ -581,7 +581,11 @@
             name: product.Name,
             price: price,
             imageUrl: product.GalleryImages?.FirstOrDefault()?.ImagePath ?? "",
-            quantity: quantity
+            quantity: quantity,
+            variantId: variant?.Id,
+            variantInfo: variant?.VariantSku ?? "",
+            weight: variant?.Weight ?? 0,
+            weightUnit: variant?.WeightUnit ?? "g"
         );
         
         // Show success message using Toast component
@@ -606,7 +610,11 @@
             name: product.Name,
             price: price,
             imageUrl: product.GalleryImages?.FirstOrDefault()?.ImagePath ?? "",
-            quantity: 1
+            quantity: 1,
+            variantId: variant?.Id,
+            variantInfo: variant?.VariantSku ?? "",
+            weight: variant?.Weight ?? 0,
+            weightUnit: variant?.WeightUnit ?? "g"
         );
         
         // Show quick success message

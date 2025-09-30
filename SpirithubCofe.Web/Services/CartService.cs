@@ -11,7 +11,9 @@ public class CartItemDto
     public decimal Price { get; set; }
     public int Quantity { get; set; }
     public string ImageUrl { get; set; } = "";
-    public string VariantInfo { get; set; } = "";  
+    public string VariantInfo { get; set; } = "";
+    public decimal Weight { get; set; } = 0;
+    public string WeightUnit { get; set; } = "g";
 }
 
 public class CartService
@@ -45,7 +47,7 @@ public class CartService
         remove => OnCartChanged -= value;
     }
     
-    public async Task AddToCartAsync(int productId, string name, decimal price, string imageUrl = "", int quantity = 1, int? variantId = null, string variantInfo = "")
+    public async Task AddToCartAsync(int productId, string name, decimal price, string imageUrl = "", int quantity = 1, int? variantId = null, string variantInfo = "", decimal weight = 0, string weightUnit = "g")
     {
         var existingItem = _cartItems.FirstOrDefault(x => x.ProductId == productId && x.VariantId == variantId);
         
@@ -63,7 +65,9 @@ public class CartService
                 Price = price,
                 Quantity = quantity,
                 ImageUrl = imageUrl,
-                VariantInfo = variantInfo
+                VariantInfo = variantInfo,
+                Weight = weight,
+                WeightUnit = weightUnit
             });
         }
         

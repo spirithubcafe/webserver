@@ -1,6 +1,7 @@
 @page "/checkout"
 @using Microsoft.AspNetCore.Authorization
 @using SpirithubCofe.Web.Services
+@using SpirithubCofe.Application.Services
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Web
 @using SpirithubCofe.Domain.Entities
@@ -10,6 +11,7 @@
 @inject CartService CartService
 @inject LocationService LocationService
 @inject ShippingMethodService ShippingMethodService
+@inject IAramexRateService AramexRateService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
 @implements IDisposable
@@ -675,10 +677,51 @@ else
     {
         if (!string.IsNullOrEmpty(selectedShippingMethod) && shippingAddress.CityId > 0)
         {
-            calculatedShippingCost = await ShippingMethodService.CalculateShippingCostAsync(
-                selectedShippingMethod, 
-                shippingAddress.CountryId, 
-                shippingAddress.CityId);
+            // If Aramex is selected, use AramexRateService
+            if (selectedShippingMethod.ToLower() == "aramex")
+            {
+                var totalWeight = CalculateTotalWeight();
+                var country = countries.FirstOrDefault(c => c.Id == shippingAddress.CountryId);
+                var city = cities.FirstOrDefault(c => c.Id == shippingAddress.CityId);
+                
+                if (country != null && city != null && totalWeight > 0)
+                {
+                    var request = new AramexRateRequest
+                    {
+                        DestinationCountryCode = country.Code,
+                        DestinationCity = city.Name,
+                        DestinationAddress = shippingAddress.Line1,
+                        DestinationPostalCode = shippingAddress.PostalCode,
+                        Weight = totalWeight
+                    };
+                    
+                    var result = await AramexRateService.CalculateRateAsync(request);
+                    
+                    if (result.Success)
+                    {
+                        calculatedShippingCost = result.TotalAmount;
+                    }
+                    else
+                    {
+                        // Fallback to standard calculation if Aramex fails
+                        calculatedShippingCost = await ShippingMethodService.CalculateShippingCostAsync(
+                            selectedShippingMethod, 
+                            shippingAddress.CountryId, 
+                            shippingAddress.CityId);
+                    }
+                }
+                else
+                {
+                    calculatedShippingCost = 0;
+                }
+            }
+            else
+            {
+                calculatedShippingCost = await ShippingMethodService.CalculateShippingCostAsync(
+                    selectedShippingMethod, 
+                    shippingAddress.CountryId, 
+                    shippingAddress.CityId);
+            }
         }
         else
         {
@@ -741,6 +784,47 @@ else
     private decimal GetFinalTotal()
     {
         return CartService.TotalPrice + GetShippingCost() + GetTax();
+    }
+
+    private decimal CalculateTotalWeight()
+    {
+        decimal totalWeightInKg = 0;
+        
+        foreach (var item in CartService.Items)
+        {
+            if (item.Weight > 0)
+            {
+                decimal itemWeightInKg = item.Weight;
+                
+                // Convert weight to kg based on unit
+                switch (item.WeightUnit?.ToLower())
+                {
+                    case "g":
+                    case "gram":
+                    case "grams":
+                        itemWeightInKg = item.Weight / 1000m; // Convert grams to kg
+                        break;
+                    case "kg":
+                    case "kilogram":
+                    case "kilograms":
+                        itemWeightInKg = item.Weight; // Already in kg
+                        break;
+                    case "lb":
+                    case "pound":
+                    case "pounds":
+                        itemWeightInKg = item.Weight * 0.453592m; // Convert pounds to kg
+                        break;
+                    default:
+                        // Default assume grams if unit is not specified or unknown
+                        itemWeightInKg = item.Weight / 1000m;
+                        break;
+                }
+                
+                totalWeightInKg += itemWeightInKg * item.Quantity;
+            }
+        }
+        
+        return totalWeightInKg;
     }
 
     public void Dispose()
