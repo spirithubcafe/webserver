@@ -1,18 +1,20 @@
 using SpirithubCofe.Domain.Entities;
 using SpirithubCofe.Application.Interfaces;
+using SpirithubCofe.Application.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 namespace SpirithubCofe.Application.Services;
 
 public interface ICheckoutService
 {
-    Task<IEnumerable<Country>> GetCountriesAsync();
-    Task<IEnumerable<City>> GetCitiesByCountryAsync(int countryId);
-    Task<IEnumerable<ShippingMethod>> GetAvailableShippingMethodsAsync(int countryId);
+    Task<IEnumerable<CountryDto>> GetActiveCountriesAsync();
+    Task<IEnumerable<CityDto>> GetActiveCitiesByCountryAsync(int countryId);
+    Task<IEnumerable<ShippingMethodDto>> GetAvailableShippingMethodsAsync(int countryId);
     Task<decimal> CalculateShippingCostAsync(int shippingMethodId, int? cityId = null);
     Task<decimal> CalculateTaxAsync(IEnumerable<CartItem> cartItems);
     Task<Order> CreateOrderAsync(Order order);
     Task<string> GenerateOrderNumberAsync();
+    Task<bool> IsOmanCountryAsync(int countryId);
 }
 
 public class CheckoutService : ICheckoutService
@@ -24,54 +26,96 @@ public class CheckoutService : ICheckoutService
         _context = context;
     }
 
-    public async Task<IEnumerable<Country>> GetCountriesAsync()
+    public async Task<IEnumerable<CountryDto>> GetActiveCountriesAsync()
     {
         return await _context.Countries
             .Where(c => c.IsActive)
             .OrderBy(c => c.Name)
+            .Select(c => new CountryDto
+            {
+                Id = c.Id,
+                Code = c.Code,
+                Name = c.Name,
+                NameAr = c.NameAr
+            })
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<City>> GetCitiesByCountryAsync(int countryId)
+    public async Task<IEnumerable<CityDto>> GetActiveCitiesByCountryAsync(int countryId)
     {
         return await _context.Cities
             .Where(c => c.CountryId == countryId && c.IsActive)
             .OrderBy(c => c.Name)
+            .Select(c => new CityDto
+            {
+                Id = c.Id,
+                Code = c.Code,
+                Name = c.Name,
+                NameAr = c.NameAr,
+                CountryId = c.CountryId
+            })
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<ShippingMethod>> GetAvailableShippingMethodsAsync(int countryId)
+    public async Task<IEnumerable<ShippingMethodDto>> GetAvailableShippingMethodsAsync(int countryId)
     {
         var country = await _context.Countries.FindAsync(countryId);
-        if (country == null) return new List<ShippingMethod>();
+        if (country == null) return new List<ShippingMethodDto>();
 
         var allMethods = await _context.ShippingMethods
             .Where(sm => sm.IsActive)
             .OrderBy(sm => sm.DisplayOrder)
             .ToListAsync();
 
-        var availableMethods = new List<ShippingMethod>();
+        var availableMethods = new List<ShippingMethodDto>();
 
         foreach (var method in allMethods)
         {
             // Always include pickup
             if (method.Type == "Pickup")
             {
-                availableMethods.Add(method);
+                availableMethods.Add(new ShippingMethodDto
+                {
+                    Id = method.Id,
+                    Type = method.Type,
+                    Name = method.Name,
+                    NameAr = method.NameAr,
+                    Description = method.Description,
+                    DescriptionAr = method.DescriptionAr,
+                    Cost = 0 // Free pickup
+                });
                 continue;
             }
 
             // Include Nool only for Oman
             if (method.Type == "NoolOman" && country.Code == "OM")
             {
-                availableMethods.Add(method);
+                availableMethods.Add(new ShippingMethodDto
+                {
+                    Id = method.Id,
+                    Type = method.Type,
+                    Name = method.Name,
+                    NameAr = method.NameAr,
+                    Description = method.Description,
+                    DescriptionAr = method.DescriptionAr,
+                    Cost = 0 // Will be calculated based on city selection
+                });
                 continue;
             }
 
             // Include Aramex for all countries except Oman
             if (method.Type == "Aramex" && country.Code != "OM")
             {
-                availableMethods.Add(method);
+                availableMethods.Add(new ShippingMethodDto
+                {
+                    Id = method.Id,
+                    Type = method.Type,
+                    Name = method.Name,
+                    NameAr = method.NameAr,
+                    Description = method.Description,
+                    DescriptionAr = method.DescriptionAr,
+                    Cost = 1 // Placeholder - will use API later
+                });
                 continue;
             }
         }
@@ -150,5 +194,11 @@ public class CheckoutService : ICheckoutService
 
         var nextNumber = (lastOrder?.Id ?? 0) + 1;
         return $"ORD-{DateTime.UtcNow:yyyyMM}-{nextNumber:D6}";
+    }
+
+    public async Task<bool> IsOmanCountryAsync(int countryId)
+    {
+        var country = await _context.Countries.FindAsync(countryId);
+        return country?.Code == "OM";
     }
 }
