@@ -12,6 +12,7 @@
 @inject LocationService LocationService
 @inject ShippingMethodService ShippingMethodService
 @inject IAramexRateService AramexRateService
+@inject ProductService ProductService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
 @implements IDisposable
@@ -487,6 +488,7 @@ else
     private List<City> cities = new();
     private List<City> availableCities = new();
     private List<ShippingMethod> shippingMethods = new();
+    private List<Product> allProducts = new();
     
     // Selected options
     private string selectedShippingMethod = "";
@@ -513,6 +515,7 @@ else
             countries = await LocationService.GetAllCountriesAsync();
             cities = await LocationService.GetAllCitiesAsync();
             shippingMethods = await ShippingMethodService.GetActiveShippingMethodsAsync();
+            allProducts = await ProductService.GetAllProductsAsync();
         }
         catch (Exception ex)
         {
@@ -777,7 +780,21 @@ else
 
     private decimal GetTax()
     {
-        return CartService.TotalPrice * 0.05m; // 5% tax
+        decimal totalTax = 0;
+        
+        foreach (var item in CartService.Items)
+        {
+            // Get product to access its category
+            var product = allProducts.FirstOrDefault(p => p.Id == item.ProductId);
+            if (product?.Category != null)
+            {
+                var itemSubtotal = item.Price * item.Quantity;
+                var categoryTaxRate = product.Category.TaxPercentage / 100m;
+                totalTax += itemSubtotal * categoryTaxRate;
+            }
+        }
+        
+        return totalTax;
     }
 
  

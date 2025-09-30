@@ -1416,4 +1416,16 @@
   <data name="SearchOrders" xml:space="preserve">
     <value>البحث في الطلبات...</value>
   </data>
+  <data name="TaxPercentage" xml:space="preserve">
+    <value>نسبة الضريبة (%)</value>
+  </data>
+  <data name="TaxPercentageHelp" xml:space="preserve">
+    <value>النسبة المئوية للضريبة المطبقة على المنتجات في هذه الفئة (0 إلى 100)</value>
+  </data>
+  <data name="Tax" xml:space="preserve">
+    <value>ضريبة</value>
+  </data>
+  <data name="NoTax" xml:space="preserve">
+    <value>بدون ضريبة</value>
+  </data>
 </root>

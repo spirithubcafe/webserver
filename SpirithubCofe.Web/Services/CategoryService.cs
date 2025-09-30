@@ -128,6 +128,7 @@ public class CategoryService
         existingCategory.Slug = category.Slug;
         existingCategory.Description = category.Description;
         existingCategory.DescriptionAr = category.DescriptionAr;
+        existingCategory.TaxPercentage = category.TaxPercentage;
         existingCategory.ImagePath = category.ImagePath;
         existingCategory.DisplayOrder = category.DisplayOrder;
         existingCategory.IsActive = category.IsActive;
