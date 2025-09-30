@@ -23,6 +23,11 @@ public interface IApplicationDbContext
     DbSet<FAQ> FAQs { get; }
     DbSet<FAQCategory> FAQCategories { get; }
     DbSet<FAQPage> FAQPages { get; }
+    DbSet<Cart> Carts { get; }
+    DbSet<CartItem> CartItems { get; }
+    DbSet<Order> Orders { get; }
+    DbSet<OrderItem> OrderItems { get; }
+    DbSet<HomePageSettings> HomePageSettings { get; }
     
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

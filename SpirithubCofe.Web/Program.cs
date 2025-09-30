@@ -133,6 +133,7 @@ builder.Services.AddScoped<ReviewService>();
 builder.Services.AddScoped<ShippingService>();
 builder.Services.AddScoped<ShippingMethodService>();
 builder.Services.AddScoped<HomePageSettingsService>();
+builder.Services.AddScoped<SpirithubCofe.Application.Services.ICheckoutService, SpirithubCofe.Application.Services.CheckoutService>();
 
 // Register user login service
 builder.Services.AddScoped<UserLoginService>();

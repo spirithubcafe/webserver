@@ -1,5 +1,5 @@
 using System.Text.Json;
-using SpirithubCofe.Domain.Entities;
+using Microsoft.JSInterop;
 
 namespace SpirithubCofe.Web.Services;
 
@@ -17,19 +17,19 @@ public class CartItemDto
 public class CartService
 {
     private List<CartItemDto> _cartItems = new();
-    private readonly string _cartFilePath;
+    private readonly IJSRuntime _jsRuntime;
+    private const string CART_STORAGE_KEY = "spirithub_cart";
     
     public event Action? OnCartChanged;
     
-    public CartService()
+    public CartService(IJSRuntime jsRuntime)
     {
-        // Store cart data in temp directory
-        _cartFilePath = Path.Combine(Path.GetTempPath(), "spirithub-cart.json");
+        _jsRuntime = jsRuntime;
     }
     
     public async Task InitializeAsync()
     {
-        await LoadCartFromFile();
+        await LoadCartFromStorage();
     }
     
     public IReadOnlyList<CartItemDto> Items => _cartItems.AsReadOnly();
@@ -47,7 +47,6 @@ public class CartService
     
     public async Task AddToCartAsync(int productId, string name, decimal price, string imageUrl = "", int quantity = 1, int? variantId = null, string variantInfo = "")
     {
-        // اگر variant داریم، باید کلید unique بر اساس productId + variantId باشد
         var existingItem = _cartItems.FirstOrDefault(x => x.ProductId == productId && x.VariantId == variantId);
         
         if (existingItem != null)
@@ -68,7 +67,7 @@ public class CartService
             });
         }
         
-        await SaveCartToFile();
+        await SaveCartToStorage();
         OnCartChanged?.Invoke();
     }
     
@@ -86,7 +85,7 @@ public class CartService
                 item.Quantity = quantity;
             }
             
-            await SaveCartToFile();
+            await SaveCartToStorage();
             OnCartChanged?.Invoke();
         }
     }
@@ -97,7 +96,7 @@ public class CartService
         if (item != null)
         {
             _cartItems.Remove(item);
-            await SaveCartToFile();
+            await SaveCartToStorage();
             OnCartChanged?.Invoke();
         }
     }
@@ -105,14 +104,14 @@ public class CartService
     public async Task ClearCart()
     {
         _cartItems.Clear();
-        await SaveCartToFile();
+        await SaveCartToStorage();
         OnCartChanged?.Invoke();
     }
     
     public async Task ClearCartAsync()
     {
         _cartItems.Clear();
-        await SaveCartToFile();
+        await SaveCartToStorage();
         OnCartChanged?.Invoke();
     }
     
@@ -126,13 +125,14 @@ public class CartService
         return _cartItems.FirstOrDefault(x => x.ProductId == productId && x.VariantId == variantId)?.Quantity ?? 0;
     }
     
-    private async Task LoadCartFromFile()
+    private async Task LoadCartFromStorage()
     {
         try
         {
-            if (File.Exists(_cartFilePath))
+            // Check if we're in server-side prerender mode
+            if (_jsRuntime is IJSInProcessRuntime)
             {
-                var cartJson = await File.ReadAllTextAsync(_cartFilePath);
+                var cartJson = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", CART_STORAGE_KEY);
                 if (!string.IsNullOrEmpty(cartJson))
                 {
                     var items = JsonSerializer.Deserialize<List<CartItemDto>>(cartJson);
@@ -140,25 +140,29 @@ public class CartService
                 }
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            // Log the error for debugging
+            Console.WriteLine($"Error loading cart from storage: {ex.Message}");
             _cartItems = new List<CartItemDto>();
         }
     }
     
-    private async Task SaveCartToFile()
+    private async Task SaveCartToStorage()
     {
         try
         {
-            var cartJson = JsonSerializer.Serialize(_cartItems, new JsonSerializerOptions 
-            { 
-                WriteIndented = true 
-            });
-            await File.WriteAllTextAsync(_cartFilePath, cartJson);
+            // Check if we're in server-side prerender mode
+            if (_jsRuntime is IJSInProcessRuntime)
+            {
+                var cartJson = JsonSerializer.Serialize(_cartItems);
+                await _jsRuntime.InvokeVoidAsync("localStorage.setItem", CART_STORAGE_KEY, cartJson);
+            }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // Handle error silently
+            // Log the error for debugging
+            Console.WriteLine($"Error saving cart to storage: {ex.Message}");
         }
     }
 }

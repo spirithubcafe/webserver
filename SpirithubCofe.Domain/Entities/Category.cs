@@ -53,6 +53,11 @@ public class Category
     public int DisplayOrder { get; set; }
     
     /// <summary>
+    /// Tax percentage for products in this category (0-100)
+    /// </summary>
+    public decimal TaxPercentage { get; set; } = 0;
+    
+    /// <summary>
     /// When the category was created
     /// </summary>
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
