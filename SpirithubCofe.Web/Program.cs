@@ -136,6 +136,7 @@ builder.Services.AddScoped<LocationService>();
 builder.Services.AddScoped<HomePageSettingsService>();
 builder.Services.AddScoped<SpirithubCofe.Application.Services.ICheckoutService, SpirithubCofe.Application.Services.CheckoutService>();
 builder.Services.AddScoped<SpirithubCofe.Application.Services.IAramexApiService, SpirithubCofe.Application.Services.AramexApiService>();
+builder.Services.AddScoped<SpirithubCofe.Application.Services.IAramexRateService, SpirithubCofe.Application.Services.AramexRateService>();
 
 // Register user login service
 builder.Services.AddScoped<UserLoginService>();

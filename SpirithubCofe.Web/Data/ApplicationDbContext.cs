@@ -27,6 +27,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<ShippingMethod> ShippingMethods { get; set; }
     public DbSet<NoolShippingRate> NoolShippingRates { get; set; }
     public DbSet<HomePageSettings> HomePageSettings { get; set; }
+    public DbSet<AramexSettings> AramexSettings { get; set; }
     
     // Order entities
     public DbSet<Order> Orders { get; set; }
