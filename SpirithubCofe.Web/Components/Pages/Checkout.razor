@@ -261,9 +261,14 @@ else
                                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Select Shipping Method</h3>
                                     @foreach (var shipping in GetAvailableShippingMethods())
                                     {
-                                        <div class="border border-gray-200 rounded-xl p-4 mb-4 @(selectedShippingMethod == shipping.Type.ToLower() ? "ring-2 ring-orange-500 border-orange-500" : "")">
+                                        <div class="border border-gray-200 rounded-xl p-4 mb-4 @(selectedShippingMethod?.ToLower() == shipping.Type.ToLower() ? "ring-2 ring-orange-500 border-orange-500" : "")">
                                             <label class="flex items-center cursor-pointer">
-                                                <input type="radio" name="shipping" value="@shipping.Type.ToLower()" @onchange="@(() => OnShippingMethodChanged(shipping.Type.ToLower()))" class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300">
+                                                <input type="radio" 
+                                                       name="shipping" 
+                                                       value="@shipping.Type.ToLower()" 
+                                                       checked="@(selectedShippingMethod?.ToLower() == shipping.Type.ToLower())"
+                                                       @onchange="@((ChangeEventArgs e) => OnShippingMethodChanged(e.Value?.ToString() ?? ""))" 
+                                                       class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300">
                                                 <div class="ml-3 flex items-center justify-between w-full">
                                                     <div class="flex items-center">
                                                         <div class="w-8 h-8 bg-gradient-to-br from-orange-100 to-orange-200 rounded-lg flex items-center justify-center mr-3">
@@ -341,23 +346,151 @@ else
                                 <!-- Shipping Information Review -->
                                 <div class="border border-gray-200 rounded-xl p-4">
                                     <div class="flex items-center justify-between mb-3">
-                                        <h3 class="font-semibold text-gray-900">Shipping Address</h3>
+                                        <h3 class="font-semibold text-gray-900 flex items-center">
+                                            <svg class="w-5 h-5 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            </svg>
+                                            Shipping Address
+                                        </h3>
                                         <button @onclick="EditShipping" class="text-orange-600 hover:text-orange-700 text-sm font-medium">Edit</button>
                                     </div>
-                                    <div class="text-sm text-gray-600">
-                                        <p class="font-medium text-gray-900">@shippingAddress.FullName</p>
-                                        <p>@shippingAddress.Line1</p>
+                                    <div class="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
+                                        <p class="font-medium text-gray-900 mb-1">@shippingAddress.FullName</p>
+                                        <p class="mb-1">@shippingAddress.Line1</p>
                                         @if (!string.IsNullOrEmpty(shippingAddress.Line2))
                                         {
-                                            <p>@shippingAddress.Line2</p>
+                                            <p class="mb-1">@shippingAddress.Line2</p>
                                         }
-                                        <p>@shippingAddress.CityName, @shippingAddress.CountryName @shippingAddress.PostalCode</p>
-                                        <p>@shippingAddress.Phone</p>
-                                        <p>@shippingAddress.Email</p>
+                                        @if (!string.IsNullOrEmpty(shippingAddress.CityName) && !string.IsNullOrEmpty(shippingAddress.CountryName))
+                                        {
+                                            <p class="mb-1">@shippingAddress.CityName, @shippingAddress.CountryName</p>
+                                        }
+                                        @if (!string.IsNullOrEmpty(shippingAddress.PostalCode))
+                                        {
+                                            <p class="mb-1">Postal Code: @shippingAddress.PostalCode</p>
+                                        }
+                                        <p class="mb-1">📞 @shippingAddress.Phone</p>
+                                        <p>📧 @shippingAddress.Email</p>
                                     </div>
                                 </div>
 
- 
+                                <!-- Shipping Method Review -->
+                                <div class="border border-gray-200 rounded-xl p-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="font-semibold text-gray-900 flex items-center">
+                                            <svg class="w-5 h-5 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                                            </svg>
+                                            Shipping Method
+                                        </h3>
+                                        <button @onclick="() => currentStep = 2" class="text-orange-600 hover:text-orange-700 text-sm font-medium">Change</button>
+                                    </div>
+                                    <div class="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
+                                        @if (!string.IsNullOrEmpty(selectedShippingMethod))
+                                        {
+                                            var method = shippingMethods.FirstOrDefault(sm => sm.Type.ToLower() == selectedShippingMethod.ToLower());
+                                            if (method != null)
+                                            {
+                                                <p class="font-medium text-gray-900 mb-1">@method.Name</p>
+                                                <p class="mb-1">@method.Description</p>
+                                                <p class="font-semibold text-orange-600">Cost: @GetShippingCost().ToString("F3") OMR</p>
+                                            }
+                                            else
+                                            {
+                                                <p class="text-red-600">⚠️ Shipping method '@selectedShippingMethod' not found</p>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <p class="text-red-600">⚠️ No shipping method selected</p>
+                                        }
+                                    </div>
+                                </div>
+
+                                <!-- Order Items Review -->
+                                <div class="border border-gray-200 rounded-xl p-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="font-semibold text-gray-900 flex items-center">
+                                            <svg class="w-5 h-5 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                                            </svg>
+                                            Order Items (@CartService.Items.Count items)
+                                        </h3>
+                                        <span class="text-sm text-gray-500">Total Weight: @GetTotalWeight().ToString("F2") kg</span>
+                                    </div>
+                                    <div class="space-y-3">
+                                        @foreach (var item in CartService.Items)
+                                        {
+                                            <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+                                                <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-orange-100 to-orange-200 rounded-lg overflow-hidden">
+                                                    @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                                    {
+                                                        <img src="@item.ImageUrl" alt="@item.Name" class="w-full h-full object-cover">
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="w-full h-full flex items-center justify-center">
+                                                            <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                            </svg>
+                                                        </div>
+                                                    }
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <h4 class="text-sm font-medium text-gray-900 truncate">@item.Name</h4>
+                                                    <div class="flex items-center space-x-2 text-xs text-gray-500 mt-1">
+                                                        <span>Qty: @item.Quantity</span>
+                                                        <span>•</span>
+                                                        <span>@item.Price.ToString("F3") OMR each</span>
+                                                        @if (item.Weight > 0)
+                                                        {
+                                                            <span>•</span>
+                                                            <span>@item.Weight.ToString("F2") kg each</span>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                <div class="text-right">
+                                                    <p class="text-sm font-semibold text-gray-900">@((item.Price * item.Quantity).ToString("F3")) OMR</p>
+                                                    @if (item.Weight > 0)
+                                                    {
+                                                        <p class="text-xs text-gray-500">@((item.Weight * item.Quantity).ToString("F2")) kg</p>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+
+                                <!-- Order Summary Review -->
+                                <div class="border border-gray-200 rounded-xl p-4 bg-gradient-to-r from-gray-50 to-gray-100">
+                                    <h3 class="font-semibold text-gray-900 mb-4 flex items-center">
+                                        <svg class="w-5 h-5 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                        </svg>
+                                        Order Summary
+                                    </h3>
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Subtotal (@CartService.Items.Sum(i => i.Quantity) items)</span>
+                                            <span class="font-medium">@CartService.TotalPrice.ToString("F3") OMR</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">@GetShippingMethodDisplayName()</span>
+                                            <span class="font-medium">@GetShippingCost().ToString("F3") OMR</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Tax (@GetTaxRate()%)</span>
+                                            <span class="font-medium">@GetTax().ToString("F3") OMR</span>
+                                        </div>
+                                        <div class="border-t border-gray-300 pt-2 mt-3">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-lg font-bold text-gray-900">Total Amount</span>
+                                                <span class="text-xl font-bold text-orange-600">@GetFinalTotal().ToString("F3") OMR</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <div class="flex items-center justify-between">
                                     <button @onclick="PreviousStep" class="inline-flex items-center px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-all duration-300">
@@ -658,10 +791,13 @@ else
             return;
         }
 
+        // Debug log
+        await JSRuntime.InvokeVoidAsync("console.log", $"PlaceOrder called with selectedShippingMethod: '{selectedShippingMethod}'");
+        
         // Validate that shipping method is selected
         if (string.IsNullOrEmpty(selectedShippingMethod))
         {
-            await JSRuntime.InvokeVoidAsync("alert", "❌ Please select a shipping method before placing your order.");
+            await JSRuntime.InvokeVoidAsync("alert", $"❌ Please select a shipping method before placing your order. Current value: '{selectedShippingMethod}'");
             return;
         }
         
@@ -674,11 +810,11 @@ else
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             var userId = authState.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             
-            // Find selected shipping method
-            var selectedMethod = shippingMethods.FirstOrDefault(sm => sm.Type == selectedShippingMethod);
+            // Find selected shipping method (case insensitive comparison)
+            var selectedMethod = shippingMethods.FirstOrDefault(sm => sm.Type.ToLower() == selectedShippingMethod.ToLower());
             if (selectedMethod == null)
             {
-                throw new InvalidOperationException("Selected shipping method not found");
+                throw new InvalidOperationException($"Selected shipping method '{selectedShippingMethod}' not found. Available methods: {string.Join(", ", shippingMethods.Select(m => m.Type))}");
             }
 
             // Split full name into first and last name
@@ -727,9 +863,21 @@ else
 
     private async Task OnShippingMethodChanged(string shippingType)
     {
-        selectedShippingMethod = shippingType;
-        await CalculateShippingCostAsync();
-        StateHasChanged();
+        await JSRuntime.InvokeVoidAsync("console.log", $"OnShippingMethodChanged called with: '{shippingType}'");
+        
+        if (!string.IsNullOrEmpty(shippingType))
+        {
+            selectedShippingMethod = shippingType;
+            await CalculateShippingCostAsync();
+            StateHasChanged();
+            
+            // Debug log to console
+            await JSRuntime.InvokeVoidAsync("console.log", $"Shipping method set to: '{selectedShippingMethod}'");
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("console.log", "Shipping method is null or empty!");
+        }
     }
 
     private async Task CalculateShippingCostAsync()
@@ -898,6 +1046,17 @@ else
         }
         
         return totalWeightInKg;
+    }
+
+    private decimal GetTotalWeight()
+    {
+        return CalculateTotalWeight();
+    }
+
+    private decimal GetTaxRate()
+    {
+        // Default tax rate - you can make this configurable
+        return 5.0m; // 5%
     }
 
     public void Dispose()

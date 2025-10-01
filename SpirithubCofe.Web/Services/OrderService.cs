@@ -144,6 +144,87 @@ public class OrderService
     }
 
     /// <summary>
+    /// Get user orders with pagination
+    /// </summary>
+    public async Task<(List<Order> Orders, int TotalCount)> GetUserOrdersAsync(string userId, int page = 1, int pageSize = 10)
+    {
+        var query = _context.Orders
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                    .ThenInclude(p => p.MainImage)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.ProductVariant)
+            .Include(o => o.Country)
+            .Include(o => o.City)
+            .Include(o => o.ShippingMethod)
+            .Where(o => o.UserId == userId)
+            .OrderByDescending(o => o.CreatedAt);
+
+        var totalCount = await query.CountAsync();
+        var orders = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (orders, totalCount);
+    }
+
+    /// <summary>
+    /// Get all orders with pagination (for admin)
+    /// </summary>
+    public async Task<(List<Order> Orders, int TotalCount)> GetAllOrdersAsync(int page = 1, int pageSize = 10)
+    {
+        var query = _context.Orders
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                    .ThenInclude(p => p.MainImage)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.ProductVariant)
+            .Include(o => o.Country)
+            .Include(o => o.City)
+            .Include(o => o.ShippingMethod)
+            .Include(o => o.User)
+            .OrderByDescending(o => o.CreatedAt);
+
+        var totalCount = await query.CountAsync();
+        var orders = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (orders, totalCount);
+    }
+
+    /// <summary>
+    /// Get count of pending orders
+    /// </summary>
+    public async Task<int> GetPendingOrdersCountAsync()
+    {
+        return await _context.Orders
+            .Where(o => o.Status == "Pending")
+            .CountAsync();
+    }
+
+    /// <summary>
+    /// Update order status
+    /// </summary>
+    public async Task<bool> UpdateOrderStatusAsync(int orderId, string status, string? trackingNumber = null)
+    {
+        var order = await _context.Orders.FindAsync(orderId);
+        if (order == null) return false;
+
+        order.Status = status;
+        if (!string.IsNullOrEmpty(trackingNumber))
+        {
+            order.TrackingNumber = trackingNumber;
+        }
+        order.UpdatedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    /// <summary>
     /// Get orders for a specific user
     /// </summary>
     public async Task<List<Order>> GetOrdersByUserIdAsync(string userId)
