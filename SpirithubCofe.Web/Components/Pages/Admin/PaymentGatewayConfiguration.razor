@@ -1,0 +1,784 @@
+@page "/admin/payment-gateway-settings"
+@layout AdminLayout
+@attribute [Authorize(Roles = "Admin")]
+@using SpirithubCofe.Web.Services
+@using SpirithubCofe.Domain.Entities
+@using SpirithubCofe.Web.Components.Shared
+@using Microsoft.Extensions.Localization
+@using Microsoft.AspNetCore.Authorization
+@inject PaymentGatewaySettingsService PaymentGatewayService
+@inject ToastService ToastService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject IStringLocalizer<SpirithubCofe.Langs.Resources> Localizer
+@rendermode InteractiveServer
+
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        
+        <!-- Enhanced Header -->
+        <div class="mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0">
+                        <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">@Localizer["PaymentGatewaySettings"]</h1>
+                        <p class="mt-1 text-sm sm:text-base text-gray-600 max-w-2xl">@Localizer["PaymentGatewaySettingsDescription"]</p>
+                        <div class="mt-2 flex items-center space-x-4 text-xs sm:text-sm text-gray-500">
+                            <span class="flex items-center space-x-1">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Bank Muscat Integration</span>
+                            </span>
+                            <span class="flex items-center space-x-1">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Secure Configuration</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-2 h-2 @(settings?.IsEnabled == true ? "bg-green-400" : "bg-red-400") rounded-full animate-pulse"></div>
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold @(settings?.IsEnabled == true ? "bg-green-100 text-green-800 border border-green-200" : "bg-red-100 text-red-800 border border-red-200")">
+                            @(settings?.IsEnabled == true ? Localizer["Active"] : Localizer["Inactive"])
+                        </span>
+                    </div>
+                    @if (settings?.IsEnabled == true)
+                    {
+                        <div class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            @(settings.IsSandboxMode ? "Sandbox Mode" : "Live Mode")
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @if (isLoading)
+        {
+            <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-12">
+                <div class="flex flex-col items-center justify-center space-y-4">
+                    <div class="relative">
+                        <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-200"></div>
+                        <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent absolute top-0"></div>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-lg font-semibold text-gray-900">@Localizer["LoadingSettings"]</p>
+                        <p class="text-sm text-gray-500 mt-1">Please wait while we load your payment gateway configuration...</p>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (settings != null)
+        {
+            <div class="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
+                
+                <!-- Form -->
+                <form @onsubmit="SaveSettings" @onsubmit:preventDefault="true">
+                    
+                    <div class="px-6 py-8 space-y-8">
+                        
+                        <!-- General Settings -->
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">@Localizer["GeneralSettings"]</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                
+                                <!-- Gateway Name -->
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-semibold text-gray-700">@Localizer["GatewayName"]</label>
+                                    <input @bind="settings.GatewayName" 
+                                           class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                           placeholder="Bank Muscat" />
+                                </div>
+
+                                <!-- Title -->
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-semibold text-gray-700">@Localizer["Title"]</label>
+                                    <input @bind="settings.Title" 
+                                           class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                           placeholder="Bank Muscat" />
+                                </div>
+
+                                <!-- Description -->
+                                <div class="space-y-2 md:col-span-2">
+                                    <label class="block text-sm font-semibold text-gray-700">@Localizer["Description"]</label>
+                                    <textarea @bind="settings.Description" 
+                                              rows="3"
+                                              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                              placeholder="Pay securely by Credit or Debit card or internet banking through Bank Muscat Secure Servers."></textarea>
+                                </div>
+
+                                <!-- Enable/Disable -->
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-semibold text-gray-700">@Localizer["Status"]</label>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" @bind="settings.IsEnabled" 
+                                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                                        <span class="ml-2 text-sm text-gray-700">@Localizer["EnablePaymentGateway"]</span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Environment Settings -->
+                        <div class="border-t border-gray-200 pt-8">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">@Localizer["EnvironmentSettings"]</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                
+                                <!-- Sandbox Mode -->
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-semibold text-gray-700">@Localizer["EnvironmentMode"]</label>
+                                    <div class="flex items-center space-x-6">
+                                        <label class="flex items-center">
+                                            <input type="radio" @onchange='() => settings.IsSandboxMode = true' checked="@settings.IsSandboxMode" 
+                                                   class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" />
+                                            <span class="ml-2 text-sm text-gray-700">@Localizer["Sandbox"]</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="radio" @onchange='() => settings.IsSandboxMode = false' checked="@(!settings.IsSandboxMode)" 
+                                                   class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" />
+                                            <span class="ml-2 text-sm text-gray-700">@Localizer["Live"]</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Live Gateway URL -->
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-semibold text-gray-700">@Localizer["LiveGatewayUrl"]</label>
+                                    <input @bind="settings.LiveGatewayUrl" 
+                                           class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                           placeholder="https://secure.bankmuscat.com/payment/request" />
+                                </div>
+
+                                <!-- Sandbox Gateway URL -->
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-semibold text-gray-700">@Localizer["SandboxGatewayUrl"]</label>
+                                    <input @bind="settings.SandboxGatewayUrl" 
+                                           class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                           placeholder="https://test.bankmuscat.com/payment/request" />
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Merchant Configuration -->
+                        <div class="border-t border-gray-200 pt-8">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">@Localizer["MerchantConfiguration"]</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                
+                                <!-- Merchant ID -->
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-semibold text-gray-700">
+                                        @Localizer["MerchantId"]
+                                        <span class="text-red-500">*</span>
+                                    </label>
+                                    <input @bind="settings.MerchantId" 
+                                           class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                           placeholder="224" />
+                                    <p class="text-xs text-gray-500">@Localizer["MerchantIdDescription"]</p>
+                                </div>
+
+                                <!-- Access Code -->
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-semibold text-gray-700">
+                                        @Localizer["AccessCode"]
+                                        <span class="text-red-500">*</span>
+                                    </label>
+                                    <input @bind="settings.AccessCode" 
+                                           class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                           placeholder="AVDP00LA16BE47PDEB" />
+                                    <p class="text-xs text-gray-500">@Localizer["AccessCodeDescription"]</p>
+                                </div>
+
+                                <!-- Working Key -->
+                                <div class="space-y-2 md:col-span-2">
+                                    <label class="block text-sm font-semibold text-gray-700">
+                                        @Localizer["WorkingKey"]
+                                        <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input @bind="settings.WorkingKey" 
+                                               type="@(showWorkingKey ? "text" : "password")"
+                                               class="w-full px-4 py-3 pr-12 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                               placeholder="841FEAE32609C3E892C4D0B1393A7ACC" />
+                                        <button type="button" @onclick="ToggleWorkingKeyVisibility" 
+                                                class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                            @if (showWorkingKey)
+                                            {
+                                                <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd"></path>
+                                                    <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z"></path>
+                                                </svg>
+                                            }
+                                            else
+                                            {
+                                                <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
+                                                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"></path>
+                                                </svg>
+                                            }
+                                        </button>
+                                    </div>
+                                    <p class="text-xs text-gray-500">@Localizer["WorkingKeyDescription"]</p>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Callback URLs -->
+                        <div class="border-t border-gray-200 pt-8">
+                            <div class="flex items-center space-x-3 mb-6">
+                                <div class="flex-shrink-0">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">@Localizer["CallbackUrls"]</h3>
+                                    <p class="text-sm text-gray-600">Configure webhook endpoints for payment notifications</p>
+                                </div>
+                            </div>
+
+                            <!-- URL Configuration Warning -->
+                            <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        <svg class="w-5 h-5 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm text-amber-800">
+                                            <strong>Important:</strong> These URLs must be accessible from Bank Muscat's servers. Ensure your domain is publicly accessible and uses HTTPS in production.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                                
+                                <!-- Success Return URL -->
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <label class="block text-sm font-semibold text-gray-900">
+                                            <span class="flex items-center space-x-2">
+                                                <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                                </svg>
+                                                <span>@Localizer["ReturnUrl"]</span>
+                                            </span>
+                                        </label>
+                                        <button type="button" @onclick="() => CopyToClipboard(GetFullUrl(settings.ReturnUrl))" 
+                                                class="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                                            Copy Full URL
+                                        </button>
+                                    </div>
+                                    <div class="relative">
+                                        <input @bind="settings.ReturnUrl" 
+                                               class="w-full px-4 py-3 pr-12 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors bg-white" 
+                                               placeholder="/api/payment/callback/success" />
+                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                            <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="bg-green-50 border border-green-200 rounded-md p-3">
+                                        <p class="text-xs text-green-800">
+                                            <strong>Full URL:</strong> <code class="bg-green-100 px-1 rounded text-green-900">@GetFullUrl(settings?.ReturnUrl)</code>
+                                        </p>
+                                        <p class="text-xs text-green-700 mt-1">
+                                            Called when payment is completed successfully. User will be redirected here after successful payment.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Cancel/Failure URL -->
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <label class="block text-sm font-semibold text-gray-900">
+                                            <span class="flex items-center space-x-2">
+                                                <svg class="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                                </svg>
+                                                <span>@Localizer["CancelUrl"]</span>
+                                            </span>
+                                        </label>
+                                        <button type="button" @onclick="() => CopyToClipboard(GetFullUrl(settings.CancelUrl))" 
+                                                class="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                                            Copy Full URL
+                                        </button>
+                                    </div>
+                                    <div class="relative">
+                                        <input @bind="settings.CancelUrl" 
+                                               class="w-full px-4 py-3 pr-12 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors bg-white" 
+                                               placeholder="/api/payment/callback/cancel" />
+                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                            <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="bg-red-50 border border-red-200 rounded-md p-3">
+                                        <p class="text-xs text-red-800">
+                                            <strong>Full URL:</strong> <code class="bg-red-100 px-1 rounded text-red-900">@GetFullUrl(settings?.CancelUrl)</code>
+                                        </p>
+                                        <p class="text-xs text-red-700 mt-1">
+                                            Called when payment is cancelled or fails. User will be redirected here if payment is unsuccessful.
+                                        </p>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- Additional Configuration -->
+                            <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                
+                                <!-- Currency Configuration -->
+                                <div class="space-y-3">
+                                    <label class="block text-sm font-semibold text-gray-900">
+                                        <span class="flex items-center space-x-2">
+                                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                            </svg>
+                                            <span>@Localizer["Currency"]</span>
+                                        </span>
+                                    </label>
+                                    <select @bind="settings.Currency" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white">
+                                        <option value="OMR">OMR - Omani Rial</option>
+                                        <option value="USD">USD - US Dollar</option>
+                                        <option value="EUR">EUR - Euro</option>
+                                        <option value="GBP">GBP - British Pound</option>
+                                        <option value="AED">AED - UAE Dirham</option>
+                                        <option value="SAR">SAR - Saudi Riyal</option>
+                                    </select>
+                                    <div class="bg-blue-50 border border-blue-200 rounded-md p-3">
+                                        <p class="text-xs text-blue-800">
+                                            Default currency for payment transactions. Bank Muscat primarily supports OMR.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Webhook Timeout -->
+                                <div class="space-y-3">
+                                    <label class="block text-sm font-semibold text-gray-900">
+                                        <span class="flex items-center space-x-2">
+                                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            <span>Webhook Timeout (seconds)</span>
+                                        </span>
+                                    </label>
+                                    <input @bind="webhookTimeout" type="number" min="5" max="60"
+                                           class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                           placeholder="30" />
+                                    <div class="bg-gray-50 border border-gray-200 rounded-md p-3">
+                                        <p class="text-xs text-gray-700">
+                                            Maximum time to wait for webhook response. Recommended: 30 seconds.
+                                        </p>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- URL Testing Section -->
+                            <div class="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-sm font-semibold text-gray-900">URL Testing</h4>
+                                            <p class="text-xs text-gray-600">Test your callback URLs accessibility</p>
+                                        </div>
+                                    </div>
+                                    <button type="button" @onclick="TestCallbackUrls" disabled="@isTestingUrls"
+                                            class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                        @if (isTestingUrls)
+                                        {
+                                            <span class="flex items-center">
+                                                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                                Testing...
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span>Test URLs</span>
+                                        }
+                                    </button>
+                                </div>
+                                
+                                @if (urlTestResults.Any())
+                                {
+                                    <div class="space-y-2">
+                                        @foreach (var result in urlTestResults)
+                                        {
+                                            <div class="flex items-center justify-between p-3 bg-white rounded-lg border">
+                                                <div class="flex items-center space-x-3">
+                                                    @if (result.IsSuccess)
+                                                    {
+                                                        <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                    }
+                                                    else
+                                                    {
+                                                        <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                    }
+                                                    <div>
+                                                        <p class="text-sm font-medium text-gray-900">@result.UrlType</p>
+                                                        <p class="text-xs text-gray-500">@result.Url</p>
+                                                    </div>
+                                                </div>
+                                                <div class="text-right">
+                                                    <p class="text-sm @(result.IsSuccess ? "text-green-600" : "text-red-600")">
+                                                        @result.StatusCode
+                                                    </p>
+                                                    <p class="text-xs text-gray-500">@result.ResponseTime ms</p>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Enhanced Actions Section -->
+                    <div class="px-4 sm:px-6 py-6 bg-gradient-to-r from-gray-50 to-gray-100 border-t border-gray-200">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                            <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-6">
+                                <div class="flex items-center space-x-2 text-sm text-gray-600">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span>@Localizer["LastUpdated"]: @(settings.UpdatedAt.ToString("MMM dd, yyyy HH:mm"))</span>
+                                </div>
+                                <div class="flex items-center space-x-2 text-sm text-gray-600">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span>Configuration Status: @(settings.IsEnabled ? "Active" : "Inactive")</span>
+                                </div>
+                            </div>
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+                                <button type="button" @onclick="TestConnection" 
+                                        class="inline-flex items-center justify-center px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-sm">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                    </svg>
+                                    @Localizer["TestConnection"]
+                                </button>
+                                <button type="submit" disabled="@isSaving"
+                                        class="inline-flex items-center justify-center px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg">
+                                    @if (isSaving)
+                                    {
+                                        <span class="flex items-center">
+                                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            @Localizer["Saving"]
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="flex items-center">
+                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                            @Localizer["SaveSettings"]
+                                        </span>
+                                    }
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        }
+
+    </div>
+</div>
+
+<!-- Toast Component -->
+<Toast />
+
+@code {
+    private PaymentGatewaySettings? settings;
+    private bool isLoading = true;
+    private bool isSaving = false;
+    private bool showWorkingKey = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSettings();
+    }
+
+    private async Task LoadSettings()
+    {
+        try
+        {
+            isLoading = true;
+            settings = await PaymentGatewayService.GetBankMuscatSettingsAsync();
+            if (settings == null)
+            {
+                // Create default settings if none exist
+                settings = new PaymentGatewaySettings
+                {
+                    GatewayName = "Bank Muscat",
+                    Title = "Bank Muscat",
+                    Description = "Pay securely by Credit or Debit card or internet banking through Bank Muscat Secure Servers.",
+                    IsEnabled = false,
+                    MerchantId = "224",
+                    AccessCode = "AVDP00LA16BE47PDEB",
+                    WorkingKey = "841FEAE32609C3E892C4D0B1393A7ACC",
+                    IsSandboxMode = true,
+                    LiveGatewayUrl = "https://secure.checkout.visa.com/payment/",
+                    SandboxGatewayUrl = "https://secure.checkout.visa.com/payment/",
+                    Currency = "OMR",
+                    ReturnUrl = "/api/payment/callback/success",
+                    CancelUrl = "/api/payment/callback/cancel",
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowToast($"{Localizer["ErrorLoadingSettings"]}: {ex.Message}", "error");
+            // Create default settings on error
+            settings = new PaymentGatewaySettings
+            {
+                GatewayName = "Bank Muscat",
+                Title = "Bank Muscat",
+                Description = "Pay securely by Credit or Debit card or internet banking through Bank Muscat Secure Servers.",
+                IsEnabled = false,
+                MerchantId = "224",
+                AccessCode = "AVDP00LA16BE47PDEB",
+                WorkingKey = "841FEAE32609C3E892C4D0B1393A7ACC",
+                IsSandboxMode = true,
+                LiveGatewayUrl = "https://secure.checkout.visa.com/payment/",
+                SandboxGatewayUrl = "https://secure.checkout.visa.com/payment/",
+                Currency = "OMR",
+                ReturnUrl = "/api/payment/callback/success",
+                CancelUrl = "/api/payment/callback/cancel",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task SaveSettings()
+    {
+        if (settings == null) return;
+
+        try
+        {
+            isSaving = true;
+            settings.UpdatedAt = DateTime.UtcNow;
+            await PaymentGatewayService.UpdateBankMuscatSettingsAsync(settings);
+            ShowToast(Localizer["SettingsSavedSuccessfully"], "success");
+        }
+        catch (Exception ex)
+        {
+            ShowToast($"{Localizer["ErrorSavingSettings"]}: {ex.Message}", "error");
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private void ToggleWorkingKeyVisibility()
+    {
+        showWorkingKey = !showWorkingKey;
+    }
+
+    private async Task TestConnection()
+    {
+        if (settings == null) return;
+
+        try
+        {
+            ShowToast(Localizer["TestingConnection"], "info");
+            
+            // Test connection using the service
+            var result = await PaymentGatewayService.TestConnectionAsync();
+            
+            if (result)
+            {
+                ShowToast(Localizer["ConnectionTestSuccessful"], "success");
+            }
+            else
+            {
+                ShowToast(Localizer["ConnectionTestFailed"], "error");
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowToast($"{Localizer["ErrorTestingConnection"]}: {ex.Message}", "error");
+        }
+    }
+
+    private void ShowToast(string message, string type)
+    {
+        switch (type.ToLower())
+        {
+            case "success":
+                ToastService.ShowSuccess(message);
+                break;
+            case "error":
+                ToastService.ShowError(message);
+                break;
+            case "warning":
+                ToastService.ShowWarning(message);
+                break;
+            case "info":
+            default:
+                ToastService.ShowInfo(message);
+                break;
+        }
+    }
+
+    // Additional properties for enhanced functionality
+    private int webhookTimeout = 30;
+    private bool isTestingUrls = false;
+    private List<UrlTestResult> urlTestResults = new();
+
+    public class UrlTestResult
+    {
+        public string UrlType { get; set; } = "";
+        public string Url { get; set; } = "";
+        public bool IsSuccess { get; set; } = false;
+        public int StatusCode { get; set; } = 0;
+        public long ResponseTime { get; set; } = 0;
+    }
+
+    private string GetFullUrl(string? relativePath)
+    {
+        if (string.IsNullOrEmpty(relativePath))
+            return "";
+            
+        // Get the current request's base URL
+        var currentUrl = NavigationManager.Uri;
+        var uri = new Uri(currentUrl);
+        var baseUrl = $"{uri.Scheme}://{uri.Host}{(uri.Port == 80 || uri.Port == 443 ? "" : $":{uri.Port}")}";
+        
+        if (relativePath.StartsWith("http"))
+            return relativePath;
+            
+        return baseUrl + (relativePath.StartsWith("/") ? relativePath : "/" + relativePath);
+    }
+
+    private async Task CopyToClipboard(string text)
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+            ShowToast("URL copied to clipboard!", "success");
+        }
+        catch
+        {
+            ShowToast("Failed to copy URL to clipboard", "error");
+        }
+    }
+
+    private async Task TestCallbackUrls()
+    {
+        if (settings == null) return;
+
+        try
+        {
+            isTestingUrls = true;
+            urlTestResults.Clear();
+            StateHasChanged();
+
+            var httpClient = new HttpClient();
+            httpClient.Timeout = TimeSpan.FromSeconds(webhookTimeout);
+
+            // Test Success URL
+            await TestUrl(httpClient, "Success Callback", GetFullUrl(settings.ReturnUrl));
+            
+            // Test Cancel URL
+            await TestUrl(httpClient, "Cancel Callback", GetFullUrl(settings.CancelUrl));
+
+            ShowToast("URL testing completed", "info");
+        }
+        catch (Exception ex)
+        {
+            ShowToast($"Error testing URLs: {ex.Message}", "error");
+        }
+        finally
+        {
+            isTestingUrls = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task TestUrl(HttpClient httpClient, string urlType, string url)
+    {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        var result = new UrlTestResult
+        {
+            UrlType = urlType,
+            Url = url
+        };
+
+        try
+        {
+            var response = await httpClient.GetAsync(url);
+            stopwatch.Stop();
+            
+            result.IsSuccess = response.IsSuccessStatusCode;
+            result.StatusCode = (int)response.StatusCode;
+            result.ResponseTime = stopwatch.ElapsedMilliseconds;
+        }
+        catch (HttpRequestException)
+        {
+            stopwatch.Stop();
+            result.IsSuccess = false;
+            result.StatusCode = 0;
+            result.ResponseTime = stopwatch.ElapsedMilliseconds;
+        }
+        catch (TaskCanceledException)
+        {
+            stopwatch.Stop();
+            result.IsSuccess = false;
+            result.StatusCode = 408; // Request Timeout
+            result.ResponseTime = stopwatch.ElapsedMilliseconds;
+        }
+
+        urlTestResults.Add(result);
+        StateHasChanged();
+    }
+}

@@ -364,7 +364,7 @@ namespace SpirithubCofe.Web.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AramexSettings");
+                    b.ToTable("AramexSettings", (string)null);
                 });
 
             modelBuilder.Entity("SpirithubCofe.Domain.Entities.Cart", b =>
@@ -388,7 +388,7 @@ namespace SpirithubCofe.Web.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Carts");
+                    b.ToTable("Carts", (string)null);
                 });
 
             modelBuilder.Entity("SpirithubCofe.Domain.Entities.CartItem", b =>
@@ -426,7 +426,7 @@ namespace SpirithubCofe.Web.Migrations
 
                     b.HasIndex("ProductVariantId");
 
-                    b.ToTable("CartItems");
+                    b.ToTable("CartItems", (string)null);
                 });
 
             modelBuilder.Entity("SpirithubCofe.Domain.Entities.Category", b =>
@@ -494,7 +494,7 @@ namespace SpirithubCofe.Web.Migrations
                         .IsUnique()
                         .HasDatabaseName("IX_Categories_Slug");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("SpirithubCofe.Domain.Entities.CategoryImage", b =>
@@ -542,7 +542,7 @@ namespace SpirithubCofe.Web.Migrations
                         .IsUnique()
                         .HasDatabaseName("IX_CategoryImages_CategoryId");
 
-                    b.ToTable("CategoryImages");
+                    b.ToTable("CategoryImages", (string)null);
                 });
 
             modelBuilder.Entity("SpirithubCofe.Domain.Entities.City", b =>
@@ -580,7 +580,7 @@ namespace SpirithubCofe.Web.Migrations
                     b.HasIndex("IsActive")
                         .HasDatabaseName("IX_Cities_IsActive");
 
-                    b.ToTable("Cities");
+                    b.ToTable("Cities", (string)null);
                 });
 
             modelBuilder.Entity("SpirithubCofe.Domain.Entities.Country", b =>
@@ -617,7 +617,7 @@ namespace SpirithubCofe.Web.Migrations
                     b.HasIndex("IsActive")
                         .HasDatabaseName("IX_Countries_IsActive");
 
-                    b.ToTable("Countries");
+                    b.ToTable("Countries", (string)null);
                 });
 
             modelBuilder.Entity("SpirithubCofe.Domain.Entities.FAQ", b =>
@@ -672,7 +672,7 @@ namespace SpirithubCofe.Web.Migrations
 
                     b.HasIndex("CategoryId", "Order");
 
-                    b.ToTable("FAQs");
+                    b.ToTable("FAQs", (string)null);
                 });
 
             modelBuilder.Entity("SpirithubCofe.Domain.Entities.FAQCategory", b =>
@@ -709,7 +709,7 @@ namespace SpirithubCofe.Web.Migrations
                     b.HasIndex("Order")
                         .HasDatabaseName("IX_FAQCategories_Order");
 
-                    b.ToTable("FAQCategories");
+                    b.ToTable("FAQCategories", (string)null);
                 });
 
             modelBuilder.Entity("SpirithubCofe.Domain.Entities.FAQPage", b =>
@@ -759,7 +759,7 @@ namespace SpirithubCofe.Web.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FAQPages");
+                    b.ToTable("FAQPages", (string)null);
                 });
 
             modelBuilder.Entity("SpirithubCofe.Domain.Entities.HomePageSettings", b =>
@@ -952,7 +952,7 @@ namespace SpirithubCofe.Web.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("HomePageSettings");
+                    b.ToTable("HomePageSettings", (string)null);
                 });
 
             modelBuilder.Entity("SpirithubCofe.Domain.Entities.NoolShippingRate", b =>
@@ -992,7 +992,7 @@ namespace SpirithubCofe.Web.Migrations
                         .IsUnique()
                         .HasDatabaseName("IX_NoolShippingRates_ShippingMethod_City");
 
-                    b.ToTable("NoolShippingRates");
+                    b.ToTable("NoolShippingRates", (string)null);
                 });
 
             modelBuilder.Entity("SpirithubCofe.Domain.Entities.Order", b =>
@@ -1091,7 +1091,7 @@ namespace SpirithubCofe.Web.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("SpirithubCofe.Domain.Entities.OrderItem", b =>
@@ -1141,7 +1141,7 @@ namespace SpirithubCofe.Web.Migrations
 
                     b.HasIndex("ProductVariantId");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("OrderItems", (string)null);
                 });
 
             modelBuilder.Entity("SpirithubCofe.Domain.Entities.Product", b =>
@@ -1343,7 +1343,7 @@ namespace SpirithubCofe.Web.Migrations
                         .IsUnique()
                         .HasDatabaseName("IX_Products_Sku");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("SpirithubCofe.Domain.Entities.ProductImage", b =>
@@ -1399,7 +1399,7 @@ namespace SpirithubCofe.Web.Migrations
                     b.HasIndex("ProductId")
                         .HasDatabaseName("IX_ProductImages_ProductId");
 
-                    b.ToTable("ProductImages");
+                    b.ToTable("ProductImages", (string)null);
                 });
 
             modelBuilder.Entity("SpirithubCofe.Domain.Entities.ProductReview", b =>
@@ -1478,7 +1478,7 @@ namespace SpirithubCofe.Web.Migrations
                     b.HasIndex("Rating")
                         .HasDatabaseName("IX_ProductReviews_Rating");
 
-                    b.ToTable("ProductReviews");
+                    b.ToTable("ProductReviews", (string)null);
                 });
 
             modelBuilder.Entity("SpirithubCofe.Domain.Entities.ProductVariant", b =>
@@ -1551,7 +1551,7 @@ namespace SpirithubCofe.Web.Migrations
                         .IsUnique()
                         .HasDatabaseName("IX_ProductVariants_VariantSku");
 
-                    b.ToTable("ProductVariants");
+                    b.ToTable("ProductVariants", (string)null);
                 });
 
             modelBuilder.Entity("SpirithubCofe.Domain.Entities.Setting", b =>
@@ -1600,7 +1600,7 @@ namespace SpirithubCofe.Web.Migrations
                     b.HasIndex("Key")
                         .IsUnique();
 
-                    b.ToTable("Settings");
+                    b.ToTable("Settings", (string)null);
                 });
 
             modelBuilder.Entity("SpirithubCofe.Domain.Entities.ShippingMethod", b =>
@@ -1662,7 +1662,7 @@ namespace SpirithubCofe.Web.Migrations
                         .IsUnique()
                         .HasDatabaseName("IX_ShippingMethods_Type");
 
-                    b.ToTable("ShippingMethods");
+                    b.ToTable("ShippingMethods", (string)null);
                 });
 
             modelBuilder.Entity("SpirithubCofe.Domain.Entities.Slide", b =>
@@ -1736,7 +1736,7 @@ namespace SpirithubCofe.Web.Migrations
                     b.HasIndex("Order")
                         .HasDatabaseName("IX_Slides_Order");
 
-                    b.ToTable("Slides");
+                    b.ToTable("Slides", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
