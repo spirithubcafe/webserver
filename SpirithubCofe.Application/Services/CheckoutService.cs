@@ -15,15 +15,20 @@ public interface ICheckoutService
     Task<Order> CreateOrderAsync(Order order);
     Task<string> GenerateOrderNumberAsync();
     Task<bool> IsOmanCountryAsync(int countryId);
+    Task<(Order order, Payment payment)> CreateOrderWithPaymentAsync(Order order, string gateway);
+    Task<Order?> GetOrderByIdAsync(int orderId);
+    Task<Order?> GetOrderByNumberAsync(string orderNumber);
 }
 
 public class CheckoutService : ICheckoutService
 {
     private readonly IApplicationDbContext _context;
+    private readonly IPaymentService _paymentService;
 
-    public CheckoutService(IApplicationDbContext context)
+    public CheckoutService(IApplicationDbContext context, IPaymentService paymentService)
     {
         _context = context;
+        _paymentService = paymentService;
     }
 
     public async Task<IEnumerable<CountryDto>> GetActiveCountriesAsync()
@@ -200,5 +205,52 @@ public class CheckoutService : ICheckoutService
     {
         var country = await _context.Countries.FindAsync(countryId);
         return country?.Code == "OM";
+    }
+
+    public async Task<(Order order, Payment payment)> CreateOrderWithPaymentAsync(Order order, string gateway)
+    {
+        // Create order with unpaid status
+        order.PaymentStatus = "Unpaid";
+        order.Status = "Pending";
+        var createdOrder = await CreateOrderAsync(order);
+
+        // Create payment record
+        var createPaymentDto = new CreatePaymentDto
+        {
+            OrderId = createdOrder.Id,
+            Amount = createdOrder.TotalAmount,
+            Currency = "OMR", // You can make this configurable
+            Gateway = gateway
+        };
+
+        var payment = await _paymentService.CreatePaymentAsync(createPaymentDto);
+
+        return (createdOrder, payment);
+    }
+
+    public async Task<Order?> GetOrderByIdAsync(int orderId)
+    {
+        return await _context.Orders
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+            .Include(o => o.User)
+            .Include(o => o.Country)
+            .Include(o => o.City)
+            .Include(o => o.ShippingMethod)
+            .Include(o => o.Payments)
+            .FirstOrDefaultAsync(o => o.Id == orderId);
+    }
+
+    public async Task<Order?> GetOrderByNumberAsync(string orderNumber)
+    {
+        return await _context.Orders
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+            .Include(o => o.User)
+            .Include(o => o.Country)
+            .Include(o => o.City)
+            .Include(o => o.ShippingMethod)
+            .Include(o => o.Payments)
+            .FirstOrDefaultAsync(o => o.OrderNumber == orderNumber);
     }
 }

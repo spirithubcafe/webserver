@@ -1,6 +1,7 @@
 @page "/order-confirmation/{orderNumber}"
 @using SpirithubCofe.Web.Services
 @using SpirithubCofe.Domain.Entities
+@using SpirithubCofe.Application.DTOs
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.JSInterop
 @attribute [Authorize]
@@ -86,6 +87,11 @@
                                 <p><span class="font-medium">Order Number:</span> @order.OrderNumber</p>
                                 <p><span class="font-medium">Order Date:</span> @order.CreatedAt.ToString("MMM dd, yyyy")</p>
                                 <p><span class="font-medium">Total Amount:</span> @order.TotalAmount.ToString("F3") OMR</p>
+                                <p><span class="font-medium">Payment Status:</span> 
+                                    <span class="px-2 py-1 @GetPaymentStatusBadgeClass(order.PaymentStatus) rounded-full text-xs font-medium">
+                                        @GetPaymentStatusText(order.PaymentStatus)
+                                    </span>
+                                </p>
                                 @if (!string.IsNullOrEmpty(order.TrackingNumber) && order.Status.ToLower() != "shipped" && order.Status.ToLower() != "delivered")
                                 {
                                     <p><span class="font-medium">Tracking Number:</span> 
@@ -188,6 +194,16 @@
 
             <!-- Action Buttons -->
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                @if (order.PaymentStatus == "Unpaid" || order.PaymentStatus == "Failed")
+                {
+                    <button @onclick="PayForOrder"
+                            class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                        </svg>
+                        <span>Pay Now</span>
+                    </button>
+                }
                 @if (!string.IsNullOrEmpty(order.TrackingNumber) && (order.Status.ToLower() == "shipped" || order.Status.ToLower() == "delivered"))
                 {
                     <button @onclick="() => OpenTrackingLink(order.TrackingNumber)" 
@@ -309,5 +325,80 @@
             "cancelled" => "bg-red-100 text-red-800",
             _ => "bg-gray-100 text-gray-800"
         };
+    }
+
+    private string GetPaymentStatusBadgeClass(string paymentStatus)
+    {
+        return paymentStatus?.ToLower() switch
+        {
+            "paid" => "bg-green-100 text-green-800",
+            "unpaid" => "bg-red-100 text-red-800",
+            "failed" => "bg-red-100 text-red-800",
+            "refunded" => "bg-gray-100 text-gray-800",
+            "pending" => "bg-yellow-100 text-yellow-800",
+            _ => "bg-gray-100 text-gray-800"
+        };
+    }
+
+    private string GetPaymentStatusText(string paymentStatus)
+    {
+        return paymentStatus?.ToLower() switch
+        {
+            "paid" => "Paid",
+            "unpaid" => "Unpaid",
+            "failed" => "Failed",
+            "refunded" => "Refunded",
+            "pending" => "Processing",
+            _ => "Unknown"
+        };
+    }
+
+    private async Task PayForOrder()
+    {
+        if (order == null) return;
+
+        try
+        {
+            isLoading = true;
+            StateHasChanged();
+
+            // Call payment initiation API
+            var httpClient = new HttpClient { BaseAddress = new Uri(Navigation.BaseUri) };
+            var response = await httpClient.GetAsync($"/api/payment/initiate/{order.Id}");
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var paymentData = await response.Content.ReadFromJsonAsync<PaymentInitiationResponse>();
+                if (paymentData != null && !string.IsNullOrEmpty(paymentData.PaymentUrl))
+                {
+                    // Redirect to payment gateway
+                    Navigation.NavigateTo(paymentData.PaymentUrl, forceLoad: true);
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("alert", "Failed to initiate payment. Please try again.");
+                }
+            }
+            else
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                await JSRuntime.InvokeVoidAsync("alert", $"Payment initiation failed: {error}");
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error initiating payment: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    public class PaymentInitiationResponse
+    {
+        public string PaymentUrl { get; set; } = string.Empty;
+        public string PaymentReference { get; set; } = string.Empty;
     }
 }

@@ -2785,6 +2785,9 @@
   .border-green-300 {
     border-color: var(--color-green-300);
   }
+  .border-green-600 {
+    border-color: var(--color-green-600);
+  }
   .border-indigo-200 {
     border-color: var(--color-indigo-200);
   }

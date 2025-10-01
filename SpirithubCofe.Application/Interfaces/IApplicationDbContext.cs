@@ -29,6 +29,8 @@ public interface IApplicationDbContext
     DbSet<OrderItem> OrderItems { get; }
     DbSet<HomePageSettings> HomePageSettings { get; }
     DbSet<AramexSettings> AramexSettings { get; }
+    DbSet<PaymentGatewaySettings> PaymentGatewaySettings { get; }
+    DbSet<Payment> Payments { get; }
     
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

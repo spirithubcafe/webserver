@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using SpirithubCofe.Domain.Entities;
 using SpirithubCofe.Web.Data;
+using SpirithubCofe.Application.Services;
+using SpirithubCofe.Application.DTOs;
 
 namespace SpirithubCofe.Web.Services;
 
@@ -12,12 +14,21 @@ public class OrderService
     private readonly ApplicationDbContext _context;
     private readonly CartService _cartService;
     private readonly ProductService _productService;
+    private readonly IPaymentService _paymentService;
+    private readonly IPaymentGatewayService _paymentGatewayService;
 
-    public OrderService(ApplicationDbContext context, CartService cartService, ProductService productService)
+    public OrderService(
+        ApplicationDbContext context, 
+        CartService cartService, 
+        ProductService productService,
+        IPaymentService paymentService,
+        IPaymentGatewayService paymentGatewayService)
     {
         _context = context;
         _cartService = cartService;
         _productService = productService;
+        _paymentService = paymentService;
+        _paymentGatewayService = paymentGatewayService;
     }
 
     /// <summary>
@@ -111,6 +122,49 @@ public class OrderService
         await _context.SaveChangesAsync();
 
         return order;
+    }
+
+    /// <summary>
+    /// Create a new order with payment integration
+    /// </summary>
+    public async Task<(Order order, string paymentUrl)> CreateOrderWithPaymentAsync(CreateOrderRequest request)
+    {
+        // Create the order first with unpaid status
+        var order = await CreateOrderAsync(request);
+        
+        // Update order to unpaid status
+        order.PaymentStatus = "Unpaid";
+        await _context.SaveChangesAsync();
+        
+        // Create payment record
+        var createPaymentDto = new CreatePaymentDto
+        {
+            OrderId = order.Id,
+            Amount = order.TotalAmount,
+            Currency = "OMR",
+            Gateway = "Bank Muscat"
+        };
+        
+        var payment = await _paymentService.CreatePaymentAsync(createPaymentDto);
+        
+        // Prepare payment request
+        var paymentRequest = new PaymentGatewayRequestDto
+        {
+            PaymentReference = payment.PaymentReference,
+            Amount = payment.Amount,
+            Currency = payment.Currency,
+            CustomerName = $"{order.FirstName} {order.LastName}",
+            CustomerEmail = order.Email,
+            CustomerPhone = order.Phone,
+            ReturnUrl = $"/checkout/payment-success?PaymentRef={payment.PaymentReference}",
+            CancelUrl = $"/checkout/payment-cancelled?PaymentRef={payment.PaymentReference}",
+            CallbackUrl = "/api/payment/callback"
+        };
+        
+        // Generate payment URL
+        var paymentUrl = await _paymentGatewayService.GeneratePaymentUrlAsync(paymentRequest);
+        
+        return (order, paymentUrl);
     }
 
     /// <summary>

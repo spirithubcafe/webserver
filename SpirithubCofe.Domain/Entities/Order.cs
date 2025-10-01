@@ -28,6 +28,12 @@ public class Order
     public string Status { get; set; } = "Pending";
     
     /// <summary>
+    /// Payment status (Unpaid, Paid, Failed, Refunded)
+    /// </summary>
+    [Required]
+    public string PaymentStatus { get; set; } = "Unpaid";
+    
+    /// <summary>
     /// Subtotal amount (before tax and shipping)
     /// </summary>
     [Range(0, double.MaxValue)]
@@ -142,4 +148,5 @@ public class Order
     public virtual City? City { get; set; }
     public virtual ShippingMethod? ShippingMethod { get; set; }
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+    public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 }

@@ -840,15 +840,17 @@ else
                 Notes = null // Could add a notes field to the form if needed
             };
 
-            // Create the order
-            var order = await OrderService.CreateOrderAsync(orderRequest);
+            // Create the order with payment
+            var (order, paymentUrl) = await OrderService.CreateOrderWithPaymentAsync(orderRequest);
             
-            // Clear cart after successful order
+            // Clear cart after successful order creation
             await CartService.ClearCartAsync();
             
-            // Show success message and redirect to order confirmation
-            await JSRuntime.InvokeVoidAsync("alert", $"🎉 Order #{order.OrderNumber} placed successfully! You will receive a confirmation email shortly.");
-            Navigation.NavigateTo($"/order-confirmation/{order.OrderNumber}");
+            // Show message and redirect to payment
+            await JSRuntime.InvokeVoidAsync("alert", $"🛒 Order #{order.OrderNumber} created successfully! Redirecting to payment...");
+            
+            // Redirect to payment gateway
+            Navigation.NavigateTo(paymentUrl, forceLoad: true);
         }
         catch (Exception ex)
         {

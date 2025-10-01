@@ -139,6 +139,8 @@ builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<SpirithubCofe.Application.Services.ICheckoutService, SpirithubCofe.Application.Services.CheckoutService>();
 builder.Services.AddScoped<SpirithubCofe.Application.Services.IAramexApiService, SpirithubCofe.Application.Services.AramexApiService>();
 builder.Services.AddScoped<SpirithubCofe.Application.Services.IAramexRateService, SpirithubCofe.Application.Services.AramexRateService>();
+builder.Services.AddScoped<SpirithubCofe.Application.Services.IPaymentService, SpirithubCofe.Application.Services.PaymentService>();
+builder.Services.AddScoped<SpirithubCofe.Application.Services.IPaymentGatewayService, SpirithubCofe.Application.Services.PaymentGatewayService>();
 
 // Register user login service
 builder.Services.AddScoped<UserLoginService>();
