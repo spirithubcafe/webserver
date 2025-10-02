@@ -1,0 +1,180 @@
+@page "/payment-redirect/{OrderId:int}"
+@using Microsoft.AspNetCore.Authorization
+@using SpirithubCafe.Application.Services
+@using SpirithubCafe.Application.DTOs
+@attribute [Authorize]
+@layout PublicLayout
+@inject OrderService OrderService
+@inject IPaymentService PaymentService
+@inject IPaymentGatewayService PaymentGatewayService
+@inject ILogger<PaymentRedirect> Logger
+@rendermode InteractiveServer
+
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center">
+    <div class="max-w-md mx-auto text-center px-4">
+        @if (isLoading)
+        {
+            <div class="mb-8">
+                <div class="w-20 h-20 mx-auto mb-6 relative">
+                    <div class="w-20 h-20 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">Redirecting to Payment Gateway</h2>
+                <p class="text-gray-600">Please wait while we prepare your secure payment...</p>
+            </div>
+        }
+        else if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="mb-8">
+                <div class="w-20 h-20 mx-auto mb-6 bg-red-100 rounded-full flex items-center justify-center">
+                    <svg class="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"/>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-red-600 mb-4">Payment Error</h2>
+                <p class="text-gray-600 mb-6">@errorMessage</p>
+                <a href="/checkout" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Back to Checkout
+                </a>
+            </div>
+        }
+
+        <!-- Payment gateway form -->
+        @if (!string.IsNullOrEmpty(gatewayBaseUrl) && paymentData != null && paymentData.Any())
+        {
+            <div class="mb-8">
+                <div class="w-20 h-20 mx-auto mb-6 bg-green-100 rounded-full flex items-center justify-center">
+                    <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">Payment Ready</h2>
+                <p class="text-gray-600 mb-6">Click the button below to proceed to the secure payment gateway.</p>
+                
+                <form method="post" action="@gatewayBaseUrl" class="text-center">
+                    @foreach (var data in paymentData)
+                    {
+                        <input type="hidden" name="@data.Key" value="@data.Value" />
+                    }
+                    <button type="submit" class="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors text-lg">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v2a2 2 0 002 2z"/>
+                        </svg>
+                        Proceed to Payment
+                    </button>
+                    <p class="text-sm text-gray-500 mt-3">Secure payment powered by Bank Muscat</p>
+                </form>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public int OrderId { get; set; }
+    
+    private bool isLoading = true;
+    private string? errorMessage;
+    private string? paymentUrl;
+    private string? gatewayBaseUrl;
+    private Dictionary<string, string>? paymentData;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await InitiatePaymentRedirect();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error initiating payment redirect for order {OrderId}", OrderId);
+            errorMessage = "An error occurred while preparing payment. Please try again.";
+            isLoading = false;
+        }
+    }
+
+    private async Task InitiatePaymentRedirect()
+    {
+        // Get order details
+        var order = await OrderService.GetOrderByIdAsync(OrderId);
+        if (order == null)
+        {
+            errorMessage = "Order not found.";
+            isLoading = false;
+            return;
+        }
+
+        if (order.PaymentStatus == "Paid")
+        {
+            errorMessage = "This order has already been paid.";
+            isLoading = false;
+            return;
+        }
+
+        // Get or create payment
+        var payment = await PaymentService.GetPaymentByOrderIdAsync(OrderId);
+        if (payment == null)
+        {
+            var createPaymentDto = new CreatePaymentDto
+            {
+                OrderId = OrderId,
+                Amount = order.TotalAmount,
+                Currency = "OMR",
+                Gateway = "Bank Muscat"
+            };
+            payment = await PaymentService.CreatePaymentAsync(createPaymentDto);
+        }
+
+        // Prepare payment request
+        var paymentRequest = await PaymentService.PreparePaymentRequestAsync(OrderId);
+        
+        // Get payment gateway settings
+        var gateway = await PaymentGatewayService.GetActiveGatewayAsync();
+        if (gateway == null)
+        {
+            errorMessage = "Payment gateway is not configured.";
+            isLoading = false;
+            return;
+        }
+
+        // Prepare form data for POST submission
+        paymentData = new Dictionary<string, string>
+        {
+            {"merchant_id", gateway.MerchantId},
+            {"order_id", paymentRequest.PaymentReference},
+            {"amount", paymentRequest.Amount.ToString("F2")},
+            {"currency", paymentRequest.Currency},
+            {"redirect_url", paymentRequest.ReturnUrl},
+            {"cancel_url", paymentRequest.CancelUrl},
+            {"billing_name", paymentRequest.CustomerName},
+            {"billing_email", paymentRequest.CustomerEmail},
+            {"billing_tel", paymentRequest.CustomerPhone ?? ""},
+            {"merchant_param1", paymentRequest.PaymentReference},
+            {"merchant_param2", "SpirithubCafe"}
+        };
+
+        // Encrypt the data if needed
+        var queryString = string.Join("&", paymentData.Select(kvp => $"{kvp.Key}={Uri.EscapeDataString(kvp.Value)}"));
+        var encryptedData = PaymentGatewayService.EncryptPaymentData(queryString, gateway.WorkingKey);
+        
+        // Set up form data for submission
+        paymentData = new Dictionary<string, string>
+        {
+            {"encRequest", encryptedData},
+            {"access_code", gateway.AccessCode}
+        };
+
+        // Get gateway URL
+        gatewayBaseUrl = gateway.IsSandboxMode ? gateway.SandboxGatewayUrl : gateway.LiveGatewayUrl;
+        
+        // Extract base URL without query parameters
+        if (gatewayBaseUrl.Contains('?'))
+        {
+            gatewayBaseUrl = gatewayBaseUrl.Split('?')[0];
+        }
+
+        isLoading = false;
+        StateHasChanged();
+    }
+}

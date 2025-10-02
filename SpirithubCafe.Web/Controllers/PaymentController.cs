@@ -108,6 +108,86 @@ public class PaymentController : ControllerBase
         }
     }
 
+    [HttpGet("callback/success")]
+    [HttpPost("callback/success")]
+    public async Task<IActionResult> PaymentSuccess()
+    {
+        try
+        {
+            var parameters = new Dictionary<string, string>();
+            
+            // Get parameters from query string or form data
+            foreach (var key in Request.Query.Keys)
+            {
+                parameters[key] = Request.Query[key].ToString();
+            }
+            
+            foreach (var key in Request.Form.Keys)
+            {
+                parameters[key] = Request.Form[key].ToString();
+            }
+
+            _logger.LogInformation("Payment success callback received with parameters: {Parameters}", 
+                string.Join(", ", parameters.Select(kv => $"{kv.Key}={kv.Value}")));
+
+            // Process the callback if we have encrypted response
+            if (parameters.ContainsKey("encResp"))
+            {
+                var callbackDto = await _gatewayService.ProcessCallbackAsync(parameters);
+                await _paymentService.UpdatePaymentStatusAsync(callbackDto.PaymentReference, callbackDto);
+            }
+
+            // Redirect to success page with parameters
+            var queryString = string.Join("&", parameters.Select(kv => $"{kv.Key}={Uri.EscapeDataString(kv.Value)}"));
+            return Redirect($"/checkout/payment-success?{queryString}");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error processing payment success callback");
+            return Redirect("/payment/cancel");
+        }
+    }
+
+    [HttpGet("callback/cancel")]
+    [HttpPost("callback/cancel")]
+    public async Task<IActionResult> PaymentCancel()
+    {
+        try
+        {
+            var parameters = new Dictionary<string, string>();
+            
+            // Get parameters from query string or form data
+            foreach (var key in Request.Query.Keys)
+            {
+                parameters[key] = Request.Query[key].ToString();
+            }
+            
+            foreach (var key in Request.Form.Keys)
+            {
+                parameters[key] = Request.Form[key].ToString();
+            }
+
+            _logger.LogInformation("Payment cancel callback received with parameters: {Parameters}", 
+                string.Join(", ", parameters.Select(kv => $"{kv.Key}={kv.Value}")));
+
+            // Process the callback if we have encrypted response
+            if (parameters.ContainsKey("encResp"))
+            {
+                var callbackDto = await _gatewayService.ProcessCallbackAsync(parameters);
+                await _paymentService.UpdatePaymentStatusAsync(callbackDto.PaymentReference, callbackDto);
+            }
+
+            // Redirect to cancel page with parameters
+            var queryString = string.Join("&", parameters.Select(kv => $"{kv.Key}={Uri.EscapeDataString(kv.Value)}"));
+            return Redirect($"/payment/cancel?{queryString}");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error processing payment cancel callback");
+            return Redirect("/payment/cancel");
+        }
+    }
+
     [HttpGet("status/{paymentReference}")]
     public async Task<IActionResult> GetPaymentStatus(string paymentReference)
     {
