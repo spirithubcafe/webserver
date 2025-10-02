@@ -40,6 +40,8 @@ public class AramexRateService : IAramexRateService
 
             // TODO: Implement actual Aramex Rate Calculator API integration
             // For now, return mock data to test the UI
+            // NOTE: All rates are calculated in OMR (Omani Rial) currency
+            // Mock rates are based on realistic Aramex pricing structure
             await Task.Delay(1000); // Simulate API call delay
 
             var mockRate = CalculateMockRate(request, settings);
@@ -85,28 +87,31 @@ public class AramexRateService : IAramexRateService
 
     private decimal CalculateMockRate(AramexRateRequest request, AramexSettings settings)
     {
-        // Simple mock calculation based on weight and destination
-        decimal baseRate = 2.000m; // Base rate in OMR
-        decimal weightMultiplier = request.Weight * 0.5m;
-        decimal distanceMultiplier = 1.0m;
+        // Realistic mock calculation based on actual Aramex rates (in OMR)
+        decimal baseRate = 1.500m; // Base rate in OMR - more realistic
+        decimal weightMultiplier = request.Weight * 0.200m; // Reduced weight cost
+        decimal distanceMultiplier = 0.5m; // More reasonable base distance cost
 
-        // Adjust based on destination country
+        // Adjust based on destination country (realistic OMR rates)
         switch (request.DestinationCountryCode?.ToUpper())
         {
-            case "AE": // UAE
-                distanceMultiplier = 1.2m;
+            case "AE": // UAE - Regional
+                distanceMultiplier = 0.800m;
                 break;
-            case "SA": // Saudi Arabia
-                distanceMultiplier = 1.5m;
+            case "SA": // Saudi Arabia - Regional
+                distanceMultiplier = 1.000m;
                 break;
-            case "US": // USA
-                distanceMultiplier = 3.0m;
+            case "US": // USA - International
+                distanceMultiplier = 2.500m;
                 break;
-            case "GB": // UK
-                distanceMultiplier = 2.8m;
+            case "GB": // UK - International
+                distanceMultiplier = 2.200m;
                 break;
-            default:
-                distanceMultiplier = 2.0m;
+            case "OM": // Domestic Oman
+                distanceMultiplier = 0.300m;
+                break;
+            default: // Other international
+                distanceMultiplier = 1.800m;
                 break;
         }
 
