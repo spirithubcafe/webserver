@@ -1,0 +1,404 @@
+@inherits LayoutComponentBase
+@implements IDisposable
+
+@inject IStringLocalizer<Resources> Localizer
+@inject CartService CartService
+@inject NavigationManager Navigation
+@inject SpirithubCafe.Application.Services.ISettingService SettingService
+@inject SpirithubCafe.Web.Services.CategoryService CategoryService
+@using System.Globalization
+@using SpirithubCafe.Web.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Antiforgery
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.JSInterop
+@using SpirithubCafe.Web
+@using SpirithubCafe.Web.Components.Layout
+@using SpirithubCafe.Web.Components.Shared
+@using SpirithubCafe.Web.Components.Shared
+@using SpirithubCafe.Web.Components
+
+<!DOCTYPE html>
+<html data-theme="light" lang="@CultureInfo.CurrentUICulture.TwoLetterISOLanguageName"
+    dir="@(CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "rtl" : "ltr")" class="h-full bg-gray-50">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link rel="stylesheet" href="dist.css" />
+    <link rel="stylesheet" href="@Assets["SpirithubCafe.Web.styles.css"]" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <PageTitle>@Localizer["SiteTitle"]</PageTitle>
+</head>
+
+<body class="h-full">
+    <div class="min-h-screen flex flex-col">
+        <!-- Top Navigation -->
+        <nav class="bg-white shadow-lg border-b border-gray-100 sticky top-0 z-50 flex-shrink-0">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-20">
+                    <!-- Logo and Brand -->
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0 flex items-center">
+                            @if (logoType == "image" && !string.IsNullOrEmpty(logoImage))
+                            {
+                                <!-- Dynamic Image Logo -->
+                                <a href="/" class="flex items-center">
+                                    <img src="@logoImage" alt="@(logoText ?? "SpirithubCafe")" class="h-12 w-auto mr-3" />
+                                </a>
+                            }
+                            else
+                            {
+                                <!-- Text Logo with Coffee Bean Icon -->
+                                <div
+                                    class="w-10 h-10 bg-gradient-to-br from-amber-500 to-amber-600 rounded-full flex items-center justify-center mr-3 shadow-md">
+                                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            d="M18.5 3H6c-1.1 0-2 .9-2 2v5.71c0 3.83 2.95 7.18 6.78 7.29 3.96.12 7.22-3.06 7.22-7v-1h.5c1.93 0 3.5-1.57 3.5-3.5S20.43 3 18.5 3zM16 5v3h1.5c.83 0 1.5-.67 1.5-1.5S17.83 5 17 5h-1zM6 5h8v8.58c0 2.4-1.9 4.42-4.29 4.42S5.42 15.98 5.42 13.58V5z" />
+                                    </svg>
+                                </div>
+                                <div class="flex flex-col">
+                                    <a href="/"
+                                        class="text-2xl font-bold text-gray-900 hover:text-amber-600 transition-colors">
+                                        @(string.IsNullOrEmpty(logoText) ? "SpirithubCafe" : logoText)
+                                    </a>
+                                    <span class="text-xs text-gray-500 font-medium">Premium Coffee from Oman</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+
+
+                    <!-- Right Side Actions -->
+                    <div class="flex items-center space-x-4">
+                        <!-- Products Dropdown - Always visible on all screen sizes -->
+                        <div class="relative group">
+                            <button
+                                class="flex items-center px-3 py-2 text-sm font-medium text-amber-800 hover:text-amber-900 hover:bg-gradient-to-r hover:from-amber-50 hover:to-yellow-50 rounded-lg transition-all duration-200 border border-transparent hover:border-amber-200">
+                                <svg class="w-6 h-6 group-hover:scale-105 transition-transform mr-2 text-current" viewBox="0 0 24 24"
+                                    fill="none">
+                                    <path d="M22 22H2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                    <path d="M20 22V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                    <path d="M4 22V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                    <path
+                                        d="M16.5278 2H7.47214C6.26932 2 5.66791 2 5.18461 2.2987C4.7013 2.5974 4.43234 3.13531 3.89443 4.21114L2.49081 7.75929C2.16652 8.57905 1.88279 9.54525 2.42867 10.2375C2.79489 10.7019 3.36257 11 3.99991 11C5.10448 11 5.99991 10.1046 5.99991 9C5.99991 10.1046 6.89534 11 7.99991 11C9.10448 11 9.99991 10.1046 9.99991 9C9.99991 10.1046 10.8953 11 11.9999 11C13.1045 11 13.9999 10.1046 13.9999 9C13.9999 10.1046 14.8953 11 15.9999 11C17.1045 11 17.9999 10.1046 17.9999 9C17.9999 10.1046 18.8953 11 19.9999 11C20.6373 11 21.205 10.7019 21.5712 10.2375C22.1171 9.54525 21.8334 8.57905 21.5091 7.75929L20.1055 4.21114C19.5676 3.13531 19.2986 2.5974 18.8153 2.2987C18.332 2 17.7306 2 16.5278 2Z"
+                                        stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+                                    <path
+                                        d="M9.5 21.5V18.5C9.5 17.5654 9.5 17.0981 9.70096 16.75C9.83261 16.522 10.022 16.3326 10.25 16.201C10.5981 16 11.0654 16 12 16C12.9346 16 13.4019 16 13.75 16.201C13.978 16.3326 14.1674 16.522 14.299 16.75C14.5 17.0981 14.5 17.5654 14.5 18.5V21.5"
+                                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                </svg>
+                                <span class="hidden sm:inline">@Localizer["Products"]</span>
+                                <svg class="w-4 h-4 ml-1 text-current" fill="currentColor"
+                                    viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                            <!-- Dropdown Menu -->
+                            <div
+                                class="absolute left-1/2 transform -translate-x-1/2 mt-2 w-64 bg-white border border-gray-100 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 max-w-[calc(100vw-2rem)] mx-2">
+                                <div class="py-2">
+                                    <NavLink href="/products"
+                                        class="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-amber-900 hover:bg-amber-50 border-b border-gray-100 font-medium">
+                                        <div
+                                            class="w-8 h-8 bg-gradient-to-br from-amber-50 to-amber-100 rounded-md flex items-center justify-center mr-3 text-amber-800">
+ 
+
+<svg class="w-4 h-4 text-current" viewBox="0 0 24 24" fill="none">
+ <path d="M17.625 21.0002C18.2666 20.4299 19.2334 20.4299 19.875 21.0002C20.3109 21.3876 21 21.0782 21 20.495V3.50519C21 2.92196 20.3109 2.61251 19.875 2.99999C19.2334 3.57029 18.2666 3.57029 17.625 2.99999C16.9834 2.42969 16.0166 2.42969 15.375 2.99999C14.7334 3.57029 13.7666 3.57029 13.125 2.99999C12.4834 2.42969 11.5166 2.42969 10.875 2.99999C10.2334 3.57029 9.26659 3.57029 8.625 2.99999C7.98341 2.42969 7.01659 2.42969 6.375 2.99999C5.73341 3.57029 4.76659 3.57029 4.125 2.99999C3.68909 2.61251 3 2.92196 3 3.50519V20.495C3 21.0782 3.68909 21.3876 4.125 21.0002C4.76659 20.4299 5.73341 20.4299 6.375 21.0002C7.01659 21.5705 7.98341 21.5705 8.625 21.0002C9.26659 20.4299 10.2334 20.4299 10.875 21.0002C11.5166 21.5705 12.4834 21.5705 13.125 21.0002C13.7666 20.4299 14.7334 20.4299 15.375 21.0002C16.0166 21.5705 16.9834 21.5705 17.625 21.0002Z" stroke="currentColor" stroke-width="1.5"/>
+<path d="M7.5 15.5H16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M7.5 12H16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M7.5 8.5H16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+</svg>
+
+
+                                        </div>
+                                        @Localizer["AllProducts"]
+                                    </NavLink>
+                                    @foreach (var category in categories.Take(8))
+                                    {
+                                        <NavLink href="@($"/products/{category.Slug}")"
+                                            class="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-amber-900 hover:bg-amber-50">
+                                            <div
+                                                class="w-8 h-8 bg-gradient-to-br from-amber-50 to-amber-100 rounded-md flex items-center justify-center mr-3 text-amber-800">
+                                                <svg class="w-4 h-4 text-current" fill="none" viewBox="0 0 24 24">
+ <path d="M16.755 2H7.24502C6.08614 2 5.50671 2 5.03939 2.16261C4.15322 2.47096 3.45748 3.18719 3.15795 4.09946C3 4.58055 3 5.17705 3 6.37006V20.3742C3 21.2324 3.985 21.6878 4.6081 21.1176C4.97417 20.7826 5.52583 20.7826 5.8919 21.1176L6.375 21.5597C7.01659 22.1468 7.98341 22.1468 8.625 21.5597C9.26659 20.9726 10.2334 20.9726 10.875 21.5597C11.5166 22.1468 12.4834 22.1468 13.125 21.5597C13.7666 20.9726 14.7334 20.9726 15.375 21.5597C16.0166 22.1468 16.9834 22.1468 17.625 21.5597L18.1081 21.1176C18.4742 20.7826 19.0258 20.7826 19.3919 21.1176C20.015 21.6878 21 21.2324 21 20.3742V6.37006C21 5.17705 21 4.58055 20.842 4.09946C20.5425 3.18719 19.8468 2.47096 18.9606 2.16261C18.4933 2 17.9139 2 16.755 2Z" stroke="currentColor" stroke-width="1.5"/>
+<path d="M9.5 10.4L10.9286 12L14.5 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M7.5 15.5H16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+</svg>
+                                            </div>
+                                            @(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar" &&
+                                                                                    !string.IsNullOrEmpty(category.NameAr) ? category.NameAr : category.Name)
+                                        </NavLink>
+                                    }
+                                    @if (categories.Count > 8)
+                                    {
+                                        <NavLink href="/products"
+                                            class="flex items-center px-4 py-2 text-sm text-amber-600 hover:text-amber-700 hover:bg-amber-50 border-t border-gray-100 font-medium">
+                                            <div
+                                                class="w-8 h-8 bg-amber-100 rounded-md flex items-center justify-center mr-3 text-amber-600">
+                                                <svg class="w-4 h-4 text-current" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                                                        clip-rule="evenodd"></path>
+                                                </svg>
+                                            </div>
+                                            @Localizer["ViewAllCategories"]
+                                        </NavLink>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cart Button - Always visible -->
+                        <CartIcon />
+
+                        <!-- User Menu - Always visible -->
+                        <div class="relative group">
+                            <AuthorizeView>
+                                <Authorized>
+                                    <button
+                                        class="flex items-center space-x-3 p-2 text-sm rounded-lg hover:bg-gray-50 transition-all duration-200">
+                                        <div
+                                            class="w-8 h-8 bg-gradient-to-br from-amber-400 to-amber-500 rounded-full flex items-center justify-center text-white font-medium text-sm">
+                                            @(context.User.Identity?.Name?.Substring(0, 1).ToUpper() ?? "U")
+                                        </div>
+                                        <div class="hidden sm:block text-left">
+                                            <div class="text-sm font-medium text-gray-900">@Localizer["Profile"]</div>
+                                        </div>
+                                        <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                    </button>
+                                </Authorized>
+                                <NotAuthorized>
+                                    <button
+                                        class="flex items-center space-x-3 p-2 text-sm rounded-lg hover:bg-gray-50 transition-all duration-200">
+                                        <div
+                                            class="w-8 h-8 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center text-white font-medium text-sm">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                                    clip-rule="evenodd"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="hidden sm:block text-left">
+                                            <div class="text-sm font-medium text-gray-900">@Localizer["Account"]</div>
+                                        </div>
+                                        <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                    </button>
+                                </NotAuthorized>
+                            </AuthorizeView>
+
+                            <!-- User Dropdown - Always visible -->
+                            <div
+                                class="absolute right-0 mt-2 w-56 bg-white border border-gray-100 rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                                <div class="py-2">
+                                    <AuthorizeView>
+                                        <Authorized>
+                                            <!-- Authenticated User Info Header -->
+                                            <div class="px-4 py-3 border-b border-gray-100">
+                                                <div class="text-sm font-medium text-gray-900">
+                                                    @context.User.Identity?.Name</div>
+                                                <div class="text-xs text-gray-500">@Localizer["Customer"]</div>
+                                            </div>
+
+                                            <!-- Language Switcher -->
+                                            <div class="px-4 py-3 border-b border-gray-100">
+                                                <LanguageSwitcher />
+                                            </div>
+
+                                            <NavLink href="/Account/Manage"
+                                                class="flex items-center px-4 py-3 text-sm text-gray-700 hover:text-amber-600 hover:bg-amber-50">
+                                                <svg class="w-4 h-4 mr-3 text-gray-400" fill="currentColor"
+                                                    viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                                        clip-rule="evenodd"></path>
+                                                </svg>
+                                                @Localizer["MyProfile"]
+                                            </NavLink>
+                                            <NavLink href="/orders"
+                                                class="flex items-center px-4 py-3 text-sm text-gray-700 hover:text-amber-600 hover:bg-amber-50">
+                                                <svg class="w-4 h-4 mr-3 text-gray-400" fill="currentColor"
+                                                    viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                                                        clip-rule="evenodd"></path>
+                                                </svg>
+                                                @Localizer["MyOrders"]
+                                            </NavLink>
+                                            <NavLink href="/favorites"
+                                                class="flex items-center px-4 py-3 text-sm text-gray-700 hover:text-amber-600 hover:bg-amber-50">
+                                                <svg class="w-4 h-4 mr-3 text-gray-400" fill="currentColor"
+                                                    viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                                                        clip-rule="evenodd"></path>
+                                                </svg>
+                                                @Localizer["Favorites"]
+                                            </NavLink>
+
+                                            <!-- Admin Panel - Only show for Admin users -->
+                                            @if (context.User.IsInRole("Admin"))
+                                            {
+                                                <hr class="my-2 border-gray-100">
+                                                <NavLink href="/admin/dashboard"
+                                                    class="flex items-center px-4 py-3 text-sm text-purple-600 hover:text-purple-700 hover:bg-purple-50 font-medium">
+                                                    <svg class="w-4 h-4 mr-3 text-purple-500" fill="currentColor"
+                                                        viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd"
+                                                            d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 01-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15.586 13H14a1 1 0 01-1-1z"
+                                                            clip-rule="evenodd"></path>
+                                                    </svg>
+                                                    @Localizer["AdminPanel"]
+                                                </NavLink>
+                                            }
+
+                                            <hr class="my-2 border-gray-100">
+                                            <form action="Account/Logout" method="post" class="inline-block w-full">
+                                                <AntiforgeryToken />
+                                                <input type="hidden" name="ReturnUrl" value="/" />
+                                                <button type="submit"
+                                                    class="flex items-center w-full px-4 py-3 text-sm text-red-600 hover:text-red-700 hover:bg-red-50">
+                                                    <svg class="w-4 h-4 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd"
+                                                            d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
+                                                            clip-rule="evenodd"></path>
+                                                    </svg>
+                                                    @Localizer["SignOut"]
+                                                </button>
+                                            </form>
+                                        </Authorized>
+                                        <NotAuthorized>
+                                            <!-- Guest User Menu -->
+                                            <!-- Language Switcher -->
+                                            <div class="px-4 py-3 border-b border-gray-100">
+                                                <LanguageSwitcher />
+                                            </div>
+
+                                            <NavLink href="/Account/Login"
+                                                class="flex items-center px-4 py-3 text-sm text-gray-700 hover:text-amber-600 hover:bg-amber-50">
+                                                <svg class="w-4 h-4 mr-3 text-gray-400" fill="currentColor"
+                                                    viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z"
+                                                        clip-rule="evenodd"></path>
+                                                </svg>
+                                                @Localizer["Login"]
+                                            </NavLink>
+                                            <NavLink href="/Account/Register"
+                                                class="flex items-center px-4 py-3 text-sm text-white bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 rounded-lg mx-3 my-2 font-medium">
+                                                <svg class="w-4 h-4 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path
+                                                        d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z">
+                                                    </path>
+                                                </svg>
+                                                @Localizer["Register"]
+                                            </NavLink>
+                                        </NotAuthorized>
+                                    </AuthorizeView>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </nav>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col">
+            <div class="flex-1">
+                <CustomErrorBoundary>
+                    @Body
+                </CustomErrorBoundary>
+            </div>
+        </main>
+
+        <!-- Dynamic Footer -->
+        <DynamicFooter />
+    </div>
+
+    <!-- Error UI -->
+    <div id="blazor-error-ui" data-nosnippet
+        class="fixed top-4 right-4 z-50 bg-red-600 text-white p-4 rounded-lg shadow-lg max-w-md hidden">
+        <div class="flex items-center justify-between">
+            <span>An unhandled error has occurred.</span>
+            <div class="ml-4 flex space-x-2">
+                <a href="." class="underline hover:no-underline">Reload</a>
+                <button class="dismiss text-xl font-bold hover:text-gray-200">&times;</button>
+            </div>
+        </div>
+    </div>
+
+    @code {
+        private string logoType = "text";
+        private string logoText = "SpirithubCafe";
+        private string logoImage = "";
+        private List<SpirithubCafe.Domain.Entities.Category> categories = new();
+
+        protected override async Task OnInitializedAsync()
+        {
+            await LoadLogoSettings();
+            await LoadCategories();
+            await CartService.InitializeAsync();
+        }
+
+        private async Task LoadCategories()
+        {
+            try
+            {
+                categories = await CategoryService.GetActiveCategoriesAsync();
+            }
+            catch (Exception)
+            {
+                // If category service fails, use empty list
+                categories = new();
+            }
+        }
+
+        private async Task LoadLogoSettings()
+        {
+            try
+            {
+                logoType = await SettingService.GetValueAsync("logo_type", "text");
+                logoText = await SettingService.GetValueAsync("logo_text", "SpirithubCafe");
+                logoImage = await SettingService.GetValueAsync("logo_image", "");
+            }
+            catch (Exception)
+            {
+                // If settings service fails, use defaults
+                logoType = "text";
+                logoText = "SpirithubCafe";
+                logoImage = "";
+            }
+        }
+
+        private void NavigateToCart()
+        {
+            Navigation.NavigateTo("/cart", forceLoad: true);
+        }
+
+        public void Dispose()
+        {
+        }
+    }
+
+</body>
+
+</html>

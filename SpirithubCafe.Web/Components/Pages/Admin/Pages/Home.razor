@@ -1,0 +1,864 @@
+@page "/admin/pages/home"
+@layout AdminLayout
+@attribute [Authorize(Roles = "Admin")]
+@using SpirithubCafe.Domain.Entities
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using System.ComponentModel.DataAnnotations
+@using SpirithubCafe.Web.Components.Shared
+@inject HomePageSettingsService HomePageSettingsService
+@inject ToastService ToastService
+@rendermode InteractiveServer
+
+<PageTitle>Home Page Settings - SpirithubCafe</PageTitle>
+
+<Toast />
+
+<div class="min-h-screen bg-gray-50 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Page Header -->
+        <div class="bg-white shadow-sm rounded-lg mb-6">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Home Page Settings</h1>
+                        <p class="mt-1 text-sm text-gray-600">Configure sections, content, and appearance of your homepage</p>
+                    </div>
+                    <div class="mt-4 sm:mt-0">
+                        <button type="button" @onclick="SaveSettings" disabled="@saving" 
+                                class="inline-flex items-center px-6 py-3 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200">
+                            @if (saving)
+                            {
+                                <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <text>Saving...</text>
+                            }
+                            else
+                            {
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                <text>Save Changes</text>
+                            }
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (settings != null)
+        {
+            <EditForm Model="settings" OnValidSubmit="SaveSettings">
+                <DataAnnotationsValidator />
+                
+                <div class="space-y-6">
+                    
+                    <!-- Slideshow Section -->
+                    <div class="bg-white shadow rounded-lg">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900">Slideshow Section</h3>
+                                        <p class="text-sm text-gray-600">Control the main hero slideshow display</p>
+                                    </div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" @bind="settings.ShowSlideshow" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Categories Section -->
+                    <div class="bg-white shadow rounded-lg">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14-2V4a1 1 0 00-1-1H6a1 1 0 00-1 1v5M9 21v-6a1 1 0 011-1h4a1 1 0 011 1v6"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900">Categories Section</h3>
+                                        <p class="text-sm text-gray-600">Configure category showcase section</p>
+                                    </div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" @bind="settings.ShowCategories" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        @if (settings.ShowCategories)
+                        {
+                            <div class="px-6 py-6 space-y-6">
+                                <!-- Titles -->
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Title (English)</label>
+                                        <InputText @bind-Value="settings.CategoriesTitle" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                            placeholder="Our Categories" />
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Title (Arabic)</label>
+                                        <InputText @bind-Value="settings.CategoriesTitleAr" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                            placeholder="فئاتنا" dir="rtl" />
+                                    </div>
+                                </div>
+
+                                <!-- Subtitles -->
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Subtitle (English)</label>
+                                        <InputText @bind-Value="settings.CategoriesSubtitle" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                            placeholder="Explore our wide range of products" />
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Subtitle (Arabic)</label>
+                                        <InputText @bind-Value="settings.CategoriesSubtitleAr" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                            placeholder="اكتشف مجموعتنا الواسعة من المنتجات" dir="rtl" />
+                                    </div>
+                                </div>
+
+                                <!-- Display Count & Background -->
+                                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Display Count</label>
+                                        <InputNumber @bind-Value="settings.CategoriesDisplayCount" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                            min="1" max="20" />
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Background Type</label>
+                                        <select @bind="settings.CategoriesBgType" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white">
+                                            <option value="color">Color</option>
+                                            <option value="image">Image</option>
+                                            <option value="video">Video</option>
+                                        </select>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Background Value</label>
+                                        @if (settings.CategoriesBgType == "color")
+                                        {
+                                            <div class="flex items-center space-x-3">
+                                                <input type="color" @bind="settings.CategoriesBgValue" 
+                                                    class="w-16 h-12 border border-gray-200 rounded-lg cursor-pointer" />
+                                                <InputText @bind-Value="settings.CategoriesBgValue" 
+                                                    class="flex-1 px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                                    placeholder="#f8f9fa" />
+                                            </div>
+                                        }
+                                        else if (settings.CategoriesBgType == "image" || settings.CategoriesBgType == "video")
+                                        {
+                                            <FileUpload 
+                                                FileType="@(settings.CategoriesBgType == "image" ? "image" : "video")"
+                                                Folder="homepage/categories"
+                                                Prefix="categories-bg"
+                                                @bind-CurrentFileUrl="settings.CategoriesBgValue"
+                                                AltText="Categories Background" />
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Mission Section -->
+                    <div class="bg-white shadow rounded-lg">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900">Mission Section</h3>
+                                        <p class="text-sm text-gray-600">Share your company mission and values</p>
+                                    </div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" @bind="settings.ShowMission" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        @if (settings.ShowMission)
+                        {
+                            <div class="px-6 py-6 space-y-6">
+                                <!-- Titles -->
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Title (English)</label>
+                                        <InputText @bind-Value="settings.MissionTitle" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                            placeholder="Our Mission" />
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Title (Arabic)</label>
+                                        <InputText @bind-Value="settings.MissionTitleAr" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                            placeholder="مهمتنا" dir="rtl" />
+                                    </div>
+                                </div>
+
+                                <!-- Subtitles -->
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Subtitle (English)</label>
+                                        <InputText @bind-Value="settings.MissionSubtitle" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                            placeholder="What drives us forward" />
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Subtitle (Arabic)</label>
+                                        <InputText @bind-Value="settings.MissionSubtitleAr" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                            placeholder="ما يدفعنا إلى الأمام" dir="rtl" />
+                                    </div>
+                                </div>
+
+                                <!-- Mission Text -->
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Mission Text (English)</label>
+                                        <InputTextArea @bind-Value="settings.MissionText" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                            rows="4" placeholder="Describe your mission in detail..." />
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Mission Text (Arabic)</label>
+                                        <InputTextArea @bind-Value="settings.MissionTextAr" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                            rows="4" placeholder="اوصف مهمتك بالتفصيل..." dir="rtl" />
+                                    </div>
+                                </div>
+
+                                <!-- Background -->
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Background Type</label>
+                                        <select @bind="settings.MissionBgType" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white">
+                                            <option value="color">Color</option>
+                                            <option value="image">Image</option>
+                                            <option value="video">Video</option>
+                                        </select>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Background Value</label>
+                                        @if (settings.MissionBgType == "color")
+                                        {
+                                            <div class="flex items-center space-x-3">
+                                                <input type="color" @bind="settings.MissionBgValue" 
+                                                    class="w-16 h-12 border border-gray-200 rounded-lg cursor-pointer" />
+                                                <InputText @bind-Value="settings.MissionBgValue" 
+                                                    class="flex-1 px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                                    placeholder="#ffffff" />
+                                            </div>
+                                        }
+                                        else if (settings.MissionBgType == "image" || settings.MissionBgType == "video")
+                                        {
+                                            <FileUpload 
+                                                FileType="@(settings.MissionBgType == "image" ? "image" : "video")"
+                                                Folder="homepage/mission"
+                                                Prefix="mission-bg"
+                                                @bind-CurrentFileUrl="settings.MissionBgValue"
+                                                AltText="Mission Background" />
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Latest Products Section -->
+                    <div class="bg-white shadow rounded-lg">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900">Latest Products Section</h3>
+                                        <p class="text-sm text-gray-600">Showcase your newest product releases</p>
+                                    </div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" @bind="settings.ShowLatestProducts" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-yellow-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        @if (settings.ShowLatestProducts)
+                        {
+                            <div class="px-6 py-6 space-y-6">
+                                <!-- Titles -->
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Title (English)</label>
+                                        <InputText @bind-Value="settings.LatestProductsTitle" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                            placeholder="Latest Products" />
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Title (Arabic)</label>
+                                        <InputText @bind-Value="settings.LatestProductsTitleAr" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                            placeholder="أحدث المنتجات" dir="rtl" />
+                                    </div>
+                                </div>
+
+                                <!-- Subtitles -->
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Subtitle (English)</label>
+                                        <InputText @bind-Value="settings.LatestProductsSubtitle" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                            placeholder="Discover our newest arrivals" />
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Subtitle (Arabic)</label>
+                                        <InputText @bind-Value="settings.LatestProductsSubtitleAr" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                            placeholder="اكتشف أحدث وصولاتنا" dir="rtl" />
+                                    </div>
+                                </div>
+
+                                <!-- Display Count & Background -->
+                                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Products Count</label>
+                                        <InputNumber @bind-Value="settings.LatestProductsCount" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                            min="3" max="12" />
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Background Type</label>
+                                        <select @bind="settings.LatestProductsBgType" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white">
+                                            <option value="color">Color</option>
+                                            <option value="image">Image</option>
+                                            <option value="video">Video</option>
+                                        </select>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Background Value</label>
+                                        @if (settings.LatestProductsBgType == "color")
+                                        {
+                                            <div class="flex items-center space-x-3">
+                                                <input type="color" @bind="settings.LatestProductsBgValue" 
+                                                    class="w-16 h-12 border border-gray-200 rounded-lg cursor-pointer" />
+                                                <InputText @bind-Value="settings.LatestProductsBgValue" 
+                                                    class="flex-1 px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                                    placeholder="#f8f9fa" />
+                                            </div>
+                                        }
+                                        else if (settings.LatestProductsBgType == "image" || settings.LatestProductsBgType == "video")
+                                        {
+                                            <FileUpload 
+                                                FileType="@(settings.LatestProductsBgType == "image" ? "image" : "video")"
+                                                Folder="homepage/products"
+                                                Prefix="products-bg"
+                                                @bind-CurrentFileUrl="settings.LatestProductsBgValue"
+                                                AltText="Latest Products Background" />
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Newsletter Section -->
+                    <div class="bg-white shadow rounded-lg">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900">Newsletter Section</h3>
+                                        <p class="text-sm text-gray-600">Email subscription section for updates</p>
+                                    </div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" @bind="settings.ShowNewsletter" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        @if (settings.ShowNewsletter)
+                        {
+                            <div class="px-6 py-6 space-y-6">
+                                <!-- Titles -->
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Title (English)</label>
+                                        <InputText @bind-Value="settings.NewsletterTitle" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                            placeholder="Stay Updated" />
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Title (Arabic)</label>
+                                        <InputText @bind-Value="settings.NewsletterTitleAr" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                            placeholder="ابق على اطلاع" dir="rtl" />
+                                    </div>
+                                </div>
+
+                                <!-- Subtitles -->
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Subtitle (English)</label>
+                                        <InputText @bind-Value="settings.NewsletterSubtitle" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                            placeholder="Subscribe to get the latest news and offers" />
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Subtitle (Arabic)</label>
+                                        <InputText @bind-Value="settings.NewsletterSubtitleAr" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                            placeholder="اشترك للحصول على آخر الأخبار والعروض" dir="rtl" />
+                                    </div>
+                                </div>
+
+                                <!-- Background Settings -->
+                                <div class="space-y-4">
+                                    <h4 class="text-md font-semibold text-gray-800">Background Settings</h4>
+                                    
+                                    <!-- Background Type Selection -->
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Background Type</label>
+                                        <select @onchange="OnNewsletterBgTypeChanged" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white">
+                                            <option value="color" selected="@(settings.NewsletterBgType == "color")">Color</option>
+                                            <option value="image" selected="@(settings.NewsletterBgType == "image")">Image</option>
+                                            <option value="video" selected="@(settings.NewsletterBgType == "video")">Video</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Color Picker (when color is selected) -->
+                                    @if (settings.NewsletterBgType == "color")
+                                    {
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-semibold text-gray-700">Background Color</label>
+                                            <div class="flex gap-2">
+                                                <input type="color" @bind="settings.NewsletterBgValue" 
+                                                       class="w-12 h-10 border border-gray-200 rounded cursor-pointer" />
+                                                <InputText @bind-Value="settings.NewsletterBgValue" 
+                                                           class="flex-1 px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                                           placeholder="#ffffff" />
+                                            </div>
+                                        </div>
+                                    }
+
+                                    <!-- File Upload (when image or video is selected) -->
+                                    @if (settings.NewsletterBgType == "image" || settings.NewsletterBgType == "video")
+                                    {
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-semibold text-gray-700">
+                                                @(settings.NewsletterBgType == "image" ? "Background Image" : "Background Video")
+                                            </label>
+                                            <FileUpload FileType="@(settings.NewsletterBgType == "image" ? "image" : "video")"
+                                                        Folder="backgrounds"
+                                                        Prefix="@($"newsletter-{settings.NewsletterBgType}")"
+                                                        @bind-CurrentFileUrl="settings.NewsletterBgValue" />
+                                        </div>
+                                    }
+                                </div>
+
+                                <!-- Newsletter Section Image -->
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-semibold text-gray-700">Newsletter Section Image</label>
+                                    <p class="text-sm text-gray-600">This image will be displayed alongside the email input form</p>
+                                    <FileUpload FileType="image"
+                                                Folder="newsletter"
+                                                Prefix="newsletter-section"
+                                                @bind-CurrentFileUrl="settings.NewsletterImage" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- About Us Section -->
+                    <div class="bg-white shadow rounded-lg">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900">About Us Section</h3>
+                                        <p class="text-sm text-gray-600">Company information and story</p>
+                                    </div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" @bind="settings.ShowAboutUs" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        @if (settings.ShowAboutUs)
+                        {
+                            <div class="px-6 py-6 space-y-6">
+                                <!-- Titles -->
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Title (English)</label>
+                                        <InputText @bind-Value="settings.AboutUsTitle" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                            placeholder="About Us" />
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Title (Arabic)</label>
+                                        <InputText @bind-Value="settings.AboutUsTitleAr" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                            placeholder="من نحن" dir="rtl" />
+                                    </div>
+                                </div>
+
+                                <!-- Subtitles -->
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Subtitle (English)</label>
+                                        <InputText @bind-Value="settings.AboutUsSubtitle" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                            placeholder="Learn more about our story" />
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Subtitle (Arabic)</label>
+                                        <InputText @bind-Value="settings.AboutUsSubtitleAr" 
+                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                            placeholder="تعرف على قصتنا" dir="rtl" />
+                                    </div>
+                                </div>
+
+                                <!-- Content Text -->
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Content Text (English)</label>
+                                        <textarea @bind="settings.AboutUsText" 
+                                                  rows="4"
+                                                  class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                                  placeholder="Tell your company story..."></textarea>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Content Text (Arabic)</label>
+                                        <textarea @bind="settings.AboutUsTextAr" 
+                                                  rows="4"
+                                                  class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                                  placeholder="اكتب قصة شركتك..." dir="rtl"></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Background Settings -->
+                                <div class="space-y-4">
+                                    <h4 class="text-md font-semibold text-gray-800">Background Settings</h4>
+                                    
+                                    <!-- Background Type Selection -->
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-semibold text-gray-700">Background Type</label>
+                                        <select @onchange="OnAboutUsBgTypeChanged" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white">
+                                            <option value="color" selected="@(settings.AboutUsBgType == "color")">Color</option>
+                                            <option value="image" selected="@(settings.AboutUsBgType == "image")">Image</option>
+                                            <option value="video" selected="@(settings.AboutUsBgType == "video")">Video</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Color Picker (when color is selected) -->
+                                    @if (settings.AboutUsBgType == "color")
+                                    {
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-semibold text-gray-700">Background Color</label>
+                                            <div class="flex gap-2">
+                                                <input type="color" @bind="settings.AboutUsBgValue" 
+                                                       class="w-12 h-10 border border-gray-200 rounded cursor-pointer" />
+                                                <InputText @bind-Value="settings.AboutUsBgValue" 
+                                                           class="flex-1 px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white" 
+                                                           placeholder="#ffffff" />
+                                            </div>
+                                        </div>
+                                    }
+
+                                    <!-- File Upload (when image or video is selected) -->
+                                    @if (settings.AboutUsBgType == "image" || settings.AboutUsBgType == "video")
+                                    {
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-semibold text-gray-700">
+                                                @(settings.AboutUsBgType == "image" ? "Background Image" : "Background Video")
+                                            </label>
+                                            <FileUpload FileType="@(settings.AboutUsBgType == "image" ? "image" : "video")"
+                                                        Folder="backgrounds"
+                                                        Prefix="@($"aboutus-{settings.AboutUsBgType}")"
+                                                        @bind-CurrentFileUrl="settings.AboutUsBgValue" />
+                                        </div>
+                                    }
+                                </div>
+
+                                <!-- About Us Section Image -->
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-semibold text-gray-700">About Us Section Image</label>
+                                    <p class="text-sm text-gray-600">This image will be displayed alongside the about us content</p>
+                                    <FileUpload FileType="image"
+                                                Folder="about"
+                                                Prefix="about-us-section"
+                                                @bind-CurrentFileUrl="settings.AboutUsImage" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Section Order Manager -->
+                    <div class="bg-white shadow rounded-lg">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Section Display Order</h3>
+                                    <p class="text-sm text-gray-600">Drag and drop to reorder sections on homepage</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-6 py-6">
+                            <div id="sortable-sections" class="space-y-3">
+                                @{
+                                    var sortedSections = GetSortedSections();
+                                }
+                                @for (int i = 0; i < sortedSections.Count; i++)
+                                {
+                                    var sectionItem = sortedSections[i];
+                                    var index = i;
+                                    <div class="section-item flex items-center p-4 bg-gray-50 rounded-lg border border-gray-300 hover:bg-gray-100 transition-colors">
+                                        <div class="flex-shrink-0 mr-3">
+                                            <div class="flex flex-col space-y-1">
+                                                <button type="button" @onclick="@(() => MoveSection(sectionItem.Name, -1))" 
+                                                        disabled="@(index == 0)"
+                                                        class="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                                                    </svg>
+                                                </button>
+                                                <button type="button" @onclick="@(() => MoveSection(sectionItem.Name, 1))"
+                                                        disabled="@(index == sortedSections.Count - 1)"
+                                                        class="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow">
+                                            <h4 class="font-medium text-gray-900">@sectionItem.DisplayName</h4>
+                                            <p class="text-sm text-gray-600">@sectionItem.Description</p>
+                                        </div>
+                                        <div class="flex-shrink-0 flex items-center space-x-3">
+                                            <span class="text-sm text-gray-500">Order: @sectionItem.Order</span>
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium @(sectionItem.IsEnabled ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800")">
+                                                @(sectionItem.IsEnabled ? "Enabled" : "Disabled")
+                                            </span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </EditForm>
+        }
+    </div>
+</div>
+
+@code {
+    private HomePageSettings? settings;
+    private bool saving = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSettings();
+    }
+
+    private async Task LoadSettings()
+    {
+        try
+        {
+            settings = await HomePageSettingsService.GetSettingsAsync();
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError($"Error loading settings: {ex.Message}");
+        }
+        
+        StateHasChanged();
+    }
+
+    private async Task SaveSettings()
+    {
+        if (settings == null) return;
+        
+        saving = true;
+        try
+        {
+            await HomePageSettingsService.UpdateSettingsAsync(settings);
+            ToastService.ShowSuccess("Settings saved successfully!");
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError($"Error saving settings: {ex.Message}");
+        }
+        finally
+        {
+            saving = false;
+        }
+        
+        StateHasChanged();
+    }
+
+    private void OnNewsletterBgTypeChanged(ChangeEventArgs e)
+    {
+        if (settings != null && e.Value != null)
+        {
+            settings.NewsletterBgType = e.Value.ToString();
+            // Reset the background value when type changes
+            settings.NewsletterBgValue = settings.NewsletterBgType switch
+            {
+                "color" => "#f8f9fa",
+                "image" => "",
+                "video" => "",
+                _ => "#f8f9fa"
+            };
+        }
+    }
+
+    private void OnAboutUsBgTypeChanged(ChangeEventArgs e)
+    {
+        if (settings != null && e.Value != null)
+        {
+            settings.AboutUsBgType = e.Value.ToString();
+            // Reset the background value when type changes
+            settings.AboutUsBgValue = settings.AboutUsBgType switch
+            {
+                "color" => "#ffffff",
+                "image" => "",
+                "video" => "",
+                _ => "#ffffff"
+            };
+        }
+    }
+
+    // Section Order Management
+    public class SectionInfo
+    {
+        public string Name { get; set; } = "";
+        public string DisplayName { get; set; } = "";
+        public string Description { get; set; } = "";
+        public int Order { get; set; }
+        public bool IsEnabled { get; set; }
+    }
+
+
+
+    private List<SectionInfo> GetSortedSections()
+    {
+        if (settings == null) return new List<SectionInfo>();
+
+        var sections = new List<SectionInfo>
+        {
+            new() { Name = "slideshow", DisplayName = "Slideshow", Description = "Hero image slider", Order = settings.SlideshowOrder, IsEnabled = settings.ShowSlideshow },
+            new() { Name = "categories", DisplayName = "Categories", Description = "Product categories grid", Order = settings.CategoriesOrder, IsEnabled = settings.ShowCategories },
+            new() { Name = "mission", DisplayName = "Mission", Description = "Company mission statement", Order = settings.MissionOrder, IsEnabled = settings.ShowMission },
+            new() { Name = "latestproducts", DisplayName = "Latest Products", Description = "Recently added products", Order = settings.LatestProductsOrder, IsEnabled = settings.ShowLatestProducts },
+            new() { Name = "aboutus", DisplayName = "About Us", Description = "Company information", Order = settings.AboutUsOrder, IsEnabled = settings.ShowAboutUs },
+            new() { Name = "newsletter", DisplayName = "Newsletter", Description = "Email subscription", Order = settings.NewsletterOrder, IsEnabled = settings.ShowNewsletter }
+        };
+
+        return sections.OrderBy(s => s.Order).ToList();
+    }
+
+    private void MoveSection(string sectionName, int direction)
+    {
+        if (settings == null) return;
+        
+        var sections = GetSortedSections();
+        var currentIndex = sections.FindIndex(s => s.Name.Equals(sectionName, StringComparison.OrdinalIgnoreCase));
+        
+        if (currentIndex == -1) return;
+        
+        var newIndex = currentIndex + direction;
+        if (newIndex < 0 || newIndex >= sections.Count) return;
+
+        // Swap order values
+        var currentSection = sections[currentIndex];
+        var targetSection = sections[newIndex];
+        
+        var tempOrder = currentSection.Order;
+        
+        // Update the order in the settings object
+        UpdateSectionOrder(currentSection.Name, targetSection.Order);
+        UpdateSectionOrder(targetSection.Name, tempOrder);
+        
+        StateHasChanged();
+    }
+
+    private void UpdateSectionOrder(string sectionName, int newOrder)
+    {
+        if (settings == null) return;
+
+        switch (sectionName.ToLower())
+        {
+            case "slideshow":
+                settings.SlideshowOrder = newOrder;
+                break;
+            case "categories":
+                settings.CategoriesOrder = newOrder;
+                break;
+            case "mission":
+                settings.MissionOrder = newOrder;
+                break;
+            case "latestproducts":
+                settings.LatestProductsOrder = newOrder;
+                break;
+            case "aboutus":
+                settings.AboutUsOrder = newOrder;
+                break;
+            case "newsletter":
+                settings.NewsletterOrder = newOrder;
+                break;
+        }
+    }
+}

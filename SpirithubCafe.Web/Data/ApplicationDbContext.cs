@@ -1,0 +1,873 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using SpirithubCafe.Domain.Entities;
+using SpirithubCafe.Application.Interfaces;
+
+namespace SpirithubCafe.Web.Data;
+
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options), IApplicationDbContext
+{
+    public DbSet<Slide> Slides { get; set; }
+    public DbSet<Category> Categories { get; set; }
+    public DbSet<Product> Products { get; set; }
+    public DbSet<ProductVariant> ProductVariants { get; set; }
+    public DbSet<ProductImage> ProductImages { get; set; }
+    public DbSet<CategoryImage> CategoryImages { get; set; }
+    public DbSet<ProductReview> ProductReviews { get; set; }
+    public DbSet<Setting> Settings { get; set; }
+    public DbSet<FAQ> FAQs { get; set; }
+    public DbSet<FAQCategory> FAQCategories { get; set; }
+    public DbSet<FAQPage> FAQPages { get; set; }
+    
+    // Cart entities
+    public DbSet<Cart> Carts { get; set; }
+    public DbSet<CartItem> CartItems { get; set; }
+    public DbSet<Country> Countries { get; set; }
+    public DbSet<City> Cities { get; set; }
+    public DbSet<ShippingMethod> ShippingMethods { get; set; }
+    public DbSet<NoolShippingRate> NoolShippingRates { get; set; }
+    public DbSet<HomePageSettings> HomePageSettings { get; set; }
+    public DbSet<AramexSettings> AramexSettings { get; set; }
+    public DbSet<PaymentGatewaySettings> PaymentGatewaySettings { get; set; }
+    
+    // Footer entities
+    public DbSet<FooterSettings> FooterSettings { get; set; }
+    public DbSet<FooterMenu> FooterMenus { get; set; }
+    
+    // Order entities
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderItem> OrderItems { get; set; }
+    public DbSet<Payment> Payments { get; set; }
+    
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+        
+        // Configure Setting entity
+        builder.Entity<Setting>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.Key)
+                .IsRequired()
+                .HasMaxLength(100);
+                
+            entity.Property(e => e.Value)
+                .IsRequired()
+                .HasMaxLength(2000);
+                
+            entity.Property(e => e.Category)
+                .IsRequired()
+                .HasMaxLength(50);
+                
+            entity.Property(e => e.DataType)
+                .IsRequired()
+                .HasMaxLength(20);
+                
+            entity.HasIndex(e => e.Key)
+                .IsUnique();
+        });
+        
+        // Configure Slide entity
+        builder.Entity<Slide>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.Title)
+                .IsRequired()
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.TitleAr)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.Subtitle)
+                .IsRequired()
+                .HasMaxLength(500);
+                
+            entity.Property(e => e.SubtitleAr)
+                .HasMaxLength(500);
+                
+            entity.Property(e => e.ImagePath)
+                .IsRequired()
+                .HasMaxLength(500);
+                
+            entity.Property(e => e.ButtonText)
+                .IsRequired()
+                .HasMaxLength(100);
+                
+            entity.Property(e => e.ButtonTextAr)
+                .HasMaxLength(100);
+                
+            entity.Property(e => e.ButtonUrl)
+                .IsRequired()
+                .HasMaxLength(500);
+                
+            entity.Property(e => e.BackgroundColor)
+                .HasMaxLength(50);
+                
+            entity.Property(e => e.TextColor)
+                .HasMaxLength(50);
+                
+            entity.HasIndex(e => e.Order)
+                .HasDatabaseName("IX_Slides_Order");
+                
+            entity.HasIndex(e => e.IsActive)
+                .HasDatabaseName("IX_Slides_IsActive");
+        });
+
+        // Configure Category entity
+        builder.Entity<Category>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.Slug)
+                .IsRequired()
+                .HasMaxLength(100);
+                
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.NameAr)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.Description)
+                .HasMaxLength(1000);
+                
+            entity.Property(e => e.DescriptionAr)
+                .HasMaxLength(1000);
+                
+            entity.Property(e => e.ImagePath)
+                .HasMaxLength(500);
+                
+            entity.HasIndex(e => e.Slug)
+                .IsUnique()
+                .HasDatabaseName("IX_Categories_Slug");
+                
+            entity.HasIndex(e => e.IsActive)
+                .HasDatabaseName("IX_Categories_IsActive");
+                
+            entity.HasIndex(e => e.IsDisplayedOnHomepage)
+                .HasDatabaseName("IX_Categories_IsDisplayedOnHomepage");
+                
+            entity.HasIndex(e => e.DisplayOrder)
+                .HasDatabaseName("IX_Categories_DisplayOrder");
+        });
+
+        // Configure Product entity
+        builder.Entity<Product>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.Sku)
+                .IsRequired()
+                .HasMaxLength(50);
+                
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.NameAr)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.Description)
+                .HasMaxLength(2000);
+                
+            entity.Property(e => e.DescriptionAr)
+                .HasMaxLength(2000);
+                
+            entity.Property(e => e.Notes)
+                .HasMaxLength(1000);
+                
+            entity.Property(e => e.NotesAr)
+                .HasMaxLength(1000);
+                
+            entity.Property(e => e.AromaticProfile)
+                .HasMaxLength(500);
+                
+            entity.Property(e => e.AromaticProfileAr)
+                .HasMaxLength(500);
+                
+            entity.Property(e => e.Compatibility)
+                .HasMaxLength(500);
+                
+            entity.Property(e => e.CompatibilityAr)
+                .HasMaxLength(500);
+                
+            entity.Property(e => e.Uses)
+                .HasMaxLength(1000);
+                
+            entity.Property(e => e.UsesAr)
+                .HasMaxLength(1000);
+                
+            // Coffee Information Properties
+            entity.Property(e => e.RoastLevel)
+                .HasMaxLength(100);
+                
+            entity.Property(e => e.RoastLevelAr)
+                .HasMaxLength(100);
+                
+            entity.Property(e => e.Process)
+                .HasMaxLength(100);
+                
+            entity.Property(e => e.ProcessAr)
+                .HasMaxLength(100);
+                
+            entity.Property(e => e.Variety)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.VarietyAr)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.Farm)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.FarmAr)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.TastingNotes)
+                .HasMaxLength(1000);
+                
+            entity.Property(e => e.TastingNotesAr)
+                .HasMaxLength(1000);
+                
+            entity.Property(e => e.BrewingInstructions)
+                .HasMaxLength(2000);
+                
+            entity.Property(e => e.BrewingInstructionsAr)
+                .HasMaxLength(2000);
+                
+            // SEO and Additional Properties
+            entity.Property(e => e.MetaTitle)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.MetaDescription)
+                .HasMaxLength(500);
+                
+            entity.Property(e => e.MetaKeywords)
+                .HasMaxLength(500);
+                
+            entity.Property(e => e.Tags)
+                .HasMaxLength(1000);
+                
+            entity.Property(e => e.Slug)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.ImageAlt)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.ImageAltAr)
+                .HasMaxLength(200);
+                
+            entity.HasIndex(e => e.Sku)
+                .IsUnique()
+                .HasDatabaseName("IX_Products_Sku");
+                
+            entity.HasIndex(e => e.IsActive)
+                .HasDatabaseName("IX_Products_IsActive");
+                
+            entity.HasIndex(e => e.CategoryId)
+                .HasDatabaseName("IX_Products_CategoryId");
+                
+            entity.HasOne(e => e.Category)
+                .WithMany(e => e.Products)
+                .HasForeignKey(e => e.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+                
+            entity.HasOne(e => e.MainImage)
+                .WithOne()
+                .HasForeignKey<Product>("MainImageId")
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // Configure ProductVariant entity
+        builder.Entity<ProductVariant>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.VariantSku)
+                .IsRequired()
+                .HasMaxLength(50);
+                
+            entity.Property(e => e.Weight)
+                .HasColumnType("decimal(10,3)");
+                
+            entity.Property(e => e.WeightUnit)
+                .IsRequired()
+                .HasMaxLength(10);
+                
+            entity.Property(e => e.Price)
+                .HasColumnType("decimal(10,3)");
+                
+            entity.Property(e => e.DiscountPrice)
+                .HasColumnType("decimal(10,3)");
+                
+            entity.Property(e => e.Length)
+                .HasColumnType("decimal(10,2)");
+                
+            entity.Property(e => e.Width)
+                .HasColumnType("decimal(10,2)");
+                
+            entity.Property(e => e.Height)
+                .HasColumnType("decimal(10,2)");
+                
+            entity.HasIndex(e => e.VariantSku)
+                .IsUnique()
+                .HasDatabaseName("IX_ProductVariants_VariantSku");
+                
+            entity.HasIndex(e => e.ProductId)
+                .HasDatabaseName("IX_ProductVariants_ProductId");
+                
+            entity.HasIndex(e => e.IsActive)
+                .HasDatabaseName("IX_ProductVariants_IsActive");
+                
+            entity.HasOne(e => e.Product)
+                .WithMany(e => e.Variants)
+                .HasForeignKey(e => e.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Configure ProductImage entity
+        builder.Entity<ProductImage>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.FileName)
+                .IsRequired()
+                .HasMaxLength(255);
+                
+            entity.Property(e => e.ImagePath)
+                .IsRequired()
+                .HasMaxLength(500);
+                
+            entity.Property(e => e.AltText)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.AltTextAr)
+                .HasMaxLength(200);
+                
+            entity.HasIndex(e => e.ProductId)
+                .HasDatabaseName("IX_ProductImages_ProductId");
+                
+            entity.HasIndex(e => e.IsMain)
+                .HasDatabaseName("IX_ProductImages_IsMain");
+                
+            entity.HasOne(e => e.Product)
+                .WithMany(e => e.GalleryImages)
+                .HasForeignKey(e => e.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Configure CategoryImage entity
+        builder.Entity<CategoryImage>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.FileName)
+                .IsRequired()
+                .HasMaxLength(255);
+                
+            entity.Property(e => e.ImagePath)
+                .IsRequired()
+                .HasMaxLength(500);
+                
+            entity.Property(e => e.AltText)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.AltTextAr)
+                .HasMaxLength(200);
+                
+            entity.HasIndex(e => e.CategoryId)
+                .HasDatabaseName("IX_CategoryImages_CategoryId");
+                
+            entity.HasOne(e => e.Category)
+                .WithOne()
+                .HasForeignKey<CategoryImage>(e => e.CategoryId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Configure ProductReview entity
+        builder.Entity<ProductReview>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.Title)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.TitleAr)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.Content)
+                .HasMaxLength(2000);
+                
+            entity.Property(e => e.ContentAr)
+                .HasMaxLength(2000);
+                
+            entity.Property(e => e.CustomerName)
+                .IsRequired()
+                .HasMaxLength(100);
+                
+            entity.Property(e => e.CustomerEmail)
+                .IsRequired()
+                .HasMaxLength(256);
+                
+            entity.Property(e => e.AdminNotes)
+                .HasMaxLength(1000);
+
+        // Configure Country entity
+        builder.Entity<Country>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Code)
+                .IsRequired()
+                .HasMaxLength(10);
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.Property(e => e.NameAr)
+                .HasMaxLength(200);
+
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+
+            entity.HasIndex(e => e.Code)
+                .IsUnique()
+                .HasDatabaseName("IX_Countries_Code");
+
+            entity.HasIndex(e => e.IsActive)
+                .HasDatabaseName("IX_Countries_IsActive");
+        });
+
+        // Configure City entity
+        builder.Entity<City>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Code)
+                .HasMaxLength(50);
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.Property(e => e.NameAr)
+                .HasMaxLength(200);
+
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+
+            entity.HasIndex(e => e.CountryId)
+                .HasDatabaseName("IX_Cities_CountryId");
+
+            entity.HasIndex(e => e.IsActive)
+                .HasDatabaseName("IX_Cities_IsActive");
+
+            entity.HasOne(e => e.Country)
+                .WithMany(e => e.Cities)
+                .HasForeignKey(e => e.CountryId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+                
+            entity.Property(e => e.ApprovedByUserId)
+                .HasMaxLength(450);
+                
+            entity.Property(e => e.UserId)
+                .HasMaxLength(450);
+                
+            entity.HasIndex(e => e.ProductId)
+                .HasDatabaseName("IX_ProductReviews_ProductId");
+                
+            entity.HasIndex(e => e.IsApproved)
+                .HasDatabaseName("IX_ProductReviews_IsApproved");
+                
+            entity.HasIndex(e => e.Rating)
+                .HasDatabaseName("IX_ProductReviews_Rating");
+                
+            entity.HasOne(e => e.Product)
+                .WithMany(e => e.Reviews)
+                .HasForeignKey(e => e.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Configure FAQ entities
+        builder.Entity<FAQCategory>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.NameEn)
+                .IsRequired()
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.NameAr)
+                .HasMaxLength(200);
+                
+            entity.HasIndex(e => e.Order)
+                .HasDatabaseName("IX_FAQCategories_Order");
+                
+            entity.HasIndex(e => e.IsActive)
+                .HasDatabaseName("IX_FAQCategories_IsActive");
+        });
+
+        builder.Entity<FAQ>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.QuestionEn)
+                .IsRequired()
+                .HasMaxLength(500);
+                
+            entity.Property(e => e.QuestionAr)
+                .HasMaxLength(500);
+                
+            entity.Property(e => e.AnswerEn)
+                .IsRequired();
+                
+            entity.Property(e => e.AnswerAr);
+                
+            entity.HasIndex(e => e.Order)
+                .HasDatabaseName("IX_FAQs_Order");
+                
+            entity.HasIndex(e => e.IsActive)
+                .HasDatabaseName("IX_FAQs_IsActive");
+                
+            entity.HasIndex(e => e.CategoryId)
+                .HasDatabaseName("IX_FAQs_CategoryId");
+                
+            entity.HasOne(e => e.Category)
+                .WithMany(e => e.FAQs)
+                .HasForeignKey(e => e.CategoryId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        builder.Entity<FAQPage>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.TitleEn)
+                .IsRequired()
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.TitleAr)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.MetaTitleEn)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.MetaTitleAr)
+                .HasMaxLength(200);
+        });
+
+        // FAQ Category configuration
+        builder.Entity<FAQCategory>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.NameAr).HasMaxLength(200);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
+            entity.HasIndex(e => e.Order);
+        });
+
+        // FAQ configuration
+        builder.Entity<FAQ>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.QuestionEn).IsRequired().HasMaxLength(500);
+            entity.Property(e => e.QuestionAr).HasMaxLength(500);
+            entity.Property(e => e.AnswerEn).IsRequired();
+            entity.Property(e => e.AnswerAr);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
+            entity.HasIndex(e => e.Order);
+            entity.HasIndex(e => new { e.CategoryId, e.Order });
+            
+            entity.HasOne(e => e.Category)
+                .WithMany(c => c.FAQs)
+                .HasForeignKey(e => e.CategoryId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // FAQ Page configuration
+        builder.Entity<FAQPage>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.TitleEn).IsRequired().HasMaxLength(300);
+            entity.Property(e => e.TitleAr).HasMaxLength(300);
+            entity.Property(e => e.DescriptionEn);
+            entity.Property(e => e.DescriptionAr);
+            entity.Property(e => e.MetaTitleEn).HasMaxLength(300);
+            entity.Property(e => e.MetaTitleAr).HasMaxLength(300);
+            entity.Property(e => e.MetaDescriptionEn).HasMaxLength(500);
+            entity.Property(e => e.MetaDescriptionAr).HasMaxLength(500);
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("datetime('now')");
+        });
+
+
+
+
+
+
+
+        // Configure Cart entity
+        builder.Entity<Cart>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UserId).IsRequired();
+            
+            entity.HasIndex(e => e.UserId).IsUnique();
+        });
+
+        // Configure CartItem entity
+        builder.Entity<CartItem>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UnitPrice).HasColumnType("decimal(18,3)");
+            
+            entity.HasOne(e => e.Cart)
+                .WithMany(c => c.Items)
+                .HasForeignKey(e => e.CartId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
+            entity.HasOne(e => e.Product)
+                .WithMany()
+                .HasForeignKey(e => e.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
+            entity.HasOne(e => e.ProductVariant)
+                .WithMany()
+                .HasForeignKey(e => e.ProductVariantId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // Configure ShippingMethod entity
+        builder.Entity<ShippingMethod>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Type)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.Property(e => e.NameAr)
+                .HasMaxLength(200);
+
+            entity.Property(e => e.Description)
+                .HasMaxLength(1000);
+
+            entity.Property(e => e.DescriptionAr)
+                .HasMaxLength(1000);
+
+            entity.Property(e => e.ApiConfiguration)
+                .HasColumnType("TEXT");
+
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+
+            entity.Property(e => e.DisplayOrder)
+                .HasDefaultValue(0);
+
+            entity.HasIndex(e => e.Type)
+                .IsUnique()
+                .HasDatabaseName("IX_ShippingMethods_Type");
+
+            entity.HasIndex(e => e.IsActive)
+                .HasDatabaseName("IX_ShippingMethods_IsActive");
+
+            entity.HasIndex(e => e.DisplayOrder)
+                .HasDatabaseName("IX_ShippingMethods_DisplayOrder");
+        });
+
+        // Configure NoolShippingRate entity
+        builder.Entity<NoolShippingRate>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Rate)
+                .HasColumnType("decimal(10,3)")
+                .IsRequired();
+
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+
+            entity.HasOne(e => e.ShippingMethod)
+                .WithMany(s => s.NoolRates)
+                .HasForeignKey(e => e.ShippingMethodId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.City)
+                .WithMany()
+                .HasForeignKey(e => e.CityId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(e => new { e.ShippingMethodId, e.CityId })
+                .IsUnique()
+                .HasDatabaseName("IX_NoolShippingRates_ShippingMethod_City");
+
+            entity.HasIndex(e => e.IsActive)
+                .HasDatabaseName("IX_NoolShippingRates_IsActive");
+        });
+
+        // Configure FooterSettings entity
+        builder.Entity<FooterSettings>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.LogoUrl)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.CompanyName)
+                .HasMaxLength(200);
+
+            entity.Property(e => e.CompanyNameAr)
+                .HasMaxLength(200);
+
+            entity.Property(e => e.Description)
+                .HasMaxLength(1000);
+
+            entity.Property(e => e.DescriptionAr)
+                .HasMaxLength(1000);
+
+            entity.Property(e => e.BgType)
+                .HasMaxLength(50)
+                .HasDefaultValue("color");
+
+            entity.Property(e => e.BgValue)
+                .HasMaxLength(500)
+                .HasDefaultValue("#111827");
+
+            entity.Property(e => e.OverlayType)
+                .HasMaxLength(50)
+                .HasDefaultValue("blur");
+
+            entity.Property(e => e.OverlayValue)
+                .HasMaxLength(50)
+                .HasDefaultValue("0.5");
+
+            entity.Property(e => e.TextColor)
+                .HasMaxLength(50)
+                .HasDefaultValue("#ffffff");
+
+            entity.Property(e => e.AccentColor)
+                .HasMaxLength(50)
+                .HasDefaultValue("#f59e0b");
+
+            entity.Property(e => e.Address)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.AddressAr)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.Phone1)
+                .HasMaxLength(100);
+
+            entity.Property(e => e.Phone2)
+                .HasMaxLength(100);
+
+            entity.Property(e => e.Email)
+                .HasMaxLength(200);
+
+            entity.Property(e => e.WorkingHours)
+                .HasMaxLength(200);
+
+            entity.Property(e => e.WorkingHoursAr)
+                .HasMaxLength(200);
+
+            entity.Property(e => e.CopyrightText)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.CopyrightTextAr)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.FacebookUrl)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.InstagramUrl)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.TwitterUrl)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.LinkedInUrl)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.WhatsAppUrl)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.YouTubeUrl)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.TikTokUrl)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.SnapchatUrl)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.PinterestUrl)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.TelegramUrl)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.SocialMediaTitle)
+                .HasMaxLength(200);
+
+            entity.Property(e => e.SocialMediaTitleAr)
+                .HasMaxLength(200);
+
+            entity.Property(e => e.QuickLinksTitle)
+                .HasMaxLength(200);
+
+            entity.Property(e => e.QuickLinksTitleAr)
+                .HasMaxLength(200);
+
+            entity.Property(e => e.LegalPagesTitle)
+                .HasMaxLength(200);
+
+            entity.Property(e => e.LegalPagesTitleAr)
+                .HasMaxLength(200);
+
+            entity.Property(e => e.ContactTitle)
+                .HasMaxLength(200);
+
+            entity.Property(e => e.ContactTitleAr)
+                .HasMaxLength(200);
+        });
+
+        // Configure FooterMenu entity
+        builder.Entity<FooterMenu>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Title)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.Property(e => e.TitleAr)
+                .HasMaxLength(200);
+
+            entity.Property(e => e.Url)
+                .IsRequired()
+                .HasMaxLength(500);
+
+            entity.Property(e => e.IconClass)
+                .HasMaxLength(100);
+
+            entity.Property(e => e.Description)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.DescriptionAr)
+                .HasMaxLength(500);
+
+            entity.HasIndex(e => new { e.MenuType, e.SortOrder })
+                .HasDatabaseName("IX_FooterMenus_MenuType_SortOrder");
+
+            entity.HasIndex(e => e.IsActive)
+                .HasDatabaseName("IX_FooterMenus_IsActive");
+        });
+    }
+}

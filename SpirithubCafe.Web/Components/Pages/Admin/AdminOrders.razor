@@ -1,0 +1,490 @@
+@page "/admin/orders"
+@using SpirithubCafe.Web.Services
+@using SpirithubCafe.Domain.Entities
+@using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+@attribute [Authorize(Roles = "Admin")]
+@layout AdminLayout
+@inject OrderService OrderService
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<div class="p-6">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Order Management</h1>
+        <p class="text-gray-600 mt-2">Manage and track all customer orders</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Pending Orders</p>
+                    <p class="text-2xl font-bold text-gray-900">@pendingCount</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Processing</p>
+                    <p class="text-2xl font-bold text-gray-900">@processingCount</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Shipped</p>
+                    <p class="text-2xl font-bold text-gray-900">@shippedCount</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-green-100 text-green-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Delivered</p>
+                    <p class="text-2xl font-bold text-gray-900">@deliveredCount</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white rounded-lg shadow mb-6">
+        <div class="p-6 border-b border-gray-200">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Status Filter</label>
+                    <select @onchange="OnStatusFilterChange" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <option value="">All Status</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Processing">Processing</option>
+                        <option value="Shipped">Shipped</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Payment Filter</label>
+                    <select @onchange="OnPaymentFilterChange" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <option value="">All Payments</option>
+                        <option value="Paid">Paid</option>
+                        <option value="Unpaid">Unpaid</option>
+                        <option value="Failed">Failed</option>
+                        <option value="Refunded">Refunded</option>
+                        <option value="Pending">Processing</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                    <input type="text" @bind="searchQuery" @onkeyup="OnSearchQueryChange" 
+                           placeholder="Order number or customer email..." 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Date From</label>
+                    <input type="date" @bind="dateFrom" @bind:after="OnDateFilterChange"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Date To</label>
+                    <input type="date" @bind="dateTo" @bind:after="OnDateFilterChange"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <!-- Loading State -->
+        <div class="bg-white rounded-lg shadow p-8 text-center">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <p class="mt-4 text-gray-600">Loading orders...</p>
+        </div>
+    }
+    else if (orders == null || !orders.Any())
+    {
+        <!-- No Orders State -->
+        <div class="bg-white rounded-lg shadow p-8 text-center">
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">No Orders Found</h3>
+            <p class="text-gray-600">No orders match your current filters.</p>
+        </div>
+    }
+    else
+    {
+        <!-- Orders Table -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach (var order in orders)
+                        {
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900">#@order.OrderNumber</div>
+                                        <div class="text-sm text-gray-500">@order.OrderItems.Count items</div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900">@order.FirstName @order.LastName</div>
+                                        <div class="text-sm text-gray-500">@order.Email</div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    @order.CreatedAt.ToString("MMM dd, yyyy")
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full @GetStatusBadgeClass(order.Status)">
+                                        @order.Status
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full @GetPaymentStatusBadgeClass(order.PaymentStatus)">
+                                        @GetPaymentStatusText(order.PaymentStatus)
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    @order.TotalAmount.ToString("F3") OMR
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-2">
+                                        <button @onclick="@(() => ViewOrderDetails(order.OrderNumber))"
+                                                class="text-blue-600 hover:text-blue-900">View</button>
+                                        @if (order.Status == "Pending")
+                                        {
+                                            <button @onclick="@(() => UpdateOrderStatus(order.Id, "Processing"))"
+                                                    class="text-green-600 hover:text-green-900">Process</button>
+                                        }
+                                        @if (order.Status == "Processing")
+                                        {
+                                            <button @onclick="@(() => ShowTrackingDialog(order))"
+                                                    class="text-purple-600 hover:text-purple-900">Ship</button>
+                                        }
+                                        @if (order.Status != "Delivered" && order.Status != "Cancelled")
+                                        {
+                                            <button @onclick="@(() => UpdateOrderStatus(order.Id, "Cancelled"))"
+                                                    class="text-red-600 hover:text-red-900">Cancel</button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (totalPages > 1)
+            {
+                <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1 flex justify-between sm:hidden">
+                            <button @onclick="@(() => LoadPage(currentPage - 1))"
+                                    disabled="@(currentPage <= 1)"
+                                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">
+                                Previous
+                            </button>
+                            <button @onclick="@(() => LoadPage(currentPage + 1))"
+                                    disabled="@(currentPage >= totalPages)"
+                                    class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">
+                                Next
+                            </button>
+                        </div>
+                        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                            <div>
+                                <p class="text-sm text-gray-700">
+                                    Showing <span class="font-medium">@((currentPage - 1) * pageSize + 1)</span> to 
+                                    <span class="font-medium">@Math.Min(currentPage * pageSize, totalOrders)</span> of 
+                                    <span class="font-medium">@totalOrders</span> results
+                                </p>
+                            </div>
+                            <div>
+                                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                                    @for (int i = Math.Max(1, currentPage - 2); i <= Math.Min(totalPages, currentPage + 2); i++)
+                                    {
+                                        <button @onclick="@(() => LoadPage(i))"
+                                                class="relative inline-flex items-center px-4 py-2 border text-sm font-medium @(i == currentPage ? "z-10 bg-blue-50 border-blue-500 text-blue-600" : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50")">
+                                            @i
+                                        </button>
+                                    }
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!-- Tracking Number Modal -->
+@if (showTrackingDialog && selectedOrder != null)
+{
+    <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Add Tracking Number</h3>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Order: #@selectedOrder.OrderNumber</label>
+                    <input type="text" @bind="trackingNumber" placeholder="Enter tracking number..."
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button @onclick="CancelTracking"
+                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button @onclick="ConfirmShipping"
+                            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700">
+                        Ship Order
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Order>? orders;
+    private bool isLoading = true;
+    private int currentPage = 1;
+    private int pageSize = 20;
+    private int totalPages = 0;
+    private int totalOrders = 0;
+
+    // Stats
+    private int pendingCount = 0;
+    private int processingCount = 0;
+    private int shippedCount = 0;
+    private int deliveredCount = 0;
+
+    // Filters
+    private string statusFilter = "";
+    private string paymentFilter = "";
+    private string searchQuery = "";
+    private DateTime? dateFrom;
+    private DateTime? dateTo;
+
+    // Tracking dialog
+    private bool showTrackingDialog = false;
+    private Order? selectedOrder;
+    private string trackingNumber = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadOrders();
+        await LoadStats();
+    }
+
+    private async Task LoadOrders()
+    {
+        try
+        {
+            isLoading = true;
+            var result = await OrderService.GetAllOrdersAsync(currentPage, pageSize);
+            orders = result.Orders;
+            totalOrders = result.TotalCount;
+            totalPages = (int)Math.Ceiling((double)totalOrders / pageSize);
+        }
+        catch (Exception)
+        {
+            orders = new List<Order>();
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadStats()
+    {
+        // This would need additional methods in OrderService for different status counts
+        pendingCount = await OrderService.GetPendingOrdersCountAsync();
+        // Add similar methods for other statuses if needed
+    }
+
+    private async Task LoadPage(int page)
+    {
+        currentPage = page;
+        await LoadOrders();
+    }
+
+    private async Task OnStatusFilterChange(ChangeEventArgs e)
+    {
+        statusFilter = e.Value?.ToString() ?? "";
+        currentPage = 1;
+        await LoadOrders();
+    }
+
+    private async Task OnPaymentFilterChange(ChangeEventArgs e)
+    {
+        paymentFilter = e.Value?.ToString() ?? "";
+        currentPage = 1;
+        await LoadOrders();
+    }
+
+    private async Task OnSearchQueryChange()
+    {
+        currentPage = 1;
+        await LoadOrders();
+    }
+
+    private async Task OnDateFilterChange()
+    {
+        currentPage = 1;
+        await LoadOrders();
+    }
+
+    private void ViewOrderDetails(string orderNumber)
+    {
+        // Navigate to order details or open modal
+        NavigationManager.NavigateTo($"/order-confirmation/{orderNumber}");
+    }
+
+    private async Task UpdateOrderStatus(int orderId, string newStatus)
+    {
+        try
+        {
+            var success = await OrderService.UpdateOrderStatusAsync(orderId, newStatus);
+            if (success)
+            {
+                await LoadOrders();
+                await LoadStats();
+                await JSRuntime.InvokeVoidAsync("alert", $"Order status updated to {newStatus}");
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error updating order: {ex.Message}");
+        }
+    }
+
+    private void ShowTrackingDialog(Order order)
+    {
+        selectedOrder = order;
+        trackingNumber = "";
+        showTrackingDialog = true;
+        StateHasChanged();
+    }
+
+    private void CancelTracking()
+    {
+        showTrackingDialog = false;
+        selectedOrder = null;
+        trackingNumber = "";
+        StateHasChanged();
+    }
+
+    private async Task ConfirmShipping()
+    {
+        if (selectedOrder == null || string.IsNullOrWhiteSpace(trackingNumber))
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Please enter a tracking number");
+            return;
+        }
+
+        try
+        {
+            var success = await OrderService.UpdateOrderStatusAsync(selectedOrder.Id, "Shipped", trackingNumber);
+            if (success)
+            {
+                showTrackingDialog = false;
+                selectedOrder = null;
+                trackingNumber = "";
+                await LoadOrders();
+                await LoadStats();
+                await JSRuntime.InvokeVoidAsync("alert", "Order shipped successfully!");
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error shipping order: {ex.Message}");
+        }
+    }
+
+    private string GetStatusBadgeClass(string status)
+    {
+        return status.ToLower() switch
+        {
+            "pending" => "bg-yellow-100 text-yellow-800",
+            "processing" => "bg-blue-100 text-blue-800",
+            "shipped" => "bg-purple-100 text-purple-800",
+            "delivered" => "bg-green-100 text-green-800",
+            "cancelled" => "bg-red-100 text-red-800",
+            _ => "bg-gray-100 text-gray-800"
+        };
+    }
+
+    private string GetPaymentStatusBadgeClass(string paymentStatus)
+    {
+        return paymentStatus?.ToLower() switch
+        {
+            "paid" => "bg-green-100 text-green-800",
+            "unpaid" => "bg-red-100 text-red-800",
+            "failed" => "bg-red-100 text-red-800",
+            "refunded" => "bg-gray-100 text-gray-800",
+            "pending" => "bg-yellow-100 text-yellow-800",
+            _ => "bg-gray-100 text-gray-800"
+        };
+    }
+
+    private string GetPaymentStatusText(string paymentStatus)
+    {
+        return paymentStatus?.ToLower() switch
+        {
+            "paid" => "Paid",
+            "unpaid" => "Unpaid",
+            "failed" => "Failed",
+            "refunded" => "Refunded",
+            "pending" => "Processing",
+            _ => "Unknown"
+        };
+    }
+}

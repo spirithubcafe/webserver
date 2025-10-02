@@ -1,0 +1,152 @@
+@page "/checkout/payment-success"
+@using SpirithubCafe.Application.Services
+@using Microsoft.AspNetCore.Components
+@inject IPaymentService PaymentService
+@inject ICheckoutService CheckoutService
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<div class="min-h-screen bg-gray-50 py-12">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-lg shadow-lg p-8 text-center">
+            @if (isLoading)
+            {
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+                <p class="text-lg text-gray-600">Verifying your payment...</p>
+            }
+            else if (paymentVerified)
+            {
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                
+                <h1 class="text-3xl font-bold text-gray-900 mb-4">Payment Successful!</h1>
+                <p class="text-lg text-gray-600 mb-6">Thank you for your order. Your payment has been processed successfully.</p>
+                
+                @if (order != null)
+                {
+                    <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Order Details</h2>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <span class="font-medium text-gray-700">Order Number:</span>
+                                <span class="text-gray-900">@order.OrderNumber</span>
+                            </div>
+                            <div>
+                                <span class="font-medium text-gray-700">Total Amount:</span>
+                                <span class="text-gray-900">@order.TotalAmount.ToString("F3") OMR</span>
+                            </div>
+                            <div>
+                                <span class="font-medium text-gray-700">Payment Status:</span>
+                                <span class="text-green-600 font-medium">@order.PaymentStatus</span>
+                            </div>
+                            <div>
+                                <span class="font-medium text-gray-700">Order Status:</span>
+                                <span class="text-blue-600 font-medium">@order.Status</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+                
+                @if (payment != null)
+                {
+                    <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Payment Details</h2>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <span class="font-medium text-gray-700">Payment Reference:</span>
+                                <span class="text-gray-900">@payment.PaymentReference</span>
+                            </div>
+                            @if (!string.IsNullOrEmpty(payment.TransactionId))
+                            {
+                                <div>
+                                    <span class="font-medium text-gray-700">Transaction ID:</span>
+                                    <span class="text-gray-900">@payment.TransactionId</span>
+                                </div>
+                            }
+                            <div>
+                                <span class="font-medium text-gray-700">Payment Method:</span>
+                                <span class="text-gray-900">@(payment.PaymentMethod ?? "Not specified")</span>
+                            </div>
+                            <div>
+                                <span class="font-medium text-gray-700">Date:</span>
+                                <span class="text-gray-900">@payment.CompletedAt?.ToString("dd/MM/yyyy HH:mm")</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button @onclick="@(() => Navigation.NavigateTo("/"))" 
+                            class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                        Continue Shopping
+                    </button>
+                    <button @onclick="@(() => Navigation.NavigateTo("/account/orders"))" 
+                            class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors">
+                        View Orders
+                    </button>
+                </div>
+            }
+            else
+            {
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </div>
+                
+                <h1 class="text-3xl font-bold text-gray-900 mb-4">Payment Verification Failed</h1>
+                <p class="text-lg text-gray-600 mb-6">We couldn't verify your payment. Please contact support if you believe this is an error.</p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button @onclick="@(() => Navigation.NavigateTo("/checkout"))" 
+                            class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                        Try Again
+                    </button>
+                    <button @onclick="@(() => Navigation.NavigateTo("/contact"))" 
+                            class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors">
+                        Contact Support
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromQuery] public string? PaymentRef { get; set; }
+    
+    private bool isLoading = true;
+    private bool paymentVerified = false;
+    private Domain.Entities.Payment? payment;
+    private Domain.Entities.Order? order;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        if (string.IsNullOrEmpty(PaymentRef))
+        {
+            Navigation.NavigateTo("/");
+            return;
+        }
+        
+        try
+        {
+            payment = await PaymentService.GetPaymentByReferenceAsync(PaymentRef);
+            if (payment != null)
+            {
+                order = await CheckoutService.GetOrderByIdAsync(payment.OrderId);
+                paymentVerified = payment.Status == "Completed" || payment.Status == "Paid";
+            }
+        }
+        catch (Exception)
+        {
+            paymentVerified = false;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

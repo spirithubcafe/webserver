@@ -1,0 +1,347 @@
+@page "/admin/footer"
+@using Microsoft.Extensions.Localization
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using SpirithubCafe.Domain.Entities
+@using SpirithubCafe.Application.Interfaces
+@using SpirithubCafe.Web.Components.Shared
+@inject IStringLocalizer<SpirithubCafe.Langs.Resources> Localizer
+@inject IFooterService FooterService
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+
+<div class="container mx-auto px-4 py-6">
+    <div class="bg-white rounded-lg shadow-md">
+        <!-- Header -->
+        <div class="border-b border-gray-200 px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">@Localizer["FooterManagement"]</h1>
+                    <p class="text-sm text-gray-600 mt-1">@Localizer["FooterSettings"]</p>
+                </div>
+                <button @onclick="SaveSettings" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors">
+                    <i class="fas fa-save mr-2"></i>
+                    @Localizer["SaveChanges"]
+                </button>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="border-b border-gray-200">
+            <nav class="flex space-x-8 px-6" aria-label="Tabs">
+                <button @onclick="() => activeTab = 1" 
+                        class="@(activeTab == 1 ? "border-blue-500 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300") whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                    @Localizer["GeneralSettings"]
+                </button>
+                <button @onclick="() => activeTab = 2" 
+                        class="@(activeTab == 2 ? "border-blue-500 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300") whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                    @Localizer["QuickLinks"]
+                </button>
+                <button @onclick="() => activeTab = 3" 
+                        class="@(activeTab == 3 ? "border-blue-500 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300") whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                    @Localizer["LegalPages"]
+                </button>
+                <button @onclick="() => activeTab = 4" 
+                        class="@(activeTab == 4 ? "border-blue-500 text-blue-600" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300") whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                    @Localizer["SocialMedia"]
+                </button>
+            </nav>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="p-6">
+            @if (activeTab == 1)
+            {
+                <!-- General Settings Tab -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Company Information -->
+                    <div class="space-y-6">
+                        <h3 class="text-lg font-semibold text-gray-900 border-b pb-2">@Localizer["CompanyInformation"]</h3>
+                        
+                        <!-- Logo -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-gray-700">@Localizer["Logo"]</label>
+                            <FileUpload FileType="image"
+                                        Folder="footer"
+                                        Prefix="logo"
+                                        @bind-CurrentFileUrl="settings.LogoUrl" />
+                        </div>
+
+                        <!-- Company Name -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">@Localizer["CompanyName"] (English)</label>
+                                <input type="text" @bind="settings.CompanyName" class="w-full px-4 py-3 border border-gray-200 rounded-lg" />
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">@Localizer["CompanyName"] (العربية)</label>
+                                <input type="text" @bind="settings.CompanyNameAr" class="w-full px-4 py-3 border border-gray-200 rounded-lg" dir="rtl" />
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">@Localizer["Description"] (English)</label>
+                                <textarea @bind="settings.Description" rows="4" class="w-full px-4 py-3 border border-gray-200 rounded-lg"></textarea>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">@Localizer["Description"] (العربية)</label>
+                                <textarea @bind="settings.DescriptionAr" rows="4" class="w-full px-4 py-3 border border-gray-200 rounded-lg" dir="rtl"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Copyright Text -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">@Localizer["CopyrightText"] (English)</label>
+                                <input type="text" @bind="settings.CopyrightText" class="w-full px-4 py-3 border border-gray-200 rounded-lg" />
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">@Localizer["CopyrightText"] (العربية)</label>
+                                <input type="text" @bind="settings.CopyrightTextAr" class="w-full px-4 py-3 border border-gray-200 rounded-lg" dir="rtl" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Background & Appearance -->
+                    <div class="space-y-6">
+                        <h3 class="text-lg font-semibold text-gray-900 border-b pb-2">@Localizer["BackgroundAndAppearance"]</h3>
+                        
+                        <!-- Background Type -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-gray-700">@Localizer["BackgroundType"]</label>
+                            <select @onchange="OnBgTypeChanged" class="w-full px-4 py-3 border border-gray-200 rounded-lg">
+                                <option value="color" selected="@(settings.BgType == "color")">@Localizer["Color"]</option>
+                                <option value="image" selected="@(settings.BgType == "image")">@Localizer["Image"]</option>
+                                <option value="video" selected="@(settings.BgType == "video")">@Localizer["Video"]</option>
+                            </select>
+                        </div>
+
+                        <!-- Background Value -->
+                        @if (settings.BgType == "color")
+                        {
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">@Localizer["BackgroundColor"]</label>
+                                <div class="flex gap-2">
+                                    <input type="color" @bind="settings.BgValue" 
+                                           class="w-12 h-10 border border-gray-200 rounded cursor-pointer" />
+                                    <input type="text" @bind="settings.BgValue" 
+                                               class="flex-1 px-4 py-3 border border-gray-200 rounded-lg" 
+                                               placeholder="#111827" />
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">
+                                    @(settings.BgType == "image" ? Localizer["BackgroundImage"] : Localizer["BackgroundVideo"])
+                                </label>
+                                <FileUpload FileType="@(settings.BgType == "image" ? "image" : "video")"
+                                            Folder="footer"
+                                            Prefix="@($"bg-{settings.BgType}")"
+                                            @bind-CurrentFileUrl="settings.BgValue" />
+                            </div>
+                        }
+
+                        <!-- Overlay Settings -->
+                        @if (settings.BgType != "color")
+                        {
+                            <div class="space-y-4">
+                                <div class="flex items-center">
+                                    <input type="checkbox" @bind="settings.EnableOverlay" class="rounded border-gray-300 text-blue-600 shadow-sm" />
+                                    <label class="ml-2 block text-sm font-semibold text-gray-700">@Localizer["EnableOverlay"]</label>
+                                </div>
+
+                                @if (settings.EnableOverlay)
+                                {
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-semibold text-gray-700">@Localizer["OverlayType"]</label>
+                                            <select @bind="settings.OverlayType" class="w-full px-4 py-3 border border-gray-200 rounded-lg">
+                                                <option value="blur">@Localizer["Blur"]</option>
+                                                <option value="mask">@Localizer["Mask"]</option>
+                                                <option value="gradient">@Localizer["Gradient"]</option>
+                                            </select>
+                                        </div>
+                                        <div class="space-y-2">
+                                            <label class="block text-sm font-semibold text-gray-700">@Localizer["OverlayValue"]</label>
+                                            <input type="text" @bind="settings.OverlayValue" 
+                                                       class="w-full px-4 py-3 border border-gray-200 rounded-lg"
+                                                       placeholder="@(settings.OverlayType == "blur" ? "5px" : "0.5")" />
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        <!-- Text Colors -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">@Localizer["TextColor"]</label>
+                                <div class="flex gap-2">
+                                    <input type="color" @bind="settings.TextColor" 
+                                           class="w-12 h-10 border border-gray-200 rounded cursor-pointer" />
+                                    <input type="text" @bind="settings.TextColor" 
+                                               class="flex-1 px-4 py-3 border border-gray-200 rounded-lg" 
+                                               placeholder="#ffffff" />
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">@Localizer["AccentColor"]</label>
+                                <div class="flex gap-2">
+                                    <input type="color" @bind="settings.AccentColor" 
+                                           class="w-12 h-10 border border-gray-200 rounded cursor-pointer" />
+                                    <input type="text" @bind="settings.AccentColor" 
+                                               class="flex-1 px-4 py-3 border border-gray-200 rounded-lg" 
+                                               placeholder="#f59e0b" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Information Section -->
+                <div class="mt-8 space-y-6">
+                    <h3 class="text-lg font-semibold text-gray-900 border-b pb-2">@Localizer["ContactInformation"]</h3>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Address -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">@Localizer["Address"] (English)</label>
+                                <input type="text" @bind="settings.Address" class="w-full px-4 py-3 border border-gray-200 rounded-lg" />
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">@Localizer["Address"] (العربية)</label>
+                                <input type="text" @bind="settings.AddressAr" class="w-full px-4 py-3 border border-gray-200 rounded-lg" dir="rtl" />
+                            </div>
+                        </div>
+
+                        <!-- Phone Numbers -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">@Localizer["Phone"] 1</label>
+                                <input type="text" @bind="settings.Phone1" class="w-full px-4 py-3 border border-gray-200 rounded-lg" />
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">@Localizer["Phone"] 2</label>
+                                <input type="text" @bind="settings.Phone2" class="w-full px-4 py-3 border border-gray-200 rounded-lg" />
+                            </div>
+                        </div>
+
+                        <!-- Email and Working Hours -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-gray-700">@Localizer["Email"]</label>
+                            <input type="email" @bind="settings.Email" class="w-full px-4 py-3 border border-gray-200 rounded-lg" />
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">@Localizer["WorkingHours"] (English)</label>
+                                <input type="text" @bind="settings.WorkingHours" class="w-full px-4 py-3 border border-gray-200 rounded-lg" />
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">@Localizer["WorkingHours"] (العربية)</label>
+                                <input type="text" @bind="settings.WorkingHoursAr" class="w-full px-4 py-3 border border-gray-200 rounded-lg" dir="rtl" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (activeTab == 2)
+            {
+                <!-- Quick Links Tab -->
+                <div class="space-y-6">
+                    <div class="text-center py-12 text-gray-500">
+                        <i class="fas fa-link text-4xl mb-4"></i>
+                        <h3 class="text-lg font-medium">@Localizer["QuickLinks"] Management</h3>
+                        <p>Coming soon...</p>
+                    </div>
+                </div>
+            }
+            else if (activeTab == 3)
+            {
+                <!-- Legal Pages Tab -->
+                <div class="space-y-6">
+                    <div class="text-center py-12 text-gray-500">
+                        <i class="fas fa-gavel text-4xl mb-4"></i>
+                        <h3 class="text-lg font-medium">@Localizer["LegalPages"] Management</h3>
+                        <p>Coming soon...</p>
+                    </div>
+                </div>
+            }
+            else if (activeTab == 4)
+            {
+                <!-- Social Media Tab -->
+                <div class="space-y-6">
+                    <div class="text-center py-12 text-gray-500">
+                        <i class="fas fa-share-alt text-4xl mb-4"></i>
+                        <h3 class="text-lg font-medium">@Localizer["SocialMedia"] Management</h3>
+                        <p>Coming soon...</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private FooterSettings settings = new();
+    private List<FooterMenu> quickLinkMenus = new();
+    private List<FooterMenu> legalPageMenus = new();
+    private int activeTab = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            settings = await FooterService.GetFooterSettingsAsync();
+            quickLinkMenus = await FooterService.GetFooterMenusByTypeAsync(FooterMenuType.QuickLinks);
+            legalPageMenus = await FooterService.GetFooterMenusByTypeAsync(FooterMenuType.LegalPages);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading data: {ex.Message}");
+        }
+    }
+
+    private async Task SaveSettings()
+    {
+        try
+        {
+            await FooterService.UpdateFooterSettingsAsync(settings);
+            // Simple alert for now instead of toast
+            await JSRuntime.InvokeVoidAsync("alert", Localizer["SaveChanges"] + " - Success!");
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error: {ex.Message}");
+        }
+    }
+
+    private void OnBgTypeChanged(ChangeEventArgs e)
+    {
+        settings.BgType = e.Value?.ToString() ?? "color";
+        if (settings.BgType == "color")
+        {
+            settings.BgValue = "#111827";
+        }
+        else
+        {
+            settings.BgValue = "";
+        }
+        StateHasChanged();
+    }
+
+    private void OnMenuItemsChanged()
+    {
+        StateHasChanged();
+    }
+}

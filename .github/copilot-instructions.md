@@ -1,8 +1,8 @@
-# Copilot Instructions for spirithubcofe
+# Copilot Instructions for SpirithubCafe
 
 ## Components Usage
-- Use <Toast /> component from '@using SpirithubCofe.Web.Components.Shared' to show toast messages
-- Use file upload component from '@using SpirithubCofe.Web.Components.Shared' to upload files FileUpload.razor
+- Use <Toast /> component from '@using SpirithubCafe.Web.Components.Shared' to show toast messages
+- Use file upload component from '@using SpirithubCafe.Web.Components.Shared' to upload files FileUpload.razor
 - FileUpload component parameters: FileType, Folder, Prefix, CurrentFileUrl (two-way binding)
 
 ## Entity Framework Migrations
@@ -19,7 +19,7 @@
 ### Creating and Applying Migrations
 1. Navigate to the Web project directory:
    ```bash
-   cd /home/milad/Documents/GitHub/spirithubcafe/webserver/SpirithubCofe.Web
+   cd /home/milad/Documents/GitHub/spirithubcafe/webserver/SpirithubCafe.Web
    ```
 
 2. Create a new migration:
@@ -44,10 +44,10 @@
 - Background values store: color codes (#ffffff), image paths, or video paths
 
 ## Database Structure
-- Main database: SQLite at `/home/milad/Documents/GitHub/spirithubcafe/webserver/SpirithubCofe.Web/Data/app.db`
+- Main database: SQLite at `/home/milad/Documents/GitHub/spirithubcafe/webserver/SpirithubCafe.Web/Data/app.db`
 - Use SQLite commands to check data:
   ```bash
-  sqlite3 /home/milad/Documents/GitHub/spirithubcafe/webserver/SpirithubCofe.Web/Data/app.db "SELECT * FROM TableName;"
+  sqlite3 /home/milad/Documents/GitHub/spirithubcafe/webserver/SpirithubCafe.Web/Data/app.db "SELECT * FROM TableName;"
   ```
 
 ## Admin Interface Patterns
@@ -100,7 +100,7 @@ For sections with background settings, use this conditional rendering pattern:
 ```bash
 cd /home/milad/Documents/GitHub/spirithubcafe/webserver
 dotnet build
-dotnet run --project SpirithubCofe.Web
+dotnet run --project SpirithubCafe.Web
 ```
 
 ### Publish
@@ -120,8 +120,8 @@ dotnet publish -c Release -o publish/windows-x64 --self-contained true -r win-x6
 - Additional section-specific fields as needed
 
 ## Project Structure
-- Domain Layer: `/SpirithubCofe.Domain/Entities/` - Entity definitions
-- Web Layer: `/SpirithubCofe.Web/Components/Pages/Admin/` - Admin interface
-- Shared Components: `/SpirithubCofe.Web/Components/Shared/` - Reusable components
-- Data: `/SpirithubCofe.Web/Data/` - Database context and files
-- Migrations: `/SpirithubCofe.Web/Migrations/` - EF Core migrations
+- Domain Layer: `/SpirithubCafe.Domain/Entities/` - Entity definitions
+- Web Layer: `/SpirithubCafe.Web/Components/Pages/Admin/` - Admin interface
+- Shared Components: `/SpirithubCafe.Web/Components/Shared/` - Reusable components
+- Data: `/SpirithubCafe.Web/Data/` - Database context and files
+- Migrations: `/SpirithubCafe.Web/Migrations/` - EF Core migrations

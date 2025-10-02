@@ -1,0 +1,366 @@
+@page "/orders"
+@page "/my-orders"
+@using SpirithubCafe.Web.Services
+@using SpirithubCafe.Domain.Entities
+@using SpirithubCafe.Application.DTOs
+@using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+@attribute [Authorize]
+@layout PublicLayout
+@inject OrderService OrderService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@inject HttpClient HttpClient
+@rendermode InteractiveServer
+
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-6xl mx-auto px-4">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">My Orders</h1>
+            <p class="text-gray-600 mt-2">Track and manage your orders</p>
+        </div>
+
+        @if (isLoading)
+        {
+            <!-- Loading State -->
+            <div class="text-center py-16">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <p class="mt-4 text-gray-600">Loading your orders...</p>
+            </div>
+        }
+        else if (orders == null || !orders.Any())
+        {
+            <!-- No Orders State -->
+            <div class="text-center py-16">
+                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-xl font-semibold text-gray-900 mb-2">No Orders Yet</h2>
+                <p class="text-gray-600 mb-6">You haven't placed any orders yet. Start shopping to see your orders here.</p>
+                <button @onclick="@(() => Navigation.NavigateTo("/"))" 
+                        class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                    Start Shopping
+                </button>
+            </div>
+        }
+        else
+        {
+            <!-- Orders List -->
+            <div class="space-y-6">
+                @foreach (var order in orders)
+                {
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <!-- Order Header -->
+                        <div class="p-6 border-b border-gray-200">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center space-x-3">
+                                        <h3 class="text-lg font-semibold text-gray-900">
+                                            Order #@order.OrderNumber
+                                        </h3>
+                                        <span class="px-2 py-1 text-xs font-medium rounded-full @GetStatusBadgeClass(order.Status)">
+                                            @order.Status
+                                        </span>
+                                        <span class="px-2 py-1 text-xs font-medium rounded-full @GetPaymentStatusBadgeClass(order.PaymentStatus)">
+                                            @GetPaymentStatusText(order.PaymentStatus)
+                                        </span>
+                                    </div>
+                                    <div class="mt-1 flex flex-col sm:flex-row sm:space-x-6 text-sm text-gray-500">
+                                        <p>Placed on @order.CreatedAt.ToString("MMM dd, yyyy")</p>
+                                        <p>Total: @order.TotalAmount.ToString("F3") OMR</p>
+                                        <p>Items: @order.OrderItems.Count</p>
+                                        <p>Payment: @GetPaymentStatusText(order.PaymentStatus)</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4 sm:mt-0 flex flex-wrap gap-2">
+                                    <button @onclick="@(() => ViewOrderDetails(order.OrderNumber))"
+                                            class="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                                        View Details
+                                    </button>
+                                    @if (order.PaymentStatus == "Unpaid" || order.PaymentStatus == "Failed")
+                                    {
+                                        <button @onclick="@(() => PayForOrder(order.Id))"
+                                                class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors">
+                                            Pay Now
+                                        </button>
+                                    }
+                                    @if (order.Status == "Pending" && order.PaymentStatus == "Unpaid")
+                                    {
+                                        <button @onclick="@(() => CancelOrder(order.OrderNumber))"
+                                                class="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
+                                            Cancel Order
+                                        </button>
+                                    }
+                                    @if (!string.IsNullOrEmpty(order.TrackingNumber))
+                                    {
+                                        <button @onclick="@(() => TrackOrder(order.TrackingNumber))"
+                                                class="px-4 py-2 text-sm font-medium text-green-600 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+                                            Track Order
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order Items Preview -->
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                @foreach (var item in order.OrderItems.Take(3))
+                                {
+                                    <div class="flex items-center space-x-3">
+                                        @if (item.Product?.MainImage != null)
+                                        {
+                                            <img src="@item.Product.MainImage.ImagePath" alt="@item.ProductName" 
+                                                 class="w-12 h-12 object-cover rounded-lg flex-shrink-0">
+                                        }
+                                        else
+                                        {
+                                            <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                </svg>
+                                            </div>
+                                        }
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-medium text-gray-900 truncate">@item.ProductName</p>
+                                            <p class="text-sm text-gray-500">Qty: @item.Quantity × @item.UnitPrice.ToString("F3") OMR</p>
+                                        </div>
+                                    </div>
+                                }
+                                @if (order.OrderItems.Count > 3)
+                                {
+                                    <div class="flex items-center justify-center text-sm text-gray-500">
+                                        +@(order.OrderItems.Count - 3) more items
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Shipping Info -->
+                        @if (!string.IsNullOrEmpty(order.TrackingNumber))
+                        {
+                            <div class="px-6 py-4 bg-blue-50 border-t border-gray-200">
+                                <div class="flex items-center space-x-2">
+                                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span class="text-sm font-medium text-blue-900">Tracking Number: @order.TrackingNumber</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Pagination -->
+            @if (totalPages > 1)
+            {
+                <div class="mt-8 flex justify-center">
+                    <nav class="flex space-x-2">
+                        @if (currentPage > 1)
+                        {
+                            <button @onclick="@(() => LoadPage(currentPage - 1))"
+                                    class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                                Previous
+                            </button>
+                        }
+                        
+                        @for (int i = Math.Max(1, currentPage - 2); i <= Math.Min(totalPages, currentPage + 2); i++)
+                        {
+                            <button @onclick="@(() => LoadPage(i))"
+                                    class="px-3 py-2 text-sm font-medium @(i == currentPage ? "text-blue-600 bg-blue-50" : "text-gray-500 bg-white") border border-gray-300 rounded-lg hover:bg-gray-50">
+                                @i
+                            </button>
+                        }
+                        
+                        @if (currentPage < totalPages)
+                        {
+                            <button @onclick="@(() => LoadPage(currentPage + 1))"
+                                    class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                                Next
+                            </button>
+                        }
+                    </nav>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@code {
+    private List<Order>? orders;
+    private bool isLoading = true;
+    private int currentPage = 1;
+    private int pageSize = 10;
+    private int totalPages = 0;
+    private int totalOrders = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUserOrders();
+    }
+
+    private async Task LoadUserOrders()
+    {
+        try
+        {
+            isLoading = true;
+            
+            // Get current user ID
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var userId = authState.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            
+            if (!string.IsNullOrEmpty(userId))
+            {
+                var result = await OrderService.GetUserOrdersAsync(userId, currentPage, pageSize);
+                orders = result.Orders;
+                totalOrders = result.TotalCount;
+                totalPages = (int)Math.Ceiling((double)totalOrders / pageSize);
+            }
+        }
+        catch (Exception)
+        {
+            // Log error if needed
+            orders = new List<Order>();
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadPage(int page)
+    {
+        currentPage = page;
+        await LoadUserOrders();
+    }
+
+    private void ViewOrderDetails(string orderNumber)
+    {
+        Navigation.NavigateTo($"/order-confirmation/{orderNumber}");
+    }
+
+    private async Task CancelOrder(string orderNumber)
+    {
+        if (await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to cancel this order?"))
+        {
+            try
+            {
+                var order = await OrderService.GetOrderByNumberAsync(orderNumber);
+                if (order != null)
+                {
+                    await OrderService.UpdateOrderStatusAsync(order.Id, "Cancelled");
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("alert", "Order not found!");
+                    return;
+                }
+                await LoadUserOrders(); // Refresh the list
+                await JSRuntime.InvokeVoidAsync("alert", "Order cancelled successfully!");
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", $"Error cancelling order: {ex.Message}");
+            }
+        }
+    }
+
+    private async Task TrackOrder(string trackingNumber)
+    {
+        // You can implement tracking logic here
+        // For now, show the tracking number
+        await JSRuntime.InvokeVoidAsync("alert", $"Tracking Number: {trackingNumber}\n\nPlease visit your shipping provider's website to track your package.");
+    }
+
+    private string GetStatusBadgeClass(string status)
+    {
+        return status.ToLower() switch
+        {
+            "pending" => "bg-yellow-100 text-yellow-800",
+            "processing" => "bg-blue-100 text-blue-800",
+            "shipped" => "bg-purple-100 text-purple-800",
+            "delivered" => "bg-green-100 text-green-800",
+            "cancelled" => "bg-red-100 text-red-800",
+            _ => "bg-gray-100 text-gray-800"
+        };
+    }
+
+    private string GetPaymentStatusBadgeClass(string paymentStatus)
+    {
+        return paymentStatus?.ToLower() switch
+        {
+            "paid" => "bg-green-100 text-green-800",
+            "unpaid" => "bg-red-100 text-red-800",
+            "failed" => "bg-red-100 text-red-800",
+            "refunded" => "bg-gray-100 text-gray-800",
+            "pending" => "bg-yellow-100 text-yellow-800",
+            _ => "bg-gray-100 text-gray-800"
+        };
+    }
+
+    private string GetPaymentStatusText(string paymentStatus)
+    {
+        return paymentStatus?.ToLower() switch
+        {
+            "paid" => "Paid",
+            "unpaid" => "Unpaid",
+            "failed" => "Failed",
+            "refunded" => "Refunded",
+            "pending" => "Processing",
+            _ => "Unknown"
+        };
+    }
+
+    private async Task PayForOrder(int orderId)
+    {
+        try
+        {
+            isLoading = true;
+            StateHasChanged();
+
+            // Call payment initiation API
+            var httpClient = new HttpClient { BaseAddress = new Uri(Navigation.BaseUri) };
+            var response = await httpClient.GetAsync($"/api/payment/initiate/{orderId}");
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var paymentData = await response.Content.ReadFromJsonAsync<PaymentInitiationResponse>();
+                if (paymentData != null && !string.IsNullOrEmpty(paymentData.PaymentUrl))
+                {
+                    // Redirect to payment gateway
+                    Navigation.NavigateTo(paymentData.PaymentUrl, forceLoad: true);
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("alert", "Failed to initiate payment. Please try again.");
+                }
+            }
+            else
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                await JSRuntime.InvokeVoidAsync("alert", $"Payment initiation failed: {error}");
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error initiating payment: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    public class PaymentInitiationResponse
+    {
+        public string PaymentUrl { get; set; } = string.Empty;
+        public string PaymentReference { get; set; } = string.Empty;
+    }
+}
