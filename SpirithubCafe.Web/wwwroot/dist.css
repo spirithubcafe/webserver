@@ -3035,9 +3035,6 @@
   .bg-stone-600 {
     background-color: var(--color-stone-600);
   }
-  .bg-success {
-    background-color: var(--color-success);
-  }
   .bg-teal-600 {
     background-color: var(--color-teal-600);
   }
@@ -3842,9 +3839,6 @@
   }
   .text-stone-700 {
     color: var(--color-stone-700);
-  }
-  .text-success {
-    color: var(--color-success);
   }
   .text-teal-100 {
     color: var(--color-teal-100);
@@ -5263,6 +5257,11 @@
   .sm\:h-4 {
     @media (width >= 40rem) {
       height: calc(var(--spacing) * 4);
+    }
+  }
+  .sm\:h-10 {
+    @media (width >= 40rem) {
+      height: calc(var(--spacing) * 10);
     }
   }
   .sm\:w-4 {

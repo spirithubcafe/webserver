@@ -12,6 +12,7 @@
 @inject NavigationManager Navigation
 @inject IStringLocalizer<SpirithubCafe.Langs.Resources> Localizer
 @inject ToastService ToastService
+@inject SpirithubCafe.Application.Services.ISettingService SettingService
 @implements IDisposable
 
 <PageTitle>Products - SpirithubCafe</PageTitle>
@@ -23,15 +24,19 @@
 <ProductQuickViewModal Product="selectedProduct" IsVisible="isQuickViewVisible" OnClose="CloseQuickView" />
 
 <!-- Hero Section -->
-<section class="relative bg-gradient-to-br from-stone-50 to-stone-100 py-16">
-    <div class="absolute inset-0 bg-black bg-opacity-5"></div>
+<section class="relative py-16" style="@GetHeroBackgroundStyle()">
+    @* Remove overlay when custom background is set *@
+    @if (shopBgType != "color" && shopBgType != "image")
+    {
+        <div class="absolute inset-0 bg-opacity-5"></div>
+    }
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
-            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                Premium <span class="text-stone-600">Coffee</span> Collection
+            <h1 class="text-4xl md:text-5xl font-bold mb-4" style="color: @shopTitleTextColor">
+                @GetShopTitle()
             </h1>
-            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                Discover our carefully curated selection of single-origin beans and signature blends from around the world.
+            <p class="text-xl max-w-2xl mx-auto" style="color: @shopSubtitleTextColor">
+                @GetShopSubtitle()
             </p>
         </div>
     </div>
@@ -552,12 +557,24 @@
     private Product? selectedProduct = null;
     private bool isQuickViewVisible = false;
     
+    // Shop settings
+    private string shopTitleEn = "Premium Coffee Collection";
+    private string shopTitleAr = "مجموعة القهوة المتميزة";
+    private string shopSubtitleEn = "Discover our carefully curated selection of single-origin beans and signature blends from around the world.";
+    private string shopSubtitleAr = "اكتشف مجموعتنا المختارة بعناية من حبوب القهوة المنفردة المنشأ والمخاليط المميزة من جميع أنحاء العالم.";
+    private string shopBgType = "color";
+    private string shopBgValue = "#f3f4f6";
+    private string shopTitleTextColor = "#1f2937";
+    private string shopSubtitleTextColor = "#6b7280";
+    
     private IEnumerable<Product> filteredProducts => GetFilteredProducts();
     
     protected override async Task OnInitializedAsync()
     {
         try
         {
+            // Load shop settings
+            await LoadShopSettings();
            
             // Load categories
             categories = await CategoryService.GetAllCategoriesAsync();
@@ -842,6 +859,54 @@
     private void NavigateToProduct(int productId)
     {
         Navigation.NavigateTo($"/product/{productId}");
+    }
+    
+    private async Task LoadShopSettings()
+    {
+        try
+        {
+            shopTitleEn = await SettingService.GetValueAsync("ShopTitleEn", "Premium Coffee Collection");
+            shopTitleAr = await SettingService.GetValueAsync("ShopTitleAr", "مجموعة القهوة المتميزة");
+            shopSubtitleEn = await SettingService.GetValueAsync("ShopSubtitleEn", "Discover our carefully curated selection of single-origin beans and signature blends from around the world.");
+            shopSubtitleAr = await SettingService.GetValueAsync("ShopSubtitleAr", "اكتشف مجموعتنا المختارة بعناية من حبوب القهوة المنفردة المنشأ والمخاليط المميزة من جميع أنحاء العالم.");
+            
+            shopBgType = await SettingService.GetValueAsync("ShopBgType", "color");
+            shopBgValue = await SettingService.GetValueAsync("ShopBgValue", "#f3f4f6");
+            
+            shopTitleTextColor = await SettingService.GetValueAsync("ShopTitleTextColor", "#1f2937");
+            shopSubtitleTextColor = await SettingService.GetValueAsync("ShopSubtitleTextColor", "#6b7280");
+        }
+        catch (Exception)
+        {
+            // Use default values if loading fails
+        }
+    }
+    
+    private string GetShopTitle()
+    {
+        var currentCulture = System.Globalization.CultureInfo.CurrentUICulture.Name;
+        return currentCulture.StartsWith("ar") && !string.IsNullOrEmpty(shopTitleAr) 
+            ? shopTitleAr 
+            : shopTitleEn;
+    }
+    
+    private string GetShopSubtitle()
+    {
+        var currentCulture = System.Globalization.CultureInfo.CurrentUICulture.Name;
+        return currentCulture.StartsWith("ar") && !string.IsNullOrEmpty(shopSubtitleAr) 
+            ? shopSubtitleAr 
+            : shopSubtitleEn;
+    }
+    
+    private string GetHeroBackgroundStyle()
+    {
+        return shopBgType switch
+        {
+            "color" => $"background-color: {shopBgValue} !important;",
+            "image" when !string.IsNullOrEmpty(shopBgValue) => $"background-image: url('{shopBgValue}') !important; background-size: cover !important; background-position: center !important; background-repeat: no-repeat !important;",
+            "video" when !string.IsNullOrEmpty(shopBgValue) => $"background-color: #f3f4f6 !important;", // Fallback for video - would need video implementation
+            _ => "background: linear-gradient(to bottom right, #fafaf9, #f5f5f4) !important;"
+        };
     }
     
     public void Dispose()
