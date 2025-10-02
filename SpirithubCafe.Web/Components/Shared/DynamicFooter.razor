@@ -8,24 +8,41 @@
 @if (settings != null && settings.ShowFooter)
 {
     <footer class="@GetFooterClasses()" style="@GetFooterStyles()">
-        @* Background Video *@
+        @* Background Video - Enhanced for cross-browser compatibility *@
         @if (settings.BgType == "video" && !string.IsNullOrEmpty(settings.BgValue))
         {
-            <video id="footer-bg-video" 
-                   autoplay 
-                   muted 
-                   loop 
-                   playsinline 
-                   preload="metadata"
-                   class="absolute inset-0 w-full h-full object-cover z-behind"
-                   onloadstart="console.log('Video loading started:', '@settings.BgValue')"
-                   oncanplay="console.log('Video can play'); this.play();"
-                   onerror="console.error('Video error:', this.error); this.style.display='none';">
-                <source src="@settings.BgValue" type="video/mp4">
-                <source src="@settings.BgValue" type="video/webm">
-                <source src="@settings.BgValue" type="video/ogg">
-                Your browser does not support the video tag.
-            </video>
+            <div class="absolute inset-0 w-full h-full overflow-hidden z-behind" 
+                 style="z-index: -1; pointer-events: none;">
+                <video id="footer-bg-video" 
+                       autoplay 
+                       muted 
+                       loop 
+                       playsinline 
+                       preload="auto"
+                       disablepictureinpicture
+                       webkit-playsinline="true"
+                       class="absolute inset-0 w-full h-full object-cover"
+                       style="min-width: 100%; min-height: 100%; 
+                              pointer-events: none; 
+                              -webkit-transform: translateZ(0); 
+                              transform: translateZ(0);"
+                       onloadeddata="this.play().catch(e => console.log('Auto-play prevented:', e));"
+                       oncanplaythrough="this.play().catch(e => console.log('Play failed:', e));">
+                    <source src="@settings.BgValue" type="video/mp4">
+                    <source src="@settings.BgValue.Replace(".mp4", ".webm")" type="video/webm">
+                    <source src="@settings.BgValue.Replace(".mp4", ".ogv")" type="video/ogg">
+                    <!-- Fallback image if video fails -->
+                    Your browser does not support the video tag.
+                </video>
+                
+                <!-- Fallback background image in case video fails -->
+                <div class="absolute inset-0 w-full h-full bg-gray-800" 
+                     style="background-image: url('@(settings.BgValue.Replace(".mp4", ".jpg"))'); 
+                            background-size: cover; 
+                            background-position: center;
+                            background-repeat: no-repeat;
+                            z-index: -2;"></div>
+            </div>
         }
         
         @* Background Image with potential blur overlay *@
@@ -447,25 +464,87 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const video = document.getElementById('footer-bg-video');
-        if (video) {
-            video.addEventListener('loadeddata', function() {
-                console.log('Video loaded successfully');
-                this.play().catch(e => console.log('Auto-play prevented:', e));
-            });
-            
-            video.addEventListener('error', function(e) {
-                console.error('Video failed to load:', e);
-                console.error('Video src:', this.currentSrc);
-                this.style.display = 'none';
-            });
-
-            // Force play after a delay
-            setTimeout(() => {
-                if (video.paused) {
-                    video.play().catch(e => console.log('Manual play prevented:', e));
-                }
-            }, 1000);
-        }
+        initFooterVideo();
     });
+    
+    function initFooterVideo() {
+        const video = document.getElementById('footer-bg-video');
+        if (!video) return;
+        
+        // Set video attributes for better compatibility
+        video.setAttribute('webkit-playsinline', 'true');
+        video.setAttribute('playsinline', 'true');
+        video.muted = true;
+        video.loop = true;
+        video.autoplay = true;
+        
+        // Multiple event listeners for different browsers
+        video.addEventListener('loadedmetadata', function() {
+            console.log('Video metadata loaded');
+            tryVideoPlay(this);
+        });
+        
+        video.addEventListener('loadeddata', function() {
+            console.log('Video data loaded');
+            tryVideoPlay(this);
+        });
+        
+        video.addEventListener('canplay', function() {
+            console.log('Video can play');
+            tryVideoPlay(this);
+        });
+        
+        video.addEventListener('canplaythrough', function() {
+            console.log('Video can play through');
+            tryVideoPlay(this);
+        });
+        
+        video.addEventListener('error', function(e) {
+            console.error('Video error:', e, this.error);
+            handleVideoError(this);
+        });
+        
+        // iOS Safari specific handling
+        if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+            video.addEventListener('touchstart', function() {
+                tryVideoPlay(this);
+            }, { once: true });
+        }
+        
+        // Force load and play
+        setTimeout(() => {
+            video.load();
+            tryVideoPlay(video);
+        }, 500);
+        
+        // Final attempt after delay
+        setTimeout(() => {
+            if (video.paused || video.currentTime === 0) {
+                tryVideoPlay(video);
+            }
+        }, 2000);
+    }
+    
+    function tryVideoPlay(video) {
+        if (!video || video.readyState < 2) return;
+        
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                console.log('Video playing successfully');
+            }).catch(error => {
+                console.log('Auto-play prevented or failed:', error);
+                // Try to play on user interaction
+                document.addEventListener('click', () => tryVideoPlay(video), { once: true });
+                document.addEventListener('scroll', () => tryVideoPlay(video), { once: true });
+            });
+        }
+    }
+    
+    function handleVideoError(video) {
+        console.error('Video failed to load, hiding video element');
+        if (video && video.parentElement) {
+            video.parentElement.style.display = 'none';
+        }
+    }
 </script>
