@@ -3,6 +3,90 @@
   themes: light --default, dark --prefersdark, coffee;
 }
 
+/* Beautiful Arabic Fonts for RTL Languages */
+[dir="rtl"] {
+    font-family: 'Tajawal', 'Almarai', 'IBM Plex Sans Arabic', Arial, sans-serif;
+}
+
+/* Specific Arabic font classes */
+.font-arabic {
+    font-family: 'Tajawal', 'Almarai', sans-serif;
+}
+
+.font-arabic-elegant {
+    font-family: 'Almarai', 'Tajawal', sans-serif;
+}
+
+.font-arabic-modern {
+    font-family: 'Tajawal', 'IBM Plex Sans Arabic', sans-serif;
+}
+
+.font-arabic-clean {
+    font-family: 'IBM Plex Sans Arabic', 'Tajawal', sans-serif;
+}
+
+/* RTL specific text improvements */
+[dir="rtl"] body,
+[dir="rtl"] .text-arabic {
+    font-family: 'Tajawal', 'Almarai', 'IBM Plex Sans Arabic', sans-serif;
+    line-height: 1.8;
+    letter-spacing: 0.02em;
+}
+
+[dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3, [dir="rtl"] h4, [dir="rtl"] h5, [dir="rtl"] h6 {
+    font-family: 'Tajawal', 'Almarai', sans-serif;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+[dir="rtl"] .font-bold {
+    font-weight: 700;
+}
+
+[dir="rtl"] .font-medium {
+    font-weight: 500;
+}
+
+/* Arabic navigation and buttons */
+[dir="rtl"] nav,
+[dir="rtl"] button,
+[dir="rtl"] a {
+    font-family: 'Tajawal', 'Almarai', sans-serif;
+}
+
+/* Mobile navigation Arabic styling */
+[dir="rtl"] .fixed.bottom-0 {
+    font-family: 'Tajawal', 'Almarai', sans-serif;
+    font-weight: 500;
+}
+
+[dir="rtl"] .fixed.bottom-0 span {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+}
+
+/* Arabic logo and brand text */
+[dir="rtl"] .text-2xl {
+    font-family: 'Tajawal', 'Almarai', sans-serif;
+    font-weight: 800;
+}
+
+/* Arabic form elements */
+[dir="rtl"] input,
+[dir="rtl"] textarea,
+[dir="rtl"] select {
+    font-family: 'Tajawal', 'IBM Plex Sans Arabic', sans-serif;
+}
+
+/* Product cards and content in Arabic */
+[dir="rtl"] .product-card,
+[dir="rtl"] .card-title,
+[dir="rtl"] .card-text {
+    font-family: 'Tajawal', 'Almarai', sans-serif;
+    line-height: 1.7;
+}
+
 /* Custom TailwindCSS utilities for Blazor */
 .blazor-error-boundary {
     @apply bg-red-600 text-white p-4 rounded-lg border-l-4 border-red-800;
