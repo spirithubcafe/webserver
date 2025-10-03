@@ -160,7 +160,7 @@
                                     <label class="block text-sm font-semibold text-gray-700">@Localizer["LiveGatewayUrl"]</label>
                                     <input @bind="settings.LiveGatewayUrl" 
                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                                           placeholder="https://secure.bankmuscat.com/payment/request" />
+                                           placeholder="https://smartpaytrns.bankmuscat.com/transaction.do?command=initiateTransaction" />
                                 </div>
 
                                 <!-- Sandbox Gateway URL -->
@@ -168,7 +168,7 @@
                                     <label class="block text-sm font-semibold text-gray-700">@Localizer["SandboxGatewayUrl"]</label>
                                     <input @bind="settings.SandboxGatewayUrl" 
                                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                                           placeholder="https://test.bankmuscat.com/payment/request" />
+                                           placeholder="https://mti.bankmuscat.com:6443/transaction.do?command=initiateTransaction" />
                                 </div>
 
                             </div>
@@ -559,8 +559,8 @@
                     AccessCode = "AVDP00LA16BE47PDEB",
                     WorkingKey = "841FEAE32609C3E892C4D0B1393A7ACC",
                     IsSandboxMode = true,
-                    LiveGatewayUrl = "https://secure.checkout.visa.com/payment/",
-                    SandboxGatewayUrl = "https://secure.checkout.visa.com/payment/",
+                    LiveGatewayUrl = "https://smartpaytrns.bankmuscat.com/transaction.do?command=initiateTransaction",
+                    SandboxGatewayUrl = "https://mti.bankmuscat.com:6443/transaction.do?command=initiateTransaction",
                     Currency = "OMR",
                     ReturnUrl = "/checkout/payment-success",
                     CancelUrl = "/payment/cancel",
@@ -583,8 +583,8 @@
                 AccessCode = "AVDP00LA16BE47PDEB",
                 WorkingKey = "841FEAE32609C3E892C4D0B1393A7ACC",
                 IsSandboxMode = true,
-                LiveGatewayUrl = "https://secure.checkout.visa.com/payment/",
-                SandboxGatewayUrl = "https://secure.checkout.visa.com/payment/",
+                LiveGatewayUrl = "https://smartpaytrns.bankmuscat.com/transaction.do?command=initiateTransaction",
+                SandboxGatewayUrl = "https://mti.bankmuscat.com:6443/transaction.do?command=initiateTransaction",
                 Currency = "OMR",
                 ReturnUrl = "/api/payment/callback/success",
                 CancelUrl = "/api/payment/callback/cancel",

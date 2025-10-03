@@ -42,7 +42,7 @@
         }
 
         <!-- Payment gateway redirect -->
-        @if (!string.IsNullOrEmpty(paymentUrl))
+        @if (!string.IsNullOrEmpty(gatewayUrl) && !string.IsNullOrEmpty(encryptedRequest) && !string.IsNullOrEmpty(accessCode))
         {
             <div class="mb-8">
                 <div class="w-20 h-20 mx-auto mb-6 bg-green-100 rounded-full flex items-center justify-center">
@@ -51,17 +51,30 @@
                     </svg>
                 </div>
                 <h2 class="text-2xl font-bold text-gray-900 mb-4">Payment Ready</h2>
-                <p class="text-gray-600 mb-6">Click the button below to proceed to the secure payment gateway.</p>
+                <p class="text-gray-600 mb-6">You will be redirected to Bank Muscat secure payment gateway...</p>
                 
-                <div class="text-center">
-                    <a href="@paymentUrl" class="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors text-lg">
-                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v2a2 2 0 002 2z"/>
-                        </svg>
-                        Proceed to Payment
-                    </a>
-                    <p class="text-sm text-gray-500 mt-3">Secure payment powered by Bank Muscat</p>
-                </div>
+                <!-- Auto-submit form like in Go code -->
+                <form method="post" name="bankMuscatRedirect" action="@gatewayUrl">
+                    <input type="hidden" name="encRequest" value="@encryptedRequest" />
+                    <input type="hidden" name="access_code" value="@accessCode" />
+                    
+                    <div class="text-center">
+                        <button type="submit" class="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors text-lg">
+                            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v2a2 2 0 002 2z"/>
+                            </svg>
+                            Proceed to Payment
+                        </button>
+                        <p class="text-sm text-gray-500 mt-3">Secure payment powered by Bank Muscat</p>
+                    </div>
+                </form>
+
+                <!-- Auto-submit script like in Go code -->
+                <script>
+                    setTimeout(function() {
+                        document.bankMuscatRedirect.submit();
+                    }, 2000);
+                </script>
             </div>
         }
     </div>
@@ -72,7 +85,9 @@
     
     private bool isLoading = true;
     private string? errorMessage;
-    private string? paymentUrl;
+    private string? gatewayUrl;
+    private string? encryptedRequest;
+    private string? accessCode;
 
     protected override async Task OnInitializedAsync()
     {
@@ -132,15 +147,20 @@
             return;
         }
 
-        // Prepare payment data for GET request
+        // Prepare payment data like in Go code
+        var random = new Random();
+        var trackingId = random.Next(100000, 999999); // Generate tracking ID like 'tid' in Go
+        
         var paymentParameters = new Dictionary<string, string>
         {
+            {"tid", trackingId.ToString()},
             {"merchant_id", gateway.MerchantId},
             {"order_id", paymentRequest.PaymentReference},
             {"amount", paymentRequest.Amount.ToString("F2")},
             {"currency", paymentRequest.Currency},
             {"redirect_url", paymentRequest.ReturnUrl},
             {"cancel_url", paymentRequest.CancelUrl},
+            {"language", "EN"}, // Like in Go code
             {"billing_name", paymentRequest.CustomerName},
             {"billing_email", paymentRequest.CustomerEmail},
             {"billing_tel", paymentRequest.CustomerPhone ?? ""},
@@ -148,15 +168,15 @@
             {"merchant_param2", "SpirithubCafe"}
         };
 
-        // Encrypt the data if needed
+        // Convert to query string like mapToString function in Go
         var queryString = string.Join("&", paymentParameters.Select(kvp => $"{kvp.Key}={Uri.EscapeDataString(kvp.Value)}"));
-        var encryptedData = PaymentGatewayService.EncryptPaymentData(queryString, gateway.WorkingKey);
         
-        // Get gateway URL
-        var gatewayBaseUrl = gateway.IsSandboxMode ? gateway.SandboxGatewayUrl : gateway.LiveGatewayUrl;
+        // Encrypt like getAES256GCMEncrypted in Go
+        encryptedRequest = PaymentGatewayService.EncryptPaymentData(queryString, gateway.WorkingKey);
         
-        // Build GET URL with parameters
-        paymentUrl = $"{gatewayBaseUrl}?encRequest={Uri.EscapeDataString(encryptedData)}&access_code={Uri.EscapeDataString(gateway.AccessCode)}";
+        // Set gateway URL and access code
+        gatewayUrl = gateway.IsSandboxMode ? gateway.SandboxGatewayUrl : gateway.LiveGatewayUrl;
+        accessCode = gateway.AccessCode;
 
         isLoading = false;
         StateHasChanged();

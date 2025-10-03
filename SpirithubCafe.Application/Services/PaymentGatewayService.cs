@@ -147,22 +147,41 @@ public class PaymentGatewayService : IPaymentGatewayService
     {
         try
         {
-            var key = Encoding.UTF8.GetBytes(workingKey);
-            var dataBytes = Encoding.UTF8.GetBytes(data);
+            // Convert hex working key to bytes (Bank Muscat provides hex key)
+            var keyBytes = Convert.FromHexString(workingKey);
+            
+            // Generate random 12-byte nonce for AES-GCM
+            var nonce = new byte[12];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(nonce);
+            }
 
-            using var aes = Aes.Create();
-            aes.Mode = CipherMode.CBC;
-            aes.Padding = PaddingMode.PKCS7;
-            aes.Key = MD5.HashData(key);
-            aes.IV = new byte[16]; // Use zero IV for consistency
-
-            using var encryptor = aes.CreateEncryptor();
-            var encrypted = encryptor.TransformFinalBlock(dataBytes, 0, dataBytes.Length);
-            return Convert.ToHexString(encrypted).ToLower();
+            // Create AES-GCM cipher with 16-byte authentication tag
+            using var aes = new AesGcm(keyBytes, 16);
+            
+            // Prepare plaintext bytes
+            var plaintextBytes = Encoding.UTF8.GetBytes(data);
+            
+            // Prepare output arrays
+            var ciphertext = new byte[plaintextBytes.Length];
+            var tag = new byte[16];
+            
+            // Encrypt using AES-256-GCM
+            aes.Encrypt(nonce, plaintextBytes, ciphertext, tag);
+            
+            // Combine nonce + ciphertext + tag (Bank Muscat format)
+            var result = new byte[nonce.Length + ciphertext.Length + tag.Length];
+            Array.Copy(nonce, 0, result, 0, nonce.Length);
+            Array.Copy(ciphertext, 0, result, nonce.Length, ciphertext.Length);
+            Array.Copy(tag, 0, result, nonce.Length + ciphertext.Length, tag.Length);
+            
+            // Return as lowercase hex string
+            return Convert.ToHexString(result).ToLower();
         }
         catch (Exception ex)
         {
-            throw new InvalidOperationException("Failed to encrypt payment data", ex);
+            throw new InvalidOperationException($"Failed to encrypt payment data: {ex.Message}", ex);
         }
     }
 
@@ -170,22 +189,30 @@ public class PaymentGatewayService : IPaymentGatewayService
     {
         try
         {
-            var key = Encoding.UTF8.GetBytes(workingKey);
-            var encryptedBytes = Convert.FromHexString(encData);
-
-            using var aes = Aes.Create();
-            aes.Mode = CipherMode.CBC;
-            aes.Padding = PaddingMode.PKCS7;
-            aes.Key = MD5.HashData(key);
-            aes.IV = new byte[16]; // Use zero IV for consistency
-
-            using var decryptor = aes.CreateDecryptor();
-            var decrypted = decryptor.TransformFinalBlock(encryptedBytes, 0, encryptedBytes.Length);
-            return Encoding.UTF8.GetString(decrypted);
+            // Convert hex strings to bytes
+            var encryptedData = Convert.FromHexString(encData);
+            var keyBytes = Convert.FromHexString(workingKey);
+            
+            // Extract components from Bank Muscat format
+            var nonce = encryptedData[..12]; // First 12 bytes
+            var tag = encryptedData[^16..]; // Last 16 bytes  
+            var ciphertext = encryptedData[12..^16]; // Middle part
+            
+            // Create AES-GCM cipher
+            using var aes = new AesGcm(keyBytes, 16);
+            
+            // Prepare output array
+            var plaintextBytes = new byte[ciphertext.Length];
+            
+            // Decrypt using AES-256-GCM
+            aes.Decrypt(nonce, ciphertext, tag, plaintextBytes);
+            
+            // Convert to string
+            return Encoding.UTF8.GetString(plaintextBytes);
         }
         catch (Exception ex)
         {
-            throw new InvalidOperationException("Failed to decrypt payment data", ex);
+            throw new InvalidOperationException($"Failed to decrypt payment data: {ex.Message}", ex);
         }
     }
 

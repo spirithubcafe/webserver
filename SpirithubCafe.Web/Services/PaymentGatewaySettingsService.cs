@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using SpirithubCafe.Domain.Entities;
 using SpirithubCafe.Web.Data;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
 
 namespace SpirithubCafe.Web.Services;
 
@@ -134,5 +137,130 @@ public class PaymentGatewaySettingsService
         {
             return false;
         }
+    }
+
+    /// <summary>
+    /// Encrypt payment data using AES-256-GCM (Bank Muscat standard)
+    /// </summary>
+    /// <param name="plaintext">Plain text data to encrypt</param>
+    /// <param name="workingKey">Working key for encryption (hex string)</param>
+    /// <returns>Encrypted data as hex string (nonce + ciphertext)</returns>
+    public string EncryptPaymentData(string plaintext, string workingKey)
+    {
+        try
+        {
+            // Convert hex working key to bytes
+            var keyBytes = Convert.FromHexString(workingKey);
+            
+            // Generate random 12-byte nonce
+            var nonce = new byte[12];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(nonce);
+            }
+
+            // Create AES-GCM cipher
+            using var aes = new AesGcm(keyBytes, 16); // 16-byte tag size
+            
+            // Prepare plaintext bytes
+            var plaintextBytes = Encoding.UTF8.GetBytes(plaintext);
+            
+            // Prepare output arrays
+            var ciphertext = new byte[plaintextBytes.Length];
+            var tag = new byte[16];
+            
+            // Encrypt
+            aes.Encrypt(nonce, plaintextBytes, ciphertext, tag);
+            
+            // Combine nonce + ciphertext + tag
+            var result = new byte[nonce.Length + ciphertext.Length + tag.Length];
+            Array.Copy(nonce, 0, result, 0, nonce.Length);
+            Array.Copy(ciphertext, 0, result, nonce.Length, ciphertext.Length);
+            Array.Copy(tag, 0, result, nonce.Length + ciphertext.Length, tag.Length);
+            
+            // Return as hex string
+            return Convert.ToHexString(result).ToLower();
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Encryption failed: {ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
+    /// Decrypt payment response data using AES-256-GCM (Bank Muscat standard)
+    /// </summary>
+    /// <param name="encryptedDataHex">Encrypted data as hex string (nonce + ciphertext + tag)</param>
+    /// <param name="workingKey">Working key for decryption (hex string)</param>
+    /// <returns>Decrypted data as dictionary</returns>
+    public Dictionary<string, object> DecryptPaymentResponse(string encryptedDataHex, string workingKey)
+    {
+        try
+        {
+            // Convert hex strings to bytes
+            var encryptedData = Convert.FromHexString(encryptedDataHex);
+            var keyBytes = Convert.FromHexString(workingKey);
+            
+            // Extract components
+            var nonce = encryptedData[..12]; // First 12 bytes
+            var tag = encryptedData[^16..]; // Last 16 bytes
+            var ciphertext = encryptedData[12..^16]; // Middle part
+            
+            // Create AES-GCM cipher
+            using var aes = new AesGcm(keyBytes, 16);
+            
+            // Prepare output array
+            var plaintextBytes = new byte[ciphertext.Length];
+            
+            // Decrypt
+            aes.Decrypt(nonce, ciphertext, tag, plaintextBytes);
+            
+            // Convert to string
+            var plaintext = Encoding.UTF8.GetString(plaintextBytes);
+            
+            // Parse as query string to dictionary
+            return ParseQueryStringToMap(plaintext);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Decryption failed: {ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
+    /// Convert query string to dictionary
+    /// </summary>
+    /// <param name="queryString">Query string (key1=value1&key2=value2)</param>
+    /// <returns>Dictionary of key-value pairs</returns>
+    private Dictionary<string, object> ParseQueryStringToMap(string queryString)
+    {
+        var result = new Dictionary<string, object>();
+        
+        if (string.IsNullOrEmpty(queryString))
+            return result;
+            
+        var pairs = queryString.Split('&');
+        foreach (var pair in pairs)
+        {
+            var keyValue = pair.Split('=', 2);
+            if (keyValue.Length == 2)
+            {
+                var key = Uri.UnescapeDataString(keyValue[0]);
+                var value = Uri.UnescapeDataString(keyValue[1]);
+                result[key] = value;
+            }
+        }
+        
+        return result;
+    }
+
+    /// <summary>
+    /// Get active payment gateway settings
+    /// </summary>
+    /// <returns>Active gateway settings or null</returns>
+    public async Task<PaymentGatewaySettings?> GetActiveGatewayAsync()
+    {
+        return await _context.PaymentGatewaySettings
+            .FirstOrDefaultAsync(g => g.IsEnabled);
     }
 }
