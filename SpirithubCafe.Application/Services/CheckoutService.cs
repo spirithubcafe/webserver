@@ -2,6 +2,7 @@ using SpirithubCafe.Domain.Entities;
 using SpirithubCafe.Application.Interfaces;
 using SpirithubCafe.Application.DTOs;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace SpirithubCafe.Application.Services;
 
@@ -24,11 +25,19 @@ public class CheckoutService : ICheckoutService
 {
     private readonly IApplicationDbContext _context;
     private readonly IPaymentService _paymentService;
+    private readonly IEmailService _emailService;
+    private readonly ILogger<CheckoutService> _logger;
 
-    public CheckoutService(IApplicationDbContext context, IPaymentService paymentService)
+    public CheckoutService(
+        IApplicationDbContext context, 
+        IPaymentService paymentService, 
+        IEmailService emailService,
+        ILogger<CheckoutService> logger)
     {
         _context = context;
         _paymentService = paymentService;
+        _emailService = emailService;
+        _logger = logger;
     }
 
     public async Task<IEnumerable<CountryDto>> GetActiveCountriesAsync()
@@ -188,6 +197,24 @@ public class CheckoutService : ICheckoutService
         _context.Orders.Add(order);
         await _context.SaveChangesAsync();
 
+        // Send order confirmation email
+        try
+        {
+            await _emailService.SendOrderConfirmationEmailAsync(
+                order.Email, 
+                order.OrderNumber, 
+                order.TotalAmount);
+            
+            _logger.LogInformation("Order confirmation email sent to {Email} for order {OrderNumber}", 
+                order.Email, order.OrderNumber);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send order confirmation email to {Email} for order {OrderNumber}", 
+                order.Email, order.OrderNumber);
+            // Don't throw - order creation should succeed even if email fails
+        }
+
         return order;
     }
 
@@ -212,20 +239,43 @@ public class CheckoutService : ICheckoutService
         // Create order with unpaid status
         order.PaymentStatus = "Unpaid";
         order.Status = "Pending";
-        var createdOrder = await CreateOrderAsync(order);
+        
+        // Generate order number
+        order.OrderNumber = await GenerateOrderNumberAsync();
+        
+        _context.Orders.Add(order);
+        await _context.SaveChangesAsync();
 
         // Create payment record
         var createPaymentDto = new CreatePaymentDto
         {
-            OrderId = createdOrder.Id,
-            Amount = createdOrder.TotalAmount,
+            OrderId = order.Id,
+            Amount = order.TotalAmount,
             Currency = "OMR", // You can make this configurable
             Gateway = gateway
         };
 
         var payment = await _paymentService.CreatePaymentAsync(createPaymentDto);
 
-        return (createdOrder, payment);
+        // Send order confirmation email
+        try
+        {
+            await _emailService.SendOrderConfirmationEmailAsync(
+                order.Email, 
+                order.OrderNumber, 
+                order.TotalAmount);
+            
+            _logger.LogInformation("Order confirmation email sent to {Email} for order {OrderNumber}", 
+                order.Email, order.OrderNumber);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send order confirmation email to {Email} for order {OrderNumber}", 
+                order.Email, order.OrderNumber);
+            // Don't throw - order creation should succeed even if email fails
+        }
+
+        return (order, payment);
     }
 
     public async Task<Order?> GetOrderByIdAsync(int orderId)

@@ -112,7 +112,9 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+// Register email services
+builder.Services.AddScoped<SpirithubCafe.Application.Services.IEmailService, SpirithubCafe.Application.Services.SmtpEmailService>();
+builder.Services.AddScoped<IEmailSender<ApplicationUser>, SpirithubCafe.Web.Services.IdentityEmailSender>();
 
 // Add HttpClient for API calls
 builder.Services.AddHttpClient();
@@ -135,6 +137,8 @@ builder.Services.AddScoped<ShippingMethodService>();
 builder.Services.AddScoped<LocationService>();
 builder.Services.AddScoped<HomePageSettingsService>();
 builder.Services.AddScoped<PaymentGatewaySettingsService>();
+builder.Services.AddScoped<ContactService>();
+builder.Services.AddScoped<NewsletterService>();
 builder.Services.AddScoped<SpirithubCafe.Application.Interfaces.IFooterService, SpirithubCafe.Application.Services.FooterService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<SpirithubCafe.Application.Services.ICheckoutService, SpirithubCafe.Application.Services.CheckoutService>();

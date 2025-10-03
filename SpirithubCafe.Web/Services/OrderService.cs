@@ -3,7 +3,7 @@ using SpirithubCafe.Domain.Entities;
 using SpirithubCafe.Web.Data;
 using SpirithubCafe.Application.Services;
 using SpirithubCafe.Application.DTOs;
-
+using Microsoft.Extensions.Logging;
 namespace SpirithubCafe.Web.Services;
 
 /// <summary>
@@ -16,19 +16,25 @@ public class OrderService
     private readonly ProductService _productService;
     private readonly IPaymentService _paymentService;
     private readonly IPaymentGatewayService _paymentGatewayService;
+    private readonly IEmailService _emailService;
+    private readonly ILogger<OrderService> _logger;
 
     public OrderService(
         ApplicationDbContext context, 
         CartService cartService, 
         ProductService productService,
         IPaymentService paymentService,
-        IPaymentGatewayService paymentGatewayService)
+        IPaymentGatewayService paymentGatewayService,
+        IEmailService emailService,
+        ILogger<OrderService> logger)
     {
         _context = context;
         _cartService = cartService;
         _productService = productService;
         _paymentService = paymentService;
         _paymentGatewayService = paymentGatewayService;
+        _emailService = emailService;
+        _logger = logger;
     }
 
     /// <summary>
@@ -267,6 +273,7 @@ public class OrderService
         var order = await _context.Orders.FindAsync(orderId);
         if (order == null) return false;
 
+        var oldStatus = order.Status;
         order.Status = status;
         if (!string.IsNullOrEmpty(trackingNumber))
         {
@@ -275,6 +282,28 @@ public class OrderService
         order.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
+
+        // Send email notification for status changes
+        try
+        {
+            if (status.ToLower() == "shipped" && !string.IsNullOrEmpty(trackingNumber))
+            {
+                await _emailService.SendOrderShippedEmailAsync(
+                    order.Email, 
+                    order.OrderNumber, 
+                    trackingNumber);
+                
+                _logger.LogInformation("Order shipped email sent to {Email} for order {OrderNumber}", 
+                    order.Email, order.OrderNumber);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send order status update email to {Email} for order {OrderNumber}", 
+                order.Email, order.OrderNumber);
+            // Don't throw - order update should succeed even if email fails
+        }
+
         return true;
     }
 
@@ -301,14 +330,7 @@ public class OrderService
     /// </summary>
     public async Task<bool> UpdateOrderStatusAsync(int orderId, string status)
     {
-        var order = await _context.Orders.FindAsync(orderId);
-        if (order == null) return false;
-
-        order.Status = status;
-        order.UpdatedAt = DateTime.UtcNow;
-
-        await _context.SaveChangesAsync();
-        return true;
+        return await UpdateOrderStatusAsync(orderId, status, null);
     }
 
     /// <summary>

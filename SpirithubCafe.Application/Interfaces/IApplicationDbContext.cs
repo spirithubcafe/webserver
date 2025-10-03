@@ -33,6 +33,7 @@ public interface IApplicationDbContext
     DbSet<FooterSettings> FooterSettings { get; }
     DbSet<FooterMenu> FooterMenus { get; }
     DbSet<Payment> Payments { get; }
+    DbSet<NewsletterSubscription> NewsletterSubscriptions { get; }
     
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
