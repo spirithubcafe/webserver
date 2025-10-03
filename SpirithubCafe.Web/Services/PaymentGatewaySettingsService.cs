@@ -140,11 +140,12 @@ public class PaymentGatewaySettingsService
     }
 
     /// <summary>
-    /// Encrypt payment data using AES-256-GCM (Bank Muscat standard)
+    /// Encrypt payment data using AES-256-CBC (Bank Muscat standard)
+    /// Compatible with official Bank Muscat encryption
     /// </summary>
     /// <param name="plaintext">Plain text data to encrypt</param>
     /// <param name="workingKey">Working key for encryption (hex string)</param>
-    /// <returns>Encrypted data as hex string (nonce + ciphertext)</returns>
+    /// <returns>Encrypted data as hex string</returns>
     public string EncryptPaymentData(string plaintext, string workingKey)
     {
         try
@@ -152,31 +153,29 @@ public class PaymentGatewaySettingsService
             // Convert hex working key to bytes
             var keyBytes = Convert.FromHexString(workingKey);
             
-            // Generate random 12-byte nonce
-            var nonce = new byte[12];
+            // Generate random 16-byte IV
+            var iv = new byte[16];
             using (var rng = RandomNumberGenerator.Create())
             {
-                rng.GetBytes(nonce);
+                rng.GetBytes(iv);
             }
 
-            // Create AES-GCM cipher
-            using var aes = new AesGcm(keyBytes, 16); // 16-byte tag size
-            
-            // Prepare plaintext bytes
-            var plaintextBytes = Encoding.UTF8.GetBytes(plaintext);
-            
-            // Prepare output arrays
-            var ciphertext = new byte[plaintextBytes.Length];
-            var tag = new byte[16];
+            // Create AES cipher
+            using var aes = Aes.Create();
+            aes.Key = keyBytes;
+            aes.IV = iv;
+            aes.Mode = CipherMode.CBC;
+            aes.Padding = PaddingMode.PKCS7;
             
             // Encrypt
-            aes.Encrypt(nonce, plaintextBytes, ciphertext, tag);
+            using var encryptor = aes.CreateEncryptor();
+            var plaintextBytes = Encoding.UTF8.GetBytes(plaintext);
+            var ciphertext = encryptor.TransformFinalBlock(plaintextBytes, 0, plaintextBytes.Length);
             
-            // Combine nonce + ciphertext + tag
-            var result = new byte[nonce.Length + ciphertext.Length + tag.Length];
-            Array.Copy(nonce, 0, result, 0, nonce.Length);
-            Array.Copy(ciphertext, 0, result, nonce.Length, ciphertext.Length);
-            Array.Copy(tag, 0, result, nonce.Length + ciphertext.Length, tag.Length);
+            // Combine IV + ciphertext
+            var result = new byte[iv.Length + ciphertext.Length];
+            Array.Copy(iv, 0, result, 0, iv.Length);
+            Array.Copy(ciphertext, 0, result, iv.Length, ciphertext.Length);
             
             // Return as hex string
             return Convert.ToHexString(result).ToLower();
@@ -188,9 +187,9 @@ public class PaymentGatewaySettingsService
     }
 
     /// <summary>
-    /// Decrypt payment response data using AES-256-GCM (Bank Muscat standard)
+    /// Decrypt payment response data using AES-256-CBC (Bank Muscat standard)
     /// </summary>
-    /// <param name="encryptedDataHex">Encrypted data as hex string (nonce + ciphertext + tag)</param>
+    /// <param name="encryptedDataHex">Encrypted data as hex string (IV + ciphertext)</param>
     /// <param name="workingKey">Working key for decryption (hex string)</param>
     /// <returns>Decrypted data as dictionary</returns>
     public Dictionary<string, object> DecryptPaymentResponse(string encryptedDataHex, string workingKey)
@@ -201,19 +200,20 @@ public class PaymentGatewaySettingsService
             var encryptedData = Convert.FromHexString(encryptedDataHex);
             var keyBytes = Convert.FromHexString(workingKey);
             
-            // Extract components
-            var nonce = encryptedData[..12]; // First 12 bytes
-            var tag = encryptedData[^16..]; // Last 16 bytes
-            var ciphertext = encryptedData[12..^16]; // Middle part
+            // Extract IV and ciphertext
+            var iv = encryptedData[..16]; // First 16 bytes
+            var ciphertext = encryptedData[16..]; // Remaining bytes
             
-            // Create AES-GCM cipher
-            using var aes = new AesGcm(keyBytes, 16);
-            
-            // Prepare output array
-            var plaintextBytes = new byte[ciphertext.Length];
+            // Create AES cipher
+            using var aes = Aes.Create();
+            aes.Key = keyBytes;
+            aes.IV = iv;
+            aes.Mode = CipherMode.CBC;
+            aes.Padding = PaddingMode.PKCS7;
             
             // Decrypt
-            aes.Decrypt(nonce, ciphertext, tag, plaintextBytes);
+            using var decryptor = aes.CreateDecryptor();
+            var plaintextBytes = decryptor.TransformFinalBlock(ciphertext, 0, ciphertext.Length);
             
             // Convert to string
             var plaintext = Encoding.UTF8.GetString(plaintextBytes);

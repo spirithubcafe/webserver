@@ -2,7 +2,8 @@
 bin/
 obj/
 out/
-
+1/
+2/
 # User-specific files
 *.rsuser
 *.suo

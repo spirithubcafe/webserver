@@ -147,17 +147,17 @@ public class PaymentGatewayService : IPaymentGatewayService
     {
         try
         {
-            // Convert hex working key to bytes (Bank Muscat provides hex key)
-            var keyBytes = Convert.FromHexString(workingKey);
-            
-            // Generate random 12-byte nonce for AES-GCM
+            // Generate random 12-byte nonce for AES-GCM (exactly like Go code)
             var nonce = new byte[12];
             using (var rng = RandomNumberGenerator.Create())
             {
                 rng.GetBytes(nonce);
             }
 
-            // Create AES-GCM cipher with 16-byte authentication tag
+            // Working key is hex string - decode to bytes like Go code: hex.DecodeString(Bmpg.WorkingKey)
+            var keyBytes = Convert.FromHexString(workingKey);
+
+            // Create AES-GCM cipher (exactly like Go code)
             using var aes = new AesGcm(keyBytes, 16);
             
             // Prepare plaintext bytes
@@ -167,16 +167,16 @@ public class PaymentGatewayService : IPaymentGatewayService
             var ciphertext = new byte[plaintextBytes.Length];
             var tag = new byte[16];
             
-            // Encrypt using AES-256-GCM
+            // Encrypt using AES-256-GCM (exactly like Go code)
             aes.Encrypt(nonce, plaintextBytes, ciphertext, tag);
             
-            // Combine nonce + ciphertext + tag (Bank Muscat format)
+            // Combine nonce + ciphertext + tag (exactly like Go code format)
             var result = new byte[nonce.Length + ciphertext.Length + tag.Length];
             Array.Copy(nonce, 0, result, 0, nonce.Length);
             Array.Copy(ciphertext, 0, result, nonce.Length, ciphertext.Length);
             Array.Copy(tag, 0, result, nonce.Length + ciphertext.Length, tag.Length);
             
-            // Return as lowercase hex string
+            // Return as lowercase hex string (exactly like Go code)
             return Convert.ToHexString(result).ToLower();
         }
         catch (Exception ex)
@@ -191,20 +191,21 @@ public class PaymentGatewayService : IPaymentGatewayService
         {
             // Convert hex strings to bytes
             var encryptedData = Convert.FromHexString(encData);
+            // Working key is hex string - decode to bytes like Go code: hex.DecodeString(Bmpg.WorkingKey)
             var keyBytes = Convert.FromHexString(workingKey);
             
-            // Extract components from Bank Muscat format
+            // Extract components from Bank Muscat format (exactly like Go code)
             var nonce = encryptedData[..12]; // First 12 bytes
             var tag = encryptedData[^16..]; // Last 16 bytes  
             var ciphertext = encryptedData[12..^16]; // Middle part
             
-            // Create AES-GCM cipher
+            // Create AES-GCM cipher (exactly like Go code)
             using var aes = new AesGcm(keyBytes, 16);
             
             // Prepare output array
             var plaintextBytes = new byte[ciphertext.Length];
             
-            // Decrypt using AES-256-GCM
+            // Decrypt using AES-256-GCM (exactly like Go code)
             aes.Decrypt(nonce, ciphertext, tag, plaintextBytes);
             
             // Convert to string

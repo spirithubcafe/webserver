@@ -2,7 +2,6 @@
 @using SpirithubCafe.Application.Services
 @using SpirithubCafe.Web.Services
 @inject IPaymentGatewayService PaymentGatewayService
-@inject PaymentGatewaySettingsService PaymentGatewaySettingsService
 @rendermode InteractiveServer
 
 <div class="container mx-auto px-4 py-8">
@@ -35,13 +34,13 @@
                 return;
             }
 
-            // Test data exactly like what would be sent
+            // Test data exactly like Go code structure
             var paymentParameters = new Dictionary<string, string>
             {
                 {"tid", "123456"},
                 {"merchant_id", gateway.MerchantId},
                 {"order_id", "ORD123456789"},
-                {"amount", "10.50"},
+                {"amount", "10.5"}, // Go uses float32 format
                 {"currency", "OMR"},
                 {"redirect_url", "https://spirithubcafe.com/success"},
                 {"cancel_url", "https://spirithubcafe.com/cancel"},
@@ -49,15 +48,18 @@
                 {"billing_name", "Test Customer"},
                 {"billing_email", "test@example.com"},
                 {"billing_tel", "12345678"},
-                {"merchant_param1", "ORD123456789"},
-                {"merchant_param2", "SpirithubCafe"}
+                {"billing_address", ""},
+                {"billing_city", ""},
+                {"billing_state", ""},
+                {"billing_zip", ""},
+                {"billing_country", "OM"}
             };
 
-            // Create query string
-            var queryString = string.Join("&", paymentParameters.Select(kvp => $"{kvp.Key}={Uri.EscapeDataString(kvp.Value)}"));
+            // Create query string (NO URL encoding for encryption)
+            var queryString = string.Join("&", paymentParameters.OrderBy(kvp => kvp.Key).Select(kvp => $"{kvp.Key}={kvp.Value}"));
             
-            // Test encryption
-            var encrypted = PaymentGatewaySettingsService.EncryptPaymentData(queryString, gateway.WorkingKey);
+            // Test encryption with new AES-CBC method
+            var encrypted = PaymentGatewayService.EncryptPaymentData(queryString, gateway.WorkingKey);
             
             var parametersList = string.Join(Environment.NewLine, paymentParameters.Select(kvp => $"- {kvp.Key}: {kvp.Value}"));
             
