@@ -77,33 +77,43 @@ public class PaymentController : ControllerBase
         {
             var parameters = new Dictionary<string, string>();
             
-            // Get parameters from form data
+            // Get parameters from form data - SmartPay sends POST parameters as per Section 10
             foreach (var key in Request.Form.Keys)
             {
                 parameters[key] = Request.Form[key].ToString();
             }
 
-            // Validate callback
-            if (!await _gatewayService.ValidateCallbackAsync(parameters))
+            _logger.LogInformation("SmartPay callback received with parameters: {Parameters}",
+                string.Join(", ", parameters.Where(kv => kv.Key != "encResponse").Select(kv => $"{kv.Key}={kv.Value}")));
+
+            // Validate required parameters as per Section 10: order_id and encResponse
+            if (!parameters.ContainsKey("order_id") || !parameters.ContainsKey("encResponse"))
             {
-                _logger.LogWarning("Invalid payment callback received");
-                return BadRequest("Invalid callback");
+                _logger.LogWarning("Invalid SmartPay callback - missing required parameters (order_id or encResponse)");
+                return BadRequest("Invalid callback - missing required parameters");
             }
 
-            // Process callback
+            // Validate callback format
+            if (!await _gatewayService.ValidateCallbackAsync(parameters))
+            {
+                _logger.LogWarning("SmartPay callback validation failed for order {OrderId}", parameters.GetValueOrDefault("order_id"));
+                return BadRequest("Invalid callback signature");
+            }
+
+            // Process callback according to SmartPay documentation
             var callbackDto = await _gatewayService.ProcessCallbackAsync(parameters);
             
             // Update payment status
             var payment = await _paymentService.UpdatePaymentStatusAsync(callbackDto.PaymentReference, callbackDto);
 
-            _logger.LogInformation("Payment {PaymentReference} updated to status {Status}", 
+            _logger.LogInformation("SmartPay payment {PaymentReference} processed successfully with status {Status}", 
                 callbackDto.PaymentReference, callbackDto.Status);
 
             return Ok("Callback processed successfully");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error processing payment callback");
+            _logger.LogError(ex, "Error processing SmartPay callback");
             return StatusCode(500, "An error occurred while processing callback");
         }
     }
@@ -127,14 +137,17 @@ public class PaymentController : ControllerBase
                 parameters[key] = Request.Form[key].ToString();
             }
 
-            _logger.LogInformation("Payment success callback received with parameters: {Parameters}", 
-                string.Join(", ", parameters.Select(kv => $"{kv.Key}={kv.Value}")));
+            _logger.LogInformation("SmartPay success callback received with parameters: {Parameters}", 
+                string.Join(", ", parameters.Where(kv => kv.Key != "encResponse").Select(kv => $"{kv.Key}={kv.Value}")));
 
-            // Process the callback if we have encrypted response
-            if (parameters.ContainsKey("encResp"))
+            // Process the callback if we have encrypted response as per Section 10
+            if (parameters.ContainsKey("encResponse") && parameters.ContainsKey("order_id"))
             {
                 var callbackDto = await _gatewayService.ProcessCallbackAsync(parameters);
                 await _paymentService.UpdatePaymentStatusAsync(callbackDto.PaymentReference, callbackDto);
+                
+                _logger.LogInformation("SmartPay success: Payment {OrderId} status updated to {Status}", 
+                    parameters["order_id"], callbackDto.Status);
             }
 
             // Redirect to success page with parameters
@@ -143,7 +156,7 @@ public class PaymentController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error processing payment success callback");
+            _logger.LogError(ex, "Error processing SmartPay success callback");
             return Redirect("/payment/cancel");
         }
     }
@@ -167,14 +180,17 @@ public class PaymentController : ControllerBase
                 parameters[key] = Request.Form[key].ToString();
             }
 
-            _logger.LogInformation("Payment cancel callback received with parameters: {Parameters}", 
-                string.Join(", ", parameters.Select(kv => $"{kv.Key}={kv.Value}")));
+            _logger.LogInformation("SmartPay cancel callback received with parameters: {Parameters}", 
+                string.Join(", ", parameters.Where(kv => kv.Key != "encResponse").Select(kv => $"{kv.Key}={kv.Value}")));
 
-            // Process the callback if we have encrypted response
-            if (parameters.ContainsKey("encResp"))
+            // Process the callback if we have encrypted response as per Section 10
+            if (parameters.ContainsKey("encResponse") && parameters.ContainsKey("order_id"))
             {
                 var callbackDto = await _gatewayService.ProcessCallbackAsync(parameters);
                 await _paymentService.UpdatePaymentStatusAsync(callbackDto.PaymentReference, callbackDto);
+                
+                _logger.LogInformation("SmartPay cancel: Payment {OrderId} status updated to {Status}", 
+                    parameters["order_id"], callbackDto.Status);
             }
 
             // Redirect to cancel page with parameters
@@ -183,7 +199,7 @@ public class PaymentController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error processing payment cancel callback");
+            _logger.LogError(ex, "Error processing SmartPay cancel callback");
             return Redirect("/payment/cancel");
         }
     }

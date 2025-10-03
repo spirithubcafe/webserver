@@ -151,54 +151,12 @@
         var random = new Random();
         var trackingId = random.Next(100000, 999999);
         
-        // Create complete payment parameters exactly like Go merchantData struct
-        var paymentParameters = new Dictionary<string, string>
-        {
-            {"tid", trackingId.ToString()},
-            {"merchant_id", gateway.MerchantId},
-            {"order_id", paymentRequest.PaymentReference},
-            {"amount", paymentRequest.Amount.ToString("F1")}, // Go uses float32 format
-            {"currency", paymentRequest.Currency},
-            {"redirect_url", paymentRequest.ReturnUrl},
-            {"cancel_url", paymentRequest.CancelUrl},
-            {"language", "EN"},
-            // Billing fields - all required by Go struct
-            {"billing_name", paymentRequest.CustomerName ?? ""},
-            {"billing_address", ""},
-            {"billing_city", ""},
-            {"billing_state", ""},
-            {"billing_country", "OM"},
-            {"billing_email", paymentRequest.CustomerEmail ?? ""},
-            {"billing_zip", ""},
-            {"billing_tel", paymentRequest.CustomerPhone ?? ""},
-            // Delivery fields - all required by Go struct  
-            {"delivery_name", ""},
-            {"delivery_address", ""},
-            {"delivery_city", ""},
-            {"delivery_state", ""},
-            {"delivery_country", ""},
-            {"delivery_zip", ""},
-            {"delivery_tel", ""},
-            // Merchant parameters - all optional but must be present
-            {"merchant_param1", ""},
-            {"merchant_param2", ""},
-            {"merchant_param3", ""},
-            {"merchant_param4", ""},
-            {"merchant_param5", ""},
-            {"promo_code", ""},
-            {"customer_identifier", ""}
-        };
-
-        // Convert to query string exactly like Go mapToString function
-        // Go doesn't sort - it iterates through map randomly, but we'll keep consistent order
-        var queryString = string.Join("&", paymentParameters.Select(kvp => $"{kvp.Key}={Uri.EscapeDataString(kvp.Value)}"));
+        // Use the updated PaymentGatewayService that follows official SmartPay documentation
+        Logger.LogInformation("Generating payment URL for order {OrderId} with amount {Amount}", 
+            paymentRequest.PaymentReference, paymentRequest.Amount);
         
-        // Log for debugging
-        Logger.LogInformation("Payment data to encrypt: {QueryString}", queryString);
-        Logger.LogInformation("Working key length: {Length}", gateway.WorkingKey?.Length);
-        
-        // Encrypt like getAES256GCMEncrypted in Go
-        encryptedRequest = PaymentGatewayService.EncryptPaymentData(queryString, gateway.WorkingKey);
+        // Generate encrypted request using official SmartPay format
+        encryptedRequest = await PaymentGatewayService.GeneratePaymentUrlAsync(paymentRequest);
         
         // Log encrypted result
         Logger.LogInformation("Encrypted request length: {Length}", encryptedRequest?.Length);

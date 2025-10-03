@@ -1,9 +1,15 @@
+@page "/payment-success"
 @page "/checkout/payment-success"
+@using SpirithubCafe.Application.Interfaces
 @using SpirithubCafe.Application.Services
-@using Microsoft.AspNetCore.Components
+@using SpirithubCafe.Web.Services
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject IPaymentGatewayService PaymentGatewayService
 @inject IPaymentService PaymentService
 @inject ICheckoutService CheckoutService
 @inject NavigationManager Navigation
+@inject ILogger<PaymentSuccess> Logger
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
 <div class="min-h-screen bg-gray-50 py-12">
@@ -125,23 +131,37 @@
     
     protected override async Task OnInitializedAsync()
     {
-        if (string.IsNullOrEmpty(PaymentRef))
-        {
-            Navigation.NavigateTo("/");
-            return;
-        }
-        
         try
         {
-            payment = await PaymentService.GetPaymentByReferenceAsync(PaymentRef);
-            if (payment != null)
+            // Get query parameters from the current URL like PHP $_REQUEST
+            var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+            var queryParams = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+
+            // Convert to simple dictionary like PHP does
+            var parameters = new Dictionary<string, string>();
+            foreach (var kvp in queryParams)
             {
-                order = await CheckoutService.GetOrderByIdAsync(payment.OrderId);
-                paymentVerified = payment.Status == "Completed" || payment.Status == "Paid";
+                parameters[kvp.Key] = kvp.Value.ToString();
             }
+
+            // Process the payment callback like PHP CompletePurchaseResponse
+            var callback = await PaymentGatewayService.ProcessCallbackAsync(parameters);
+            
+            // Update payment status
+            if (!string.IsNullOrEmpty(callback.PaymentReference))
+            {
+                payment = await PaymentService.UpdatePaymentStatusAsync(callback.PaymentReference, callback);
+                if (payment != null)
+                {
+                    order = await CheckoutService.GetOrderByIdAsync(payment.OrderId);
+                }
+            }
+
+            paymentVerified = callback.Status == "Completed";
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            Logger.LogError(ex, "Error processing payment callback");
             paymentVerified = false;
         }
         finally

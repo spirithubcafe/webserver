@@ -321,46 +321,14 @@
     {
         try
         {
-            isLoading = true;
-            StateHasChanged();
-
-            // Call payment initiation API
-            var httpClient = new HttpClient { BaseAddress = new Uri(Navigation.BaseUri) };
-            var response = await httpClient.GetAsync($"/api/payment/initiate/{orderId}");
-            
-            if (response.IsSuccessStatusCode)
-            {
-                var paymentData = await response.Content.ReadFromJsonAsync<PaymentInitiationResponse>();
-                if (paymentData != null && !string.IsNullOrEmpty(paymentData.PaymentUrl))
-                {
-                    // Redirect to payment gateway
-                    Navigation.NavigateTo(paymentData.PaymentUrl, forceLoad: true);
-                }
-                else
-                {
-                    await JSRuntime.InvokeVoidAsync("alert", "Failed to initiate payment. Please try again.");
-                }
-            }
-            else
-            {
-                var error = await response.Content.ReadAsStringAsync();
-                await JSRuntime.InvokeVoidAsync("alert", $"Payment initiation failed: {error}");
-            }
+            // Navigate directly to the payment redirect page with the order ID
+            Navigation.NavigateTo($"/payment-redirect/{orderId}");
         }
         catch (Exception ex)
         {
             await JSRuntime.InvokeVoidAsync("alert", $"Error initiating payment: {ex.Message}");
         }
-        finally
-        {
-            isLoading = false;
-            StateHasChanged();
-        }
     }
 
-    public class PaymentInitiationResponse
-    {
-        public string PaymentUrl { get; set; } = string.Empty;
-        public string PaymentReference { get; set; } = string.Empty;
-    }
+
 }

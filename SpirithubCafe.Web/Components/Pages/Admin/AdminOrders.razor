@@ -196,6 +196,11 @@
                                     <div class="flex space-x-2">
                                         <button @onclick="@(() => ViewOrderDetails(order.OrderNumber))"
                                                 class="text-blue-600 hover:text-blue-900">View</button>
+                                        @if (order.PaymentStatus == "Unpaid" || order.PaymentStatus == "Failed")
+                                        {
+                                            <button @onclick="@(() => InitiatePaymentForOrder(order.Id))"
+                                                    class="text-green-600 hover:text-green-900">Pay</button>
+                                        }
                                         @if (order.Status == "Pending")
                                         {
                                             <button @onclick="@(() => UpdateOrderStatus(order.Id, "Processing"))"
@@ -486,5 +491,18 @@
             "pending" => "Processing",
             _ => "Unknown"
         };
+    }
+
+    private async Task InitiatePaymentForOrder(int orderId)
+    {
+        try
+        {
+            // Navigate to the payment redirect page for this order
+            NavigationManager.NavigateTo($"/payment-redirect/{orderId}");
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error initiating payment: {ex.Message}");
+        }
     }
 }
