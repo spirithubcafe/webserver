@@ -78,21 +78,21 @@ public class PaymentGatewaySettingsService
     {
         var defaultSettings = new PaymentGatewaySettings
         {
-            GatewayName = "Bank Muscat",
-            Title = "Bank Muscat",
-            Description = "Pay securely by Credit or Debit card or internet banking through Bank Muscat Secure Servers.",
-            IsEnabled = false,
-            MerchantId = "224",
-            AccessCode = "AVDP00LA16BE47PDEB",
-            WorkingKey = "841FEAE32609C3E892C4D0B1393A7ACC",
-            IsSandboxMode = true,
-            LiveGatewayUrl = "https://secure.checkout.visa.com/payment/",
-            SandboxGatewayUrl = "https://secure.checkout.visa.com/payment/",
-            ReturnUrl = "/api/payment/callback/success",
-            CancelUrl = "/api/payment/callback/cancel",
-            Currency = "OMR",
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
+                GatewayName = "Bank Muscat",
+                Title = "Bank Muscat",
+                Description = "Pay securely by Credit or Debit card or internet banking through Bank Muscat Secure Servers.",
+                IsEnabled = false,
+                MerchantId = "224",
+                AccessCode = "AVDP00LA16BE47PDEB",
+                WorkingKey = "841FEAE32609C3E892C4D0B1393A7ACC",
+                IsSandboxMode = true,
+                LiveGatewayUrl = "https://smartpaytrns.bankmuscat.com/transaction.do?command=initiateTransaction",
+                SandboxGatewayUrl = "https://mti.bankmuscat.com:6443/transaction.do?command=initiateTransaction",
+                Currency = "OMR",
+                ReturnUrl = "/api/payment/callback/success",
+                CancelUrl = "/api/payment/callback/cancel",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
         };
 
         _context.PaymentGatewaySettings.Add(defaultSettings);

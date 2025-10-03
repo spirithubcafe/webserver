@@ -1,0 +1,96 @@
+@page "/debug-bankmuscat"
+@using SpirithubCafe.Application.Services
+@using SpirithubCafe.Web.Services
+@inject IPaymentGatewayService PaymentGatewayService
+@inject PaymentGatewaySettingsService PaymentGatewaySettingsService
+@rendermode InteractiveServer
+
+<div class="container mx-auto px-4 py-8">
+    <h2 class="text-2xl font-bold mb-4">Bank Muscat Debug</h2>
+    
+    @if (!string.IsNullOrEmpty(debugResult))
+    {
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+            <h3 class="font-semibold mb-2">Debug Results:</h3>
+            <pre class="text-sm overflow-auto whitespace-pre-wrap">@debugResult</pre>
+        </div>
+    }
+
+    <button class="bg-blue-600 text-white px-4 py-2 rounded" @onclick="DebugEncryption">
+        Debug Encryption
+    </button>
+</div>
+
+@code {
+    private string debugResult = "";
+
+    private async Task DebugEncryption()
+    {
+        try
+        {
+            var gateway = await PaymentGatewayService.GetActiveGatewayAsync();
+            if (gateway == null)
+            {
+                debugResult = "No gateway configured";
+                return;
+            }
+
+            // Test data exactly like what would be sent
+            var paymentParameters = new Dictionary<string, string>
+            {
+                {"tid", "123456"},
+                {"merchant_id", gateway.MerchantId},
+                {"order_id", "ORD123456789"},
+                {"amount", "10.50"},
+                {"currency", "OMR"},
+                {"redirect_url", "https://spirithubcafe.com/success"},
+                {"cancel_url", "https://spirithubcafe.com/cancel"},
+                {"language", "EN"},
+                {"billing_name", "Test Customer"},
+                {"billing_email", "test@example.com"},
+                {"billing_tel", "12345678"},
+                {"merchant_param1", "ORD123456789"},
+                {"merchant_param2", "SpirithubCafe"}
+            };
+
+            // Create query string
+            var queryString = string.Join("&", paymentParameters.Select(kvp => $"{kvp.Key}={Uri.EscapeDataString(kvp.Value)}"));
+            
+            // Test encryption
+            var encrypted = PaymentGatewaySettingsService.EncryptPaymentData(queryString, gateway.WorkingKey);
+            
+            var parametersList = string.Join(Environment.NewLine, paymentParameters.Select(kvp => $"- {kvp.Key}: {kvp.Value}"));
+            
+            debugResult = $@"Gateway Settings:
+- Merchant ID: {gateway.MerchantId}
+- Access Code: {gateway.AccessCode}
+- Working Key: {gateway.WorkingKey}
+- Gateway URL: {(gateway.IsSandboxMode ? gateway.SandboxGatewayUrl : gateway.LiveGatewayUrl)}
+- Is Sandbox: {gateway.IsSandboxMode}
+
+Payment Parameters:
+{parametersList}
+
+Query String:
+{queryString}
+
+Query String Length: {queryString.Length}
+
+Encrypted Data:
+{encrypted}
+
+Encrypted Length: {encrypted.Length}
+
+Working Key Length: {gateway.WorkingKey.Length}
+
+Form Data that would be sent:
+- encRequest: {encrypted}
+- access_code: {gateway.AccessCode}";
+
+        }
+        catch (Exception ex)
+        {
+            debugResult = $"Error: {ex.Message}\n\nStack Trace:\n{ex.StackTrace}";
+        }
+    }
+}

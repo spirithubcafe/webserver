@@ -160,19 +160,32 @@
             {"currency", paymentRequest.Currency},
             {"redirect_url", paymentRequest.ReturnUrl},
             {"cancel_url", paymentRequest.CancelUrl},
-            {"language", "EN"}, // Like in Go code
+            {"language", "EN"}, 
             {"billing_name", paymentRequest.CustomerName},
             {"billing_email", paymentRequest.CustomerEmail},
             {"billing_tel", paymentRequest.CustomerPhone ?? ""},
+            {"billing_address", ""}, // Add missing fields commonly required
+            {"billing_city", ""}, 
+            {"billing_state", ""},
+            {"billing_zip", ""},
+            {"billing_country", "OM"},
             {"merchant_param1", paymentRequest.PaymentReference},
             {"merchant_param2", "SpirithubCafe"}
         };
 
-        // Convert to query string like mapToString function in Go
-        var queryString = string.Join("&", paymentParameters.Select(kvp => $"{kvp.Key}={Uri.EscapeDataString(kvp.Value)}"));
+        // Convert to query string like mapToString function in Go - MUST sort keys alphabetically
+        var sortedParams = paymentParameters.OrderBy(kvp => kvp.Key);
+        var queryString = string.Join("&", sortedParams.Select(kvp => $"{kvp.Key}={kvp.Value}"));
+        
+        // Log for debugging
+        Logger.LogInformation("Payment data to encrypt: {QueryString}", queryString);
+        Logger.LogInformation("Working key length: {Length}", gateway.WorkingKey?.Length);
         
         // Encrypt like getAES256GCMEncrypted in Go
         encryptedRequest = PaymentGatewayService.EncryptPaymentData(queryString, gateway.WorkingKey);
+        
+        // Log encrypted result
+        Logger.LogInformation("Encrypted request length: {Length}", encryptedRequest?.Length);
         
         // Set gateway URL and access code
         gatewayUrl = gateway.IsSandboxMode ? gateway.SandboxGatewayUrl : gateway.LiveGatewayUrl;
