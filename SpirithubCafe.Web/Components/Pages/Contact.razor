@@ -7,20 +7,24 @@
 @using SpirithubCafe.Web.Services
 @using SpirithubCafe.Web.Components.Shared
 @using static SpirithubCafe.Web.Services.ToastService
+@using Microsoft.Extensions.Localization
+@using System.ComponentModel.DataAnnotations
+@using SpirithubCafe.Application.DTOs
 @inject ContactService ContactService
 @inject ToastService ToastService
+@inject IStringLocalizer<SpirithubCafe.Langs.Resources> Resources
 
-<PageTitle>Contact Us - SpirithubCafe</PageTitle>
+<PageTitle>@Resources["Contact"] - @Resources["BrandName"]</PageTitle>
 
 <!-- Hero Section -->
 <section class="relative bg-gradient-to-br from-amber-50 to-amber-100 py-20">
     <div class="absolute inset-0 bg-black bg-opacity-5"></div>
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-            Get in <span class="text-amber-600">Touch</span>
+            @Resources["GetInTouch"]
         </h1>
         <p class="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+            @Resources["ContactUsDescription"]
         </p>
     </div>
 </section>
@@ -32,9 +36,9 @@
             <!-- Contact Form -->
             <div class="space-y-8">
                 <div>
-                    <h2 class="text-3xl font-bold text-gray-900 mb-6">Send us a Message</h2>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6">@Resources["SendUsMessage"]</h2>
                     <p class="text-lg text-gray-600 mb-8">
-                        Have a question about our coffee? Need help with your order? We're here to help!
+                        @Resources["ContactFormDescription"]
                     </p>
                 </div>
                 
@@ -51,63 +55,69 @@
                     }
                     
                     <!-- Name -->
+                    <!-- Name Field -->
                     <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-                            Full Name *
+                        <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">
+                            @Resources["FullName"] *
                         </label>
                         <InputText @bind-Value="contactForm.Name"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors duration-200"
-                            placeholder="Ahmed Al-Rashid" />
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                            placeholder="@Resources["FullName"]"
+                            id="name" />
                         @if (hasAttemptedSubmit)
                         {
                             <ValidationMessage For="() => contactForm.Name" class="text-red-600 text-sm mt-1" />
                         }
                     </div>
-                    
-                    <!-- Email -->
+
+                    <!-- Email Field -->
                     <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                            Email Address *
+                        <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
+                            @Resources["EmailAddress"] *
                         </label>
                         <InputText @bind-Value="contactForm.Email"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors duration-200"
-                            placeholder="ahmed@example.com" />
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                            placeholder="@Resources["EmailAddress"]"
+                            type="email"
+                            id="email" />
                         @if (hasAttemptedSubmit)
                         {
                             <ValidationMessage For="() => contactForm.Email" class="text-red-600 text-sm mt-1" />
                         }
                     </div>
-                    
-                    <!-- Subject -->
+
+                    <!-- Subject Field -->
                     <div>
-                        <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">
-                            Subject *
+                        <label for="subject" class="block text-sm font-semibold text-gray-700 mb-2">
+                            @Resources["Subject"] *
                         </label>
                         <InputSelect @bind-Value="contactForm.Subject"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors duration-200">
-                            <option value="">Select a subject</option>
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                            id="subject">
+                            <option value="">@Resources["Subject"]</option>
                             <option value="General Inquiry">General Inquiry</option>
                             <option value="Order Support">Order Support</option>
-                            <option value="Product Question">Product Question</option>
-                            <option value="Shipping & Delivery">Shipping & Delivery</option>
-                            <option value="Wholesale Opportunities">Wholesale Opportunities</option>
-                            <option value="Feedback & Suggestions">Feedback & Suggestions</option>
+                            <option value="Product Information">Product Information</option>
+                            <option value="Shipping Question">Shipping Question</option>
+                            <option value="Feedback">Feedback</option>
+                            <option value="Other">Other</option>
                         </InputSelect>
                         @if (hasAttemptedSubmit)
                         {
                             <ValidationMessage For="() => contactForm.Subject" class="text-red-600 text-sm mt-1" />
                         }
                     </div>
-                    
-                    <!-- Message -->
+
+                    <!-- Message Field -->
                     <div>
-                        <label for="message" class="block text-sm font-medium text-gray-700 mb-2">
-                            Message *
+                        <label for="message" class="block text-sm font-semibold text-gray-700 mb-2">
+                            @Resources["YourMessage"] *
                         </label>
                         <InputTextArea @bind-Value="contactForm.Message"
                             rows="6"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors duration-200 resize-none"
-                            placeholder="Tell us how we can help you..." />
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors resize-none"
+                            placeholder="@Resources["YourMessage"]"
+                            id="message" />
                         @if (hasAttemptedSubmit)
                         {
                             <ValidationMessage For="() => contactForm.Message" class="text-red-600 text-sm mt-1" />
@@ -143,9 +153,9 @@
             <!-- Contact Information -->
             <div class="space-y-8">
                 <div>
-                    <h2 class="text-3xl font-bold text-gray-900 mb-6">Contact Information</h2>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6">@Resources["ContactInfoTitle"]</h2>
                     <p class="text-lg text-gray-600 mb-8">
-                        Reach out to us through any of these channels. We're always happy to help!
+                        @Resources["ContactFormDescription"]
                     </p>
                 </div>
                 
@@ -161,7 +171,7 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-900 mb-2">Visit Our Office</h3>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">@Resources["VisitUsTitle"]</h3>
                                 <p class="text-gray-600 leading-relaxed">
                                     Al Mouj St<br/>
                                     Muscat<br/>
@@ -180,7 +190,7 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-900 mb-2">Call Us</h3>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">@Resources["CallUsTitle"]</h3>
                                 <p class="text-gray-600">
                                     <a href="tel:+96891900005" class="hover:text-green-600 transition-colors duration-200">
                                         +968 9190 0005
@@ -207,7 +217,7 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-900 mb-2">Email Us</h3>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">@Resources["EmailUsTitle"]</h3>
                                 <p class="text-gray-600">
                                     <a href="mailto:info@spirithubcafe.com" class="hover:text-blue-600 transition-colors duration-200">
                                         info@spirithubcafe.com
@@ -408,7 +418,7 @@
 </section>
 
 @code {
-    private ContactFormSubmission contactForm = new();
+    private ContactFormModel contactForm = new();
     private EditContext? editContext;
     private ValidationMessageStore? messageStore;
     private bool isSubmitting = false;
@@ -419,56 +429,86 @@
     protected override void OnInitialized()
     {
         editContext = new(contactForm);
+        editContext.OnValidationRequested += HandleValidationRequested;
+        editContext.OnFieldChanged += HandleFieldChanged;
         messageStore = new(editContext);
+    }
+
+    private void HandleValidationRequested(object? sender, ValidationRequestedEventArgs e)
+    {
+        messageStore?.Clear();
+    }
+
+    private void HandleFieldChanged(object? sender, FieldChangedEventArgs e)
+    {
+        messageStore?.Clear(e.FieldIdentifier);
+        hasAttemptedSubmit = false;
     }
 
     private async Task SubmitContactForm()
     {
+        if (isSubmitting) return;
+
+        isSubmitting = true;
         hasAttemptedSubmit = true;
-        
-        if (editContext == null || !editContext.Validate())
-        {
-            return;
-        }
+        StateHasChanged();
 
         try
         {
-            isSubmitting = true;
-            statusMessage = "";
-            
-            var result = await ContactService.SubmitContactFormAsync(contactForm);
-            
+            var submission = new ContactFormSubmission
+            {
+                Name = contactForm.Name,
+                Email = contactForm.Email,
+                Subject = contactForm.Subject,
+                Message = contactForm.Message
+            };
+
+            var result = await ContactService.SubmitContactFormAsync(submission);
+
             if (result.IsSuccess)
             {
-                isSuccess = true;
-                statusMessage = result.Message;
+                ToastService?.ShowSuccess(result.Message ?? Resources["MessageSentSuccessfully"]);
                 
-                // Clear the form and reset state
-                contactForm = new();
-                editContext = new(contactForm);
-                messageStore = new(editContext);
+                // Clear the form
+                contactForm = new ContactFormModel();
+                editContext = new EditContext(contactForm);
+                editContext.OnValidationRequested += HandleValidationRequested;
+                editContext.OnFieldChanged += HandleFieldChanged;
                 hasAttemptedSubmit = false;
             }
             else
             {
-                isSuccess = false;
-                statusMessage = result.Message;
-                
-                if (result.Errors.Any())
-                {
-                    statusMessage += " " + string.Join(" ", result.Errors);
-                }
+                var errorMessage = result.Message ?? Resources["MessageSendError"];
+                ToastService?.ShowError(errorMessage);
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            isSuccess = false;
-            statusMessage = "An unexpected error occurred. Please try again later.";
+            ToastService?.ShowError($"{Resources["MessageSendError"]}: {ex.Message}");
         }
         finally
         {
             isSubmitting = false;
             StateHasChanged();
         }
+    }
+
+    public class ContactFormModel
+    {
+        [Required(ErrorMessage = "Name is required")]
+        [StringLength(100, ErrorMessage = "Name cannot exceed 100 characters")]
+        public string Name { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email address")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Subject is required")]
+        [StringLength(200, ErrorMessage = "Subject cannot exceed 200 characters")]
+        public string Subject { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Message is required")]
+        [StringLength(2000, ErrorMessage = "Message cannot exceed 2000 characters")]
+        public string Message { get; set; } = string.Empty;
     }
 }

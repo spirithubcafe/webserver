@@ -1658,4 +1658,54 @@
   <data name="ErrorTestingConnection" xml:space="preserve">
     <value>خطأ في اختبار الاتصال</value>
   </data>
+
+  <!-- Contact Form -->
+  <data name="GetInTouch" xml:space="preserve">
+    <value>تواصل معنا</value>
+  </data>
+  <data name="ContactUsDescription" xml:space="preserve">
+    <value>نحب أن نسمع منك. أرسل لنا رسالة وسنرد عليك في أقرب وقت ممكن.</value>
+  </data>
+  <data name="SendUsMessage" xml:space="preserve">
+    <value>أرسل لنا رسالة</value>
+  </data>
+  <data name="ContactFormDescription" xml:space="preserve">
+    <value>لديك سؤال حول قهوتنا؟ تحتاج مساعدة في طلبك؟ نحن هنا لمساعدتك!</value>
+  </data>
+  <data name="FullName" xml:space="preserve">
+    <value>الاسم الكامل</value>
+  </data>
+  <data name="EmailAddress" xml:space="preserve">
+    <value>البريد الإلكتروني</value>
+  </data>
+  <data name="Subject" xml:space="preserve">
+    <value>الموضوع</value>
+  </data>
+  <data name="YourMessage" xml:space="preserve">
+    <value>رسالتك</value>
+  </data>
+  <data name="SendMessage" xml:space="preserve">
+    <value>إرسال الرسالة</value>
+  </data>
+  <data name="Sending" xml:space="preserve">
+    <value>جاري الإرسال...</value>
+  </data>
+  <data name="MessageSentSuccessfully" xml:space="preserve">
+    <value>شكرا لك! تم استلام رسالتك وسنتواصل معك قريباً.</value>
+  </data>
+  <data name="MessageSendError" xml:space="preserve">
+    <value>حدث خطأ أثناء معالجة رسالتك. يرجى المحاولة مرة أخرى لاحقاً.</value>
+  </data>
+  <data name="ContactInfoTitle" xml:space="preserve">
+    <value>معلومات الاتصال</value>
+  </data>
+  <data name="VisitUsTitle" xml:space="preserve">
+    <value>زورونا</value>
+  </data>
+  <data name="CallUsTitle" xml:space="preserve">
+    <value>اتصل بنا</value>
+  </data>
+  <data name="EmailUsTitle" xml:space="preserve">
+    <value>راسلنا</value>
+  </data>
 </root>

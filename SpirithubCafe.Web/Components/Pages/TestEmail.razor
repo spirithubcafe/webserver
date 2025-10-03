@@ -1,0 +1,63 @@
+@page "/test-email"
+@rendermode InteractiveServer
+@using SpirithubCafe.Application.Services
+@inject IEmailService EmailService
+
+<h3>Email Test</h3>
+
+<div class="p-4">
+    <input @bind="testEmail" placeholder="Enter test email" class="form-control mb-2" />
+    <button @onclick="SendTestEmail" disabled="@isTesting" class="btn btn-primary">
+        @(isTesting ? "Sending..." : "Send Test Email")
+    </button>
+    
+    @if (!string.IsNullOrEmpty(testResult))
+    {
+        <div class="alert @(testSuccess ? "alert-success" : "alert-danger") mt-3">
+            @testResult
+        </div>
+    }
+</div>
+
+@code {
+    private string testEmail = "";
+    private bool isTesting = false;
+    private string testResult = "";
+    private bool testSuccess = false;
+
+    private async Task SendTestEmail()
+    {
+        if (string.IsNullOrWhiteSpace(testEmail))
+        {
+            testResult = "Please enter an email address";
+            testSuccess = false;
+            return;
+        }
+
+        try
+        {
+            isTesting = true;
+            testResult = "";
+            StateHasChanged();
+
+            await EmailService.SendEmailAsync(
+                testEmail, 
+                "Test Email from SpirithubCafe", 
+                "<h1>Test Email</h1><p>This is a test email from SpirithubCafe contact form system.</p>"
+            );
+
+            testResult = "Email sent successfully!";
+            testSuccess = true;
+        }
+        catch (Exception ex)
+        {
+            testResult = $"Error: {ex.Message}";
+            testSuccess = false;
+        }
+        finally
+        {
+            isTesting = false;
+            StateHasChanged();
+        }
+    }
+}

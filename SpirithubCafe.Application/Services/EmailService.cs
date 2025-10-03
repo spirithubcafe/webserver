@@ -60,6 +60,7 @@ public class SmtpEmailService : IEmailService
             client.EnableSsl = _enableSsl;
             client.UseDefaultCredentials = false;
             client.Credentials = new NetworkCredential(_username, _password);
+            client.Timeout = 5000; // 5 seconds timeout
 
             using var message = new MailMessage();
             message.From = new MailAddress(_fromEmail, _fromName);

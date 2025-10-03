@@ -32,23 +32,37 @@ public class ContactService
                 return ContactSubmissionResult.Error("Please correct the validation errors.", validationResults);
             }
 
-            // Send email to admin
-            await _emailService.SendContactFormEmailAsync(
-                submission.Email,
-                submission.Name,
-                submission.Subject,
-                submission.Message
-            );
+            // Log the contact form submission (always works)
+            _logger.LogInformation("Contact form submitted by {Name} ({Email}) - Subject: {Subject}", 
+                submission.Name, submission.Email, submission.Subject);
 
-            _logger.LogInformation("Contact form submitted successfully by {Name} ({Email})", 
-                submission.Name, submission.Email);
+            // Try to send email in background (don't wait for it)
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await _emailService.SendContactFormEmailAsync(
+                        submission.Email,
+                        submission.Name,
+                        submission.Subject,
+                        submission.Message
+                    );
+                    _logger.LogInformation("Email sent successfully for contact from {Name}", submission.Name);
+                }
+                catch (Exception emailEx)
+                {
+                    _logger.LogError(emailEx, "Failed to send email for contact from {Name} ({Email})", 
+                        submission.Name, submission.Email);
+                }
+            });
 
-            return ContactSubmissionResult.Success("Thank you for your message! We'll get back to you soon.");
+            // Always return success immediately
+            return ContactSubmissionResult.Success("Thank you! Your message has been received and we'll get back to you soon.");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to submit contact form for {Email}", submission.Email);
-            return ContactSubmissionResult.Error("An error occurred while sending your message. Please try again later.");
+            _logger.LogError(ex, "Failed to process contact form for {Email}", submission.Email ?? "unknown");
+            return ContactSubmissionResult.Error("An error occurred while processing your message. Please try again later.");
         }
     }
 

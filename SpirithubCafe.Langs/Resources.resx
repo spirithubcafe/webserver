@@ -1671,4 +1671,54 @@
     <value>Error testing connection</value>
   </data>
 
+  <!-- Contact Form -->
+  <data name="GetInTouch" xml:space="preserve">
+    <value>Get in Touch</value>
+  </data>
+  <data name="ContactUsDescription" xml:space="preserve">
+    <value>We'd love to hear from you. Send us a message and we'll respond as soon as possible.</value>
+  </data>
+  <data name="SendUsMessage" xml:space="preserve">
+    <value>Send us a Message</value>
+  </data>
+  <data name="ContactFormDescription" xml:space="preserve">
+    <value>Have a question about our coffee? Need help with your order? We're here to help!</value>
+  </data>
+  <data name="FullName" xml:space="preserve">
+    <value>Full Name</value>
+  </data>
+  <data name="EmailAddress" xml:space="preserve">
+    <value>Email Address</value>
+  </data>
+  <data name="Subject" xml:space="preserve">
+    <value>Subject</value>
+  </data>
+  <data name="YourMessage" xml:space="preserve">
+    <value>Your Message</value>
+  </data>
+  <data name="SendMessage" xml:space="preserve">
+    <value>Send Message</value>
+  </data>
+  <data name="Sending" xml:space="preserve">
+    <value>Sending...</value>
+  </data>
+  <data name="MessageSentSuccessfully" xml:space="preserve">
+    <value>Thank you! Your message has been received and we'll get back to you soon.</value>
+  </data>
+  <data name="MessageSendError" xml:space="preserve">
+    <value>An error occurred while processing your message. Please try again later.</value>
+  </data>
+  <data name="ContactInfoTitle" xml:space="preserve">
+    <value>Contact Information</value>
+  </data>
+  <data name="VisitUsTitle" xml:space="preserve">
+    <value>Visit Us</value>
+  </data>
+  <data name="CallUsTitle" xml:space="preserve">
+    <value>Call Us</value>
+  </data>
+  <data name="EmailUsTitle" xml:space="preserve">
+    <value>Email Us</value>
+  </data>
+
 </root>
