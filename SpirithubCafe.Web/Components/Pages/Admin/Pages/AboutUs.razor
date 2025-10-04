@@ -558,39 +558,59 @@
 
     private async Task MoveSectionUp(int sectionId)
     {
-        var section = sections.FirstOrDefault(s => s.Id == sectionId);
-        if (section == null || currentSection.DisplayOrder == 1) return;
-
-        var previousSection = sections.FirstOrDefault(s => s.DisplayOrder == currentSection.DisplayOrder - 1);
-        if (previousSection != null)
+        try
         {
-            // Swap display orders
-            var tempOrder = currentSection.DisplayOrder;
-            currentSection.DisplayOrder = previousSection.DisplayOrder;
-            previousSection.DisplayOrder = tempOrder;
+            var section = sections.FirstOrDefault(s => s.Id == sectionId);
+            if (section == null || section.DisplayOrder == 1) return;
 
-            var sectionIds = sections.OrderBy(s => s.DisplayOrder).Select(s => s.Id).ToList();
-            await AboutUsService.ReorderSectionsAsync(sectionIds);
-            await LoadData();
+            var previousSection = sections.FirstOrDefault(s => s.DisplayOrder == section.DisplayOrder - 1);
+            if (previousSection != null)
+            {
+                // Swap display orders
+                var tempOrder = section.DisplayOrder;
+                section.DisplayOrder = previousSection.DisplayOrder;
+                previousSection.DisplayOrder = tempOrder;
+
+                // Update both sections
+                await AboutUsService.UpdateAboutUsSectionAsync(section);
+                await AboutUsService.UpdateAboutUsSectionAsync(previousSection);
+                
+                await LoadData();
+                ToastService.ShowSuccess("Section moved up successfully!");
+            }
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError($"Error moving section: {ex.Message}");
         }
     }
 
     private async Task MoveSectionDown(int sectionId)
     {
-        var section = sections.FirstOrDefault(s => s.Id == sectionId);
-        if (section == null || currentSection.DisplayOrder == sections.Count) return;
-
-        var nextSection = sections.FirstOrDefault(s => s.DisplayOrder == currentSection.DisplayOrder + 1);
-        if (nextSection != null)
+        try
         {
-            // Swap display orders
-            var tempOrder = currentSection.DisplayOrder;
-            currentSection.DisplayOrder = nextSection.DisplayOrder;
-            nextSection.DisplayOrder = tempOrder;
+            var section = sections.FirstOrDefault(s => s.Id == sectionId);
+            if (section == null || section.DisplayOrder == sections.Count) return;
 
-            var sectionIds = sections.OrderBy(s => s.DisplayOrder).Select(s => s.Id).ToList();
-            await AboutUsService.ReorderSectionsAsync(sectionIds);
-            await LoadData();
+            var nextSection = sections.FirstOrDefault(s => s.DisplayOrder == section.DisplayOrder + 1);
+            if (nextSection != null)
+            {
+                // Swap display orders
+                var tempOrder = section.DisplayOrder;
+                section.DisplayOrder = nextSection.DisplayOrder;
+                nextSection.DisplayOrder = tempOrder;
+
+                // Update both sections
+                await AboutUsService.UpdateAboutUsSectionAsync(section);
+                await AboutUsService.UpdateAboutUsSectionAsync(nextSection);
+                
+                await LoadData();
+                ToastService.ShowSuccess("Section moved down successfully!");
+            }
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError($"Error moving section: {ex.Message}");
         }
     }
 

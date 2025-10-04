@@ -94,11 +94,28 @@ public class AboutUsService : IAboutUsService
 
     public async Task<AboutUsSection> UpdateAboutUsSectionAsync(AboutUsSection section)
     {
-        section.UpdatedAt = DateTime.UtcNow;
-        _context.AboutUsSections.Update(section);
+        var existingSection = await _context.AboutUsSections.FindAsync(section.Id);
+        if (existingSection == null)
+            throw new InvalidOperationException($"Section with ID {section.Id} not found");
+
+        // Update all fields explicitly
+        existingSection.Title = section.Title;
+        existingSection.TitleAr = section.TitleAr;
+        existingSection.Content = section.Content;
+        existingSection.ContentAr = section.ContentAr;
+        existingSection.ImagePath = section.ImagePath;
+        existingSection.ImageAlt = section.ImageAlt;
+        existingSection.ImageAltAr = section.ImageAltAr;
+        existingSection.LayoutType = section.LayoutType;
+        existingSection.DisplayOrder = section.DisplayOrder;
+        existingSection.IsActive = section.IsActive;
+        existingSection.BgType = section.BgType;
+        existingSection.BgValue = section.BgValue;
+        existingSection.UpdatedAt = DateTime.UtcNow;
+        
         await _context.SaveChangesAsync();
         
-        return section;
+        return existingSection;
     }
 
     public async Task<bool> DeleteAboutUsSectionAsync(int id)
