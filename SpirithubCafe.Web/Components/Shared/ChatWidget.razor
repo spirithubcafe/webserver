@@ -1,34 +1,57 @@
 @using SpirithubCafe.Web.Services
 @using SpirithubCafe.Domain.Entities
+@using SpirithubCafe.Application.Services
 @using System.Timers
+@using Microsoft.JSInterop
 @inject IChatService ChatService
+@inject ISettingService SettingService
 @inject IStringLocalizer<Resources> Localizer
 @inject ToastService ToastService
+@inject IJSRuntime JSRuntime
 @implements IDisposable
 @rendermode InteractiveServer
+
+@if (isChatWidgetEnabled)
+{
 <div class="fixed bottom-4 right-4 z-50">
     @if (!isExpanded)
     {
         <button @onclick="ToggleChat" 
-                class="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-            <svg class="w-6 h-6" stroke="currentColor"  viewBox="0 0 24 24" fill="none">
-<path d="M13.0867 21.3877L13.7321 21.7697L13.0867 21.3877ZM13.6288 20.4718L12.9833 20.0898L13.6288 20.4718ZM10.3712 20.4718L9.72579 20.8539H9.72579L10.3712 20.4718ZM10.9133 21.3877L11.5587 21.0057L10.9133 21.3877ZM2.3806 15.9134L3.07351 15.6264V15.6264L2.3806 15.9134ZM7.78958 18.9915L7.77666 19.7413L7.78958 18.9915ZM5.08658 18.6194L4.79957 19.3123H4.79957L5.08658 18.6194ZM21.6194 15.9134L22.3123 16.2004V16.2004L21.6194 15.9134ZM16.2104 18.9915L16.1975 18.2416L16.2104 18.9915ZM18.9134 18.6194L19.2004 19.3123H19.2004L18.9134 18.6194ZM19.6125 2.7368L19.2206 3.37628L19.6125 2.7368ZM21.2632 4.38751L21.9027 3.99563V3.99563L21.2632 4.38751ZM4.38751 2.7368L3.99563 2.09732V2.09732L4.38751 2.7368ZM2.7368 4.38751L2.09732 3.99563H2.09732L2.7368 4.38751ZM9.40279 19.2098L9.77986 18.5615L9.77986 18.5615L9.40279 19.2098ZM13.7321 21.7697L14.2742 20.8539L12.9833 20.0898L12.4412 21.0057L13.7321 21.7697ZM9.72579 20.8539L10.2679 21.7697L11.5587 21.0057L11.0166 20.0898L9.72579 20.8539ZM12.4412 21.0057C12.2485 21.3313 11.7515 21.3313 11.5587 21.0057L10.2679 21.7697C11.0415 23.0767 12.9585 23.0767 13.7321 21.7697L12.4412 21.0057ZM10.5 2.75H13.5V1.25H10.5V2.75ZM21.25 10.5V11.5H22.75V10.5H21.25ZM2.75 11.5V10.5H1.25V11.5H2.75ZM1.25 11.5C1.25 12.6546 1.24959 13.5581 1.29931 14.2868C1.3495 15.0223 1.45323 15.6344 1.68769 16.2004L3.07351 15.6264C2.92737 15.2736 2.84081 14.8438 2.79584 14.1847C2.75041 13.5189 2.75 12.6751 2.75 11.5H1.25ZM7.8025 18.2416C6.54706 18.2199 5.88923 18.1401 5.37359 17.9265L4.79957 19.3123C5.60454 19.6457 6.52138 19.7197 7.77666 19.7413L7.8025 18.2416ZM1.68769 16.2004C2.27128 17.6093 3.39066 18.7287 4.79957 19.3123L5.3736 17.9265C4.33223 17.4951 3.50486 16.6678 3.07351 15.6264L1.68769 16.2004ZM21.25 11.5C21.25 12.6751 21.2496 13.5189 21.2042 14.1847C21.1592 14.8438 21.0726 15.2736 20.9265 15.6264L22.3123 16.2004C22.5468 15.6344 22.6505 15.0223 22.7007 14.2868C22.7504 13.5581 22.75 12.6546 22.75 11.5H21.25ZM16.2233 19.7413C17.4786 19.7197 18.3955 19.6457 19.2004 19.3123L18.6264 17.9265C18.1108 18.1401 17.4529 18.2199 16.1975 18.2416L16.2233 19.7413ZM20.9265 15.6264C20.4951 16.6678 19.6678 17.4951 18.6264 17.9265L19.2004 19.3123C20.6093 18.7287 21.7287 17.6093 22.3123 16.2004L20.9265 15.6264ZM13.5 2.75C15.1512 2.75 16.337 2.75079 17.2619 2.83873C18.1757 2.92561 18.7571 3.09223 19.2206 3.37628L20.0044 2.09732C19.2655 1.64457 18.4274 1.44279 17.4039 1.34547C16.3915 1.24921 15.1222 1.25 13.5 1.25V2.75ZM22.75 10.5C22.75 8.87781 22.7508 7.6085 22.6545 6.59611C22.5572 5.57256 22.3554 4.73445 21.9027 3.99563L20.6237 4.77938C20.9078 5.24291 21.0744 5.82434 21.1613 6.73809C21.2492 7.663 21.25 8.84876 21.25 10.5H22.75ZM19.2206 3.37628C19.7925 3.72672 20.2733 4.20752 20.6237 4.77938L21.9027 3.99563C21.4286 3.22194 20.7781 2.57144 20.0044 2.09732L19.2206 3.37628ZM10.5 1.25C8.87781 1.25 7.6085 1.24921 6.59611 1.34547C5.57256 1.44279 4.73445 1.64457 3.99563 2.09732L4.77938 3.37628C5.24291 3.09223 5.82434 2.92561 6.73809 2.83873C7.663 2.75079 8.84876 2.75 10.5 2.75V1.25ZM2.75 10.5C2.75 8.84876 2.75079 7.663 2.83873 6.73809C2.92561 5.82434 3.09223 5.24291 3.37628 4.77938L2.09732 3.99563C1.64457 4.73445 1.44279 5.57256 1.34547 6.59611C1.24921 7.6085 1.25 8.87781 1.25 10.5H2.75ZM3.99563 2.09732C3.22194 2.57144 2.57144 3.22194 2.09732 3.99563L3.37628 4.77938C3.72672 4.20752 4.20752 3.72672 4.77938 3.37628L3.99563 2.09732ZM11.0166 20.0898C10.8136 19.7468 10.6354 19.4441 10.4621 19.2063C10.2795 18.9559 10.0702 18.7304 9.77986 18.5615L9.02572 19.8582C9.07313 19.8857 9.13772 19.936 9.24985 20.0898C9.37122 20.2564 9.50835 20.4865 9.72579 20.8539L11.0166 20.0898ZM7.77666 19.7413C8.21575 19.7489 8.49387 19.7545 8.70588 19.7779C8.90399 19.7999 8.98078 19.832 9.02572 19.8582L9.77986 18.5615C9.4871 18.3912 9.18246 18.3215 8.87097 18.287C8.57339 18.2541 8.21375 18.2487 7.8025 18.2416L7.77666 19.7413ZM14.2742 20.8539C14.4916 20.4865 14.6287 20.2564 14.7501 20.0898C14.8622 19.936 14.9268 19.8857 14.9742 19.8582L14.2201 18.5615C13.9298 18.7304 13.7204 18.9559 13.5379 19.2063C13.3646 19.4441 13.1864 19.7468 12.9833 20.0898L14.2742 20.8539ZM16.1975 18.2416C15.7862 18.2487 15.4266 18.2541 15.129 18.287C14.8175 18.3215 14.5129 18.3912 14.2201 18.5615L14.9742 19.8582C15.0192 19.832 15.096 19.7999 15.2941 19.7779C15.5061 19.7545 15.7842 19.7489 16.2233 19.7413L16.1975 18.2416Z" fill="#1C274C"/>
-<path d="M8 9H16" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M8 12.5H13.5" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>
+                class="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 animate-pulse-slow">
+            @if (hasUnreadMessages)
+            {
+                <div class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-bounce">
+                    !
+                </div>
+            }
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-4.126-.98L3 20l1.02-5.874A8.955 8.955 0 013 12c0-4.418 3.582-8 8-8s8 3.582 8 8z"></path>
 </svg>
         </button>
     }
     else
     {
-        <div class="bg-white rounded-lg shadow-xl w-80 h-96 flex flex-col border border-gray-200">
+        <div class="bg-white rounded-lg shadow-2xl w-80 h-[500px] flex flex-col border border-gray-200 overflow-hidden">
             <!-- Header -->
-            <div class="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-4 rounded-t-lg flex justify-between items-center">
-                <h3 class="font-semibold">@Localizer["ChatWithUs"]</h3>
-                <button @onclick="ToggleChat" class="text-white hover:text-gray-200">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
+            <div class="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-4 flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                    <h3 class="font-semibold">@Localizer["ChatWithUs"]</h3>
+                </div>
+                <div class="flex items-center space-x-2">
+                    @if (currentSession != null)
+                    {
+                        <button @onclick="EndChatSession" class="text-white hover:text-gray-200 text-xs px-2 py-1 bg-black bg-opacity-20 rounded">
+                            End Chat
+                        </button>
+                    }
+                    <button @onclick="ToggleChat" class="text-white hover:text-gray-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <!-- Content -->
@@ -36,32 +59,101 @@
                 @if (currentSession == null)
                 {
                     <!-- Start Chat Form -->
-                    <div class="p-4 flex-1 flex flex-col justify-center">
-                        <div class="space-y-4">
+                    <div class="chat-form-container p-6 flex-1 flex flex-col justify-center overflow-y-auto">
+                        <style>
+                            .chat-form-container {
+                                scrollbar-width: thin;
+                                scrollbar-color: #d97706 #f3f4f6;
+                            }
+                            .chat-form-container::-webkit-scrollbar {
+                                width: 8px;
+                            }
+                            .chat-form-container::-webkit-scrollbar-track {
+                                background: #f3f4f6;
+                                border-radius: 4px;
+                            }
+                            .chat-form-container::-webkit-scrollbar-thumb {
+                                background: linear-gradient(to bottom, #f59e0b, #d97706);
+                                border-radius: 4px;
+                            }
+                            .chat-form-container::-webkit-scrollbar-thumb:hover {
+                                background: linear-gradient(to bottom, #d97706, #b45309);
+                            }
+                            .chat-messages-container {
+                                scrollbar-width: thin;
+                                scrollbar-color: #d97706 #f3f4f6;
+                            }
+                            .chat-messages-container::-webkit-scrollbar {
+                                width: 8px;
+                            }
+                            .chat-messages-container::-webkit-scrollbar-track {
+                                background: #f3f4f6;
+                                border-radius: 4px;
+                            }
+                            .chat-messages-container::-webkit-scrollbar-thumb {
+                                background: linear-gradient(to bottom, #f59e0b, #d97706);
+                                border-radius: 4px;
+                            }
+                            .chat-messages-container::-webkit-scrollbar-thumb:hover {
+                                background: linear-gradient(to bottom, #d97706, #b45309);
+                            }
+                        </style>
+                        <div class="text-center mb-6">
+                            <div class="w-16 h-16 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-4.126-.98L3 20l1.02-5.874A8.955 8.955 0 013 12c0-4.418 3.582-8 8-8s8 3.582 8 8z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="text-lg font-semibold text-gray-800">@Localizer["StartChat"]</h4>
+                            <p class="text-sm text-gray-600">We're here to help! Start a conversation with us.</p>
+                        </div>
+                        
+                        <div class="space-y-3">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">@Localizer["YourName"] *</label>
                                 <input @bind="chatForm.VisitorName" 
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" 
+                                       class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent" 
                                        required />
                             </div>
                         
-                            <div>
-                                <input @bind="chatForm.VisitorEmail" 
-                                       placeholder="@(Localizer["YourEmail"] + " (" + Localizer["Optional"] + ")")"
-                                       type="email"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                            <div class="grid grid-cols-1 gap-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">@Localizer["YourEmail"]</label>
+                                    <input @bind="chatForm.VisitorEmail" 
+                                           placeholder="example@email.com"
+                                           type="email"
+                                           class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent" />
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">@Localizer["PhoneNumber"]</label>
+                                    <input @bind="chatForm.PhoneNumber" 
+                                           placeholder="+1 234 567 8900"
+                                           type="tel"
+                                           class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent" />
+                                </div>
+                            </div>
+                            
+                            <div class="text-xs text-gray-500 text-center bg-amber-50 p-2 rounded">
+                                ℹ️ @Localizer["EmailOrPhoneRequired"]
                             </div>
                         
                             <button @onclick="StartChatSession" 
-                                    disabled="@isLoading"
-                                    class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white py-2 rounded-lg hover:from-amber-600 hover:to-orange-600 transition-colors disabled:opacity-50">
+                                    disabled="@(isLoading || !chatForm.IsContactInfoValid || string.IsNullOrWhiteSpace(chatForm.VisitorName))"
+                                    class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white py-3 rounded-lg hover:from-amber-600 hover:to-orange-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium">
                                 @if (isLoading)
                                 {
-                                    <span>@Localizer["Loading"]...</span>
+                                    <div class="flex items-center justify-center">
+                                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        <span>@Localizer["Loading"]...</span>
+                                    </div>
                                 }
                                 else
                                 {
-                                    <span>@Localizer["StartChat"]</span>
+                                    <span>💬 @Localizer["StartChat"]</span>
                                 }
                             </button>
                         </div>
@@ -70,39 +162,72 @@
                 else
                 {
                     <!-- Chat Messages -->
-                    <div class="flex-1 p-4 overflow-y-auto bg-gray-50" @ref="messagesContainer">
+                    <div class="chat-messages-container flex-1 p-3 overflow-y-auto bg-gradient-to-b from-gray-50 to-gray-100" @ref="messagesContainer" style="max-height: 350px;">
                         @if (messages.Any())
                         {
                             @foreach (var message in messages)
                             {
-                                <div class="mb-3 @(message.SenderType == ChatSenderType.Visitor ? "text-right" : "text-left")">
-                                    <div class="inline-block max-w-xs lg:max-w-md px-3 py-2 rounded-lg @(message.SenderType == ChatSenderType.Visitor ? "bg-amber-500 text-white" : "bg-white text-gray-800 border")">
-                                        <div class="text-sm">@message.Content</div>
-                                        <div class="text-xs opacity-70 mt-1">@message.CreatedAt.ToString("HH:mm")</div>
+                                <div class="mb-4 @(message.SenderType == ChatSenderType.Visitor ? "text-right" : "text-left")">
+                                    <div class="inline-block max-w-[240px] px-4 py-3 rounded-2xl shadow-sm @(message.SenderType == ChatSenderType.Visitor ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white" : "bg-white text-gray-800 border border-gray-200")">
+                                        <div class="text-sm leading-relaxed">@message.Content</div>
+                                        <div class="text-xs opacity-70 mt-2 @(message.SenderType == ChatSenderType.Visitor ? "text-amber-100" : "text-gray-500")">
+                                            @message.SenderName • @message.CreatedAt.ToString("HH:mm")
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (isTyping)
+                            {
+                                <div class="mb-4 text-left">
+                                    <div class="inline-block bg-white border border-gray-200 px-4 py-3 rounded-2xl shadow-sm">
+                                        <div class="flex space-x-1">
+                                            <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                                            <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                                            <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                                        </div>
                                     </div>
                                 </div>
                             }
                         }
                         else
                         {
-                            <div class="text-center text-gray-500 text-sm">
-                                @Localizer["TypeYourMessage"]...
+                            <div class="text-center text-gray-500 text-sm py-8">
+                                <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    💬
+                                </div>
+                                <p>@Localizer["TypeYourMessage"]...</p>
                             </div>
                         }
                     </div>
 
                     <!-- Message Input -->
-                    <div class="p-4 border-t bg-white rounded-b-lg">
-                        <div class="flex gap-2">
-                            <input @bind="messageForm.Content" 
-                                   @onkeypress="@(async (e) => { if (e.Key == "Enter") await SendMessage(); })"
-                                   placeholder="@Localizer["TypeYourMessage"]..."
-                                   class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-                                   disabled="@isLoading" />
+                    <div class="p-3 border-t bg-white">
+                        <div class="flex gap-2 items-end">
+                            <div class="flex-1">
+                                <textarea @bind="messageForm.Content" 
+                                         @onkeypress="@HandleKeyPress"
+                                         placeholder="@Localizer["TypeYourMessage"]..."
+                                         rows="1"
+                                         class="w-full px-4 py-2.5 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none"
+                                         disabled="@isLoading"
+                                         style="max-height: 80px; min-height: 38px;"></textarea>
+                            </div>
                             <button @onclick="SendMessage" 
                                     disabled="@(isLoading || string.IsNullOrWhiteSpace(messageForm.Content))"
-                                    class="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors disabled:opacity-50">
-                                @Localizer["Send"]
+                                    class="w-10 h-10 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full hover:from-amber-600 hover:to-orange-600 transition-all duration-200 disabled:opacity-50 flex items-center justify-center">
+                                @if (isLoading)
+                                {
+                                    <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                }
+                                else
+                                {
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                    </svg>
+                                }
                             </button>
                         </div>
                     </div>
@@ -111,23 +236,33 @@
         </div>
     }
 </div>
+}
 
 @code {
     private bool isExpanded = false;
     private bool isLoading = false;
+    private bool isChatWidgetEnabled = true;
+    private bool hasUnreadMessages = false;
+    private bool isTyping = false;
     private ChatSession? currentSession;
     private List<ChatMessage> messages = new();
     private ElementReference messagesContainer;
     private ChatForm chatForm = new();
     private MessageForm messageForm = new();
     private Timer? refreshTimer;
-    private DateTime lastMessageCheck = DateTime.UtcNow;
+    private Timer? typingTimer;
+    private DateTime lastMessageCheck = DateTime.Now;
+    private string? storedSessionId;
 
     public class ChatForm
     {
         [Required]
         public string VisitorName { get; set; } = string.Empty;
         public string? VisitorEmail { get; set; }
+        public string? PhoneNumber { get; set; }
+
+        // Custom validation: Either email or phone must be provided
+        public bool IsContactInfoValid => !string.IsNullOrWhiteSpace(VisitorEmail) || !string.IsNullOrWhiteSpace(PhoneNumber);
     }
 
     public class MessageForm
@@ -138,32 +273,111 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Setup refresh timer for checking new messages
-        refreshTimer = new Timer(3000); // Check every 3 seconds
-        refreshTimer.Elapsed += async (sender, e) => await CheckForNewMessages();
-        refreshTimer.AutoReset = true;
+        // Check if chat widget is enabled
+        var chatWidgetSetting = await SettingService.GetValueAsync("ChatWidgetEnabled", "true");
+        isChatWidgetEnabled = chatWidgetSetting.Equals("true", StringComparison.OrdinalIgnoreCase);
+        
+        if (isChatWidgetEnabled)
+        {
+            // Try to restore existing session
+            await RestoreSession();
+            
+            // Setup refresh timer for checking new messages
+            refreshTimer = new Timer(3000); // Check every 3 seconds
+            refreshTimer.Elapsed += async (sender, e) => await CheckForNewMessages();
+            refreshTimer.AutoReset = true;
+            refreshTimer.Enabled = true;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && isChatWidgetEnabled)
+        {
+            // Restore expanded state
+            try
+            {
+                var expanded = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "chatWidget_expanded");
+                if (!string.IsNullOrEmpty(expanded) && bool.TryParse(expanded, out var isExpandedStored))
+                {
+                    isExpanded = isExpandedStored;
+                    StateHasChanged();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error restoring expanded state: {ex.Message}");
+            }
+        }
+    }
+
+    private async Task RestoreSession()
+    {
+        try
+        {
+            storedSessionId = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "chatWidget_sessionId");
+            if (!string.IsNullOrEmpty(storedSessionId) && Guid.TryParse(storedSessionId, out var parsedSessionId))
+            {
+                // Try to get the session from the service
+                var sessions = await ChatService.GetActiveSessionsAsync();
+                currentSession = sessions.FirstOrDefault(s => s.Id == storedSessionId);
+                
+                if (currentSession != null)
+                {
+                    // Restore chat form data
+                    chatForm.VisitorName = currentSession.VisitorName;
+                    chatForm.VisitorEmail = currentSession.VisitorEmail;
+                    chatForm.PhoneNumber = currentSession.PhoneNumber;
+                    
+                    await LoadMessages();
+                }
+                else
+                {
+                    // Session doesn't exist anymore, clear localStorage
+                    await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "chatWidget_sessionId");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error restoring session: {ex.Message}");
+        }
     }
 
     private async Task CheckForNewMessages()
     {
-        if (currentSession == null || !isExpanded) return;
+        if (currentSession == null) return;
         
         try
         {
             var allMessages = await ChatService.GetMessagesAsync(currentSession.Id);
-            var newMessages = allMessages.Where(m => m.CreatedAt > lastMessageCheck).ToList();
+            var messagesList = allMessages.ToList();
             
-            if (newMessages.Any())
+            // Check for new admin messages
+            var newAdminMessages = messagesList.Where(m => 
+                m.SenderType == ChatSenderType.Admin && 
+                m.CreatedAt > lastMessageCheck &&
+                !messages.Any(existing => existing.Id == m.Id)
+            ).ToList();
+            
+            if (newAdminMessages.Any())
             {
-                foreach (var msg in newMessages)
+                foreach (var msg in newAdminMessages)
                 {
-                    if (!messages.Any(m => m.Id == msg.Id))
-                    {
-                        messages.Add(msg);
-                    }
+                    messages.Add(msg);
                 }
-                lastMessageCheck = DateTime.UtcNow;
+                
+                // Show notification if chat is not expanded
+                if (!isExpanded)
+                {
+                    hasUnreadMessages = true;
+                }
+                
+                lastMessageCheck = DateTime.Now;
                 await InvokeAsync(StateHasChanged);
+                
+                // Auto scroll to bottom
+                await ScrollToBottom();
             }
         }
         catch (Exception ex)
@@ -172,20 +386,64 @@
         }
     }
 
-    private void ToggleChat()
+    private async Task ToggleChat()
     {
         isExpanded = !isExpanded;
         
-        if (isExpanded && refreshTimer != null)
+        if (isExpanded)
         {
-            refreshTimer.Enabled = true;
+            hasUnreadMessages = false;
+            await ScrollToBottom();
         }
-        else if (refreshTimer != null)
+        
+        // Save expanded state to localStorage
+        try
         {
-            refreshTimer.Enabled = false;
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "chatWidget_expanded", isExpanded.ToString());
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error saving expanded state: {ex.Message}");
         }
         
         StateHasChanged();
+    }
+
+    private async Task EndChatSession()
+    {
+        try
+        {
+            // Clear localStorage
+            await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "chatWidget_sessionId");
+            await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "chatWidget_expanded");
+            
+            // Reset state
+            currentSession = null;
+            messages.Clear();
+            chatForm = new ChatForm();
+            messageForm = new MessageForm();
+            hasUnreadMessages = false;
+            
+            ToastService.ShowSuccess("Chat session ended");
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error ending chat session: {ex.Message}");
+        }
+    }
+
+    private async Task ScrollToBottom()
+    {
+        try
+        {
+            await Task.Delay(100); // Small delay to ensure DOM is updated
+            await JSRuntime.InvokeVoidAsync("scrollToBottom", messagesContainer);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error scrolling to bottom: {ex.Message}");
+        }
     }
 
     private async Task StartChatSession()
@@ -203,18 +461,27 @@
                 return;
             }
 
+            if (!chatForm.IsContactInfoValid)
+            {
+                ToastService.ShowError(Localizer["EmailOrPhoneRequired"]);
+                return;
+            }
+
             // Use a simple IP detection or default value
             var ipAddress = "127.0.0.1"; // Default for now
             
             currentSession = await ChatService.CreateChatSessionAsync(
                 chatForm.VisitorName, 
-                chatForm.VisitorEmail, 
+                chatForm.VisitorEmail,
+                chatForm.PhoneNumber,
                 ipAddress);
 
             if (currentSession != null)
             {
+                // Save session ID to localStorage
+                await JSRuntime.InvokeVoidAsync("localStorage.setItem", "chatWidget_sessionId", currentSession.Id.ToString());
+                
                 await LoadMessages();
-                refreshTimer!.Enabled = true;
                 ToastService.ShowSuccess(Localizer["ChatStartedSuccessfully"]);
             }
         }
@@ -226,6 +493,14 @@
         {
             isLoading = false;
             StateHasChanged();
+        }
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !e.ShiftKey)
+        {
+            await SendMessage();
         }
     }
 
@@ -250,8 +525,11 @@
             if (message != null)
             {
                 messages.Add(message);
-                lastMessageCheck = DateTime.UtcNow;
-                ToastService.ShowSuccess(Localizer["MessageSentSuccessfully"]);
+                lastMessageCheck = DateTime.Now;
+                await ScrollToBottom();
+                
+                // Simulate typing indicator for admin response
+                await SimulateTyping();
             }
         }
         catch (Exception ex)
@@ -266,6 +544,23 @@
         }
     }
 
+    private async Task SimulateTyping()
+    {
+        isTyping = true;
+        StateHasChanged();
+        
+        typingTimer?.Dispose();
+        typingTimer = new Timer(3000); // Hide typing indicator after 3 seconds
+        typingTimer.Elapsed += (sender, e) =>
+        {
+            isTyping = false;
+            InvokeAsync(StateHasChanged);
+            typingTimer?.Dispose();
+        };
+        typingTimer.AutoReset = false;
+        typingTimer.Enabled = true;
+    }
+
     private async Task LoadMessages()
     {
         if (currentSession == null) return;
@@ -273,7 +568,8 @@
         try
         {
             messages = (await ChatService.GetMessagesAsync(currentSession.Id)).ToList();
-            lastMessageCheck = DateTime.UtcNow;
+            lastMessageCheck = DateTime.Now;
+            await ScrollToBottom();
             StateHasChanged();
         }
         catch (Exception ex)
@@ -285,5 +581,6 @@
     public void Dispose()
     {
         refreshTimer?.Dispose();
+        typingTimer?.Dispose();
     }
 }

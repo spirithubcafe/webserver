@@ -34,7 +34,11 @@
                                             <h3 class="font-medium text-gray-900">@session.VisitorName</h3>
                                             @if (!string.IsNullOrEmpty(session.VisitorEmail))
                                             {
-                                                <p class="text-sm text-gray-600">@session.VisitorEmail</p>
+                                                <p class="text-sm text-gray-600">📧 @session.VisitorEmail</p>
+                                            }
+                                            @if (!string.IsNullOrEmpty(session.PhoneNumber))
+                                            {
+                                                <p class="text-sm text-gray-600">📱 @session.PhoneNumber</p>
                                             }
                                             <p class="text-xs text-gray-500 mt-1">
                                                 @(session.LastMessageAt?.ToString("dd/MM HH:mm") ?? session.CreatedAt.ToString("dd/MM HH:mm"))
@@ -69,11 +73,17 @@
                         <!-- Chat Header -->
                         <div class="bg-gray-50 p-4 rounded-t-lg border-b border-gray-200">
                             <h3 class="font-semibold text-gray-800">@Localizer["ChatWith"] @selectedSession.VisitorName</h3>
-                            @if (!string.IsNullOrEmpty(selectedSession.VisitorEmail))
-                            {
-                                <p class="text-sm text-gray-600">@selectedSession.VisitorEmail</p>
-                            }
-                            <p class="text-xs text-gray-500">IP: @selectedSession.IpAddress</p>
+                            <div class="mt-2 space-y-1">
+                                @if (!string.IsNullOrEmpty(selectedSession.VisitorEmail))
+                                {
+                                    <p class="text-sm text-gray-600">📧 @selectedSession.VisitorEmail</p>
+                                }
+                                @if (!string.IsNullOrEmpty(selectedSession.PhoneNumber))
+                                {
+                                    <p class="text-sm text-gray-600">📱 @selectedSession.PhoneNumber</p>
+                                }
+                                <p class="text-xs text-gray-500">🌐 IP: @selectedSession.IpAddress</p>
+                            </div>
                         </div>
 
                         <!-- Messages Container -->

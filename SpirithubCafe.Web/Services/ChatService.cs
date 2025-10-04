@@ -6,7 +6,7 @@ namespace SpirithubCafe.Web.Services;
 
 public interface IChatService
 {
-    Task<ChatSession> CreateChatSessionAsync(string visitorName, string? visitorEmail, string ipAddress);
+    Task<ChatSession> CreateChatSessionAsync(string visitorName, string? visitorEmail, string? phoneNumber, string ipAddress);
     Task<ChatSession?> GetChatSessionAsync(string sessionId);
     Task<IEnumerable<ChatSession>> GetActiveSessionsAsync();
     Task<ChatMessage> SendMessageAsync(string sessionId, ChatSenderType senderType, string senderName, string message);
@@ -25,13 +25,14 @@ public class ChatService : IChatService
         _context = context;
     }
 
-    public async Task<ChatSession> CreateChatSessionAsync(string visitorName, string? visitorEmail, string ipAddress)
+    public async Task<ChatSession> CreateChatSessionAsync(string visitorName, string? visitorEmail, string? phoneNumber, string ipAddress)
     {
         var session = new ChatSession
         {
             Id = Guid.NewGuid().ToString(),
             VisitorName = visitorName,
             VisitorEmail = visitorEmail,
+            PhoneNumber = phoneNumber,
             IpAddress = ipAddress,
             IsActive = true,
             CreatedAt = DateTime.Now,

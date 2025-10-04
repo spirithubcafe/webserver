@@ -14,6 +14,9 @@ public class ChatSession
     [MaxLength(200)]
     public string? VisitorEmail { get; set; }
     
+    [MaxLength(20)]
+    public string? PhoneNumber { get; set; }
+    
     [MaxLength(50)]
     public string IpAddress { get; set; } = string.Empty;
     
