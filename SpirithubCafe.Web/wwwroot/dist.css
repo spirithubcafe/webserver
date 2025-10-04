@@ -6251,6 +6251,11 @@
       flex-direction: row;
     }
   }
+  .lg\:flex-nowrap {
+    @media (width >= 64rem) {
+      flex-wrap: nowrap;
+    }
+  }
   .lg\:items-center {
     @media (width >= 64rem) {
       align-items: center;
@@ -7725,20 +7730,38 @@ body.modal-open {
   font-weight: 400;
 }
 .admin-send-button {
-  background: #37353E;
-  color: #D3DAD9;
+  background: linear-gradient(135deg, #37353E 0%, #44444E 100%);
+  color: #FFFFFF;
   border: none;
+  border-radius: 12px;
   font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 14px 0 rgba(55, 53, 62, 0.39);
+  font-size: 14px;
+  padding: 12px 24px;
+  min-width: 80px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 14px 0 rgba(55, 53, 62, 0.25);
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
 }
 .admin-send-button:hover:not(:disabled) {
-  background: #44444E;
+  background: linear-gradient(135deg, #44444E 0%, #515157 100%);
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(55, 53, 62, 0.4);
 }
+.admin-send-button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 4px 14px rgba(55, 53, 62, 0.3);
+}
 .admin-send-button:disabled {
-  background: #9CA3AF;
+  background: linear-gradient(135deg, #E5E7EB 0%, #D1D5DB 100%);
+  color: #9CA3AF;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
@@ -7891,28 +7914,42 @@ body.modal-open {
     outline: none !important;
   }
   .admin-chat-mobile .admin-send-button {
-    background: #37353E !important;
+    background: linear-gradient(135deg, #37353E 0%, #44444E 100%) !important;
     color: white !important;
-    padding: 0 !important;
+    border: none !important;
     border-radius: 12px !important;
     font-weight: 600 !important;
+    font-size: 14px !important;
     width: 80px !important;
     height: 48px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    transition: all 0.2s ease !important;
-    border: none !important;
+    gap: 6px !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     cursor: pointer !important;
     box-sizing: border-box !important;
     flex-shrink: 0 !important;
+    box-shadow: 0 4px 14px rgba(55, 53, 62, 0.25) !important;
+    user-select: none !important;
+    position: relative !important;
+    overflow: hidden !important;
   }
   .admin-chat-mobile .admin-send-button:hover:not(:disabled) {
-    background: #44444E !important;
+    background: linear-gradient(135deg, #44444E 0%, #515157 100%) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 20px rgba(55, 53, 62, 0.35) !important;
+  }
+  .admin-chat-mobile .admin-send-button:active:not(:disabled) {
+    transform: translateY(0) !important;
+    box-shadow: 0 3px 10px rgba(55, 53, 62, 0.3) !important;
   }
   .admin-chat-mobile .admin-send-button:disabled {
-    opacity: 0.5 !important;
+    background: linear-gradient(135deg, #E5E7EB 0%, #D1D5DB 100%) !important;
+    color: #9CA3AF !important;
     cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
   }
   .admin-chat-mobile .admin-message-animate {
     position: relative !important;
@@ -7928,6 +7965,29 @@ body.modal-open {
     max-width: 240px;
     padding: 10px 14px;
   }
+}
+.admin-send-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+  opacity: 0;
+  transform: scale(0);
+  transition: transform 0.3s, opacity 0.3s;
+  border-radius: inherit;
+  z-index: 1;
+}
+.admin-send-button:active:not(:disabled)::before {
+  transform: scale(1);
+  opacity: 1;
+  transition: transform 0.1s, opacity 0.1s;
+}
+.admin-send-button span, .admin-send-button svg {
+  position: relative;
+  z-index: 2;
 }
 @layer base {
   :where(:root),:root:has(input.theme-controller[value=light]:checked),[data-theme=light] {
