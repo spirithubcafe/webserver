@@ -49,11 +49,11 @@
                     <!-- Logo and Brand -->
                     <div class="flex items-center space-x-4">
                         <div class="flex-shrink-0 flex items-center">
-                            @if (logoType == "image" && !string.IsNullOrEmpty(logoImage))
+                            @if (GetCurrentLogoType() == "image" && !string.IsNullOrEmpty(GetCurrentLogoImage()))
                             {
                                 <!-- Dynamic Image Logo -->
                                 <NavLink href="/" class="flex items-center">
-                                    <img src="@logoImage" alt="@(logoText ?? "SpirithubCafe")" class="h-12 w-auto mr-3" />
+                                    <img src="@GetCurrentLogoImage()" alt="@(GetCurrentLogoText() ?? "SpirithubCafe")" class="h-12 w-auto mr-3" />
                                 </NavLink>
                             }
                             else
@@ -68,7 +68,10 @@
                                 </div>
                                 <div class="flex flex-col">
                                     <NavLink href="/" class="@($"{GetLogoTextClasses()} text-2xl font-bold hover:text-amber-600 transition-colors")">
-                                        @(string.IsNullOrEmpty(logoText) ? Localizer["SpirithubCafeDefaultName"] : logoText)
+                                        @{
+                                            var currentLogoText = GetCurrentLogoText();
+                                        }
+                                        @(string.IsNullOrEmpty(currentLogoText) ? Localizer["SpirithubCafeDefaultName"] : currentLogoText)
                                     </NavLink>
                                     <span class="@GetSubtitleClasses() text-xs font-medium">@Localizer["SiteSubtitle"]</span>
                                 </div>
@@ -439,6 +442,10 @@
         private string logoType = "text";
         private string logoText = "SpirithubCafe";
         private string logoImage = "";
+        private string homeLogoType = "inherit";
+        private string homeLogoText = "";
+        private string homeLogoTextAr = "";
+        private string homeLogoImage = "";
         private List<SpirithubCafe.Domain.Entities.Category> categories = new();
         private int cartItemCount = 0;
         
@@ -582,6 +589,12 @@
                 logoType = await SettingService.GetValueAsync("logo_type", "text");
                 logoText = await SettingService.GetValueAsync("logo_text", "SpirithubCafe");
                 logoImage = await SettingService.GetValueAsync("logo_image", "");
+                
+                // Load home page logo settings
+                homeLogoType = await SettingService.GetValueAsync("home_logo_type", "inherit");
+                homeLogoText = await SettingService.GetValueAsync("home_logo_text", "");
+                homeLogoTextAr = await SettingService.GetValueAsync("home_logo_text_ar", "");
+                homeLogoImage = await SettingService.GetValueAsync("home_logo_image", "");
             }
             catch (Exception)
             {
@@ -589,7 +602,45 @@
                 logoType = "text";
                 logoText = "SpirithubCafe";
                 logoImage = "";
+                homeLogoType = "inherit";
+                homeLogoText = "";
+                homeLogoTextAr = "";
+                homeLogoImage = "";
             }
+        }
+
+        private string GetCurrentLogoType()
+        {
+            if (IsHomePage() && homeLogoType != "inherit")
+            {
+                return homeLogoType;
+            }
+            return logoType;
+        }
+        
+        private string GetCurrentLogoText(bool isArabic = false)
+        {
+            if (IsHomePage() && homeLogoType == "text")
+            {
+                if (isArabic && !string.IsNullOrWhiteSpace(homeLogoTextAr))
+                {
+                    return homeLogoTextAr;
+                }
+                if (!string.IsNullOrWhiteSpace(homeLogoText))
+                {
+                    return homeLogoText;
+                }
+            }
+            return logoText;
+        }
+        
+        private string GetCurrentLogoImage()
+        {
+            if (IsHomePage() && homeLogoType == "image" && !string.IsNullOrWhiteSpace(homeLogoImage))
+            {
+                return homeLogoImage;
+            }
+            return logoImage;
         }
 
         private void NavigateToCart()

@@ -1792,4 +1792,72 @@
   <data name="DevelopmentModeWarning" xml:space="preserve">
     <value>لا ينبغي تمكين بيئة التطوير للتطبيقات المنشورة. يمكن أن يؤدي ذلك إلى عرض معلومات حساسة من الاستثناءات للمستخدمين النهائيين. للتصحيح المحلي، قم بتمكين بيئة التطوير عن طريق تعيين متغير البيئة ASPNETCORE_ENVIRONMENT إلى Development وإعادة تشغيل التطبيق.</value>
   </data>
+  
+  <!-- Logo Settings -->
+  <data name="MainLogoConfiguration" xml:space="preserve">
+    <value>إعداد الشعار الرئيسي</value>
+  </data>
+  <data name="HomePageLogoConfiguration" xml:space="preserve">
+    <value>إعداد شعار الصفحة الرئيسية</value>
+  </data>
+  <data name="HomePageLogoDescription" xml:space="preserve">
+    <value>قم بتكوين شعار خاص للصفحة الرئيسية، أو استخدم شعار الموقع الرئيسي</value>
+  </data>
+  <data name="HomeLogoType" xml:space="preserve">
+    <value>نوع شعار الصفحة الرئيسية</value>
+  </data>
+  <data name="UseMainLogo" xml:space="preserve">
+    <value>استخدام الشعار الرئيسي</value>
+  </data>
+  <data name="CustomTextLogo" xml:space="preserve">
+    <value>شعار نصي مخصص</value>
+  </data>
+  <data name="CustomImageLogo" xml:space="preserve">
+    <value>شعار صورة مخصص</value>
+  </data>
+  <data name="HomeLogoText" xml:space="preserve">
+    <value>نص شعار الصفحة الرئيسية</value>
+  </data>
+  <data name="HomeLogoTextArabic" xml:space="preserve">
+    <value>نص شعار الصفحة الرئيسية (عربي)</value>
+  </data>
+  <data name="HomePagePreview" xml:space="preserve">
+    <value>معاينة الصفحة الرئيسية</value>
+  </data>
+  <data name="HomeLogoImage" xml:space="preserve">
+    <value>صورة شعار الصفحة الرئيسية</value>
+  </data>
+  <data name="HomeLogoUploadDescription" xml:space="preserve">
+    <value>قم بتحميل صورة شعار مخصصة للصفحة الرئيسية</value>
+  </data>
+  <data name="CurrentHomeLogo" xml:space="preserve">
+    <value>شعار الصفحة الرئيسية الحالي</value>
+  </data>
+  <data name="UsingMainLogoDescription" xml:space="preserve">
+    <value>ستستخدم الصفحة الرئيسية نفس الشعار المكون في إعدادات الشعار الرئيسي أعلاه</value>
+  </data>
+  <data name="SaveHomeLogoSettings" xml:space="preserve">
+    <value>حفظ إعدادات شعار الصفحة الرئيسية</value>
+  </data>
+  <data name="LogoUploadedSuccessfully" xml:space="preserve">
+    <value>تم رفع الشعار بنجاح!</value>
+  </data>
+  <data name="LogoRemovedSuccessfully" xml:space="preserve">
+    <value>تم إزالة الشعار بنجاح!</value>
+  </data>
+  <data name="HomeLogoUploadedSuccessfully" xml:space="preserve">
+    <value>تم رفع شعار الصفحة الرئيسية بنجاح!</value>
+  </data>
+  <data name="HomeLogoRemovedSuccessfully" xml:space="preserve">
+    <value>تم إزالة شعار الصفحة الرئيسية بنجاح!</value>
+  </data>
+  <data name="LogoSettingsSavedSuccessfully" xml:space="preserve">
+    <value>تم حفظ إعدادات الشعار بنجاح!</value>
+  </data>
+  <data name="HomeLogoSettingsSavedSuccessfully" xml:space="preserve">
+    <value>تم حفظ إعدادات شعار الصفحة الرئيسية بنجاح!</value>
+  </data>
+  <data name="SettingsSavedSuccessfully" xml:space="preserve">
+    <value>تم حفظ الإعدادات بنجاح!</value>
+  </data>
 </root>

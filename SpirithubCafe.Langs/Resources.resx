@@ -1804,5 +1804,73 @@
   <data name="DevelopmentModeWarning" xml:space="preserve">
     <value>The Development environment shouldn't be enabled for deployed applications. It can result in displaying sensitive information from exceptions to end users. For local debugging, enable the Development environment by setting the ASPNETCORE_ENVIRONMENT environment variable to Development and restarting the app.</value>
   </data>
+  
+  <!-- Logo Settings -->
+  <data name="MainLogoConfiguration" xml:space="preserve">
+    <value>Main Logo Configuration</value>
+  </data>
+  <data name="HomePageLogoConfiguration" xml:space="preserve">
+    <value>Home Page Logo Configuration</value>
+  </data>
+  <data name="HomePageLogoDescription" xml:space="preserve">
+    <value>Configure a specific logo for the home page, or use the main site logo</value>
+  </data>
+  <data name="HomeLogoType" xml:space="preserve">
+    <value>Home Logo Type</value>
+  </data>
+  <data name="UseMainLogo" xml:space="preserve">
+    <value>Use Main Logo</value>
+  </data>
+  <data name="CustomTextLogo" xml:space="preserve">
+    <value>Custom Text Logo</value>
+  </data>
+  <data name="CustomImageLogo" xml:space="preserve">
+    <value>Custom Image Logo</value>
+  </data>
+  <data name="HomeLogoText" xml:space="preserve">
+    <value>Home Logo Text</value>
+  </data>
+  <data name="HomeLogoTextArabic" xml:space="preserve">
+    <value>Home Logo Text (Arabic)</value>
+  </data>
+  <data name="HomePagePreview" xml:space="preserve">
+    <value>Home Page Preview</value>
+  </data>
+  <data name="HomeLogoImage" xml:space="preserve">
+    <value>Home Logo Image</value>
+  </data>
+  <data name="HomeLogoUploadDescription" xml:space="preserve">
+    <value>Upload a custom logo image for the home page</value>
+  </data>
+  <data name="CurrentHomeLogo" xml:space="preserve">
+    <value>Current Home Logo</value>
+  </data>
+  <data name="UsingMainLogoDescription" xml:space="preserve">
+    <value>The home page will use the same logo as configured in the main logo settings above</value>
+  </data>
+  <data name="SaveHomeLogoSettings" xml:space="preserve">
+    <value>Save Home Logo Settings</value>
+  </data>
+  <data name="LogoUploadedSuccessfully" xml:space="preserve">
+    <value>Logo uploaded successfully!</value>
+  </data>
+  <data name="LogoRemovedSuccessfully" xml:space="preserve">
+    <value>Logo removed successfully!</value>
+  </data>
+  <data name="HomeLogoUploadedSuccessfully" xml:space="preserve">
+    <value>Home page logo uploaded successfully!</value>
+  </data>
+  <data name="HomeLogoRemovedSuccessfully" xml:space="preserve">
+    <value>Home page logo removed successfully!</value>
+  </data>
+  <data name="LogoSettingsSavedSuccessfully" xml:space="preserve">
+    <value>Logo settings saved successfully!</value>
+  </data>
+  <data name="HomeLogoSettingsSavedSuccessfully" xml:space="preserve">
+    <value>Home page logo settings saved successfully!</value>
+  </data>
+  <data name="SettingsSavedSuccessfully" xml:space="preserve">
+    <value>Settings saved successfully!</value>
+  </data>
 
 </root>

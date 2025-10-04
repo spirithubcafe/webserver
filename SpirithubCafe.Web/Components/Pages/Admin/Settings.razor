@@ -4,6 +4,7 @@
 @inject SpirithubCafe.Application.Services.ISettingService SettingService
 @inject IStringLocalizer<SpirithubCafe.Langs.Resources> Localizer
 @inject IJSRuntime JSRuntime
+@inject SpirithubCafe.Web.Services.ToastService ToastService
 @using SpirithubCafe.Application.DTOs
 @using SpirithubCafe.Web.Components.Shared
 @using Microsoft.AspNetCore.Components
@@ -68,9 +69,9 @@
                 <div class="space-y-8">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">@Localizer["BrandingSettings"]</h3>
                     
-                    <!-- Logo Configuration -->
-                    <div class="bg-gray-50 rounded-xl p-6">
-                        <h4 class="text-md font-semibold text-gray-800 mb-4">@Localizer["LogoConfiguration"]</h4>
+                    <!-- Main Logo Configuration -->
+                    <div class="bg-gray-50 rounded-xl p-6 mb-8">
+                        <h4 class="text-md font-semibold text-gray-800 mb-4">@Localizer["MainLogoConfiguration"]</h4>
                         
                         <!-- Logo Type Selection -->
                         <div class="mb-6">
@@ -155,6 +156,103 @@
                             </div>
                         }
                     </div>
+                    
+                    <!-- Home Page Logo Configuration -->
+                    <div class="bg-amber-50 rounded-xl p-6">
+                        <h4 class="text-md font-semibold text-gray-800 mb-4">@Localizer["HomePageLogoConfiguration"]</h4>
+                        <p class="text-sm text-gray-600 mb-4">@Localizer["HomePageLogoDescription"]</p>
+                        
+                        <!-- Home Logo Type Selection -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-3">@Localizer["HomeLogoType"]</label>
+                            <div class="flex space-x-4">
+                                <label class="flex items-center">
+                                    <input type="radio" @onchange="@(() => SetHomeLogoType("inherit"))" checked="@(homeLogoTypeValue == "inherit")" 
+                                           class="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300" />
+                                    <span class="ml-2 text-sm text-gray-700">@Localizer["UseMainLogo"]</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" @onchange="@(() => SetHomeLogoType("text"))" checked="@(homeLogoTypeValue == "text")" 
+                                           class="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300" />
+                                    <span class="ml-2 text-sm text-gray-700">@Localizer["CustomTextLogo"]</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" @onchange="@(() => SetHomeLogoType("image"))" checked="@(homeLogoTypeValue == "image")" 
+                                           class="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300" />
+                                    <span class="ml-2 text-sm text-gray-700">@Localizer["CustomImageLogo"]</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        @if (homeLogoTypeValue == "text")
+                        {
+                            <!-- Custom Text Logo for Home -->
+                            <div class="space-y-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["HomeLogoText"]</label>
+                                        <input @bind="homeLogoTextValue" @bind:event="oninput" type="text" 
+                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
+                                               placeholder="SpirithubCafe Home" />
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["HomeLogoTextArabic"] (@Localizer["Optional"])</label>
+                                        <input @bind="homeLogoTextArValue" @bind:event="oninput" type="text" 
+                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
+                                               placeholder="مقهى سبيريت هب" dir="rtl" />
+                                    </div>
+                                </div>
+                                
+                                <!-- Home Logo Preview -->
+                                <div class="bg-white p-4 rounded-lg shadow-sm border-2 border-amber-200">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["HomePagePreview"]</label>
+                                    <div class="text-xl font-bold text-amber-600">
+                                        @(string.IsNullOrEmpty(homeLogoTextValue) ? "SpirithubCafe Home" : homeLogoTextValue)
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else if (homeLogoTypeValue == "image")
+                        {
+                            <!-- Custom Image Logo for Home -->
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["HomeLogoImage"]</label>
+                                    
+                                    <!-- File Upload Component for Home Logo -->
+                                    <FileUpload Folder="logos" 
+                                               FileType="image" 
+                                               Prefix="home-logo"
+                                               @bind-CurrentFileUrl="homeLogoImageValue"
+                                               AltText="Home Page Logo Image"
+                                               OnFileUploaded="@OnHomeLogoUploaded"
+                                               OnFileRemoved="@OnHomeLogoRemoved" />
+                                    
+                                    <p class="text-xs text-gray-500 mt-1">@Localizer["HomeLogoUploadDescription"]</p>
+                                </div>
+                                
+                                @if (!string.IsNullOrEmpty(homeLogoImageValue))
+                                {
+                                    <!-- Current Home Logo Preview -->
+                                    <div class="bg-white p-4 rounded-lg shadow-sm border-2 border-amber-200">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["CurrentHomeLogo"]</label>
+                                        <img src="@homeLogoImageValue" alt="Home Logo" class="h-16 w-auto" />
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <!-- Using Main Logo -->
+                            <div class="bg-white p-4 rounded-lg shadow-sm border-2 border-amber-200">
+                                <p class="text-sm text-gray-600">@Localizer["UsingMainLogoDescription"]</p>
+                            </div>
+                        }
+                        
+                        <button @onclick="SaveHomeLogoSettings" class="mt-4 px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors">
+                            @Localizer["SaveHomeLogoSettings"]
+                        </button>
+                    </div>
                 </div>
             }
         </div>
@@ -162,7 +260,7 @@
 </div>
 
 <!-- Toast Component -->
-<SpirithubCafe.Web.Components.Shared.Toast />
+<Toast />
 
 @code {
     private string activeTab = "branding";
@@ -171,6 +269,12 @@
     private string logoTextArValue = "";
     private string logoImageValue = "";
     private string siteNameValue = "SpirithubCafe";
+    
+    // Home Page Logo Settings
+    private string homeLogoTypeValue = "inherit";
+    private string homeLogoTextValue = "";
+    private string homeLogoTextArValue = "";
+    private string homeLogoImageValue = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -199,6 +303,12 @@
             // Load logo image
             logoImageValue = await SettingService.GetValueAsync("logo_image", "");
             
+            // Load home page logo settings
+            homeLogoTypeValue = await SettingService.GetValueAsync("home_logo_type", "inherit");
+            homeLogoTextValue = await SettingService.GetValueAsync("home_logo_text", "");
+            homeLogoTextArValue = await SettingService.GetValueAsync("home_logo_text_ar", "");
+            homeLogoImageValue = await SettingService.GetValueAsync("home_logo_image", "");
+            
             // Load site name
             siteNameValue = await SettingService.GetValueAsync("site_name", "SpirithubCafe");
             
@@ -221,12 +331,17 @@
         logoTypeValue = type;
     }
 
+    private void SetHomeLogoType(string type)
+    {
+        homeLogoTypeValue = type;
+    }
+
     private async Task OnLogoUploaded(SpirithubCafe.Web.Components.Shared.FileUpload.UploadResult result)
     {
         if (result.Success)
         {
             logoImageValue = result.FileUrl;
-            await JSRuntime.InvokeVoidAsync("showSuccessToast", "Logo uploaded successfully!");
+            ToastService.ShowSuccess(Localizer["LogoUploadedSuccessfully"]);
             StateHasChanged();
         }
         else
@@ -238,7 +353,28 @@
     private async Task OnLogoRemoved()
     {
         logoImageValue = "";
-        await JSRuntime.InvokeVoidAsync("showSuccessToast", "Logo removed successfully!");
+        ToastService.ShowSuccess(Localizer["LogoRemovedSuccessfully"]);
+        StateHasChanged();
+    }
+
+    private async Task OnHomeLogoUploaded(SpirithubCafe.Web.Components.Shared.FileUpload.UploadResult result)
+    {
+        if (result.Success)
+        {
+            homeLogoImageValue = result.FileUrl;
+            ToastService.ShowSuccess(Localizer["HomeLogoUploadedSuccessfully"]);
+            StateHasChanged();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("showErrorToast", $"Home logo upload failed: {result.Message}");
+        }
+    }
+
+    private async Task OnHomeLogoRemoved()
+    {
+        homeLogoImageValue = "";
+        ToastService.ShowSuccess(Localizer["HomeLogoRemovedSuccessfully"]);
         StateHasChanged();
     }
 
@@ -262,11 +398,39 @@
             }
             
             // Show success message only once
-            await JSRuntime.InvokeVoidAsync("showSuccessToast", "Logo settings saved successfully!");
+            ToastService.ShowSuccess(Localizer["LogoSettingsSavedSuccessfully"]);
         }
         catch (Exception ex)
         {
             await JSRuntime.InvokeVoidAsync("showErrorToast", $"Error saving logo settings: {ex.Message}");
+        }
+    }
+
+    private async Task SaveHomeLogoSettings()
+    {
+        try
+        {
+            // Save home logo type
+            await UpdateSettingInternal("home_logo_type", homeLogoTypeValue);
+            
+            if (homeLogoTypeValue == "text")
+            {
+                // Save text logo settings for home
+                await UpdateSettingInternal("home_logo_text", homeLogoTextValue);
+                await UpdateSettingInternal("home_logo_text_ar", homeLogoTextArValue);
+            }
+            else if (homeLogoTypeValue == "image")
+            {
+                // Save image logo setting for home
+                await UpdateSettingInternal("home_logo_image", homeLogoImageValue);
+            }
+            
+            // Show success message
+            ToastService.ShowSuccess(Localizer["HomeLogoSettingsSavedSuccessfully"]);
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("showErrorToast", $"Error saving home logo settings: {ex.Message}");
         }
     }
 
@@ -275,7 +439,7 @@
         try
         {
             await UpdateSettingInternal(key, value);
-            await JSRuntime.InvokeVoidAsync("showSuccessToast", "Settings saved successfully!");
+            ToastService.ShowSuccess(Localizer["SettingsSavedSuccessfully"]);
         }
         catch (Exception ex)
         {
@@ -299,7 +463,7 @@
                 { 
                     Key = key, 
                     Value = value,
-                    Category = key.StartsWith("logo") ? "Branding" : "General",
+                    Category = key.StartsWith("logo") || key.StartsWith("home_logo") ? "Branding" : "General",
                     DataType = key.EndsWith("_image") ? "Image" : "Text"
                 });
             }
