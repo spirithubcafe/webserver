@@ -570,3 +570,56 @@ body.modal-open .blazor-app {
 body.modal-open {
     overflow: hidden;
 }
+
+/* Shimmer Animation for Skeleton Loading */
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%) skew(-12deg);
+    }
+    100% {
+        transform: translateX(200%) skew(-12deg);
+    }
+}
+
+/* Skeleton loading improvements */
+.skeleton-shimmer {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 37%, #f3f4f6 63%);
+    background-size: 400% 100%;
+    animation: shimmer-bg 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer-bg {
+    0% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Enhanced skeleton loading for products */
+.product-skeleton {
+    background: linear-gradient(90deg, 
+        rgba(243, 244, 246, 0.8) 25%, 
+        rgba(229, 231, 235, 0.9) 37%, 
+        rgba(243, 244, 246, 0.8) 63%
+    );
+    background-size: 400% 100%;
+    animation: shimmer-bg 2s ease-in-out infinite;
+}
+
+.product-skeleton::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent
+    );
+    transform: translateX(-100%);
+    animation: shimmer 2s infinite;
+}

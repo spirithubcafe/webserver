@@ -2456,6 +2456,21 @@
   .transform {
     transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
   }
+  .skeleton {
+    border-radius: var(--radius-box);
+    background-color: var(--color-base-300);
+    @media (prefers-reduced-motion: reduce) {
+      transition-duration: 15s;
+    }
+    will-change: background-position;
+    background-image: linear-gradient( 105deg, #0000 0% 40%, var(--color-base-100) 50%, #0000 60% 100% );
+    background-size: 200% auto;
+    background-repeat: no-repeat;
+    background-position-x: -50%;
+    @media (prefers-reduced-motion: no-preference) {
+      animation: skeleton 1.8s ease-in-out infinite;
+    }
+  }
   .animate-pulse {
     animation: var(--animate-pulse);
   }
@@ -5483,11 +5498,6 @@
       padding: calc(var(--spacing) * 3);
     }
   }
-  .sm\:p-4 {
-    @media (width >= 40rem) {
-      padding: calc(var(--spacing) * 4);
-    }
-  }
   .sm\:p-6 {
     @media (width >= 40rem) {
       padding: calc(var(--spacing) * 6);
@@ -5612,23 +5622,9 @@
       gap: calc(var(--spacing) * 6);
     }
   }
-  .md\:space-y-4 {
-    @media (width >= 48rem) {
-      :where(& > :not(:last-child)) {
-        --tw-space-y-reverse: 0;
-        margin-block-start: calc(calc(var(--spacing) * 4) * var(--tw-space-y-reverse));
-        margin-block-end: calc(calc(var(--spacing) * 4) * calc(1 - var(--tw-space-y-reverse)));
-      }
-    }
-  }
   .md\:p-4 {
     @media (width >= 48rem) {
       padding: calc(var(--spacing) * 4);
-    }
-  }
-  .md\:p-6 {
-    @media (width >= 48rem) {
-      padding: calc(var(--spacing) * 6);
     }
   }
   .md\:pb-0 {
@@ -6702,6 +6698,42 @@ body.modal-open .blazor-app {
 }
 body.modal-open {
   overflow: hidden;
+}
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) skew(-12deg);
+  }
+  100% {
+    transform: translateX(200%) skew(-12deg);
+  }
+}
+.skeleton-shimmer {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 37%, #f3f4f6 63%);
+  background-size: 400% 100%;
+  animation: shimmer-bg 1.5s ease-in-out infinite;
+}
+@keyframes shimmer-bg {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+.product-skeleton {
+  background: linear-gradient(90deg, rgba(243, 244, 246, 0.8) 25%, rgba(229, 231, 235, 0.9) 37%, rgba(243, 244, 246, 0.8) 63% );
+  background-size: 400% 100%;
+  animation: shimmer-bg 2s ease-in-out infinite;
+}
+.product-skeleton::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient( 90deg, transparent, rgba(255, 255, 255, 0.4), transparent );
+  transform: translateX(-100%);
+  animation: shimmer 2s infinite;
 }
 @layer base {
   :where(:root),:root:has(input.theme-controller[value=light]:checked),[data-theme=light] {
