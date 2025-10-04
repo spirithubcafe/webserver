@@ -3123,9 +3123,6 @@
   .border-gray-600 {
     border-color: var(--color-gray-600);
   }
-  .border-gray-700 {
-    border-color: var(--color-gray-700);
-  }
   .border-green-200 {
     border-color: var(--color-green-200);
   }
@@ -3212,9 +3209,6 @@
   }
   .bg-amber-600 {
     background-color: var(--color-amber-600);
-  }
-  .bg-amber-800 {
-    background-color: var(--color-amber-800);
   }
   .bg-base-100 {
     background-color: var(--color-base-100);
@@ -7514,14 +7508,15 @@ body.modal-open {
   .modern-chat-widget .modern-chat-button {
     width: 3.5rem !important;
     height: 3.5rem !important;
-    padding: 0 !important;
+    padding: 0.75rem !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
   }
   .modern-chat-widget .modern-chat-button svg {
-    width: 1.5rem !important;
-    height: 1.5rem !important;
+    width: 1.75rem !important;
+    height: 1.75rem !important;
+    margin: 0 !important;
   }
   .modern-chat-widget .modern-chat-container {
     position: absolute;
