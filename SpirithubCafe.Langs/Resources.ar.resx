@@ -1920,4 +1920,7 @@
   <data name="ErrorSendingMessage" xml:space="preserve">
     <value>خطأ في إرسال الرسالة</value>
   </data>
+  <data name="AboutUsManagement" xml:space="preserve">
+    <value>إدارة صفحة من نحن</value>
+  </data>
 </root>

@@ -1932,5 +1932,8 @@
   <data name="ErrorSendingMessage" xml:space="preserve">
     <value>Error sending message</value>
   </data>
+  <data name="AboutUsManagement" xml:space="preserve">
+    <value>About Us Management</value>
+  </data>
 
 </root>

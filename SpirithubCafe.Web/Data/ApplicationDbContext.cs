@@ -46,6 +46,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<ChatSession> ChatSessions { get; set; }
     public DbSet<ChatMessage> ChatMessages { get; set; }
     
+    // About Us entities
+    public DbSet<AboutUsPage> AboutUsPages { get; set; }
+    public DbSet<AboutUsSection> AboutUsSections { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -946,6 +950,78 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .HasForeignKey(m => m.ChatSessionId)
                 .HasPrincipalKey(s => s.Id)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        // Configure AboutUsPage entity
+        builder.Entity<AboutUsPage>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.Title)
+                .IsRequired()
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.TitleAr)
+                .IsRequired()
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.Subtitle)
+                .HasMaxLength(500);
+                
+            entity.Property(e => e.SubtitleAr)
+                .HasMaxLength(500);
+                
+            entity.Property(e => e.BgType)
+                .IsRequired()
+                .HasMaxLength(50);
+                
+            entity.Property(e => e.BgValue)
+                .IsRequired()
+                .HasMaxLength(500);
+        });
+        
+        // Configure AboutUsSection entity
+        builder.Entity<AboutUsSection>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.Title)
+                .IsRequired()
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.TitleAr)
+                .IsRequired()
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.ImagePath)
+                .HasMaxLength(500);
+                
+            entity.Property(e => e.ImageAlt)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.ImageAltAr)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.LayoutType)
+                .IsRequired()
+                .HasMaxLength(50);
+                
+            entity.Property(e => e.BgType)
+                .IsRequired()
+                .HasMaxLength(50);
+                
+            entity.Property(e => e.BgValue)
+                .IsRequired()
+                .HasMaxLength(500);
+                
+            // Relationship
+            entity.HasOne(s => s.AboutUsPage)
+                .WithMany(p => p.Sections)
+                .HasForeignKey(s => s.AboutUsPageId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
+            entity.HasIndex(e => e.DisplayOrder)
+                .HasDatabaseName("IX_AboutUsSections_DisplayOrder");
         });
     }
 }

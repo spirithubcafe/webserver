@@ -145,6 +145,7 @@ builder.Services.AddScoped<HomePageSettingsService>();
 builder.Services.AddScoped<PaymentGatewaySettingsService>();
 builder.Services.AddScoped<ContactService>();
 builder.Services.AddScoped<NewsletterService>();
+builder.Services.AddScoped<IAboutUsService, AboutUsService>();
 builder.Services.AddScoped<SpirithubCafe.Application.Interfaces.IFooterService, SpirithubCafe.Application.Services.FooterService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<SpirithubCafe.Application.Services.ICheckoutService, SpirithubCafe.Application.Services.CheckoutService>();
