@@ -52,9 +52,9 @@
                             @if (logoType == "image" && !string.IsNullOrEmpty(logoImage))
                             {
                                 <!-- Dynamic Image Logo -->
-                                <a href="/" class="flex items-center">
+                                <NavLink href="/" class="flex items-center">
                                     <img src="@logoImage" alt="@(logoText ?? "SpirithubCafe")" class="h-12 w-auto mr-3" />
-                                </a>
+                                </NavLink>
                             }
                             else
                             {
@@ -67,10 +67,9 @@
                                     </svg>
                                 </div>
                                 <div class="flex flex-col">
-                                    <a href="/"
-                                        class="@GetLogoTextClasses() text-2xl font-bold hover:text-amber-600 transition-colors">
+                                    <NavLink href="/" class="@($"{GetLogoTextClasses()} text-2xl font-bold hover:text-amber-600 transition-colors")">
                                         @(string.IsNullOrEmpty(logoText) ? "SpirithubCafe" : logoText)
-                                    </a>
+                                    </NavLink>
                                     <span class="@GetSubtitleClasses() text-xs font-medium">Premium Coffee from Oman</span>
                                 </div>
                             }
@@ -341,54 +340,54 @@
         <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50 md:hidden w-full">
             <div class="grid grid-cols-5 items-center py-2 w-full">
                 <!-- Home -->
-                <a href="/" class="text-gray-500 hover:text-amber-600 transition-colors duration-200 w-full">
+                <NavLink href="/" class="text-gray-500 hover:text-amber-600 transition-colors duration-200 w-full">
                     <div class="flex flex-col items-center py-2 px-1 w-full">
                         <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
                         </svg>
                         <span class="text-xs font-medium text-center w-full">@Localizer["Home"]</span>
                     </div>
-                </a>
+                </NavLink>
 
                 <!-- Products -->
-                <a href="/products" class="text-gray-500 hover:text-amber-600 transition-colors duration-200 w-full">
+                <NavLink href="/products" class="text-gray-500 hover:text-amber-600 transition-colors duration-200 w-full">
                     <div class="flex flex-col items-center py-2 px-1 w-full">
                         <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M19 7h-3V6a4 4 0 0 0-8 0v1H5a1 1 0 0 0-1 1v11a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V8a1 1 0 0 0-1-1zM10 6a2 2 0 0 1 4 0v1h-4V6zm8 13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V9h2v1a1 1 0 0 0 2 0V9h2v10z"/>
                         </svg>
-                                                <span class="text-xs font-medium text-center w-full font-arabic-modern">@Localizer["Home"]</span>
+                        <span class="text-xs font-medium text-center w-full font-arabic-modern">@Localizer["Products"]</span>
                     </div>
-                </a>
+                </NavLink>
 
-                <!-- Products -->
-                <a href="/products" class="text-gray-500 hover:text-amber-600 transition-colors duration-200 w-full">
+                <!-- Shop -->
+                <NavLink href="/products" class="text-gray-500 hover:text-amber-600 transition-colors duration-200 w-full">
                     <div class="flex flex-col items-center py-2 px-1 w-full">
                         <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M19 7h-3V6a4 4 0 0 0-8 0v1H5a1 1 0 0 0-1 1v11a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V8a1 1 0 0 0-1-1zM10 6a2 2 0 0 1 4 0v1h-4V6zm8 13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V9h2v1a1 1 0 0 0 2 0V9h4v1a1 1 0 0 0 2 0V9h2v10z"/>
                         </svg>
-                        <span class="text-xs font-medium text-center w-full font-arabic-modern">@Localizer["Products"]</span>
+                        <span class="text-xs font-medium text-center w-full font-arabic-modern">@Localizer["Shop"]</span>
                     </div>
-                </a>
+                </NavLink>
 
                 <!-- Categories -->
-                <a href="/categories" class="text-gray-500 hover:text-amber-600 transition-colors duration-200 w-full">
+                <NavLink href="/categories" class="text-gray-500 hover:text-amber-600 transition-colors duration-200 w-full">
                     <div class="flex flex-col items-center py-2 px-1 w-full">
                         <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
                         </svg>
                         <span class="text-xs font-medium text-center w-full font-arabic-modern">@Localizer["Categories"]</span>
                     </div>
-                </a>
+                </NavLink>
 
-                <!-- Categories -->
-                <a href="/categories" class="text-gray-500 hover:text-amber-600 transition-colors duration-200 w-full">
+                <!-- Search -->
+                <button class="text-gray-500 hover:text-amber-600 transition-colors duration-200 w-full">
                     <div class="flex flex-col items-center py-2 px-1 w-full">
                         <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
+                            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                         </svg>
-                        <span class="text-xs font-medium text-center w-full">@Localizer["Categories"]</span>
+                        <span class="text-xs font-medium text-center w-full">@Localizer["Search"]</span>
                     </div>
-                </a>
+                </button>
 
                 <!-- Cart -->
                 <button @onclick="NavigateToCart" class="text-gray-500 hover:text-amber-600 transition-colors duration-200 w-full">
@@ -412,14 +411,14 @@
                 </button>
 
                 <!-- Account -->
-                <a href="/Account/Manage" class="text-gray-500 hover:text-amber-600 transition-colors duration-200 w-full">
+                <NavLink href="/Account/Manage" class="text-gray-500 hover:text-amber-600 transition-colors duration-200 w-full">
                     <div class="flex flex-col items-center py-2 px-1 w-full">
                         <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                         </svg>
                         <span class="text-xs font-medium text-center w-full">@Localizer["Account"]</span>
                     </div>
-                </a>
+                </NavLink>
             </div>
         </div>
     </div>

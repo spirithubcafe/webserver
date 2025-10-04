@@ -39,7 +39,7 @@
                     <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-4">
                         @foreach (var category in homepageCategories)
                         {
-                            <a href="/products/@category.Slug" class="block text-center">
+                            <NavLink href="@($"/products/{category.Slug}")" class="block text-center">
                                 <div class="aspect-square bg-gray-50 rounded-xl shadow-sm border border-gray-100 hover:shadow-md mb-3">
                                     @if (!string.IsNullOrEmpty(category.ImagePath))
                                     {
@@ -60,7 +60,7 @@
                                 <h3 class="font-medium text-gray-900 text-sm hover:text-amber-600">
                                     @GetCategoryName(category)
                                 </h3>
-                            </a>
+                            </NavLink>
                         }
                     </div>
                 </div>
@@ -138,9 +138,9 @@
                                     <p class="text-gray-500 text-xs md:text-sm mb-2 md:mb-3 line-clamp-1">@GetProductNotes(product)</p>
                                     <div class="flex flex-col gap-2">
                                         <span class="text-lg md:text-xl font-bold text-stone-700">@GetProductPrice(product)</span>
-                                        <a href="/product/@product.Slug" class="bg-stone-600 hover:bg-stone-700 text-white px-3 py-2 rounded-lg text-xs md:text-sm font-medium transition-colors text-center">
+                                        <NavLink href="@($"/product/{product.Slug}")" class="bg-stone-600 hover:bg-stone-700 text-white px-3 py-2 rounded-lg text-xs md:text-sm font-medium transition-colors text-center">
                                             @Localizer["ViewProduct"]
-                                        </a>
+                                        </NavLink>
                                     </div>
                                 </div>
                             </div>
@@ -161,9 +161,9 @@
                 }
 
                 <div class="text-center mt-8">
-                    <a href="/products" class="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+                    <NavLink href="/products" class="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
                         @Localizer["ViewAllProducts"]
-                    </a>
+                    </NavLink>
                 </div>
             </div>
         </section>

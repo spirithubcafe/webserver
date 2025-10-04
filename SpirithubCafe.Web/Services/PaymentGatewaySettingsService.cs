@@ -230,7 +230,7 @@ public class PaymentGatewaySettingsService
     /// <summary>
     /// Convert query string to dictionary
     /// </summary>
-    /// <param name="queryString">Query string (key1=value1&key2=value2)</param>
+    /// <param name="queryString">Query string (key1=value1&amp;key2=value2)</param>
     /// <returns>Dictionary of key-value pairs</returns>
     private Dictionary<string, object> ParseQueryStringToMap(string queryString)
     {
