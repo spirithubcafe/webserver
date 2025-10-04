@@ -1,0 +1,362 @@
+@using System.Text.RegularExpressions
+@rendermode InteractiveServer
+
+<div class="text-editor-container bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
+    <!-- Toolbar -->
+    <div class="border-b border-gray-200 bg-gray-50 px-4 py-2">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <!-- Format Buttons -->
+                <button type="button" @onclick="@(() => FormatText("bold"))" 
+                        class="@GetButtonClass(IsTextSelected)" title="Bold (Ctrl+B)">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M3 4a1 1 0 011-1h5.5a3.5 3.5 0 110 7H6v2h3.5a3.5 3.5 0 110 7H4a1 1 0 01-1-1V4zm2 6h3.5a1.5 1.5 0 000-3H5v3z"/>
+                    </svg>
+                </button>
+                
+                <button type="button" @onclick="@(() => FormatText("italic"))" 
+                        class="@GetButtonClass(IsTextSelected)" title="Italic (Ctrl+I)">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2h-.25l-2 12H9a1 1 0 110 2h2a1 1 0 110-2h.25l2-12H13a1 1 0 110-2H9a1 1 0 00-1 1z"/>
+                    </svg>
+                </button>
+                
+                <button type="button" @onclick="@(() => FormatText("underline"))" 
+                        class="@GetButtonClass(IsTextSelected)" title="Underline (Ctrl+U)">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5 2a1 1 0 011 1v6a4 4 0 108 0V3a1 1 0 112 0v6a6 6 0 11-12 0V3a1 1 0 011-1zM3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"/>
+                    </svg>
+                </button>
+                
+                <div class="w-px h-6 bg-gray-300"></div>
+                
+                <!-- List Buttons -->
+                <button type="button" @onclick="@(() => FormatText("unordered-list"))" 
+                        class="@GetButtonClass(true)" title="Bullet List">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h1a1 1 0 010 2H4a1 1 0 01-1-1zm3 0a1 1 0 011-1h9a1 1 0 110 2H7a1 1 0 01-1-1zM3 8a1 1 0 011-1h1a1 1 0 010 2H4a1 1 0 01-1-1zm3 0a1 1 0 011-1h9a1 1 0 110 2H7a1 1 0 01-1-1zm-3 4a1 1 0 011-1h1a1 1 0 010 2H4a1 1 0 01-1-1zm3 0a1 1 0 011-1h9a1 1 0 110 2H7a1 1 0 01-1-1zm-3 4a1 1 0 011-1h1a1 1 0 010 2H4a1 1 0 01-1-1zm3 0a1 1 0 011-1h9a1 1 0 110 2H7a1 1 0 01-1-1z"/>
+                    </svg>
+                </button>
+                
+                <button type="button" @onclick="@(() => FormatText("ordered-list"))" 
+                        class="@GetButtonClass(true)" title="Numbered List">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                    </svg>
+                </button>
+                
+                <div class="w-px h-6 bg-gray-300"></div>
+                
+                <!-- Link Button -->
+                <button type="button" @onclick="InsertLink" 
+                        class="@GetButtonClass(IsTextSelected)" title="Insert Link">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Mode Toggle -->
+            <div class="flex items-center space-x-2">
+                <span class="text-sm text-gray-600">Mode:</span>
+                <div class="flex bg-gray-200 rounded-lg p-1">
+                    <button type="button" @onclick="() => SetMode(EditorMode.Edit)" 
+                            class="@GetModeButtonClass(EditorMode.Edit)">
+                        Edit
+                    </button>
+                    <button type="button" @onclick="() => SetMode(EditorMode.Preview)" 
+                            class="@GetModeButtonClass(EditorMode.Preview)">
+                        Preview
+                    </button>
+                    <button type="button" @onclick="() => SetMode(EditorMode.Split)" 
+                            class="@GetModeButtonClass(EditorMode.Split)">
+                        Split
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Editor Content -->
+    <div class="@GetContainerClass()">
+        <!-- Edit Panel -->
+        @if (CurrentMode == EditorMode.Edit || CurrentMode == EditorMode.Split)
+        {
+            <div class="@GetEditPanelClass()">
+                <textarea @ref="textareaRef" 
+                          @bind="Content" 
+                          @bind:event="oninput"
+                          @onselect="HandleTextSelection"
+                          @onkeydown="HandleKeyDown"
+                          placeholder="@Placeholder"
+                          readonly="@ReadOnly"
+                          class="w-full h-full resize-none border-0 outline-0 p-4 text-gray-800 placeholder-gray-400 bg-transparent"
+                          style="min-height: @($"{MinHeight}px"); font-family: 'JetBrains Mono', 'Courier New', monospace;">
+                </textarea>
+            </div>
+        }
+        
+        <!-- Preview Panel -->
+        @if (CurrentMode == EditorMode.Preview || CurrentMode == EditorMode.Split)
+        {
+            <div class="@GetPreviewPanelClass()">
+                <div class="p-4 prose prose-sm max-w-none">
+                    @((MarkupString)GetFormattedContent())
+                </div>
+            </div>
+        }
+    </div>
+    
+    <!-- Status Bar -->
+    <div class="border-t border-gray-200 bg-gray-50 px-4 py-2 flex items-center justify-between text-xs text-gray-500">
+        <div class="flex items-center space-x-4">
+            <span>Lines: @GetLineCount()</span>
+            <span>Words: @GetWordCount()</span>
+            <span>Characters: @(Content?.Length ?? 0)</span>
+        </div>
+        @if (!string.IsNullOrEmpty(StatusMessage))
+        {
+            <span class="text-blue-600">@StatusMessage</span>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Content { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> ContentChanged { get; set; }
+    [Parameter] public string Placeholder { get; set; } = "Start writing...";
+    [Parameter] public bool ReadOnly { get; set; } = false;
+    [Parameter] public int MinHeight { get; set; } = 300;
+    [Parameter] public EditorMode DefaultMode { get; set; } = EditorMode.Edit;
+    
+    private ElementReference textareaRef;
+    private EditorMode CurrentMode;
+    private bool IsTextSelected = false;
+    private string StatusMessage = string.Empty;
+    private Timer? statusTimer;
+    
+    public enum EditorMode
+    {
+        Edit,
+        Preview,
+        Split
+    }
+    
+    protected override void OnInitialized()
+    {
+        CurrentMode = DefaultMode;
+    }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Focus the textarea
+            if (CurrentMode == EditorMode.Edit || CurrentMode == EditorMode.Split)
+            {
+                try
+                {
+                    await textareaRef.FocusAsync();
+                }
+                catch { }
+            }
+        }
+    }
+    
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (ReadOnly) return;
+        
+        // Handle keyboard shortcuts
+        if (e.CtrlKey)
+        {
+            switch (e.Key.ToLower())
+            {
+                case "b":
+                    await FormatText("bold");
+                    break;
+                case "i":
+                    await FormatText("italic");
+                    break;
+                case "u":
+                    await FormatText("underline");
+                    break;
+            }
+        }
+        
+        // Handle Tab key for indentation
+        if (e.Key == "Tab")
+        {
+            await InsertText("    "); // 4 spaces
+        }
+    }
+    
+    private void HandleTextSelection()
+    {
+        // This would typically require JS interop to get selection
+        // For now, we'll assume text is selected when content exists
+        IsTextSelected = !string.IsNullOrEmpty(Content);
+    }
+    
+    private async Task FormatText(string format)
+    {
+        if (ReadOnly) return;
+        
+        string textToInsert = format switch
+        {
+            "bold" => "**bold text**",
+            "italic" => "*italic text*",
+            "underline" => "<u>underlined text</u>",
+            "unordered-list" => Environment.NewLine + "- List item" + Environment.NewLine + "- List item" + Environment.NewLine,
+            "ordered-list" => Environment.NewLine + "1. List item" + Environment.NewLine + "2. List item" + Environment.NewLine,
+            _ => ""
+        };
+        
+        await InsertText(textToInsert);
+        ShowStatus($"Applied {format} formatting");
+    }
+    
+    private async Task InsertLink()
+    {
+        if (ReadOnly) return;
+        
+        string linkText = "[Link Text](https://example.com)";
+        await InsertText(linkText);
+        ShowStatus("Link inserted");
+    }
+    
+    private async Task InsertText(string text)
+    {
+        if (ReadOnly) return;
+        
+        // For a full implementation, we'd use JS interop to handle cursor position
+        // For now, we'll append to the end
+        Content += text;
+        await ContentChanged.InvokeAsync(Content);
+        StateHasChanged();
+    }
+    
+    private void SetMode(EditorMode mode)
+    {
+        CurrentMode = mode;
+        StateHasChanged();
+    }
+    
+    private void ShowStatus(string message)
+    {
+        StatusMessage = message;
+        statusTimer?.Dispose();
+        statusTimer = new Timer(_ => 
+        {
+            StatusMessage = string.Empty;
+            InvokeAsync(StateHasChanged);
+        }, null, 2000, Timeout.Infinite);
+        
+        StateHasChanged();
+    }
+    
+    private string GetFormattedContent()
+    {
+        if (string.IsNullOrEmpty(Content))
+            return "<p class=\"text-gray-400\">Preview will appear here...</p>";
+        
+        var html = Content;
+        
+        // Convert markdown-like formatting to HTML
+        html = Regex.Replace(html, @"\*\*(.*?)\*\*", "<strong>$1</strong>"); // Bold
+        html = Regex.Replace(html, @"(?<!\*)\*([^*\n]+)\*(?!\*)", "<em>$1</em>"); // Italic
+        html = Regex.Replace(html, @"<u>(.*?)</u>", "<u>$1</u>"); // Underline
+        
+        // Convert links
+        html = Regex.Replace(html, @"\[([^\]]+)\]\(([^)]+)\)", "<a href=\"$2\" class=\"text-blue-600 hover:underline\" target=\"_blank\">$1</a>");
+        
+        // Convert line breaks to paragraphs
+        var paragraphs = html.Split(new[] { Environment.NewLine + Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+        html = string.Join("", paragraphs.Select(p => 
+        {
+            p = p.Trim();
+            if (string.IsNullOrEmpty(p)) return "";
+            
+            // Handle lists
+            if (p.Contains(Environment.NewLine + "- ") || p.StartsWith("- "))
+            {
+                var items = p.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).Where(line => line.Trim().StartsWith("- "));
+                var listItems = string.Join("", items.Select(item => 
+                    $"<li>{item.Substring(item.IndexOf("- ") + 2).Trim()}</li>"));
+                return $"<ul class=\"list-disc ml-6 space-y-1\">{listItems}</ul>";
+            }
+            
+            if (Regex.IsMatch(p, @"\n\d+\. ") || Regex.IsMatch(p, @"^\d+\. "))
+            {
+                var items = p.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).Where(line => Regex.IsMatch(line.Trim(), @"^\d+\. "));
+                var listItems = string.Join("", items.Select(item => 
+                {
+                    var match = Regex.Match(item.Trim(), @"^\d+\. (.+)");
+                    return match.Success ? $"<li>{match.Groups[1].Value}</li>" : "";
+                }));
+                return $"<ol class=\"list-decimal ml-6 space-y-1\">{listItems}</ol>";
+            }
+            
+            // Regular paragraph
+            p = p.Replace(Environment.NewLine, "<br>");
+            return $"<p class=\"mb-4\">{p}</p>";
+        }));
+        
+        return html;
+    }
+    
+    private int GetLineCount()
+    {
+        if (string.IsNullOrEmpty(Content)) return 0;
+        return Content.Split(new[] { Environment.NewLine }, StringSplitOptions.None).Length;
+    }
+    
+    private int GetWordCount()
+    {
+        if (string.IsNullOrEmpty(Content)) return 0;
+        return Content.Split(new char[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries).Length;
+    }
+    
+    // CSS Classes
+    private string GetButtonClass(bool enabled)
+    {
+        var baseClass = "p-2 rounded hover:bg-gray-200 transition-colors";
+        return enabled 
+            ? $"{baseClass} text-gray-700" 
+            : $"{baseClass} text-gray-400 cursor-not-allowed";
+    }
+    
+    private string GetModeButtonClass(EditorMode mode)
+    {
+        var baseClass = "px-3 py-1 text-sm font-medium rounded transition-colors";
+        return CurrentMode == mode 
+            ? $"{baseClass} bg-white text-gray-900 shadow-sm" 
+            : $"{baseClass} text-gray-600 hover:text-gray-900";
+    }
+    
+    private string GetContainerClass()
+    {
+        return CurrentMode == EditorMode.Split 
+            ? "flex divide-x divide-gray-300" 
+            : "flex";
+    }
+    
+    private string GetEditPanelClass()
+    {
+        return CurrentMode == EditorMode.Split 
+            ? "flex-1 relative" 
+            : "w-full relative";
+    }
+    
+    private string GetPreviewPanelClass()
+    {
+        return CurrentMode == EditorMode.Split 
+            ? "flex-1 bg-gray-50 overflow-y-auto" 
+            : "w-full bg-gray-50 overflow-y-auto";
+    }
+    
+    public void Dispose()
+    {
+        statusTimer?.Dispose();
+    }
+}

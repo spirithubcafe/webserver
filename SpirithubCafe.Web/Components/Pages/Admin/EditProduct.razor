@@ -165,17 +165,23 @@
                             <!-- Description (EN) -->
                             <div class="space-y-2">
                                 <label class="block text-sm font-medium text-gray-700">Description (English)</label>
-                                <textarea @bind="product.Description" rows="4"
-                                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-                                          placeholder="Detailed product description..."></textarea>
+                                <div class="w-full">
+                                    <TextEditor @bind-Content="@product.Description" 
+                                               Placeholder="Describe this coffee product in detail..."
+                                               MinHeight="300"
+                                               DefaultMode="TextEditor.EditorMode.Split" />
+                                </div>
                             </div>
 
                             <!-- Description (AR) -->
                             <div class="space-y-2">
                                 <label class="block text-sm font-medium text-gray-700">Description (Arabic)</label>
-                                <textarea @bind="product.DescriptionAr" rows="4"
-                                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-                                          placeholder="وصف مفصل للمنتج..." dir="rtl"></textarea>
+                                <div class="w-full" dir="rtl">
+                                    <TextEditor @bind-Content="@product.DescriptionAr" 
+                                               Placeholder="وصف منتج القهوة بالتفصيل..."
+                                               MinHeight="300"
+                                               DefaultMode="TextEditor.EditorMode.Split" />
+                                </div>
                             </div>
 
                             <!-- Notes (EN & AR) -->
