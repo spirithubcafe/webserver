@@ -1,0 +1,527 @@
+@page "/admin/chat"
+@layout AdminLayout
+@attribute [Authorize(Roles = "Admin")]
+@using Microsoft.AspNetCore.SignalR.Client
+@using SpirithubCafe.Web.Services
+@using System.Text.Json
+@implements IAsyncDisposable
+@inject IChatService ChatService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@inject IStringLocalizer<SpirithubCafe.Langs.Resources> Localizer
+
+<PageTitle>@Localizer["ChatManagement"] - Admin</PageTitle>
+
+<div class="container mx-auto px-4 py-6">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">@Localizer["LiveChatSupport"]</h1>
+        <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2">
+                <div class="@(IsConnected ? "bg-green-500" : "bg-red-500") w-3 h-3 rounded-full"></div>
+                <span class="text-sm text-gray-600">
+                    @(IsConnected ? Localizer["Connected"] : Localizer["Disconnected"])
+                </span>
+            </div>
+            @if (totalUnreadCount > 0)
+            {
+                <div class="bg-red-500 text-white px-3 py-1 rounded-full text-sm">
+                    @totalUnreadCount @Localizer["UnreadMessages"]
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
+        <!-- Chat Sessions List -->
+        <div class="lg:col-span-1 bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="bg-gray-50 px-4 py-3 border-b">
+                <h2 class="text-lg font-semibold text-gray-800">@Localizer["ActiveChats"]</h2>
+                <p class="text-sm text-gray-600">@chatSessions.Count @Localizer["ActiveSessions"]</p>
+            </div>
+            
+            <div class="overflow-y-auto h-full">
+                @if (isLoadingSessions)
+                {
+                    <div class="flex items-center justify-center p-8">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+                    </div>
+                }
+                else if (!chatSessions.Any())
+                {
+                    <div class="p-8 text-center text-gray-500">
+                        <svg class="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 3.582-8 8-8s8 3.582 8 8z"></path>
+                        </svg>
+                        <p class="text-sm">@Localizer["NoActiveChats"]</p>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var session in chatSessions.OrderByDescending(s => s.LastMessageAt ?? s.CreatedAt))
+                    {
+                        var unreadCount = session.Messages?.Count(m => !m.IsFromAdmin && !m.IsRead) ?? 0;
+                        var lastMessage = session.Messages?.OrderByDescending(m => m.CreatedAt).FirstOrDefault();
+                        
+                        <div @onclick="() => SelectChatSession(session)" 
+                             class="@(selectedSessionId == session.SessionId ? "bg-amber-50 border-l-4 border-amber-500" : "hover:bg-gray-50") cursor-pointer p-4 border-b transition-colors">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-8 h-8 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                                        @session.VisitorName.Substring(0, 1).ToUpper()
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-gray-800 text-sm">@session.VisitorName</div>
+                                        <div class="text-xs text-gray-500">
+                                            @((session.LastMessageAt ?? session.CreatedAt).ToString("MMM dd, HH:mm"))
+                                        </div>
+                                    </div>
+                                </div>
+                                @if (unreadCount > 0)
+                                {
+                                    <div class="bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">
+                                        @unreadCount
+                                    </div>
+                                }
+                            </div>
+                            
+                            @if (lastMessage != null)
+                            {
+                                <div class="text-xs text-gray-600 truncate">
+                                    <span class="@(lastMessage.IsFromAdmin ? "text-amber-600" : "text-gray-800")">
+                                        @(lastMessage.IsFromAdmin ? Localizer["You"] : session.VisitorName):
+                                    </span>
+                                    @lastMessage.Message
+                                </div>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <!-- Chat Window -->
+        <div class="lg:col-span-2 bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
+            @if (string.IsNullOrEmpty(selectedSessionId))
+            {
+                <div class="flex-1 flex items-center justify-center p-8">
+                    <div class="text-center text-gray-500">
+                        <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                        </svg>
+                        <h3 class="text-lg font-semibold text-gray-700 mb-2">@Localizer["SelectChatToStart"]</h3>
+                        <p class="text-sm">@Localizer["ChooseChatSessionFromLeft"]</p>
+                    </div>
+                </div>
+            }
+            else
+            {
+                var selectedSession = chatSessions.FirstOrDefault(s => s.SessionId == selectedSessionId);
+                
+                <!-- Chat Header -->
+                <div class="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center text-white font-semibold">
+                            @selectedSession?.VisitorName?.Substring(0, 1).ToUpper()
+                        </div>
+                        <div>
+                            <div class="font-semibold text-gray-800">@selectedSession?.VisitorName</div>
+                            <div class="text-sm text-gray-500">
+                                @if (!string.IsNullOrEmpty(selectedSession?.VisitorEmail))
+                                {
+                                    <span>@selectedSession.VisitorEmail • </span>
+                                }
+                                @Localizer["Started"] @selectedSession?.CreatedAt.ToString("MMM dd, HH:mm")
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2">
+                        <button @onclick="() => CloseChatSession(selectedSessionId)" 
+                                class="text-red-500 hover:text-red-700 px-3 py-1 rounded text-sm border border-red-200 hover:border-red-300 transition-colors">
+                            @Localizer["CloseChat"]
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Messages Area -->
+                <div class="flex-1 overflow-y-auto p-6 space-y-4" @ref="messagesContainer">
+                    @if (isLoadingMessages)
+                    {
+                        <div class="flex items-center justify-center">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var message in currentMessages.OrderBy(m => m.CreatedAt))
+                        {
+                            <div class="@(message.IsFromAdmin ? "flex justify-end" : "flex justify-start")">
+                                <div class="@(message.IsFromAdmin ? "bg-amber-500 text-white" : "bg-gray-100 text-gray-800") rounded-lg px-4 py-2 max-w-xs lg:max-w-md">
+                                    @if (!message.IsFromAdmin)
+                                    {
+                                        <div class="text-xs font-semibold mb-1 text-gray-600">@message.SenderName</div>
+                                    }
+                                    <div class="text-sm whitespace-pre-wrap">@message.Message</div>
+                                    <div class="text-xs mt-1 @(message.IsFromAdmin ? "text-amber-100" : "text-gray-500")">
+                                        @message.CreatedAt.ToString("HH:mm")
+                                        @if (message.IsFromAdmin && message.IsRead)
+                                        {
+                                            <span class="ml-1">✓</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <!-- Message Input -->
+                <div class="border-t bg-gray-50 p-4">
+                    <div class="flex space-x-3">
+                        <input @bind="newMessage" 
+                               @onkeypress="HandleKeyPress"
+                               placeholder="@Localizer["TypeYourReply"]..."
+                               class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                               disabled="@(!IsConnected || isSending)" />
+                        <button @onclick="SendMessage" 
+                                disabled="@(string.IsNullOrWhiteSpace(newMessage) || !IsConnected || isSending)"
+                                class="bg-amber-500 text-white px-6 py-2 rounded-lg hover:bg-amber-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                            @if (isSending)
+                            {
+                                <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            }
+                            else
+                            {
+                                <span>@Localizer["Send"]</span>
+                            }
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Toast Component -->
+<Toast />
+
+@code {
+    private HubConnection? hubConnection;
+    private List<ChatSessionDto> chatSessions = new();
+    private List<ChatMessageDto> currentMessages = new();
+    private string selectedSessionId = string.Empty;
+    private string newMessage = string.Empty;
+    private bool isLoadingSessions = true;
+    private bool isLoadingMessages = false;
+    private bool isSending = false;
+    private int totalUnreadCount = 0;
+    private ElementReference messagesContainer;
+
+    public class ChatSessionDto
+    {
+        public string SessionId { get; set; } = string.Empty;
+        public string VisitorName { get; set; } = string.Empty;
+        public string? VisitorEmail { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? LastMessageAt { get; set; }
+        public bool IsActive { get; set; }
+        public List<ChatMessageDto>? Messages { get; set; }
+    }
+
+    public class ChatMessageDto
+    {
+        public int Id { get; set; }
+        public string SessionId { get; set; } = string.Empty;
+        public string SenderName { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+        public bool IsFromAdmin { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public bool IsRead { get; set; }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InitializeSignalR();
+            await LoadChatSessions();
+            await UpdateUnreadCount();
+            StateHasChanged();
+        }
+    }
+
+    private async Task InitializeSignalR()
+    {
+        try
+        {
+            hubConnection = new HubConnectionBuilder()
+                .WithUrl(Navigation.ToAbsoluteUri("/chathub"))
+                .WithAutomaticReconnect()
+                .Build();
+
+            hubConnection.On<object>("ReceiveMessage", async (message) =>
+            {
+                try
+                {
+                    var messageJson = JsonSerializer.Serialize(message);
+                    var messageDto = JsonSerializer.Deserialize<ChatMessageDto>(messageJson, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+                    if (messageDto != null)
+                    {
+                        // Add to current messages if it's the selected session
+                        if (messageDto.SessionId == selectedSessionId)
+                        {
+                            currentMessages.Add(messageDto);
+                            await InvokeAsync(StateHasChanged);
+                            await InvokeAsync(ScrollToBottom);
+                        }
+
+                        // Update session's last message time
+                        var session = chatSessions.FirstOrDefault(s => s.SessionId == messageDto.SessionId);
+                        if (session != null)
+                        {
+                            session.LastMessageAt = messageDto.CreatedAt;
+                            if (session.Messages != null)
+                            {
+                                session.Messages.Add(messageDto);
+                            }
+                        }
+
+                        await UpdateUnreadCount();
+                        await InvokeAsync(StateHasChanged);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error handling received message: {ex.Message}");
+                }
+            });
+
+            hubConnection.On<object>("NewVisitorMessage", async (notification) =>
+            {
+                await LoadChatSessions(); // Refresh sessions
+                await UpdateUnreadCount();
+                await InvokeAsync(StateHasChanged);
+            });
+
+            await hubConnection.StartAsync();
+            await hubConnection.SendAsync("JoinAdminGroup");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"SignalR connection error: {ex.Message}");
+        }
+    }
+
+    private async Task LoadChatSessions()
+    {
+        try
+        {
+            isLoadingSessions = true;
+            var sessions = await ChatService.GetActiveChatSessionsAsync();
+            
+            chatSessions = sessions.Select(s => new ChatSessionDto
+            {
+                SessionId = s.SessionId,
+                VisitorName = s.VisitorName,
+                VisitorEmail = s.VisitorEmail,
+                CreatedAt = s.CreatedAt,
+                LastMessageAt = s.LastMessageAt,
+                IsActive = s.IsActive,
+                Messages = s.Messages?.Select(m => new ChatMessageDto
+                {
+                    Id = m.Id,
+                    SessionId = m.SessionId,
+                    SenderName = m.SenderName,
+                    Message = m.Message,
+                    IsFromAdmin = m.IsFromAdmin,
+                    CreatedAt = m.CreatedAt,
+                    IsRead = m.IsRead
+                }).ToList()
+            }).ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading chat sessions: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingSessions = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SelectChatSession(ChatSessionDto session)
+    {
+        if (selectedSessionId == session.SessionId) return;
+
+        selectedSessionId = session.SessionId;
+        await LoadMessages();
+        
+        // Join the specific chat session group
+        if (hubConnection != null)
+        {
+            await hubConnection.SendAsync("JoinChatSession", selectedSessionId);
+        }
+        
+        // Mark messages as read
+        await MarkMessagesAsRead();
+    }
+
+    private async Task LoadMessages()
+    {
+        if (string.IsNullOrEmpty(selectedSessionId)) return;
+
+        try
+        {
+            isLoadingMessages = true;
+            var messages = await ChatService.GetMessagesAsync(selectedSessionId);
+            
+            currentMessages = messages.Select(m => new ChatMessageDto
+            {
+                Id = m.Id,
+                SessionId = m.SessionId,
+                SenderName = m.SenderName,
+                Message = m.Message,
+                IsFromAdmin = m.IsFromAdmin,
+                CreatedAt = m.CreatedAt,
+                IsRead = m.IsRead
+            }).ToList();
+
+            await Task.Delay(100);
+            await ScrollToBottom();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading messages: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingMessages = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SendMessage()
+    {
+        if (string.IsNullOrWhiteSpace(newMessage) || hubConnection == null || string.IsNullOrEmpty(selectedSessionId))
+            return;
+
+        try
+        {
+            isSending = true;
+            await hubConnection.SendAsync("SendMessageToChat", selectedSessionId, "Support", newMessage);
+            newMessage = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error sending message: {ex.Message}");
+        }
+        finally
+        {
+            isSending = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !e.ShiftKey)
+        {
+            await SendMessage();
+        }
+    }
+
+    private async Task MarkMessagesAsRead()
+    {
+        if (string.IsNullOrEmpty(selectedSessionId)) return;
+
+        try
+        {
+            await ChatService.MarkMessagesAsReadAsync(selectedSessionId, true);
+            
+            // Update local state
+            foreach (var message in currentMessages.Where(m => !m.IsFromAdmin && !m.IsRead))
+            {
+                message.IsRead = true;
+            }
+            
+            var session = chatSessions.FirstOrDefault(s => s.SessionId == selectedSessionId);
+            if (session?.Messages != null)
+            {
+                foreach (var message in session.Messages.Where(m => !m.IsFromAdmin && !m.IsRead))
+                {
+                    message.IsRead = true;
+                }
+            }
+
+            await UpdateUnreadCount();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error marking messages as read: {ex.Message}");
+        }
+    }
+
+    private async Task CloseChatSession(string sessionId)
+    {
+        try
+        {
+            await ChatService.CloseChatSessionAsync(sessionId);
+            await LoadChatSessions();
+            
+            if (selectedSessionId == sessionId)
+            {
+                selectedSessionId = string.Empty;
+                currentMessages.Clear();
+            }
+            
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error closing chat session: {ex.Message}");
+        }
+    }
+
+    private async Task UpdateUnreadCount()
+    {
+        try
+        {
+            totalUnreadCount = await ChatService.GetTotalUnreadMessagesForAdminAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating unread count: {ex.Message}");
+        }
+    }
+
+    private async Task ScrollToBottom()
+    {
+        try
+        {
+            await Task.Delay(50);
+            await JSRuntime.InvokeVoidAsync("scrollToBottom", messagesContainer);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error scrolling to bottom: {ex.Message}");
+        }
+    }
+
+    public bool IsConnected =>
+        hubConnection?.State == HubConnectionState.Connected;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.SendAsync("LeaveAdminGroup");
+            await hubConnection.DisposeAsync();
+        }
+    }
+}

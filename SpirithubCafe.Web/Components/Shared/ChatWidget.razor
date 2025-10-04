@@ -1,0 +1,425 @@
+@using Microsoft.AspNetCore.SignalR.Client
+@using Microsoft.AspNetCore.Components.Forms
+@using SpirithubCafe.Web.Services
+@using System.Text.Json
+@using System.ComponentModel.DataAnnotations
+@implements IAsyncDisposable
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@inject IChatService ChatService
+@inject IStringLocalizer<SpirithubCafe.Langs.Resources> Localizer
+
+<!-- Chat Widget Button -->
+<div class="fixed bottom-6 right-6 z-50">
+    @if (!isChatOpen)
+    {
+        <button @onclick="ToggleChat" 
+                class="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-4 rounded-full shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 3.582-8 8-8s8 3.582 8 8z"></path>
+            </svg>
+            @if (unreadCount > 0)
+            {
+                <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center animate-pulse">
+                    @unreadCount
+                </span>
+            }
+        </button>
+    }
+    
+    <!-- Chat Window -->
+    @if (isChatOpen)
+    {
+        <div class="bg-white rounded-lg shadow-2xl w-80 h-96 flex flex-col border border-gray-200">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-4 rounded-t-lg flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                    <span class="font-semibold">@Localizer["LiveSupport"]</span>
+                </div>
+                <button @onclick="ToggleChat" class="hover:bg-white hover:bg-opacity-20 rounded p-1">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            @if (string.IsNullOrEmpty(sessionId))
+            {
+                <!-- Name Input Form -->
+                <div class="p-4 flex-1 flex flex-col justify-center">
+                    <div class="text-center mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">@Localizer["WelcomeToSupport"]</h3>
+                        <p class="text-gray-600 text-sm">@Localizer["PleaseTellUsYourName"]</p>
+                    </div>
+                    
+                    <EditForm Model="chatForm" OnValidSubmit="StartChat" class="space-y-4">
+                        <DataAnnotationsValidator />
+                        
+                        <div>
+                            <InputText @bind-Value="chatForm.VisitorName" 
+                                       placeholder="@Localizer["YourName"]"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                            <ValidationMessage For="() => chatForm.VisitorName" class="text-red-500 text-xs mt-1" />
+                        </div>
+                        
+                        <div>
+                            <InputText @bind-Value="chatForm.VisitorEmail" 
+                                       placeholder="@(Localizer["YourEmail"] + " (" + Localizer["Optional"] + ")")"
+                                       type="email"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                        </div>
+                        
+                        <button type="submit" 
+                                disabled="isLoading"
+                                class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white py-2 rounded-lg hover:from-amber-600 hover:to-orange-600 transition-colors disabled:opacity-50">
+                            @if (isLoading)
+                            {
+                                <span class="flex items-center justify-center space-x-2">
+                                    <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    <span>@Localizer["Starting"]...</span>
+                                </span>
+                            }
+                            else
+                            {
+                                <span>@Localizer["StartChat"]</span>
+                            }
+                        </button>
+                    </EditForm>
+                </div>
+            }
+            else
+            {
+                <!-- Chat Messages -->
+                <div class="flex-1 overflow-y-auto p-4 space-y-3" @ref="messagesContainer">
+                    @foreach (var message in messages)
+                    {
+                        <div class="@(message.IsFromAdmin ? "flex justify-start" : "flex justify-end")">
+                            <div class="@(message.IsFromAdmin ? "bg-gray-100 text-gray-800" : "bg-amber-500 text-white") rounded-lg px-3 py-2 max-w-xs">
+                                @if (message.IsFromAdmin)
+                                {
+                                    <div class="text-xs font-semibold mb-1 text-amber-600">@Localizer["Support"]</div>
+                                }
+                                <div class="text-sm">@message.Message</div>
+                                <div class="text-xs mt-1 @(message.IsFromAdmin ? "text-gray-500" : "text-amber-100")">
+                                    @message.CreatedAt.ToString("HH:mm")
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Message Input -->
+                <div class="border-t border-gray-200 p-4">
+                    <div class="flex space-x-2">
+                        <input @bind="newMessage" 
+                               @onkeypress="HandleKeyPress"
+                               placeholder="@Localizer["TypeYourMessage"]..."
+                               class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                               disabled="@(!IsConnected || isLoading)" />
+                        <button @onclick="SendMessage" 
+                                disabled="@(string.IsNullOrWhiteSpace(newMessage) || !IsConnected || isLoading)"
+                                class="bg-amber-500 text-white px-4 py-2 rounded-lg hover:bg-amber-600 transition-colors disabled:opacity-50">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    @if (!IsConnected)
+                    {
+                        <div class="text-red-500 text-xs mt-2 flex items-center">
+                            <div class="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
+                            @Localizer["ConnectionLost"]
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private HubConnection? hubConnection;
+    private bool isChatOpen = false;
+    private string? sessionId;
+    private List<ChatMessageDto> messages = new();
+    private string newMessage = string.Empty;
+    private bool isLoading = false;
+    private int unreadCount = 0;
+    private ElementReference messagesContainer;
+    
+    private ChatFormModel chatForm = new();
+
+    public class ChatFormModel
+    {
+        [Required(ErrorMessage = "Name is required")]
+        [StringLength(100, ErrorMessage = "Name must be less than 100 characters")]
+        public string VisitorName { get; set; } = string.Empty;
+
+        [EmailAddress(ErrorMessage = "Invalid email format")]
+        [StringLength(200, ErrorMessage = "Email must be less than 200 characters")]
+        public string? VisitorEmail { get; set; }
+    }
+
+    public class ChatMessageDto
+    {
+        public int Id { get; set; }
+        public string SessionId { get; set; } = string.Empty;
+        public string SenderName { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+        public bool IsFromAdmin { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public bool IsRead { get; set; }
+    }
+
+    private bool hasRendered = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !hasRendered)
+        {
+            hasRendered = true;
+            await CheckExistingSession();
+            StateHasChanged();
+        }
+    }
+
+    private async Task CheckExistingSession()
+    {
+        try
+        {
+            var storedSessionId = await JSRuntime.InvokeAsync<string?>("chatStorage.get", "chatSessionId");
+            var storedVisitorName = await JSRuntime.InvokeAsync<string?>("chatStorage.get", "chatVisitorName");
+            
+            if (!string.IsNullOrEmpty(storedSessionId) && !string.IsNullOrEmpty(storedVisitorName))
+            {
+                var session = await ChatService.GetChatSessionAsync(storedSessionId);
+                if (session?.IsActive == true)
+                {
+                    sessionId = storedSessionId;
+                    chatForm.VisitorName = storedVisitorName;
+                    await LoadMessages();
+                    await InitializeSignalR();
+                }
+                else
+                {
+                    // Clear invalid session
+                    await JSRuntime.InvokeVoidAsync("chatStorage.remove", "chatSessionId");
+                    await JSRuntime.InvokeVoidAsync("chatStorage.remove", "chatVisitorName");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error checking existing session: {ex.Message}");
+        }
+    }
+
+    private async Task ToggleChat()
+    {
+        isChatOpen = !isChatOpen;
+        
+        if (isChatOpen && !string.IsNullOrEmpty(sessionId))
+        {
+            await MarkMessagesAsRead();
+            await ScrollToBottom();
+        }
+    }
+
+    private async Task StartChat()
+    {
+        if (string.IsNullOrWhiteSpace(chatForm.VisitorName)) return;
+
+        isLoading = true;
+        try
+        {
+            var ipAddress = await GetClientIpAddress();
+            sessionId = await ChatService.CreateChatSessionAsync(
+                chatForm.VisitorName, 
+                chatForm.VisitorEmail, 
+                ipAddress
+            );
+
+            // Store in localStorage
+            await JSRuntime.InvokeVoidAsync("chatStorage.set", "chatSessionId", sessionId);
+            await JSRuntime.InvokeVoidAsync("chatStorage.set", "chatVisitorName", chatForm.VisitorName);
+
+            await InitializeSignalR();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error starting chat: {ex.Message}");
+            // TODO: Show error message to user
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task InitializeSignalR()
+    {
+        try
+        {
+            hubConnection = new HubConnectionBuilder()
+                .WithUrl(Navigation.ToAbsoluteUri("/chathub"))
+                .WithAutomaticReconnect()
+                .Build();
+
+            hubConnection.On<object>("ReceiveMessage", async (message) =>
+            {
+                var messageJson = JsonSerializer.Serialize(message);
+                var messageDto = JsonSerializer.Deserialize<ChatMessageDto>(messageJson, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                if (messageDto != null)
+                {
+                    messages.Add(messageDto);
+                    
+                    if (messageDto.IsFromAdmin && (!isChatOpen || !await IsPageVisible()))
+                    {
+                        unreadCount++;
+                    }
+                    
+                    await InvokeAsync(StateHasChanged);
+                    await InvokeAsync(ScrollToBottom);
+                }
+            });
+
+            await hubConnection.StartAsync();
+            
+            if (!string.IsNullOrEmpty(sessionId))
+            {
+                await hubConnection.SendAsync("JoinChatSession", sessionId);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"SignalR connection error: {ex.Message}");
+        }
+    }
+
+    private async Task LoadMessages()
+    {
+        if (string.IsNullOrEmpty(sessionId)) return;
+
+        try
+        {
+            var chatMessages = await ChatService.GetMessagesAsync(sessionId);
+            messages = chatMessages.Select(cm => new ChatMessageDto
+            {
+                Id = cm.Id,
+                SessionId = cm.SessionId,
+                SenderName = cm.SenderName,
+                Message = cm.Message,
+                IsFromAdmin = cm.IsFromAdmin,
+                CreatedAt = cm.CreatedAt,
+                IsRead = cm.IsRead
+            }).ToList();
+
+            unreadCount = messages.Count(m => m.IsFromAdmin && !m.IsRead);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading messages: {ex.Message}");
+        }
+    }
+
+    private async Task SendMessage()
+    {
+        if (string.IsNullOrWhiteSpace(newMessage) || hubConnection == null || string.IsNullOrEmpty(sessionId))
+            return;
+
+        try
+        {
+            await hubConnection.SendAsync("SendMessageToChat", sessionId, chatForm.VisitorName, newMessage);
+            newMessage = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error sending message: {ex.Message}");
+        }
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !e.ShiftKey)
+        {
+            await SendMessage();
+        }
+    }
+
+    private async Task MarkMessagesAsRead()
+    {
+        if (string.IsNullOrEmpty(sessionId)) return;
+
+        try
+        {
+            await ChatService.MarkMessagesAsReadAsync(sessionId, false);
+            
+            foreach (var message in messages.Where(m => m.IsFromAdmin && !m.IsRead))
+            {
+                message.IsRead = true;
+            }
+            
+            unreadCount = 0;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error marking messages as read: {ex.Message}");
+        }
+    }
+
+    private async Task ScrollToBottom()
+    {
+        try
+        {
+            await Task.Delay(50); // Small delay to ensure DOM is updated
+            await JSRuntime.InvokeVoidAsync("scrollToBottom", messagesContainer);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error scrolling to bottom: {ex.Message}");
+        }
+    }
+
+    private async Task<string> GetClientIpAddress()
+    {
+        try
+        {
+            return await JSRuntime.InvokeAsync<string>("getClientIpAddress") ?? "Unknown";
+        }
+        catch
+        {
+            return "Unknown";
+        }
+    }
+
+    private async Task<bool> IsPageVisible()
+    {
+        try
+        {
+            return await JSRuntime.InvokeAsync<bool>("isPageVisible");
+        }
+        catch
+        {
+            return true;
+        }
+    }
+
+    public bool IsConnected =>
+        hubConnection?.State == HubConnectionState.Connected;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+}

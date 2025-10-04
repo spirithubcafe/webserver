@@ -42,6 +42,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     // Newsletter entities
     public DbSet<NewsletterSubscription> NewsletterSubscriptions { get; set; }
     
+    // Chat entities
+    public DbSet<ChatSession> ChatSessions { get; set; }
+    public DbSet<ChatMessage> ChatMessages { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -871,6 +875,78 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
             entity.HasIndex(e => e.IsActive)
                 .HasDatabaseName("IX_FooterMenus_IsActive");
+        });
+
+        // Configure Chat entities
+        builder.Entity<ChatSession>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.SessionId)
+                .IsRequired()
+                .HasMaxLength(100);
+                
+            entity.Property(e => e.VisitorName)
+                .IsRequired()
+                .HasMaxLength(100);
+                
+            entity.Property(e => e.VisitorEmail)
+                .HasMaxLength(200);
+                
+            entity.Property(e => e.IpAddress)
+                .HasMaxLength(50);
+
+            entity.HasIndex(e => e.SessionId)
+                .IsUnique()
+                .HasDatabaseName("IX_ChatSessions_SessionId");
+                
+            entity.HasIndex(e => e.IsActive)
+                .HasDatabaseName("IX_ChatSessions_IsActive");
+                
+            entity.HasIndex(e => e.CreatedAt)
+                .HasDatabaseName("IX_ChatSessions_CreatedAt");
+        });
+
+        builder.Entity<ChatMessage>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.SessionId)
+                .IsRequired()
+                .HasMaxLength(100);
+                
+            entity.Property(e => e.SenderName)
+                .IsRequired()
+                .HasMaxLength(100);
+                
+            entity.Property(e => e.UserId)
+                .HasMaxLength(100);
+                
+            entity.Property(e => e.Message)
+                .IsRequired()
+                .HasMaxLength(2000);
+                
+            entity.Property(e => e.IpAddress)
+                .HasMaxLength(50);
+
+            entity.HasIndex(e => e.SessionId)
+                .HasDatabaseName("IX_ChatMessages_SessionId");
+                
+            entity.HasIndex(e => e.CreatedAt)
+                .HasDatabaseName("IX_ChatMessages_CreatedAt");
+                
+            entity.HasIndex(e => e.IsFromAdmin)
+                .HasDatabaseName("IX_ChatMessages_IsFromAdmin");
+                
+            entity.HasIndex(e => e.IsRead)
+                .HasDatabaseName("IX_ChatMessages_IsRead");
+
+            // Relationship
+            entity.HasOne<ChatSession>()
+                .WithMany(s => s.Messages)
+                .HasForeignKey(m => m.SessionId)
+                .HasPrincipalKey(s => s.SessionId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

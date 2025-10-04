@@ -1860,4 +1860,64 @@
   <data name="SettingsSavedSuccessfully" xml:space="preserve">
     <value>تم حفظ الإعدادات بنجاح!</value>
   </data>
+  <data name="ChatWithUs" xml:space="preserve">
+    <value>تحدث معنا</value>
+  </data>
+  <data name="YourName" xml:space="preserve">
+    <value>اسمك</value>
+  </data>
+  <data name="YourEmail" xml:space="preserve">
+    <value>بريدك الإلكتروني</value>
+  </data>
+  <data name="Optional" xml:space="preserve">
+    <value>اختياري</value>
+  </data>
+  <data name="StartChat" xml:space="preserve">
+    <value>بدء الدردشة</value>
+  </data>
+  <data name="TypeYourMessage" xml:space="preserve">
+    <value>اكتب رسالتك...</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>إرسال</value>
+  </data>
+  <data name="ChatManagement" xml:space="preserve">
+    <value>إدارة الدردشة</value>
+  </data>
+  <data name="ActiveChats" xml:space="preserve">
+    <value>المحادثات النشطة</value>
+  </data>
+  <data name="NoActiveChats" xml:space="preserve">
+    <value>لا توجد محادثات نشطة</value>
+  </data>
+  <data name="SelectChatToView" xml:space="preserve">
+    <value>اختر محادثة لعرض الرسائل</value>
+  </data>
+  <data name="ChatWith" xml:space="preserve">
+    <value>محادثة مع</value>
+  </data>
+  <data name="TypeYourReply" xml:space="preserve">
+    <value>اكتب ردك...</value>
+  </data>
+  <data name="Admin" xml:space="preserve">
+    <value>المدير</value>
+  </data>
+  <data name="Visitor" xml:space="preserve">
+    <value>الزائر</value>
+  </data>
+  <data name="PleaseEnterYourName" xml:space="preserve">
+    <value>الرجاء إدخال اسمك</value>
+  </data>
+  <data name="PleaseEnterMessage" xml:space="preserve">
+    <value>الرجاء إدخال رسالتك</value>
+  </data>
+  <data name="ChatStartedSuccessfully" xml:space="preserve">
+    <value>تم بدء الدردشة بنجاح</value>
+  </data>
+  <data name="MessageSentSuccessfully" xml:space="preserve">
+    <value>تم إرسال الرسالة بنجاح</value>
+  </data>
+  <data name="ErrorSendingMessage" xml:space="preserve">
+    <value>خطأ في إرسال الرسالة</value>
+  </data>
 </root>

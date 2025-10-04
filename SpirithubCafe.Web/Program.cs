@@ -126,6 +126,12 @@ builder.Services.AddScoped<ILocalizationService, LocalizationService>();
 builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<ToastService>();
 
+// Register chat service
+builder.Services.AddScoped<IChatService, ChatService>();
+
+// Add SignalR
+builder.Services.AddSignalR();
+
 // Register admin services
 builder.Services.AddScoped<UserManagementService>();
 builder.Services.AddScoped<RoleManagementService>();
@@ -288,6 +294,9 @@ app.MapRazorComponents<App>()
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
+
+// Map SignalR Hub
+app.MapHub<SpirithubCafe.Web.Hubs.ChatHub>("/chathub");
 
 // Seed roles and admin user
 await SeedAdminUser(app);

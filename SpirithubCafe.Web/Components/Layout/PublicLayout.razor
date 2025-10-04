@@ -38,6 +38,10 @@
     <link rel="stylesheet" href="@Assets["SpirithubCafe.Web.styles.css"]" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <PageTitle>@Localizer["SiteTitle"]</PageTitle>
+    
+    <!-- Chat JavaScript -->
+    <script src="~/js/chat.js"></script>
+    <script src="~/_framework/blazor.web.js"></script>
 </head>
 
 <body class="h-full font-arabic">
@@ -335,6 +339,9 @@
                 </CustomErrorBoundary>
             </div>
         </main>
+
+        <!-- Chat Widget -->
+        <ChatWidget />
 
         <!-- Dynamic Footer -->
         <DynamicFooter />

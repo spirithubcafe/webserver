@@ -1872,5 +1872,65 @@
   <data name="SettingsSavedSuccessfully" xml:space="preserve">
     <value>Settings saved successfully!</value>
   </data>
+  <data name="ChatWithUs" xml:space="preserve">
+    <value>Chat With Us</value>
+  </data>
+  <data name="YourName" xml:space="preserve">
+    <value>Your Name</value>
+  </data>
+  <data name="YourEmail" xml:space="preserve">
+    <value>Your Email</value>
+  </data>
+  <data name="Optional" xml:space="preserve">
+    <value>Optional</value>
+  </data>
+  <data name="StartChat" xml:space="preserve">
+    <value>Start Chat</value>
+  </data>
+  <data name="TypeYourMessage" xml:space="preserve">
+    <value>Type your message...</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="ChatManagement" xml:space="preserve">
+    <value>Chat Management</value>
+  </data>
+  <data name="ActiveChats" xml:space="preserve">
+    <value>Active Chats</value>
+  </data>
+  <data name="NoActiveChats" xml:space="preserve">
+    <value>No active chats</value>
+  </data>
+  <data name="SelectChatToView" xml:space="preserve">
+    <value>Select a chat to view messages</value>
+  </data>
+  <data name="ChatWith" xml:space="preserve">
+    <value>Chat with</value>
+  </data>
+  <data name="TypeYourReply" xml:space="preserve">
+    <value>Type your reply...</value>
+  </data>
+  <data name="Admin" xml:space="preserve">
+    <value>Admin</value>
+  </data>
+  <data name="Visitor" xml:space="preserve">
+    <value>Visitor</value>
+  </data>
+  <data name="PleaseEnterYourName" xml:space="preserve">
+    <value>Please enter your name</value>
+  </data>
+  <data name="PleaseEnterMessage" xml:space="preserve">
+    <value>Please enter your message</value>
+  </data>
+  <data name="ChatStartedSuccessfully" xml:space="preserve">
+    <value>Chat started successfully</value>
+  </data>
+  <data name="MessageSentSuccessfully" xml:space="preserve">
+    <value>Message sent successfully</value>
+  </data>
+  <data name="ErrorSendingMessage" xml:space="preserve">
+    <value>Error sending message</value>
+  </data>
 
 </root>
