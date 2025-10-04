@@ -3052,6 +3052,9 @@
   .bg-amber-600 {
     background-color: var(--color-amber-600);
   }
+  .bg-amber-800 {
+    background-color: var(--color-amber-800);
+  }
   .bg-base-100 {
     background-color: var(--color-base-100);
   }
@@ -4144,6 +4147,10 @@
     --tw-ring-offset-width: 2px;
     --tw-ring-offset-shadow: var(--tw-ring-inset,) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
   }
+  .outline {
+    outline-style: var(--tw-outline-style);
+    outline-width: 1px;
+  }
   .outline-0 {
     outline-style: var(--tw-outline-style);
     outline-width: 0px;
@@ -4704,13 +4711,6 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-gray-700);
-      }
-    }
-  }
-  .hover\:bg-gray-800 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-gray-800);
       }
     }
   }
