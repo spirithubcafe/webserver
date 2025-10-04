@@ -269,7 +269,7 @@
 
 /* Position Utilities */
 [dir="rtl"] .left-0 { left: auto !important; right: 0 !important; }
-[dir="rtl"] .right-0 { right: auto !important; left: 0 !important; }
+[dir="rtl"] .right-0 { left: 0 !important; }
 [dir="rtl"] .left-2 { left: auto !important; right: 0.5rem !important; }
 [dir="rtl"] .right-2 { right: auto !important; left: 0.5rem !important; }
 [dir="rtl"] .left-3 { left: auto !important; right: 0.75rem !important; }
