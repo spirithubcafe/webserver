@@ -68,9 +68,9 @@
                                 </div>
                                 <div class="flex flex-col">
                                     <NavLink href="/" class="@($"{GetLogoTextClasses()} text-2xl font-bold hover:text-amber-600 transition-colors")">
-                                        @(string.IsNullOrEmpty(logoText) ? "SpirithubCafe" : logoText)
+                                        @(string.IsNullOrEmpty(logoText) ? Localizer["SpirithubCafeDefaultName"] : logoText)
                                     </NavLink>
-                                    <span class="@GetSubtitleClasses() text-xs font-medium">Premium Coffee from Oman</span>
+                                    <span class="@GetSubtitleClasses() text-xs font-medium">@Localizer["SiteSubtitle"]</span>
                                 </div>
                             }
                         </div>
@@ -427,9 +427,9 @@
     <div id="blazor-error-ui" data-nosnippet
         class="fixed top-4 right-4 z-50 bg-red-600 text-white p-4 rounded-lg shadow-lg max-w-md hidden">
         <div class="flex items-center justify-between">
-            <span>An unhandled error has occurred.</span>
+            <span>@Localizer["UnhandledErrorOccurred"]</span>
             <div class="ml-4 flex space-x-2">
-                <a href="." class="underline hover:no-underline">Reload</a>
+                <a href="." class="underline hover:no-underline">@Localizer["Reload"]</a>
                 <button class="dismiss text-xl font-bold hover:text-gray-200">&times;</button>
             </div>
         </div>

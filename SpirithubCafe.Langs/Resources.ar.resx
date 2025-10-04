@@ -1708,4 +1708,88 @@
   <data name="EmailUsTitle" xml:space="preserve">
     <value>راسلنا</value>
   </data>
+  
+  <!-- Site Branding -->
+  <data name="SiteSubtitle" xml:space="preserve">
+    <value>قهوة عُمانية فاخرة</value>
+  </data>
+  <data name="SpirithubCafeDefaultName" xml:space="preserve">
+    <value>مقهى سبيريت هب</value>
+  </data>
+  
+  <!-- Error Messages -->
+  <data name="UnhandledErrorOccurred" xml:space="preserve">
+    <value>حدث خطأ غير متوقع.</value>
+  </data>
+  <data name="Reload" xml:space="preserve">
+    <value>إعادة تحميل</value>
+  </data>
+  
+  <!-- Cart Page -->
+  <data name="ShoppingCart" xml:space="preserve">
+    <value>عربة التسوق</value>
+  </data>
+  <data name="ContinueShopping" xml:space="preserve">
+    <value>متابعة التسوق</value>
+  </data>
+  <data name="ItemInCart" xml:space="preserve">
+    <value>عنصر في عربة التسوق</value>
+  </data>
+  <data name="ItemsInCart" xml:space="preserve">
+    <value>عناصر في عربة التسوق</value>
+  </data>
+  
+  <!-- Favorites Page -->
+  <data name="MyFavorites" xml:space="preserve">
+    <value>مفضلاتي</value>
+  </data>
+  <data name="YourSavedProducts" xml:space="preserve">
+    <value>منتجات القهوة والإكسسوارات المحفوظة</value>
+  </data>
+  <data name="AllCategories" xml:space="preserve">
+    <value>جميع الفئات</value>
+  </data>
+  <data name="CoffeeBeans" xml:space="preserve">
+    <value>حبوب القهوة</value>
+  </data>
+  <data name="Equipment" xml:space="preserve">
+    <value>المعدات</value>
+  </data>
+  <data name="Accessories" xml:space="preserve">
+    <value>الإكسسوارات</value>
+  </data>
+  <data name="SortByRecentlyAdded" xml:space="preserve">
+    <value>ترتيب حسب: المضافة حديثاً</value>
+  </data>
+  <data name="SortByPriceLowToHigh" xml:space="preserve">
+    <value>ترتيب حسب: السعر من الأقل للأعلى</value>
+  </data>
+  <data name="SortByPriceHighToLow" xml:space="preserve">
+    <value>ترتيب حسب: السعر من الأعلى للأقل</value>
+  </data>
+  
+  <!-- Orders Page -->
+  <data name="TrackAndManageOrders" xml:space="preserve">
+    <value>تتبع وإدارة طلباتك</value>
+  </data>
+  <data name="LoadingYourOrders" xml:space="preserve">
+    <value>تحميل طلباتك...</value>
+  </data>
+  
+  <!-- Error Page -->
+  <data name="Error" xml:space="preserve">
+    <value>خطأ</value>
+  </data>
+  <data name="RequestId" xml:space="preserve">
+    <value>معرف الطلب:</value>
+  </data>
+  <data name="DevelopmentMode" xml:space="preserve">
+    <value>وضع التطوير</value>
+  </data>
+  <data name="DevelopmentModeMessage" xml:space="preserve">
+    <value>التبديل إلى بيئة التطوير سيعرض معلومات أكثر تفصيلاً حول الخطأ الذي حدث.</value>
+  </data>
+  <data name="DevelopmentModeWarning" xml:space="preserve">
+    <value>لا ينبغي تمكين بيئة التطوير للتطبيقات المنشورة. يمكن أن يؤدي ذلك إلى عرض معلومات حساسة من الاستثناءات للمستخدمين النهائيين. للتصحيح المحلي، قم بتمكين بيئة التطوير عن طريق تعيين متغير البيئة ASPNETCORE_ENVIRONMENT إلى Development وإعادة تشغيل التطبيق.</value>
+  </data>
 </root>

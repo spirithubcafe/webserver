@@ -2,13 +2,16 @@
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
 @layout PublicLayout
+@inject IStringLocalizer<SpirithubCafe.Langs.Resources> Localizer
+
+<PageTitle>@Localizer["Favorites"] - @Localizer["SiteTitle"]</PageTitle>
 
 <div class="min-h-screen bg-gray-50 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Page Header -->
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">My Favorites</h1>
-            <p class="mt-2 text-gray-600">Your saved coffee products and accessories</p>
+            <h1 class="text-3xl font-bold text-gray-900">@Localizer["MyFavorites"]</h1>
+            <p class="mt-2 text-gray-600">@Localizer["YourSavedProducts"]</p>
         </div>
 
         @if (favoriteItems.Any())
@@ -17,10 +20,10 @@
             <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 <div class="flex items-center space-x-4">
                     <select class="block rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm">
-                        <option>All Categories</option>
-                        <option>Coffee Beans</option>
-                        <option>Equipment</option>
-                        <option>Accessories</option>
+                        <option>@Localizer["AllCategories"]</option>
+                        <option>@Localizer["CoffeeBeans"]</option>
+                        <option>@Localizer["Equipment"]</option>
+                        <option>@Localizer["Accessories"]</option>
                     </select>
                 </div>
                 <div class="mt-4 sm:mt-0 flex items-center space-x-4">

@@ -1720,5 +1720,89 @@
   <data name="EmailUsTitle" xml:space="preserve">
     <value>Email Us</value>
   </data>
+  
+  <!-- Site Branding -->
+  <data name="SiteSubtitle" xml:space="preserve">
+    <value>Premium Coffee from Oman</value>
+  </data>
+  <data name="SpirithubCafeDefaultName" xml:space="preserve">
+    <value>SpirithubCafe</value>
+  </data>
+  
+  <!-- Error Messages -->
+  <data name="UnhandledErrorOccurred" xml:space="preserve">
+    <value>An unhandled error has occurred.</value>
+  </data>
+  <data name="Reload" xml:space="preserve">
+    <value>Reload</value>
+  </data>
+  
+  <!-- Cart Page -->
+  <data name="ShoppingCart" xml:space="preserve">
+    <value>Shopping Cart</value>
+  </data>
+  <data name="ContinueShopping" xml:space="preserve">
+    <value>Continue Shopping</value>
+  </data>
+  <data name="ItemInCart" xml:space="preserve">
+    <value>item in your cart</value>
+  </data>
+  <data name="ItemsInCart" xml:space="preserve">
+    <value>items in your cart</value>
+  </data>
+  
+  <!-- Favorites Page -->
+  <data name="MyFavorites" xml:space="preserve">
+    <value>My Favorites</value>
+  </data>
+  <data name="YourSavedProducts" xml:space="preserve">
+    <value>Your saved coffee products and accessories</value>
+  </data>
+  <data name="AllCategories" xml:space="preserve">
+    <value>All Categories</value>
+  </data>
+  <data name="CoffeeBeans" xml:space="preserve">
+    <value>Coffee Beans</value>
+  </data>
+  <data name="Equipment" xml:space="preserve">
+    <value>Equipment</value>
+  </data>
+  <data name="Accessories" xml:space="preserve">
+    <value>Accessories</value>
+  </data>
+  <data name="SortByRecentlyAdded" xml:space="preserve">
+    <value>Sort by: Recently Added</value>
+  </data>
+  <data name="SortByPriceLowToHigh" xml:space="preserve">
+    <value>Sort by: Price: Low to High</value>
+  </data>
+  <data name="SortByPriceHighToLow" xml:space="preserve">
+    <value>Sort by: Price: High to Low</value>
+  </data>
+  
+  <!-- Orders Page -->
+  <data name="TrackAndManageOrders" xml:space="preserve">
+    <value>Track and manage your orders</value>
+  </data>
+  <data name="LoadingYourOrders" xml:space="preserve">
+    <value>Loading your orders...</value>
+  </data>
+  
+  <!-- Error Page -->
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="RequestId" xml:space="preserve">
+    <value>Request ID:</value>
+  </data>
+  <data name="DevelopmentMode" xml:space="preserve">
+    <value>Development Mode</value>
+  </data>
+  <data name="DevelopmentModeMessage" xml:space="preserve">
+    <value>Swapping to Development environment will display more detailed information about the error that occurred.</value>
+  </data>
+  <data name="DevelopmentModeWarning" xml:space="preserve">
+    <value>The Development environment shouldn't be enabled for deployed applications. It can result in displaying sensitive information from exceptions to end users. For local debugging, enable the Development environment by setting the ASPNETCORE_ENVIRONMENT environment variable to Development and restarting the app.</value>
+  </data>
 
 </root>
