@@ -90,7 +90,7 @@
         </div>
 
         <!-- Chat Messages Area -->
-        <div class="flex-1 flex flex-col @(selectedSession == null || showSessions ? "hidden lg:flex" : "flex")">
+        <div class="flex-1 flex flex-col admin-chat-mobile @(selectedSession == null || showSessions ? "hidden lg:flex" : "flex")">
             @if (selectedSession != null)
             {
                 <!-- Chat Header -->
@@ -148,7 +148,7 @@
                 </div>
 
                 <!-- Messages Container -->
-                <div class="flex-1 overflow-hidden flex flex-col">
+                <div class="flex-1 overflow-hidden flex flex-col admin-messages-container">
                     <div class="flex-1 p-4 overflow-y-auto admin-chat-messages" @ref="messagesContainer">
                         @if (currentMessages.Any())
                         {
@@ -178,8 +178,8 @@
                 </div>
 
                 <!-- Message Input -->
-                <div class="p-4 border-t border-[#D3DAD9]/20 bg-white">
-                    <div class="flex gap-3 items-end">
+                <div class="p-4 border-t border-[#D3DAD9]/20 bg-white admin-message-input-container">
+                    <div class="flex gap-3 items-center">
                         <input @bind="replyMessage" 
                                @onkeypress="@(async (e) => { if (e.Key == "Enter") await SendAdminMessage(); })"
                                placeholder="@Localizer["TypeYourReply"]..."
@@ -187,7 +187,8 @@
                                disabled="@isLoading" />
                         <button @onclick="SendAdminMessage" 
                                 disabled="@(isLoading || string.IsNullOrWhiteSpace(replyMessage))"
-                                class="admin-send-button px-6 py-3 text-white rounded-xl transition-all duration-200 disabled:opacity-50 font-medium flex-shrink-0">
+                                class="admin-send-button"
+                                type="button">
                             @if (isLoading)
                             {
                                 <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
