@@ -9,136 +9,194 @@
 @attribute [Authorize(Roles = "Admin")]
 @implements IDisposable
 @rendermode InteractiveServer
-<div class="container mx-auto p-6">
-    <div class="bg-white rounded-lg shadow-lg">
-        <!-- Header -->
-        <div class="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-6 rounded-t-lg">
-            <h1 class="text-2xl font-bold">@Localizer["ChatManagement"]</h1>
+
+<!-- Full Height Responsive Chat Management -->
+<div class="h-[calc(100vh-85px)] bg-[#F8F9FA] flex flex-col">
+    <!-- Header -->
+    <div class="bg-[#37353E] text-[#D3DAD9] p-4 sm:p-6 flex-shrink-0">
+        <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold">@Localizer["ChatManagement"]</h1>
+        <p class="text-sm text-[#D3DAD9]/70 mt-1">Manage all active chat sessions</p>
+    </div>
+
+    <!-- Main Chat Container -->
+    <div class="flex flex-col lg:flex-row flex-1 bg-white shadow-lg overflow-hidden">
+        <!-- Chat Sessions Sidebar -->
+        <div class="lg:w-1/3 xl:w-1/4 bg-[#F8F9FA] border-r border-[#D3DAD9]/20 flex flex-col">
+            <div class="p-4 border-b border-[#D3DAD9]/20 bg-white">
+                <h2 class="text-lg font-semibold text-[#37353E]">@Localizer["ActiveChats"]</h2>
+                <p class="text-sm text-[#715A5A] mt-1">@chatSessions.Count active sessions</p>
+            </div>
+            
+                @if (chatSessions.Any())
+                {
+                    <div class="h-full overflow-y-auto p-3 space-y-3">
+                        @foreach (var session in chatSessions.OrderByDescending(s => s.LastMessageAt ?? s.CreatedAt))
+                        {
+                            <div class="admin-session-card p-4 cursor-pointer transition-all duration-300 @(selectedSession?.Id == session.Id ? "admin-session-selected" : "")"
+                                 @onclick="() => SelectSession(session)">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-[#715A5A] text-white rounded-full flex items-center justify-center text-sm font-bold shadow-md flex-shrink-0">
+                                        @session.VisitorName?.Substring(0, 1).ToUpper()
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <h4 class="font-semibold text-[#37353E] truncate text-sm">@session.VisitorName</h4>
+                                        @if (!string.IsNullOrEmpty(session.VisitorEmail))
+                                        {
+                                            <p class="text-xs text-[#715A5A] truncate mt-1">📧 @session.VisitorEmail</p>
+                                        }
+                                        @if (!string.IsNullOrEmpty(session.PhoneNumber))
+                                        {
+                                            <p class="text-xs text-[#715A5A] truncate">📞 @session.PhoneNumber</p>
+                                        }
+                                        <p class="text-xs text-[#715A5A] mt-1 font-medium">
+                                            � @((session.LastMessageAt ?? session.CreatedAt).ToString("MM/dd HH:mm"))
+                                        </p>
+                                    </div>
+                                    @if (session.HasUnreadVisitorMessages)
+                                    {
+                                        <div class="bg-[#715A5A] text-white text-xs px-2 py-1 rounded-full font-bold shadow animate-pulse flex-shrink-0">
+                                            New
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="flex items-center justify-center h-full p-8">
+                        <div class="text-center text-[#715A5A]">
+                            <svg class="w-16 h-16 mx-auto mb-4 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-4.126-.98L3 20l1.02-5.874A8.955 8.955 0 013 12c0-4.418 3.582-8 8-8s8 3.582 8 8z"></path>
+                            </svg>
+                            <p class="font-medium">@Localizer["NoActiveChats"]</p>
+                            <p class="text-xs opacity-75 mt-1">Waiting for new conversations...</p>
+                        </div>
+                    </div>
+                }
         </div>
 
-        <div class="p-6">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-96">
-                <!-- Chat Sessions List -->
-                <div class="lg:col-span-1 border-r border-gray-200 pr-4">
-                    <h2 class="text-lg font-semibold mb-4 text-gray-800">@Localizer["ActiveChats"]</h2>
+        <!-- Chat Messages Area -->
+        <div class="flex-1 flex flex-col">
+            @if (selectedSession != null)
+            {
+                <!-- Chat Header -->
+                <div class="bg-[#37353E] text-[#D3DAD9] p-4 border-b border-[#715A5A]/20">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-[#715A5A] text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg">
+                            @selectedSession.VisitorName?.Substring(0, 1).ToUpper()
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-bold text-lg text-[#D3DAD9] truncate">@selectedSession.VisitorName</h3>
+                            <p class="text-xs text-[#D3DAD9]/70 font-medium">@Localizer["ChatWith"] - Active Session</p>
+                        </div>
+                        <!-- Session Info Button for Mobile -->
+                        <button class="lg:hidden bg-[#44444E] p-2 rounded-lg">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
                     
-                    @if (chatSessions.Any())
-                    {
-                        <div class="space-y-2 overflow-y-auto max-h-80">
-                            @foreach (var session in chatSessions.OrderByDescending(s => s.LastMessageAt ?? s.CreatedAt))
+                    <!-- Session Details -->
+                    <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                        @if (!string.IsNullOrEmpty(selectedSession.VisitorEmail))
+                        {
+                            <div class="bg-[#44444E] rounded-lg px-3 py-2 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-[#D3DAD9] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                                </svg>
+                                <span class="text-xs text-[#D3DAD9] font-medium truncate">@selectedSession.VisitorEmail</span>
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(selectedSession.PhoneNumber))
+                        {
+                            <div class="bg-[#44444E] rounded-lg px-3 py-2 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-[#D3DAD9] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
+                                </svg>
+                                <span class="text-xs text-[#D3DAD9] font-medium truncate">@selectedSession.PhoneNumber</span>
+                            </div>
+                        }
+                        <div class="bg-[#44444E] rounded-lg px-3 py-2 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-[#D3DAD9] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4.083 9h1.946c.089-1.546.383-2.97.837-4.118A6.004 6.004 0 004.083 9zM10 2a8 8 0 100 16 8 8 0 000-16zm0 2c-.076 0-.232.032-.465.262-.238.234-.497.623-.737 1.182-.389.907-.673 2.142-.766 3.556h3.936c-.093-1.414-.377-2.649-.766-3.556-.24-.56-.5-.948-.737-1.182C10.232 4.032 10.076 4 10 4zm3.971 5c-.089-1.546-.383-2.97-.837-4.118A6.004 6.004 0 0115.917 9h-1.946zm-2.003 2H8.032c.093 1.414.377 2.649.766 3.556.24.56.5.948.737 1.182.233.23.389.262.465.262.076 0 .232-.032.465-.262.238-.234.498-.623.737-1.182.389-.907.673-2.142.766-3.556zm1.166 4.118c.454-1.147.748-2.572.837-4.118h1.946a6.004 6.004 0 01-2.783 4.118zm-6.268 0C6.412 13.97 6.118 12.546 6.03 11H4.083a6.004 6.004 0 002.783 4.118z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-xs text-[#D3DAD9] font-medium truncate">@selectedSession.IpAddress</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages Container -->
+                <div class="flex-1 overflow-hidden flex flex-col">
+                    <div class="flex-1 p-4 overflow-y-auto admin-chat-messages" @ref="messagesContainer">
+                        @if (currentMessages.Any())
+                        {
+                            @foreach (var message in currentMessages)
                             {
-                                <div class="p-3 border rounded-lg cursor-pointer transition-colors @(selectedSession?.Id == session.Id ? "bg-amber-50 border-amber-300" : "hover:bg-gray-50 border-gray-200")"
-                                     @onclick="() => SelectSession(session)">
-                                    <div class="flex justify-between items-start">
-                                        <div class="flex-1">
-                                            <h3 class="font-medium text-gray-900">@session.VisitorName</h3>
-                                            @if (!string.IsNullOrEmpty(session.VisitorEmail))
-                                            {
-                                                <p class="text-sm text-gray-600">📧 @session.VisitorEmail</p>
-                                            }
-                                            @if (!string.IsNullOrEmpty(session.PhoneNumber))
-                                            {
-                                                <p class="text-sm text-gray-600">📱 @session.PhoneNumber</p>
-                                            }
-                                            <p class="text-xs text-gray-500 mt-1">
-                                                @(session.LastMessageAt?.ToString("dd/MM HH:mm") ?? session.CreatedAt.ToString("dd/MM HH:mm"))
-                                            </p>
+                                <div class="mb-4 admin-message-animate @(message.SenderType == ChatSenderType.Admin ? "text-right" : "text-left")">
+                                    <div class="inline-block max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-xl px-4 py-3 rounded-2xl shadow-sm @(message.SenderType == ChatSenderType.Admin ? "admin-bubble-admin" : "admin-bubble-visitor")">
+                                        <div class="text-sm font-medium leading-relaxed break-words">@message.Content</div>
+                                        <div class="text-xs opacity-75 mt-2 font-medium">
+                                            @message.SenderName • @message.CreatedAt.ToString("HH:mm")
                                         </div>
-                                        @if (session.HasUnreadVisitorMessages)
-                                        {
-                                            <div class="bg-red-500 text-white text-xs rounded-full px-2 py-1">
-                                                New
-                                            </div>
-                                        }
                                     </div>
                                 </div>
                             }
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="text-center text-gray-500 py-8">
-                            <svg class="w-12 h-12 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-4.126-.98L3 20l1.02-5.874A8.955 8.955 0 013 12c0-4.418 3.582-8 8-8s8 3.582 8 8z"></path>
-                            </svg>
-                            <p>@Localizer["NoActiveChats"]</p>
-                        </div>
-                    }
+                        }
+                        else
+                        {
+                            <div class="flex items-center justify-center h-full">
+                                <div class="text-center text-[#715A5A]">
+                                    <div class="opacity-60 text-4xl mb-3">💬</div>
+                                    <div class="font-medium">No messages yet...</div>
+                                    <div class="text-xs opacity-40 mt-1">Start the conversation</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
                 </div>
 
-                <!-- Chat Messages -->
-                <div class="lg:col-span-2 flex flex-col">
-                    @if (selectedSession != null)
-                    {
-                        <!-- Chat Header -->
-                        <div class="bg-gray-50 p-4 rounded-t-lg border-b border-gray-200">
-                            <h3 class="font-semibold text-gray-800">@Localizer["ChatWith"] @selectedSession.VisitorName</h3>
-                            <div class="mt-2 space-y-1">
-                                @if (!string.IsNullOrEmpty(selectedSession.VisitorEmail))
-                                {
-                                    <p class="text-sm text-gray-600">📧 @selectedSession.VisitorEmail</p>
-                                }
-                                @if (!string.IsNullOrEmpty(selectedSession.PhoneNumber))
-                                {
-                                    <p class="text-sm text-gray-600">📱 @selectedSession.PhoneNumber</p>
-                                }
-                                <p class="text-xs text-gray-500">🌐 IP: @selectedSession.IpAddress</p>
-                            </div>
-                        </div>
-
-                        <!-- Messages Container -->
-                        <div class="flex-1 p-4 overflow-y-auto bg-gray-50 max-h-64" @ref="messagesContainer">
-                            @if (currentMessages.Any())
+                <!-- Message Input -->
+                <div class="p-4 border-t border-[#D3DAD9]/20 bg-white">
+                    <div class="flex gap-3 items-end">
+                        <input @bind="replyMessage" 
+                               @onkeypress="@(async (e) => { if (e.Key == "Enter") await SendAdminMessage(); })"
+                               placeholder="@Localizer["TypeYourReply"]..."
+                               class="flex-1 admin-message-input"
+                               disabled="@isLoading" />
+                        <button @onclick="SendAdminMessage" 
+                                disabled="@(isLoading || string.IsNullOrWhiteSpace(replyMessage))"
+                                class="admin-send-button px-6 py-3 text-white rounded-xl transition-all duration-200 disabled:opacity-50 font-medium flex-shrink-0">
+                            @if (isLoading)
                             {
-                                @foreach (var message in currentMessages)
-                                {
-                                    <div class="mb-4 @(message.SenderType == ChatSenderType.Admin ? "text-right" : "text-left")">
-                                        <div class="inline-block max-w-xs lg:max-w-md px-4 py-2 rounded-lg @(message.SenderType == ChatSenderType.Admin ? "bg-blue-500 text-white" : "bg-white text-gray-800 border border-gray-200")">
-                                            <div class="text-sm">@message.Content</div>
-                                            <div class="text-xs opacity-70 mt-1">
-                                                @message.SenderName - @message.CreatedAt.ToString("HH:mm")
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
+                                <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
                             }
                             else
                             {
-                                <div class="text-center text-gray-500 text-sm">
-                                    No messages yet...
-                                </div>
+                                <span>@Localizer["Send"]</span>
                             }
-                        </div>
-
-                        <!-- Message Input -->
-                        <div class="p-4 border-t bg-white rounded-b-lg">
-                            <div class="flex gap-2">
-                                <input @bind="replyMessage" 
-                                       @onkeypress="@(async (e) => { if (e.Key == "Enter") await SendAdminMessage(); })"
-                                       placeholder="@Localizer["TypeYourReply"]..."
-                                       class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                       disabled="@isLoading" />
-                                <button @onclick="SendAdminMessage" 
-                                        disabled="@(isLoading || string.IsNullOrWhiteSpace(replyMessage))"
-                                        class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50">
-                                    @Localizer["Send"]
-                                </button>
-                            </div>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="flex-1 flex items-center justify-center text-gray-500">
-                            <div class="text-center">
-                                <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-4.126-.98L3 20l1.02-5.874A8.955 8.955 0 013 12c0-4.418 3.582-8 8-8s8 3.582 8 8z"></path>
-                                </svg>
-                                <p>@Localizer["SelectChatToView"]</p>
-                            </div>
-                        </div>
-                    }
+                        </button>
+                    </div>
                 </div>
-            </div>
+            }
+            else
+            {
+                <div class="flex-1 flex items-center justify-center text-[#715A5A] bg-[#F8F9FA]">
+                    <div class="text-center p-8">
+                        <svg class="w-20 h-20 mx-auto mb-6 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-4.126-.98L3 20l1.02-5.874A8.955 8.955 0 013 12c0-4.418 3.582-8 8-8s8 3.582 8 8z"></path>
+                        </svg>
+                        <h3 class="text-lg font-semibold mb-2">@Localizer["SelectChatToView"]</h3>
+                        <p class="text-sm opacity-75">Choose a chat session from the sidebar to start managing conversations</p>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </div>

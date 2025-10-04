@@ -733,3 +733,531 @@ body.modal-open {
     transform: translateX(-100%);
     animation: shimmer 2s infinite;
 }
+
+/* ========================================
+   MODERN CHAT WIDGET STYLES
+   ======================================== */
+
+/* Chat Widget Container */
+.modern-chat-widget {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+/* Chat Button */
+.modern-chat-button {
+    background: #37353E;
+    box-shadow: 0 10px 25px rgba(55, 53, 62, 0.3);
+    animation: chat-pulse 2s infinite;
+}
+
+.modern-chat-button:hover {
+    background: #715A5A;
+    box-shadow: 0 15px 35px rgba(113, 90, 90, 0.4);
+}
+
+@keyframes chat-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Chat Container */
+.modern-chat-container {
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Chat Header */
+.modern-chat-header {
+    background: #37353E;
+    position: relative;
+    overflow: hidden;
+}
+
+.modern-chat-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    animation: header-shine 3s infinite;
+}
+
+@keyframes header-shine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Chat Avatar */
+.modern-chat-avatar {
+    background: #37353E;
+    box-shadow: 0 8px 20px rgba(55, 53, 62, 0.3);
+}
+
+/* Chat Input */
+.modern-chat-input {
+    border-color: #e5e7eb;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+.modern-chat-input:focus {
+    border-color: #37353E;
+    box-shadow: 0 0 0 3px rgba(55, 53, 62, 0.1);
+    background: #ffffff;
+}
+
+/* Info Box */
+.modern-info-box {
+    background: rgba(55, 53, 62, 0.05);
+    border: 1px solid rgba(55, 53, 62, 0.1);
+}
+
+/* Start Button */
+.modern-chat-start-button {
+    background: #37353E;
+    box-shadow: 0 8px 20px rgba(55, 53, 62, 0.3);
+}
+
+.modern-chat-start-button:hover:not(:disabled) {
+    background: #715A5A;
+    box-shadow: 0 12px 30px rgba(113, 90, 90, 0.4);
+}
+
+/* Visitor Messages */
+.modern-visitor-message {
+    background: #37353E;
+    box-shadow: 0 4px 12px rgba(55, 53, 62, 0.2);
+}
+
+/* Empty Chat State */
+.modern-empty-chat {
+    background: #37353E;
+}
+
+/* Message Input */
+.modern-message-input {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-color: #e5e7eb;
+}
+
+.modern-message-input:focus {
+    border-color: #37353E;
+    box-shadow: 0 0 0 3px rgba(55, 53, 62, 0.1);
+    background: #ffffff;
+}
+
+/* Send Button */
+.modern-send-button {
+    background: #37353E;
+}
+
+.modern-send-button:hover:not(:disabled) {
+    background: #715A5A;
+}
+
+/* Animations */
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+}
+
+/* Responsive Chat Widget */
+@media (max-width: 640px) {
+    .modern-chat-container {
+        width: 100vw !important;
+        height: 100vh !important;
+        height: 100dvh !important; /* Dynamic viewport height */
+        border-radius: 0 !important;
+        position: fixed !important;
+        top: env(safe-area-inset-top, 0) !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: env(safe-area-inset-bottom, 0) !important;
+        max-height: calc(100vh - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0)) !important;
+        padding-top: env(safe-area-inset-top, 20px);
+        padding-bottom: env(safe-area-inset-bottom, 20px);
+    }
+    
+    .modern-chat-form-container {
+        height: calc(100vh - env(safe-area-inset-top, 20px) - env(safe-area-inset-bottom, 20px) - 100px) !important;
+        min-height: calc(100vh - env(safe-area-inset-top, 20px) - env(safe-area-inset-bottom, 20px) - 100px) !important;
+    }
+    
+    .modern-chat-messages-container {
+        height: calc(100vh - env(safe-area-inset-top, 20px) - env(safe-area-inset-bottom, 20px) - 160px) !important;
+        min-height: calc(100vh - env(safe-area-inset-top, 20px) - env(safe-area-inset-bottom, 20px) - 160px) !important;
+    }
+    
+    .modern-chat-widget {
+        position: fixed !important;
+        bottom: env(safe-area-inset-bottom, 0) !important;
+        right: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        z-index: 9999;
+        top: env(safe-area-inset-top, 0) !important;
+    }
+    
+    .modern-chat-messages-container {
+        padding: 0.75rem !important;
+    }
+    
+    .modern-message-input {
+        font-size: 16px !important; /* Prevents zoom on iOS */
+        padding: 0.75rem 1rem !important;
+    }
+    
+    .modern-send-button {
+        width: 2.25rem !important;
+        height: 2.25rem !important;
+    }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+    .modern-chat-container {
+        width: 22rem !important;
+        max-height: 32rem !important;
+    }
+    
+    .modern-chat-form-container {
+        height: 26rem !important;
+        min-height: 26rem !important;
+    }
+    
+    .modern-chat-messages-container {
+        height: 24rem !important;
+        min-height: 24rem !important;
+    }
+}
+
+/* Enhanced Mobile UX */
+@media (max-width: 640px) {
+    .modern-chat-form-container {
+        padding: 1rem !important;
+    }
+    
+    .modern-chat-input, .modern-admin-input {
+        font-size: 16px !important;
+        padding: 0.75rem 1rem !important;
+    }
+    
+    .modern-chat-start-button {
+        padding: 0.875rem 1.5rem !important;
+        font-size: 0.875rem !important;
+    }
+    
+    /* Extra margin for devices without safe-area support */
+    @supports not (padding: env(safe-area-inset-bottom)) {
+        .modern-chat-container {
+            padding-top: 30px !important;
+            padding-bottom: 30px !important;
+        }
+        
+        .modern-chat-form-container {
+            height: calc(100vh - 140px) !important;
+            min-height: calc(100vh - 140px) !important;
+        }
+        
+        .modern-chat-messages-container {
+            height: calc(100vh - 200px) !important;
+            min-height: calc(100vh - 200px) !important;
+        }
+    }
+}
+
+/* Mobile specific adjustments */
+@media (max-width: 640px) and (orientation: landscape) {
+    .modern-chat-container {
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+    }
+    
+    .modern-chat-form-container {
+        height: calc(100vh - env(safe-area-inset-top, 10px) - env(safe-area-inset-bottom, 10px) - 80px) !important;
+    }
+    
+    .modern-chat-messages-container {
+        height: calc(100vh - env(safe-area-inset-top, 10px) - env(safe-area-inset-bottom, 10px) - 140px) !important;
+    }
+}
+
+/* Desktop Responsive */
+@media (min-width: 1025px) {
+    .modern-chat-container {
+        max-height: 36rem;
+    }
+    
+    .modern-chat-form-container {
+        height: 28rem;
+        min-height: 28rem;
+    }
+    
+    .modern-chat-messages-container {
+        height: 26rem;
+        min-height: 26rem;
+    }
+}
+
+/* Prevent zoom on input focus (iOS Safari) */
+.modern-message-input, .modern-chat-input, .modern-admin-input {
+    font-size: 16px;
+}
+
+@media (min-width: 641px) {
+    .modern-message-input, .modern-chat-input, .modern-admin-input {
+        font-size: 14px;
+    }
+}
+
+/* PWA and Fullscreen Support */
+@media (display-mode: fullscreen) {
+    .modern-chat-container {
+        padding-top: 40px !important;
+        padding-bottom: 40px !important;
+    }
+}
+
+@media (display-mode: standalone) {
+    .modern-chat-container {
+        padding-top: env(safe-area-inset-top, 25px) !important;
+        padding-bottom: env(safe-area-inset-bottom, 25px) !important;
+    }
+}
+
+/* Admin Chat Interface Styles */
+.modern-chat-messages {
+    background: #f8f9fa;
+    border-radius: 1rem;
+    border: 1px solid rgba(211, 218, 217, 0.3);
+}
+
+.modern-message-animate {
+    animation: fade-in 0.3s ease-out;
+}
+
+.modern-admin-bubble {
+    background: #37353E;
+    color: #D3DAD9;
+    border: 1px solid rgba(113, 90, 90, 0.2);
+    box-shadow: 0 4px 12px rgba(55, 53, 62, 0.15);
+}
+
+.modern-visitor-bubble {
+    background: #D3DAD9;
+    color: #37353E;
+    border: 1px solid rgba(113, 90, 90, 0.2);
+    box-shadow: 0 2px 8px rgba(113, 90, 90, 0.1);
+}
+
+.modern-admin-input {
+    padding: 1rem 1.25rem;
+    background: #f8f9fa;
+    border: 2px solid rgba(211, 218, 217, 0.3);
+    border-radius: 1rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #37353E;
+    transition: all 0.3s ease;
+}
+
+.modern-admin-input:focus {
+    outline: none;
+    border-color: #715A5A;
+    box-shadow: 0 0 0 3px rgba(113, 90, 90, 0.1);
+    background: #ffffff;
+}
+
+/* Modern Admin Session Cards */
+.modern-session-card {
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.modern-session-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(113, 90, 90, 0.15);
+}
+
+.modern-session-selected {
+    background: rgba(113, 90, 90, 0.05);
+    border-color: #715A5A !important;
+    box-shadow: 0 8px 25px rgba(113, 90, 90, 0.2);
+    transform: translateY(-1px);
+}
+
+.modern-admin-send-button {
+    background: #37353E;
+    transition: all 0.3s ease;
+}
+
+.modern-admin-send-button:hover:not(:disabled) {
+    background: #44444E;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(55, 53, 62, 0.3);
+}
+
+/* Enhanced Admin Chat Management Styles */
+.admin-session-card {
+    background: #FFFFFF;
+    border: 2px solid #E5E7EB;
+    border-radius: 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-session-card:hover {
+    border-color: #715A5A;
+    box-shadow: 0 10px 25px -3px rgba(113, 90, 90, 0.1), 0 4px 6px -2px rgba(113, 90, 90, 0.05);
+    transform: translateY(-1px);
+    background: #F8F9FA;
+}
+
+.admin-session-selected {
+    background: #37353E !important;
+    color: #D3DAD9 !important;
+    border-color: #715A5A !important;
+    box-shadow: 0 10px 25px -3px rgba(113, 90, 90, 0.25), 0 4px 6px -2px rgba(113, 90, 90, 0.1);
+    transform: translateY(-2px);
+}
+
+.admin-session-selected h4,
+.admin-session-selected p {
+    color: #D3DAD9 !important;
+}
+
+.admin-message-input {
+    padding: 12px 16px;
+    border: 2px solid #E5E7EB;
+    border-radius: 12px;
+    background: #FFFFFF;
+    color: #37353E;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.admin-message-input:focus {
+    border-color: #715A5A;
+    box-shadow: 0 0 0 3px rgba(113, 90, 90, 0.1);
+    background: #F8F9FA;
+}
+
+.admin-message-input::placeholder {
+    color: #9CA3AF;
+    font-weight: 400;
+}
+
+.admin-send-button {
+    background: #37353E;
+    color: #D3DAD9;
+    border: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 14px 0 rgba(55, 53, 62, 0.39);
+}
+
+.admin-send-button:hover:not(:disabled) {
+    background: #44444E;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(55, 53, 62, 0.4);
+}
+
+.admin-send-button:disabled {
+    background: #9CA3AF;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.admin-chat-messages {
+    scroll-behavior: smooth;
+}
+
+.admin-message-animate {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.admin-bubble-admin {
+    background: #37353E;
+    color: #D3DAD9;
+    border-bottom-right-radius: 6px;
+}
+
+.admin-bubble-visitor {
+    background: #F1F5F9;
+    color: #37353E;
+    border-bottom-left-radius: 6px;
+    border: 1px solid #E2E8F0;
+}
+
+/* Responsive Improvements for Admin */
+@media (max-width: 1024px) {
+    .admin-session-card {
+        margin-bottom: 8px;
+    }
+    
+    .admin-message-input {
+        padding: 10px 14px;
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+    
+    .admin-send-button {
+        padding: 10px 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-session-card {
+        padding: 12px;
+    }
+    
+    .admin-session-card h4 {
+        font-size: 14px;
+    }
+    
+    .admin-session-card p {
+        font-size: 11px;
+    }
+    
+    .admin-bubble-admin,
+    .admin-bubble-visitor {
+        max-width: 280px;
+        padding: 12px 16px;
+    }
+    
+    .admin-message-input {
+        padding: 12px;
+        border-radius: 16px;
+    }
+    
+    .admin-send-button {
+        padding: 12px 20px;
+        border-radius: 16px;
+    }
+}
+
+@media (max-width: 640px) {
+    .admin-bubble-admin,
+    .admin-bubble-visitor {
+        max-width: 240px;
+        padding: 10px 14px;
+    }
+}
