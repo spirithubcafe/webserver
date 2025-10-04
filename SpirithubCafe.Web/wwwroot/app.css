@@ -3,10 +3,10 @@
   themes: light --default, dark --prefersdark, coffee;
 }
 
-/* Professional Coffee-Themed Scrollbars */
+/* Professional Modern Scrollbars */
 * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(139, 69, 19, 0.6) transparent;
+    scrollbar-color: rgba(113, 90, 90, 0.7) transparent;
 }
 
 *::-webkit-scrollbar {
@@ -19,15 +19,52 @@
 }
 
 *::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #8B4513, #D2691E);
+    background: linear-gradient(135deg, #37353E, #715A5A);
     border-radius: 10px;
-    border: 1px solid rgba(139, 69, 19, 0.2);
-    box-shadow: 0 2px 4px rgba(139, 69, 19, 0.1);
+    border: 1px solid rgba(113, 90, 90, 0.2);
+    box-shadow: 0 2px 4px rgba(55, 53, 62, 0.15);
 }
 
 *::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #A0522D, #CD853F);
-    box-shadow: 0 2px 8px rgba(139, 69, 19, 0.2);
+    background: linear-gradient(135deg, #44444E, #715A5A);
+    box-shadow: 0 2px 8px rgba(113, 90, 90, 0.25);
+}
+
+/* Modern Footer Theme Colors */
+.footer-modern {
+    --footer-primary: #37353E;
+    --footer-secondary: #44444E; 
+    --footer-accent: #715A5A;
+    --footer-text: #D3DAD9;
+    --footer-text-muted: rgba(211, 218, 217, 0.8);
+    --footer-border: rgba(211, 218, 217, 0.2);
+    --footer-hover: #715A5A;
+}
+
+.footer-modern .social-link {
+    background-color: var(--footer-accent) !important;
+    transition: all 0.3s ease;
+}
+
+.footer-modern .social-link:hover {
+    background-color: var(--footer-secondary) !important;
+    transform: scale(1.1);
+}
+
+.footer-modern .footer-text {
+    color: var(--footer-text) !important;
+}
+
+.footer-modern .footer-text-muted {
+    color: var(--footer-text-muted) !important;
+}
+
+.footer-modern .footer-border {
+    border-color: var(--footer-border) !important;
+}
+
+.footer-modern .footer-link:hover {
+    color: var(--footer-hover) !important;
 }
 
 /* Chat Widget Animations */
