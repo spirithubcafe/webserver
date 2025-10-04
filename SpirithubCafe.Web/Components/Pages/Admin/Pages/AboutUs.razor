@@ -458,9 +458,18 @@
     {
         currentSection = new AboutUsSection
         {
+            AboutUsPageId = aboutUsPage?.Id ?? 0,
             LayoutType = "image-right-text-left",
             BgType = "color",
-            BgValue = "#ffffff"
+            BgValue = "#ffffff",
+            Title = "",
+            TitleAr = "",
+            Content = "",
+            ContentAr = "",
+            ImagePath = "",
+            ImageAlt = "",
+            ImageAltAr = "",
+            IsActive = true
         };
         isEditingSection = false;
         showSectionModal = true;
@@ -483,7 +492,9 @@
             BgType = sectionToEdit.BgType,
             BgValue = sectionToEdit.BgValue,
             DisplayOrder = sectionToEdit.DisplayOrder,
-            IsActive = sectionToEdit.IsActive
+            IsActive = sectionToEdit.IsActive,
+            CreatedAt = sectionToEdit.CreatedAt,
+            UpdatedAt = sectionToEdit.UpdatedAt
         };
         isEditingSection = true;
         showSectionModal = true;
