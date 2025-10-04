@@ -22,7 +22,7 @@ public class ChatMessage
     
     public bool IsRead { get; set; } = false;
     
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
     
     // Navigation property
     public ChatSession? ChatSession { get; set; }

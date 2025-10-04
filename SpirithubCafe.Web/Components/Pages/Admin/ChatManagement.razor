@@ -5,6 +5,7 @@
 @inject IChatService ChatService
 @inject IStringLocalizer<Resources> Localizer
 @inject ToastService ToastService
+@layout AdminLayout
 @attribute [Authorize(Roles = "Admin")]
 @implements IDisposable
 @rendermode InteractiveServer

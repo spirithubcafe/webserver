@@ -27,23 +27,21 @@ public class ChatService : IChatService
 
     public async Task<ChatSession> CreateChatSessionAsync(string visitorName, string? visitorEmail, string ipAddress)
     {
-        var chatSession = new ChatSession
+        var session = new ChatSession
         {
             Id = Guid.NewGuid().ToString(),
             VisitorName = visitorName,
             VisitorEmail = visitorEmail,
             IpAddress = ipAddress,
             IsActive = true,
-            HasUnreadAdminMessages = false,
-            HasUnreadVisitorMessages = false,
-            CreatedAt = DateTime.UtcNow,
-            LastMessageAt = null
+            CreatedAt = DateTime.Now,
+            LastMessageAt = DateTime.Now
         };
 
-        _context.ChatSessions.Add(chatSession);
+        _context.ChatSessions.Add(session);
         await _context.SaveChangesAsync();
 
-        return chatSession;
+        return session;
     }
 
     public async Task<ChatSession?> GetChatSessionAsync(string sessionId)
@@ -69,7 +67,7 @@ public class ChatService : IChatService
             SenderName = senderName,
             Content = message,
             SenderType = senderType,
-            CreatedAt = DateTime.UtcNow,
+            CreatedAt = DateTime.Now,
             IsRead = false
         };
 
@@ -81,7 +79,7 @@ public class ChatService : IChatService
         
         if (session != null)
         {
-            session.LastMessageAt = DateTime.UtcNow;
+            session.LastMessageAt = DateTime.Now;
             
             // Update unread message flags based on sender
             if (senderType == ChatSenderType.Visitor)
