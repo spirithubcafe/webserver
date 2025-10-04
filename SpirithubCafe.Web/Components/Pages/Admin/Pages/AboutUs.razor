@@ -235,13 +235,37 @@
                             @foreach (var layoutType in GetLayoutTypes())
                             {
                                 <div class="relative">
-                                    <input type="radio" name="layoutType" value="@layoutType.Key" @onchange="() => OnLayoutTypeChanged(layoutType.Key)" checked="@(currentSection.LayoutType == layoutType.Key)" class="sr-only" />
-                                    <label class="block cursor-pointer">
+                                    <button type="button" @onclick="() => OnLayoutTypeChanged(layoutType.Key)" class="w-full">
                                         <div class="border-2 @(currentSection.LayoutType == layoutType.Key ? "border-[#37353E] bg-[#37353E]/5" : "border-gray-200") rounded-lg p-4 text-center hover:border-[#715A5A] transition-all">
-                                            <div class="@layoutType.Value.IconClass mb-2"></div>
+                                            <div class="@layoutType.Value.IconClass mb-2">
+                                                @if (layoutType.Key == "image-right-text-left")
+                                                {
+                                                    <span class="text-xs">📝🖼️</span>
+                                                }
+                                                else if (layoutType.Key == "image-left-text-right")
+                                                {
+                                                    <span class="text-xs">🖼️📝</span>
+                                                }
+                                                else if (layoutType.Key == "text-only")
+                                                {
+                                                    <span class="text-xs">📝</span>
+                                                }
+                                                else if (layoutType.Key == "image-only")
+                                                {
+                                                    <span class="text-xs">🖼️</span>
+                                                }
+                                            </div>
                                             <div class="text-sm font-medium text-gray-700">@layoutType.Value.Name</div>
+                                            @if (currentSection.LayoutType == layoutType.Key)
+                                            {
+                                                <div class="mt-2">
+                                                    <svg class="w-4 h-4 mx-auto text-[#37353E]" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                </div>
+                                            }
                                         </div>
-                                    </label>
+                                    </button>
                                 </div>
                             }
                         </div>
@@ -374,7 +398,12 @@
 @code {
     private AboutUsPage aboutUsPage = new();
     private List<AboutUsSection> sections = new();
-    private AboutUsSection currentSection = new();
+    private AboutUsSection currentSection = new() 
+    { 
+        LayoutType = "image-right-text-left",
+        BgType = "color",
+        BgValue = "#ffffff"
+    };
     private bool showSectionModal = false;
     private bool isEditingSection = false;
     private bool isLoading = false;
@@ -576,8 +605,20 @@
 
     private void OnLayoutTypeChanged(string layoutType)
     {
-        currentSection.LayoutType = layoutType;
-        StateHasChanged();
+        if (currentSection != null)
+        {
+            currentSection.LayoutType = layoutType;
+            
+            // Clear image-related fields if switching to text-only
+            if (layoutType == "text-only")
+            {
+                currentSection.ImagePath = null;
+                currentSection.ImageAlt = null;
+                currentSection.ImageAltAr = null;
+            }
+            
+            StateHasChanged();
+        }
     }
 
     private string GetLayoutDisplayName(string layoutType)
