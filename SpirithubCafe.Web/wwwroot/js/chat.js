@@ -96,3 +96,39 @@ window.chatStorage = {
         }
     }
 };
+
+// Emoji Picker Functions
+window.emojiPicker = {
+    init: () => {
+        console.log('Emoji picker initialized');
+        
+        // Close emoji picker when clicking outside
+        document.addEventListener('click', (event) => {
+            const emojiPicker = document.querySelector('.admin-emoji-picker.show');
+            const emojiButton = event.target.closest('.admin-emoji-button');
+            
+            if (emojiPicker && !emojiPicker.contains(event.target) && !emojiButton) {
+                emojiPicker.classList.remove('show');
+            }
+        });
+        
+        // Close on escape key
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                const emojiPicker = document.querySelector('.admin-emoji-picker.show');
+                if (emojiPicker) {
+                    emojiPicker.classList.remove('show');
+                }
+            }
+        });
+    }
+};
+
+// Auto-initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        window.emojiPicker.init();
+    });
+} else {
+    window.emojiPicker.init();
+}

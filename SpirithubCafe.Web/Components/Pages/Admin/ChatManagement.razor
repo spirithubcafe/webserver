@@ -5,6 +5,7 @@
 @inject IChatService ChatService
 @inject IStringLocalizer<Resources> Localizer
 @inject ToastService ToastService
+@inject IJSRuntime JSRuntime
 @layout AdminLayout
 @attribute [Authorize(Roles = "Admin")]
 @implements IDisposable
@@ -13,10 +14,10 @@
 <!-- Full Height Responsive Chat Management -->
 <div class="h-[calc(100vh-85px)] bg-[#F8F9FA] flex flex-col">
     <!-- Header -->
-    <div class="bg-[#37353E] text-[#D3DAD9] p-4 sm:p-6 flex-shrink-0">
+    @* <div class="bg-[#37353E] text-[#D3DAD9] p-4 sm:p-6 flex-shrink-0">
         <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold">@Localizer["ChatManagement"]</h1>
         <p class="text-sm text-[#D3DAD9]/70 mt-1">Manage all active chat sessions</p>
-    </div>
+    </div> *@
 
     <!-- Main Chat Container -->
     <div class="flex flex-col lg:flex-row flex-1 bg-white shadow-lg overflow-hidden">
@@ -179,12 +180,43 @@
 
                 <!-- Message Input -->
                 <div class="p-4 border-t border-[#D3DAD9]/20 bg-white admin-message-input-container">
-                    <div class="flex gap-3 items-center">
+                    <div class="flex gap-3 items-center relative">
                         <input @bind="replyMessage" 
                                @onkeypress="@(async (e) => { if (e.Key == "Enter") await SendAdminMessage(); })"
                                placeholder="@Localizer["TypeYourReply"]..."
                                class="flex-1 admin-message-input"
+                               @ref="messageInput"
                                disabled="@isLoading" />
+                        
+                        <!-- Emoji Button -->
+                        <button @onclick="ToggleEmojiPicker" 
+                                class="admin-emoji-button"
+                                type="button"
+                                title="Add Emoji">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zM8.5 9a1.5 1.5 0 1 1-.001 3.001A1.5 1.5 0 0 1 8.5 9zm7 0a1.5 1.5 0 1 1-.001 3.001A1.5 1.5 0 0 1 15.5 9zM12 17.5c-2.33 0-4.31-1.46-5.11-3.5h10.22c-.8 2.04-2.78 3.5-5.11 3.5z"/>
+                            </svg>
+                        </button>
+                        
+                        <!-- Emoji Picker -->
+                        <div class="admin-emoji-picker @(showEmojiPicker ? "show" : "")">
+                            <div class="admin-emoji-header">
+                                <h4>Select Emoji</h4>
+                                <button @onclick="() => showEmojiPicker = false" class="admin-emoji-close">✕</button>
+                            </div>
+                            <div class="admin-emoji-grid">
+                                @foreach (var emoji in popularEmojis)
+                                {
+                                    <button @onclick="() => InsertEmoji(emoji)" 
+                                            class="admin-emoji-item" 
+                                            type="button"
+                                            title="@emoji">
+                                        @emoji
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                        
                         <button @onclick="SendAdminMessage" 
                                 disabled="@(isLoading || string.IsNullOrWhiteSpace(replyMessage))"
                                 class="admin-send-button"
@@ -241,6 +273,35 @@
         refreshTimer.Elapsed += async (sender, e) => await RefreshData();
         refreshTimer.AutoReset = true;
         refreshTimer.Enabled = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                // Setup JavaScript event listener for closing emoji picker
+                await JSRuntime.InvokeVoidAsync("eval", @"
+                    if (typeof emojiPicker !== 'undefined') {
+                        emojiPicker.init();
+                    }
+                    
+                    // Listen for close emoji picker event
+                    document.addEventListener('closeEmojiPicker', () => {
+                        // Close emoji picker through direct DOM manipulation
+                        const emojiPicker = document.querySelector('.admin-emoji-picker.show');
+                        if (emojiPicker) {
+                            emojiPicker.classList.remove('show');
+                        }
+                    });
+                ");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error initializing emoji picker: {ex.Message}");
+            }
+        }
     }
 
     private async Task RefreshData()
@@ -365,6 +426,54 @@
     private void ToggleSessionInfo()
     {
         showSessionInfo = !showSessionInfo;
+    }
+
+    // Emoji Picker Variables
+    private bool showEmojiPicker = false;
+    private ElementReference messageInput;
+    
+    // Popular Emojis Collection (50 most used emojis)
+    private readonly string[] popularEmojis = {
+        "😀", "😃", "😄", "😁", "😆", "😅", "🤣", "😂", "🙂", "🙃",
+        "😉", "😊", "😇", "🥰", "😍", "🤩", "😘", "😗", "😚", "😙",
+        "😋", "😛", "😜", "🤪", "😝", "🤑", "🤗", "🤭", "🤫", "🤔",
+        "🤐", "🤨", "😐", "😑", "😶", "😏", "😒", "🙄", "😬", "🤥",
+        "😔", "😪", "🤤", "😴", "😷", "🤒", "🤕", "🤢", "🤮", "🤧",
+        "🥵", "🥶", "🥴", "😵", "🤯", "🤠", "🥳", "😎", "🤓", "🧐",
+        "😕", "😟", "🙁", "☹️", "😮", "😯", "😲", "😳", "🥺", "😦",
+        "😧", "😨", "😰", "😥", "😢", "😭", "😱", "😖", "😣", "😞",
+        "😓", "😩", "😫", "🥱", "😤", "😡", "😠", "🤬", "😈", "👿",
+        "💀", "☠️", "💩", "🤡", "👹", "👺", "👻", "👽", "👾", "🤖"
+    };
+
+    private void ToggleEmojiPicker()
+    {
+        showEmojiPicker = !showEmojiPicker;
+    }
+
+    private async Task InsertEmoji(string emoji)
+    {
+        replyMessage += emoji;
+        showEmojiPicker = false;
+        
+        // Focus back to input
+        try
+        {
+            await messageInput.FocusAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error focusing input: {ex.Message}");
+        }
+        
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public static void CloseEmojiPicker()
+    {
+        // This will be called from JavaScript to close emoji picker
+        // We'll handle this through JavaScript since static methods can't access instance variables
     }
 
     public void Dispose()
