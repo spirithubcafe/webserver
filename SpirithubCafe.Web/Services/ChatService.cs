@@ -6,16 +6,14 @@ namespace SpirithubCafe.Web.Services;
 
 public interface IChatService
 {
-    Task<string> CreateChatSessionAsync(string visitorName, string? visitorEmail, string ipAddress);
+    Task<ChatSession> CreateChatSessionAsync(string visitorName, string? visitorEmail, string ipAddress);
     Task<ChatSession?> GetChatSessionAsync(string sessionId);
-    Task<List<ChatSession>> GetActiveChatSessionsAsync();
-    Task<ChatMessage> SendMessageAsync(string sessionId, string senderName, string message, bool isFromAdmin = false, string? userId = null);
-    Task<List<ChatMessage>> GetMessagesAsync(string sessionId, int skip = 0, int take = 50);
-    Task MarkMessagesAsReadAsync(string sessionId, bool fromAdmin = false);
+    Task<IEnumerable<ChatSession>> GetActiveSessionsAsync();
+    Task<ChatMessage> SendMessageAsync(string sessionId, ChatSenderType senderType, string senderName, string message);
+    Task<IEnumerable<ChatMessage>> GetMessagesAsync(string sessionId);
+    Task<IEnumerable<ChatMessage>> GetMessagesAsync(string sessionId, DateTime since);
+    Task MarkMessagesAsReadAsync(string sessionId, ChatSenderType senderType);
     Task CloseChatSessionAsync(string sessionId);
-    Task<int> GetUnreadMessageCountAsync(string sessionId, bool forAdmin = false);
-    Task<int> GetTotalUnreadMessagesForAdminAsync();
-    Task<List<ChatSession>> GetRecentChatSessionsAsync(int count = 10);
 }
 
 public class ChatService : IChatService
@@ -27,63 +25,74 @@ public class ChatService : IChatService
         _context = context;
     }
 
-    public async Task<string> CreateChatSessionAsync(string visitorName, string? visitorEmail, string ipAddress)
+    public async Task<ChatSession> CreateChatSessionAsync(string visitorName, string? visitorEmail, string ipAddress)
     {
-        var sessionId = Guid.NewGuid().ToString();
-        
         var chatSession = new ChatSession
         {
-            SessionId = sessionId,
+            Id = Guid.NewGuid().ToString(),
             VisitorName = visitorName,
             VisitorEmail = visitorEmail,
             IpAddress = ipAddress,
             IsActive = true,
-            CreatedAt = DateTime.Now
+            HasUnreadAdminMessages = false,
+            HasUnreadVisitorMessages = false,
+            CreatedAt = DateTime.UtcNow,
+            LastMessageAt = null
         };
 
         _context.ChatSessions.Add(chatSession);
         await _context.SaveChangesAsync();
 
-        return sessionId;
+        return chatSession;
     }
 
     public async Task<ChatSession?> GetChatSessionAsync(string sessionId)
     {
         return await _context.ChatSessions
-            .Include(cs => cs.Messages.OrderBy(m => m.CreatedAt))
-            .FirstOrDefaultAsync(cs => cs.SessionId == sessionId);
+            .FirstOrDefaultAsync(cs => cs.Id == sessionId);
     }
 
-    public async Task<List<ChatSession>> GetActiveChatSessionsAsync()
+    public async Task<IEnumerable<ChatSession>> GetActiveSessionsAsync()
     {
         return await _context.ChatSessions
             .Where(cs => cs.IsActive)
-            .Include(cs => cs.Messages)
             .OrderByDescending(cs => cs.LastMessageAt ?? cs.CreatedAt)
             .ToListAsync();
     }
 
-    public async Task<ChatMessage> SendMessageAsync(string sessionId, string senderName, string message, bool isFromAdmin = false, string? userId = null)
+    public async Task<ChatMessage> SendMessageAsync(string sessionId, ChatSenderType senderType, string senderName, string message)
     {
         var chatMessage = new ChatMessage
         {
-            SessionId = sessionId,
+            Id = Guid.NewGuid().ToString(),
+            ChatSessionId = sessionId,
             SenderName = senderName,
-            UserId = userId,
-            Message = message,
-            IsFromAdmin = isFromAdmin,
-            CreatedAt = DateTime.Now
+            Content = message,
+            SenderType = senderType,
+            CreatedAt = DateTime.UtcNow,
+            IsRead = false
         };
 
         _context.ChatMessages.Add(chatMessage);
 
-        // Update session's last message time
+        // Update session's last message time and unread status
         var session = await _context.ChatSessions
-            .FirstOrDefaultAsync(cs => cs.SessionId == sessionId);
+            .FirstOrDefaultAsync(cs => cs.Id == sessionId);
         
         if (session != null)
         {
-            session.LastMessageAt = DateTime.Now;
+            session.LastMessageAt = DateTime.UtcNow;
+            
+            // Update unread message flags based on sender
+            if (senderType == ChatSenderType.Visitor)
+            {
+                session.HasUnreadVisitorMessages = true;
+            }
+            else if (senderType == ChatSenderType.Admin)
+            {
+                session.HasUnreadAdminMessages = true;
+            }
+            
             _context.ChatSessions.Update(session);
         }
 
@@ -91,22 +100,27 @@ public class ChatService : IChatService
         return chatMessage;
     }
 
-    public async Task<List<ChatMessage>> GetMessagesAsync(string sessionId, int skip = 0, int take = 50)
+    public async Task<IEnumerable<ChatMessage>> GetMessagesAsync(string sessionId)
     {
         return await _context.ChatMessages
-            .Where(cm => cm.SessionId == sessionId)
+            .Where(cm => cm.ChatSessionId == sessionId)
             .OrderBy(cm => cm.CreatedAt)
-            .Skip(skip)
-            .Take(take)
             .ToListAsync();
     }
 
-    public async Task MarkMessagesAsReadAsync(string sessionId, bool fromAdmin = false)
+    public async Task<IEnumerable<ChatMessage>> GetMessagesAsync(string sessionId, DateTime since)
     {
+        return await _context.ChatMessages
+            .Where(cm => cm.ChatSessionId == sessionId && cm.CreatedAt > since)
+            .OrderBy(cm => cm.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task MarkMessagesAsReadAsync(string sessionId, ChatSenderType senderType)
+    {
+        // Mark messages from the specified sender type as read
         var messages = await _context.ChatMessages
-            .Where(cm => cm.SessionId == sessionId && 
-                        cm.IsFromAdmin != fromAdmin && 
-                        !cm.IsRead)
+            .Where(cm => cm.ChatSessionId == sessionId && cm.SenderType == senderType && !cm.IsRead)
             .ToListAsync();
 
         foreach (var message in messages)
@@ -114,46 +128,37 @@ public class ChatService : IChatService
             message.IsRead = true;
         }
 
-        if (messages.Any())
+        // Update session unread flags
+        var session = await _context.ChatSessions
+            .FirstOrDefaultAsync(cs => cs.Id == sessionId);
+        
+        if (session != null)
         {
-            _context.ChatMessages.UpdateRange(messages);
-            await _context.SaveChangesAsync();
+            if (senderType == ChatSenderType.Visitor)
+            {
+                session.HasUnreadVisitorMessages = false;
+            }
+            else if (senderType == ChatSenderType.Admin)
+            {
+                session.HasUnreadAdminMessages = false;
+            }
+            
+            _context.ChatSessions.Update(session);
         }
+
+        await _context.SaveChangesAsync();
     }
 
     public async Task CloseChatSessionAsync(string sessionId)
     {
         var session = await _context.ChatSessions
-            .FirstOrDefaultAsync(cs => cs.SessionId == sessionId);
-
+            .FirstOrDefaultAsync(cs => cs.Id == sessionId);
+        
         if (session != null)
         {
             session.IsActive = false;
             _context.ChatSessions.Update(session);
             await _context.SaveChangesAsync();
         }
-    }
-
-    public async Task<int> GetUnreadMessageCountAsync(string sessionId, bool forAdmin = false)
-    {
-        return await _context.ChatMessages
-            .CountAsync(cm => cm.SessionId == sessionId && 
-                             cm.IsFromAdmin != forAdmin && 
-                             !cm.IsRead);
-    }
-
-    public async Task<int> GetTotalUnreadMessagesForAdminAsync()
-    {
-        return await _context.ChatMessages
-            .CountAsync(cm => !cm.IsFromAdmin && !cm.IsRead);
-    }
-
-    public async Task<List<ChatSession>> GetRecentChatSessionsAsync(int count = 10)
-    {
-        return await _context.ChatSessions
-            .Include(cs => cs.Messages)
-            .OrderByDescending(cs => cs.LastMessageAt ?? cs.CreatedAt)
-            .Take(count)
-            .ToListAsync();
     }
 }

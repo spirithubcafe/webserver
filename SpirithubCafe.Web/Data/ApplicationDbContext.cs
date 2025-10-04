@@ -882,7 +882,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         {
             entity.HasKey(e => e.Id);
             
-            entity.Property(e => e.SessionId)
+            entity.Property(e => e.Id)
                 .IsRequired()
                 .HasMaxLength(100);
                 
@@ -894,12 +894,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .HasMaxLength(200);
                 
             entity.Property(e => e.IpAddress)
+                .IsRequired()
                 .HasMaxLength(50);
 
-            entity.HasIndex(e => e.SessionId)
-                .IsUnique()
-                .HasDatabaseName("IX_ChatSessions_SessionId");
-                
             entity.HasIndex(e => e.IsActive)
                 .HasDatabaseName("IX_ChatSessions_IsActive");
                 
@@ -911,7 +908,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         {
             entity.HasKey(e => e.Id);
             
-            entity.Property(e => e.SessionId)
+            entity.Property(e => e.Id)
+                .IsRequired()
+                .HasMaxLength(100);
+            
+            entity.Property(e => e.ChatSessionId)
                 .IsRequired()
                 .HasMaxLength(100);
                 
@@ -919,33 +920,31 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .IsRequired()
                 .HasMaxLength(100);
                 
-            entity.Property(e => e.UserId)
-                .HasMaxLength(100);
-                
-            entity.Property(e => e.Message)
+            entity.Property(e => e.Content)
                 .IsRequired()
                 .HasMaxLength(2000);
                 
-            entity.Property(e => e.IpAddress)
-                .HasMaxLength(50);
+            entity.Property(e => e.SenderType)
+                .HasConversion<int>()
+                .IsRequired();
 
-            entity.HasIndex(e => e.SessionId)
-                .HasDatabaseName("IX_ChatMessages_SessionId");
+            entity.HasIndex(e => e.ChatSessionId)
+                .HasDatabaseName("IX_ChatMessages_ChatSessionId");
                 
             entity.HasIndex(e => e.CreatedAt)
                 .HasDatabaseName("IX_ChatMessages_CreatedAt");
                 
-            entity.HasIndex(e => e.IsFromAdmin)
-                .HasDatabaseName("IX_ChatMessages_IsFromAdmin");
+            entity.HasIndex(e => e.SenderType)
+                .HasDatabaseName("IX_ChatMessages_SenderType");
                 
             entity.HasIndex(e => e.IsRead)
                 .HasDatabaseName("IX_ChatMessages_IsRead");
 
             // Relationship
-            entity.HasOne<ChatSession>()
+            entity.HasOne(m => m.ChatSession)
                 .WithMany(s => s.Messages)
-                .HasForeignKey(m => m.SessionId)
-                .HasPrincipalKey(s => s.SessionId)
+                .HasForeignKey(m => m.ChatSessionId)
+                .HasPrincipalKey(s => s.Id)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

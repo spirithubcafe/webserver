@@ -4,11 +4,8 @@ namespace SpirithubCafe.Domain.Entities;
 
 public class ChatSession
 {
-    public int Id { get; set; }
-    
     [Required]
-    [MaxLength(100)]
-    public string SessionId { get; set; } = string.Empty;
+    public string Id { get; set; } = string.Empty;
     
     [Required]
     [MaxLength(100)]
@@ -18,11 +15,15 @@ public class ChatSession
     public string? VisitorEmail { get; set; }
     
     [MaxLength(50)]
-    public string? IpAddress { get; set; }
+    public string IpAddress { get; set; } = string.Empty;
     
     public bool IsActive { get; set; } = true;
     
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public bool HasUnreadAdminMessages { get; set; } = false;
+    
+    public bool HasUnreadVisitorMessages { get; set; } = false;
+    
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
     public DateTime? LastMessageAt { get; set; }
     

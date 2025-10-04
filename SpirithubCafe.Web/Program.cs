@@ -295,9 +295,6 @@ app.MapRazorComponents<App>()
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
 
-// Map SignalR Hub
-app.MapHub<SpirithubCafe.Web.Hubs.ChatHub>("/chathub");
-
 // Seed roles and admin user
 await SeedAdminUser(app);
 
