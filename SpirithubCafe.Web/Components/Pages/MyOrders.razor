@@ -13,6 +13,7 @@
 @inject IJSRuntime JSRuntime
 @inject HttpClient HttpClient
 @inject IStringLocalizer<SpirithubCafe.Langs.Resources> Localizer
+@inject ToastService ToastService
 @rendermode InteractiveServer
 
 <PageTitle>@Localizer["MyOrders"] - @Localizer["SiteTitle"]</PageTitle>
@@ -261,15 +262,15 @@
                 }
                 else
                 {
-                    await JSRuntime.InvokeVoidAsync("alert", "Order not found!");
+                    ToastService.ShowError("Order not found!");
                     return;
                 }
                 await LoadUserOrders(); // Refresh the list
-                await JSRuntime.InvokeVoidAsync("alert", "Order cancelled successfully!");
+                ToastService.ShowSuccess("Order cancelled successfully!");
             }
             catch (Exception ex)
             {
-                await JSRuntime.InvokeVoidAsync("alert", $"Error cancelling order: {ex.Message}");
+                ToastService.ShowError($"Error cancelling order: {ex.Message}");
             }
         }
     }
@@ -278,7 +279,7 @@
     {
         // You can implement tracking logic here
         // For now, show the tracking number
-        await JSRuntime.InvokeVoidAsync("alert", $"Tracking Number: {trackingNumber}\n\nPlease visit your shipping provider's website to track your package.");
+        ToastService.ShowInfo($"Tracking Number: {trackingNumber}\n\nPlease visit your shipping provider's website to track your package.");
     }
 
     private string GetStatusBadgeClass(string status)
@@ -329,7 +330,7 @@
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("alert", $"Error initiating payment: {ex.Message}");
+            ToastService.ShowError($"Error initiating payment: {ex.Message}");
         }
     }
 

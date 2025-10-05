@@ -8,6 +8,7 @@
 @inject OrderService OrderService
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
+@inject ToastService ToastService
 @rendermode InteractiveServer
 
 <div class="p-6">
@@ -402,12 +403,12 @@
             {
                 await LoadOrders();
                 await LoadStats();
-                await JSRuntime.InvokeVoidAsync("alert", $"Order status updated to {newStatus}");
+                ToastService.ShowSuccess($"Order status updated to {newStatus}");
             }
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("alert", $"Error updating order: {ex.Message}");
+            ToastService.ShowError($"Error updating order: {ex.Message}");
         }
     }
 
@@ -431,7 +432,7 @@
     {
         if (selectedOrder == null || string.IsNullOrWhiteSpace(trackingNumber))
         {
-            await JSRuntime.InvokeVoidAsync("alert", "Please enter a tracking number");
+            ToastService.ShowWarning("Please enter a tracking number");
             return;
         }
 
@@ -445,12 +446,12 @@
                 trackingNumber = "";
                 await LoadOrders();
                 await LoadStats();
-                await JSRuntime.InvokeVoidAsync("alert", "Order shipped successfully!");
+                ToastService.ShowSuccess("Order shipped successfully!");
             }
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("alert", $"Error shipping order: {ex.Message}");
+            ToastService.ShowError($"Error shipping order: {ex.Message}");
         }
     }
 
@@ -502,7 +503,7 @@
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("alert", $"Error initiating payment: {ex.Message}");
+            ToastService.ShowError($"Error initiating payment: {ex.Message}");
         }
     }
 }
