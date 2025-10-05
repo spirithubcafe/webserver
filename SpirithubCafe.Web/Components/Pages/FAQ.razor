@@ -1,0 +1,238 @@
+@page "/faq"
+@using SpirithubCafe.Application.Services
+@using SpirithubCafe.Application.DTOs
+@inject IFAQService FAQService
+@inject IStringLocalizer<SpirithubCafe.Langs.Resources> Localizer
+@inject IJSRuntime JSRuntime
+@layout SpirithubCafe.Web.Components.Layout.PublicLayout
+@rendermode InteractiveServer
+
+<PageTitle>@GetLocalizedText(pageSettings?.TitleEn, pageSettings?.TitleAr) - SpirithubCafe</PageTitle>
+
+@if (pageSettings != null)
+{
+    <!-- Page Header -->
+    <section class="relative bg-gradient-to-br from-[#37353E] to-[#715A5A] text-white py-12 md:py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-16 h-16 mb-4 bg-white/10 rounded-full backdrop-blur-sm">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-bold mb-3">
+                    @GetLocalizedText(pageSettings.TitleEn, pageSettings.TitleAr)
+                </h1>
+                @if (!string.IsNullOrEmpty(pageSettings.DescriptionEn) || !string.IsNullOrEmpty(pageSettings.DescriptionAr))
+                {
+                    <p class="text-lg md:text-xl text-white/90 max-w-3xl mx-auto">
+                        @GetLocalizedText(pageSettings.DescriptionEn, pageSettings.DescriptionAr)
+                    </p>
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Content -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            @if (isLoading)
+            {
+                <div class="flex justify-center items-center py-20">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#37353E]"></div>
+                </div>
+            }
+            else
+            {
+                <!-- Category Tabs -->
+                @if (categories.Any())
+                {
+                    <div class="flex flex-wrap gap-3 mb-8 justify-center">
+                        <button @onclick="() => SelectCategory(null)" 
+                                class="px-6 py-3 rounded-lg font-medium transition-all duration-200 @(selectedCategoryId == null ? "bg-[#37353E] text-white shadow-lg" : "bg-gray-100 text-gray-700 hover:bg-gray-200")">
+                            @Localizer["AllCategories"]
+                        </button>
+                        
+                        @foreach (var category in categories)
+                        {
+                            <button @onclick="() => SelectCategory(category.Id)" 
+                                    class="px-6 py-3 rounded-lg font-medium transition-all duration-200 @(selectedCategoryId == category.Id ? "bg-[#37353E] text-white shadow-lg" : "bg-gray-100 text-gray-700 hover:bg-gray-200")">
+                                @GetLocalizedText(category.NameEn, category.NameAr)
+                            </button>
+                        }
+                    </div>
+                }
+
+                <!-- FAQ List -->
+                @if (filteredFaqs.Any())
+                {
+                    <div class="max-w-4xl mx-auto space-y-4">
+                        @foreach (var faq in filteredFaqs)
+                        {
+                            <div class="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200">
+                                <button @onclick="() => ToggleFAQ(faq.Id)" 
+                                        class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors duration-200">
+                                    <div class="flex items-start flex-1">
+                                        <div class="flex-shrink-0 w-8 h-8 bg-[#37353E] text-white rounded-full flex items-center justify-center mr-4 mt-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                        </div>
+                                        <span class="text-lg font-semibold text-gray-900">
+                                            @GetLocalizedText(faq.QuestionEn, faq.QuestionAr)
+                                        </span>
+                                    </div>
+                                    <svg class="w-6 h-6 text-gray-500 flex-shrink-0 ml-4 transition-transform duration-200 @(expandedFaqIds.Contains(faq.Id) ? "transform rotate-180" : "")" 
+                                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+                                
+                                @if (expandedFaqIds.Contains(faq.Id))
+                                {
+                                    <div class="px-6 pb-4 pt-2 bg-gray-50 border-t border-gray-200">
+                                        <div class="pl-12 text-gray-700 leading-relaxed prose max-w-none">
+                                            @((MarkupString)GetLocalizedText(faq.AnswerEn ?? "", faq.AnswerAr ?? ""))
+                                        </div>
+                                        
+                                        @if (faq.Category != null)
+                                        {
+                                            <div class="pl-12 mt-4">
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#715A5A] text-white">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                                    </svg>
+                                                    @GetLocalizedText(faq.Category.NameEn, faq.Category.NameAr)
+                                                </span>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-20">
+                        <svg class="mx-auto h-24 w-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <h3 class="mt-4 text-xl font-semibold text-gray-900">@Localizer["NoFAQsFound"]</h3>
+                        <p class="mt-2 text-gray-600">@Localizer["NoFAQsFoundDescription"]</p>
+                    </div>
+                }
+            }
+        </div>
+    </section>
+
+    <!-- Contact CTA -->
+    <section class="bg-gradient-to-r from-[#37353E] to-[#715A5A] text-white py-16">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold mb-4">@Localizer["StillHaveQuestions"]</h2>
+            <p class="text-xl text-white/90 mb-8">@Localizer["ContactUsForHelp"]</p>
+            <a href="/contact" class="inline-flex items-center px-8 py-4 bg-white text-[#37353E] rounded-lg hover:bg-gray-100 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+                @Localizer["ContactUs"]
+            </a>
+        </div>
+    </section>
+}
+else
+{
+    <div class="flex justify-center items-center min-h-screen">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#37353E]"></div>
+    </div>
+}
+
+@code {
+    private FAQPageDto? pageSettings;
+    private List<FAQDto> allFaqs = new();
+    private List<FAQDto> filteredFaqs = new();
+    private List<FAQCategoryDto> categories = new();
+    private HashSet<int> expandedFaqIds = new();
+    private int? selectedCategoryId = null;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            isLoading = true;
+            
+            // Load page settings
+            pageSettings = await FAQService.GetFAQPageSettingsAsync();
+            
+            // Load categories
+            categories = (await FAQService.GetPublicCategoriesAsync()).ToList();
+            
+            // Load FAQs
+            allFaqs = (await FAQService.GetPublicFAQsAsync()).ToList();
+            
+            // Apply initial filter
+            FilterFAQs();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading FAQ data: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void SelectCategory(int? categoryId)
+    {
+        selectedCategoryId = categoryId;
+        FilterFAQs();
+    }
+
+    private void FilterFAQs()
+    {
+        if (selectedCategoryId.HasValue)
+        {
+            filteredFaqs = allFaqs.Where(f => f.CategoryId == selectedCategoryId.Value).ToList();
+        }
+        else
+        {
+            filteredFaqs = allFaqs;
+        }
+    }
+
+    private void ToggleFAQ(int faqId)
+    {
+        if (expandedFaqIds.Contains(faqId))
+        {
+            expandedFaqIds.Remove(faqId);
+        }
+        else
+        {
+            expandedFaqIds.Add(faqId);
+        }
+    }
+
+    private string GetLocalizedText(string? englishText, string? arabicText)
+    {
+        var language = Localizer.GetString("Language").Value;
+        
+        if (language == "ar" && !string.IsNullOrEmpty(arabicText))
+        {
+            return arabicText;
+        }
+        
+        return englishText ?? "";
+    }
+
+    private bool IsRtlLayout()
+    {
+        return Localizer.GetString("Language").Value == "ar";
+    }
+}
