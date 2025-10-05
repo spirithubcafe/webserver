@@ -1,107 +1,52 @@
-<?xml version="1.0" encoding="utf-8"?>
-<root>
-  <!-- 
-    Microsoft ResX Schema 
-    
-    Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
-    associated with the data types.
-    
-    Example:
-    
-    ... ado.net/XML headers & schema ...
-    <resheader name="resmimetype">text/microsoft-resx</resheader>
-    <resheader name="version">2.0</resheader>
-    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-                
-    There are any number of "resheader" rows that contain simple 
-    name/value pairs.
-    
-    Each data row contains a name/value pair, but the row also 
-    contains a type or mimetype. Type corresponds to a .NET class that
-    support text/value conversion. The mimetype is used for
-    serialized objects, and tells the ResXResourceReader how to
-    depersist the object. This is currently not 
-    extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
-    read any of the formats listed below.
-    
-    mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
-            : and then encoded with base64 encoding.
-    
-    mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-            : and then encoded with base64 encoding.
-
-    mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
-            : using a System.ComponentModel.TypeConverter
-            : and then encoded with base64 encoding.
-    -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element name="root" msdata:IsDataSet="true">
-      <xsd:complexType>
-        <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="resheader">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-        </xsd:choice>
-      </xsd:complexType>
-    </xsd:element>
-  </xsd:schema>
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+  <xs:schema id="root">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="metadata">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" />
+              </xs:sequence>
+              <xs:attribute name="name" use="required" type="xsd:string" />
+              <xs:attribute name="type" type="xsd:string" />
+              <xs:attribute name="mimetype" type="xsd:string" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="assembly">
+            <xs:complexType>
+              <xs:attribute name="alias" type="xsd:string" />
+              <xs:attribute name="name" type="xsd:string" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" />
+              </xs:sequence>
+              <xs:attribute name="name" use="required" type="xsd:string" />
+              <xs:attribute name="type" type="xsd:string" />
+              <xs:attribute name="mimetype" type="xsd:string" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" />
+              </xs:sequence>
+              <xs:attribute name="name" use="required" type="xsd:string" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
   </resheader>
@@ -115,7 +60,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   
-  <!-- Common UI -->
+  
   <data name="SiteTitle" xml:space="preserve">
     <value>SpirithubCafe - Premium Coffee from Oman</value>
   </data>
@@ -150,7 +95,7 @@
     <value>Account</value>
   </data>
   
-  <!-- Home Page -->
+  
   <data name="HeroTitle" xml:space="preserve">
     <value>Premium Coffee from Oman</value>
   </data>
@@ -164,7 +109,7 @@
     <value>Our Story</value>
   </data>
   
-  <!-- Brand -->
+  
   <data name="BrandName" xml:space="preserve">
     <value>SpirithubCafe</value>
   </data>
@@ -175,7 +120,7 @@
     <value>Discover the finest coffee from around the world</value>
   </data>
   
-  <!-- Cart -->
+  
   <data name="ShoppingCart" xml:space="preserve">
     <value>Shopping Cart</value>
   </data>
@@ -213,7 +158,7 @@
     <value>Remove</value>
   </data>
   
-  <!-- Product -->
+  
   <data name="AddToFavorites" xml:space="preserve">
     <value>Add to Favorites</value>
   </data>
@@ -230,7 +175,7 @@
     <value>In Stock</value>
   </data>
   
-  <!-- Search -->
+  
   <data name="SearchPlaceholder" xml:space="preserve">
     <value>Search for coffee...</value>
   </data>
@@ -244,7 +189,7 @@
     <value>All Categories</value>
   </data>
   
-  <!-- Orders -->
+  
   <data name="OrderHistory" xml:space="preserve">
     <value>Order History</value>
   </data>
@@ -267,7 +212,7 @@
     <value>Track Order</value>
   </data>
   
-  <!-- Checkout -->
+  
   <data name="Checkout" xml:space="preserve">
     <value>Checkout</value>
   </data>
@@ -401,7 +346,7 @@
     <value>Place Order</value>
   </data>
   
-  <!-- Common Actions -->
+  
   <data name="Save" xml:space="preserve">
     <value>Save</value>
   </data>
@@ -427,7 +372,7 @@
     <value>Next</value>
   </data>
   
-  <!-- Language -->
+  
   <data name="Language" xml:space="preserve">
     <value>Language</value>
   </data>
@@ -438,12 +383,12 @@
     <value>العربية</value>
   </data>
   
-  <!-- Currency -->
+  
   <data name="Currency" xml:space="preserve">
     <value>OMR</value>
   </data>
   
-  <!-- Slideshow Management -->
+  
   <data name="SlideshowManagement" xml:space="preserve">
     <value>Slideshow Management</value>
   </data>
@@ -490,7 +435,7 @@
     <value>Create your first slide</value>
   </data>
   
-  <!-- Slide Form -->
+  
   <data name="SlideImage" xml:space="preserve">
     <value>Slide Image</value>
   </data>
@@ -552,7 +497,7 @@
     <value>Create</value>
   </data>
   
-  <!-- Validation Messages -->
+  
   <data name="TitleRequired" xml:space="preserve">
     <value>Title is required</value>
   </data>
@@ -569,7 +514,7 @@
     <value>Button link is required</value>
   </data>
   
-  <!-- Alert Messages -->
+  
   <data name="ErrorLoadingSlides" xml:space="preserve">
     <value>Error loading slides</value>
   </data>
@@ -604,7 +549,7 @@
     <value>Error deleting slide</value>
   </data>
   
-  <!-- Navigation Menu -->
+  
   <data name="Products" xml:space="preserve">
     <value>Products</value>
   </data>
@@ -666,7 +611,7 @@
     <value>Accessories</value>
   </data>
   
-  <!-- Footer -->
+  
   <data name="QuickLinks" xml:space="preserve">
     <value>Quick Links</value>
   </data>
@@ -683,7 +628,7 @@
     <value>All rights reserved</value>
   </data>
   
-  <!-- Footer Management -->
+  
   <data name="FooterManagement" xml:space="preserve">
     <value>Footer Management</value>
   </data>
@@ -711,9 +656,6 @@
   <data name="BackgroundType" xml:space="preserve">
     <value>Background Type</value>
   </data>
-  <data name="BackgroundColor" xml:space="preserve">
-    <value>Background Color</value>
-  </data>
   <data name="BackgroundImage" xml:space="preserve">
     <value>Background Image</value>
   </data>
@@ -729,9 +671,6 @@
   <data name="OverlayValue" xml:space="preserve">
     <value>Overlay Value</value>
   </data>
-  <data name="TextColor" xml:space="preserve">
-    <value>Text Color</value>
-  </data>
   <data name="AccentColor" xml:space="preserve">
     <value>Accent Color</value>
   </data>
@@ -743,9 +682,6 @@
   </data>
   <data name="Phone" xml:space="preserve">
     <value>Phone</value>
-  </data>
-  <data name="Email" xml:space="preserve">
-    <value>Email</value>
   </data>
   <data name="WorkingHours" xml:space="preserve">
     <value>Working Hours</value>
@@ -765,9 +701,6 @@
   <data name="Color" xml:space="preserve">
     <value>Color</value>
   </data>
-  <data name="Image" xml:space="preserve">
-    <value>Image</value>
-  </data>
   <data name="Video" xml:space="preserve">
     <value>Video</value>
   </data>
@@ -784,7 +717,7 @@
     <value>Follow Us</value>
   </data>
   
-  <!-- Admin Interface -->
+  
   <data name="Dashboard" xml:space="preserve">
     <value>Dashboard</value>
   </data>
@@ -822,7 +755,7 @@
     <value>Reload</value>
   </data>
   
-  <!-- Home Page Content -->
+  
   <data name="WhyChoose" xml:space="preserve">
     <value>Why Choose SpirithubCafe?</value>
   </data>
@@ -926,7 +859,7 @@
     <value>Browse Coffee</value>
   </data>
   
-  <!-- New Admin Features -->
+  
   <data name="Roles" xml:space="preserve">
     <value>Roles</value>
   </data>
@@ -1045,7 +978,7 @@
     <value>System Settings</value>
   </data>
   
-  <!-- Additional admin translations -->
+  
   <data name="ManageUsersDescription" xml:space="preserve">
     <value>Manage system users and their roles</value>
   </data>
@@ -1074,7 +1007,7 @@
     <value>Role</value>
   </data>
   
-  <!-- User Management -->
+  
   <data name="CreateUser" xml:space="preserve">
     <value>Create User</value>
   </data>
@@ -1115,7 +1048,7 @@
     <value>Try adjusting your search criteria</value>
   </data>
   
-  <!-- Edit User -->
+  
   <data name="EditUser" xml:space="preserve">
     <value>Edit User</value>
   </data>
@@ -1126,7 +1059,7 @@
     <value>Updating</value>
   </data>
   
-  <!-- Password Reset -->
+  
   <data name="PasswordResetSuccess" xml:space="preserve">
     <value>Password Reset Successful</value>
   </data>
@@ -1143,7 +1076,7 @@
     <value>Understood</value>
   </data>
   
-  <!-- Settings -->
+  
   <data name="ManageApplicationSettings" xml:space="preserve">
     <value>Manage application settings and configurations</value>
   </data>
@@ -1152,9 +1085,6 @@
   </data>
   <data name="Branding" xml:space="preserve">
     <value>Branding</value>
-  </data>
-  <data name="GeneralSettings" xml:space="preserve">
-    <value>General Settings</value>
   </data>
   <data name="SiteName" xml:space="preserve">
     <value>Site Name</value>
@@ -1271,7 +1201,7 @@
     <value>Explore our premium coffee collections</value>
   </data>
 
-  <!-- Product Management -->
+  
   <data name="ProductManagement" xml:space="preserve">
     <value>Product Management</value>
   </data>
@@ -1342,7 +1272,7 @@
     <value>Error loading data: {0}</value>
   </data>
   
-  <!-- Dashboard Page -->
+  
   <data name="AdminDashboard" xml:space="preserve">
     <value>Admin Dashboard</value>
   </data>
@@ -1356,7 +1286,7 @@
     <value>product</value>
   </data>
 
-  <!-- Shipping Management -->
+  
   <data name="ShippingManagement" xml:space="preserve">
     <value>Shipping Management</value>
   </data>
@@ -1442,7 +1372,7 @@
     <value>Aramex Code</value>
   </data>
   
-  <!-- Product Shipping Section -->
+  
   <data name="EstimateShipping" xml:space="preserve">
     <value>Estimate Shipping</value>
   </data>
@@ -1477,7 +1407,7 @@
     <value>Pick up your order from our store location</value>
   </data>
   
-  <!-- Order Management -->
+  
   <data name="OrderManagement" xml:space="preserve">
     <value>Order Management</value>
   </data>
@@ -1535,9 +1465,6 @@
   <data name="TaxPercentageHelp" xml:space="preserve">
     <value>Tax percentage applied to products in this category (0 to 100)</value>
   </data>
-  <data name="Tax" xml:space="preserve">
-    <value>Tax</value>
-  </data>
   <data name="NoTax" xml:space="preserve">
     <value>No Tax</value>
   </data>
@@ -1547,20 +1474,11 @@
   <data name="PaymentGatewaySettingsDescription" xml:space="preserve">
     <value>Configure Bank Muscat payment gateway integration</value>
   </data>
-  <data name="GeneralSettings" xml:space="preserve">
-    <value>General Settings</value>
-  </data>
   <data name="GatewayName" xml:space="preserve">
     <value>Gateway Name</value>
   </data>
   <data name="Title" xml:space="preserve">
     <value>Title</value>
-  </data>
-  <data name="Description" xml:space="preserve">
-    <value>Description</value>
-  </data>
-  <data name="Status" xml:space="preserve">
-    <value>Status</value>
   </data>
   <data name="EnablePaymentGateway" xml:space="preserve">
     <value>Enable payment gateway</value>
@@ -1619,9 +1537,6 @@
   <data name="CancelUrlDescription" xml:space="preserve">
     <value>URL where customers are redirected when they cancel payment</value>
   </data>
-  <data name="Currency" xml:space="preserve">
-    <value>Currency</value>
-  </data>
   <data name="CurrencyDescription" xml:space="preserve">
     <value>Currency code (OMR for Omani Rial)</value>
   </data>
@@ -1634,20 +1549,11 @@
   <data name="Saving" xml:space="preserve">
     <value>Saving...</value>
   </data>
-  <data name="Loading" xml:space="preserve">
-    <value>Loading...</value>
-  </data>
   <data name="LoadingSettings" xml:space="preserve">
     <value>Loading settings...</value>
   </data>
   <data name="LastUpdated" xml:space="preserve">
     <value>Last updated</value>
-  </data>
-  <data name="Active" xml:space="preserve">
-    <value>Active</value>
-  </data>
-  <data name="Inactive" xml:space="preserve">
-    <value>Inactive</value>
   </data>
   <data name="TestingConnection" xml:space="preserve">
     <value>Testing connection...</value>
@@ -1671,7 +1577,7 @@
     <value>Error testing connection</value>
   </data>
 
-  <!-- Contact Form -->
+  
   <data name="GetInTouch" xml:space="preserve">
     <value>Get in Touch</value>
   </data>
@@ -1683,9 +1589,6 @@
   </data>
   <data name="ContactFormDescription" xml:space="preserve">
     <value>Have a question about our coffee? Need help with your order? We're here to help!</value>
-  </data>
-  <data name="FullName" xml:space="preserve">
-    <value>Full Name</value>
   </data>
   <data name="EmailAddress" xml:space="preserve">
     <value>Email Address</value>
@@ -1721,7 +1624,7 @@
     <value>Email Us</value>
   </data>
   
-  <!-- Site Branding -->
+  
   <data name="SiteSubtitle" xml:space="preserve">
     <value>Premium Coffee from Oman</value>
   </data>
@@ -1729,20 +1632,9 @@
     <value>SpirithubCafe</value>
   </data>
   
-  <!-- Error Messages -->
+  
   <data name="UnhandledErrorOccurred" xml:space="preserve">
     <value>An unhandled error has occurred.</value>
-  </data>
-  <data name="Reload" xml:space="preserve">
-    <value>Reload</value>
-  </data>
-  
-  <!-- Cart Page -->
-  <data name="ShoppingCart" xml:space="preserve">
-    <value>Shopping Cart</value>
-  </data>
-  <data name="ContinueShopping" xml:space="preserve">
-    <value>Continue Shopping</value>
   </data>
   <data name="ItemInCart" xml:space="preserve">
     <value>item in your cart</value>
@@ -1751,24 +1643,15 @@
     <value>items in your cart</value>
   </data>
   
-  <!-- Favorites Page -->
+  
   <data name="MyFavorites" xml:space="preserve">
     <value>My Favorites</value>
   </data>
   <data name="YourSavedProducts" xml:space="preserve">
     <value>Your saved coffee products and accessories</value>
   </data>
-  <data name="AllCategories" xml:space="preserve">
-    <value>All Categories</value>
-  </data>
-  <data name="CoffeeBeans" xml:space="preserve">
-    <value>Coffee Beans</value>
-  </data>
   <data name="Equipment" xml:space="preserve">
     <value>Equipment</value>
-  </data>
-  <data name="Accessories" xml:space="preserve">
-    <value>Accessories</value>
   </data>
   <data name="SortByRecentlyAdded" xml:space="preserve">
     <value>Sort by: Recently Added</value>
@@ -1780,7 +1663,7 @@
     <value>Sort by: Price: High to Low</value>
   </data>
   
-  <!-- Orders Page -->
+  
   <data name="TrackAndManageOrders" xml:space="preserve">
     <value>Track and manage your orders</value>
   </data>
@@ -1788,10 +1671,7 @@
     <value>Loading your orders...</value>
   </data>
   
-  <!-- Error Page -->
-  <data name="Error" xml:space="preserve">
-    <value>Error</value>
-  </data>
+  
   <data name="RequestId" xml:space="preserve">
     <value>Request ID:</value>
   </data>
@@ -1805,7 +1685,7 @@
     <value>The Development environment shouldn't be enabled for deployed applications. It can result in displaying sensitive information from exceptions to end users. For local debugging, enable the Development environment by setting the ASPNETCORE_ENVIRONMENT environment variable to Development and restarting the app.</value>
   </data>
   
-  <!-- Logo Settings -->
+  
   <data name="MainLogoConfiguration" xml:space="preserve">
     <value>Main Logo Configuration</value>
   </data>
@@ -1869,9 +1749,6 @@
   <data name="HomeLogoSettingsSavedSuccessfully" xml:space="preserve">
     <value>Home page logo settings saved successfully!</value>
   </data>
-  <data name="SettingsSavedSuccessfully" xml:space="preserve">
-    <value>Settings saved successfully!</value>
-  </data>
   <data name="ChatWithUs" xml:space="preserve">
     <value>Chat With Us</value>
   </data>
@@ -1880,9 +1757,6 @@
   </data>
   <data name="YourEmail" xml:space="preserve">
     <value>Your Email</value>
-  </data>
-  <data name="Optional" xml:space="preserve">
-    <value>Optional</value>
   </data>
   <data name="StartChat" xml:space="preserve">
     <value>Start Chat</value>
@@ -1926,9 +1800,6 @@
   <data name="ChatStartedSuccessfully" xml:space="preserve">
     <value>Chat started successfully</value>
   </data>
-  <data name="MessageSentSuccessfully" xml:space="preserve">
-    <value>Message sent successfully</value>
-  </data>
   <data name="ErrorSendingMessage" xml:space="preserve">
     <value>Error sending message</value>
   </data>
@@ -1944,9 +1815,6 @@
   <data name="NoReviewsFound" xml:space="preserve">
     <value>No reviews found</value>
   </data>
-  <data name="All" xml:space="preserve">
-    <value>All</value>
-  </data>
   <data name="Pending" xml:space="preserve">
     <value>Pending</value>
   </data>
@@ -1958,9 +1826,6 @@
   </data>
   <data name="Unapprove" xml:space="preserve">
     <value>Unapprove</value>
-  </data>
-  <data name="Product" xml:space="preserve">
-    <value>Product</value>
   </data>
   <data name="ComprehensiveBusinessReports" xml:space="preserve">
     <value>Comprehensive Business Reports</value>
@@ -1980,26 +1845,11 @@
   <data name="AllTime" xml:space="preserve">
     <value>All Time</value>
   </data>
-  <data name="TotalRevenue" xml:space="preserve">
-    <value>Total Revenue</value>
-  </data>
   <data name="vsLastPeriod" xml:space="preserve">
     <value>vs Last Period</value>
   </data>
-  <data name="TotalOrders" xml:space="preserve">
-    <value>Total Orders</value>
-  </data>
   <data name="Completed" xml:space="preserve">
     <value>Completed</value>
-  </data>
-  <data name="Active" xml:space="preserve">
-    <value>Active</value>
-  </data>
-  <data name="TotalProducts" xml:space="preserve">
-    <value>Total Products</value>
-  </data>
-  <data name="LowStock" xml:space="preserve">
-    <value>Low Stock</value>
   </data>
   <data name="Registered" xml:space="preserve">
     <value>Registered</value>
@@ -2019,14 +1869,8 @@
   <data name="TopSellingProducts" xml:space="preserve">
     <value>Top Selling Products</value>
   </data>
-  <data name="Orders" xml:space="preserve">
-    <value>Orders</value>
-  </data>
   <data name="LowStockAlert" xml:space="preserve">
     <value>Low Stock Alert</value>
-  </data>
-  <data name="InStock" xml:space="preserve">
-    <value>In Stock</value>
   </data>
   <data name="AllProductsWellStocked" xml:space="preserve">
     <value>All Products Are Well Stocked!</value>
@@ -2054,12 +1898,6 @@
   </data>
   <data name="RecentOrders" xml:space="preserve">
     <value>Recent Orders</value>
-  </data>
-  <data name="OrderID" xml:space="preserve">
-    <value>Order ID</value>
-  </data>
-  <data name="Customer" xml:space="preserve">
-    <value>Customer</value>
   </data>
   <data name="Date" xml:space="preserve">
     <value>Date</value>
