@@ -109,13 +109,6 @@
                                 @GetProductName(product)
                             </h3>
                             
-                            @if (!string.IsNullOrEmpty(GetProductDescription(product)))
-                            {
-                                <p class="text-xs text-gray-500 mb-3 line-clamp-2">
-                                    @GetProductDescription(product)
-                                </p>
-                            }
-
                             <!-- Price & Actions -->
                             <div class="flex items-center justify-between mt-4">
                                 @if (product.Variants != null && product.Variants.Any(v => v.IsActive))
