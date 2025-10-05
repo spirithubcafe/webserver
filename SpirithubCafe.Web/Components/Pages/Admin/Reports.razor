@@ -16,7 +16,7 @@
         <div class="flex items-center justify-between mb-6">
             <div>
                 <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
-                    📊 @Loc["Reports"]
+                    @Loc["Reports"]
                 </h1>
                 <p class="text-slate-600">@Loc["ComprehensiveBusinessReports"]</p>
             </div>
@@ -133,7 +133,7 @@
             <div class="bg-white rounded-2xl shadow-xl p-6">
                 <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center">
                     <span class="w-2 h-8 bg-gradient-to-b from-blue-500 to-indigo-500 rounded-full mr-3"></span>
-                    📈 @Loc["SalesChart"]
+                    @Loc["SalesChart"]
                 </h3>
                 <div class="space-y-4">
                     @foreach (var day in dailySales.TakeLast(7))
@@ -157,7 +157,7 @@
             <div class="bg-white rounded-2xl shadow-xl p-6">
                 <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center">
                     <span class="w-2 h-8 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full mr-3"></span>
-                    📦 @Loc["OrderStatusDistribution"]
+                    @Loc["OrderStatusDistribution"]
                 </h3>
                 <div class="space-y-4">
                     @foreach (var status in orderStatusData)
@@ -187,7 +187,7 @@
             <div class="bg-white rounded-2xl shadow-xl p-6">
                 <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center">
                     <span class="w-2 h-8 bg-gradient-to-b from-amber-500 to-orange-500 rounded-full mr-3"></span>
-                    🏆 @Loc["TopSellingProducts"]
+                    @Loc["TopSellingProducts"]
                 </h3>
                 <div class="space-y-4">
                     @foreach (var product in topProducts.Take(5))
@@ -221,7 +221,7 @@
             <div class="bg-white rounded-2xl shadow-xl p-6">
                 <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center">
                     <span class="w-2 h-8 bg-gradient-to-b from-red-500 to-rose-500 rounded-full mr-3"></span>
-                    ⚠️ @Loc["LowStockAlert"]
+                     @Loc["LowStockAlert"]
                 </h3>
                 <div class="space-y-4">
                     @if (lowStockItems.Any())
@@ -264,7 +264,7 @@
         <div class="bg-white rounded-2xl shadow-xl p-8">
             <h3 class="text-2xl font-bold text-slate-800 mb-8 flex items-center">
                 <span class="w-2 h-10 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-full mr-4"></span>
-                💰 @Loc["FinancialSummary"]
+                @Loc["FinancialSummary"]
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Gross Revenue -->
@@ -309,7 +309,7 @@
         <div class="bg-white rounded-2xl shadow-xl p-6 mt-8">
             <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center">
                 <span class="w-2 h-8 bg-gradient-to-b from-cyan-500 to-blue-500 rounded-full mr-3"></span>
-                🕒 @Loc["RecentOrders"]
+                 @Loc["RecentOrders"]
             </h3>
             <div class="overflow-x-auto">
                 <table class="w-full">
