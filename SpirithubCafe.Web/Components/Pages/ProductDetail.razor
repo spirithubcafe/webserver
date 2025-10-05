@@ -483,7 +483,7 @@ else
                 <button type="button" 
                         @onclick="() => activeTab = TabType.Details"
                         class="py-2 px-1 border-b-2 font-medium text-sm @(activeTab == TabType.Details ? "border-amber-500 text-amber-600" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300")">
-                    @Loc["ProductDetails"]
+                    @Loc["Description"]
                 </button>
                 <button type="button" 
                         @onclick="() => activeTab = TabType.Reviews"
@@ -691,7 +691,7 @@ else
 <!-- Image Modal - Enhanced with High z-index -->
 @if (showImageModal)
 {
-    <div class="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-black/80 backdrop-blur-sm" @onclick="CloseImageModal">
+    <div class="fixed inset-0 z-[99999999] flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-black/80 backdrop-blur-sm" @onclick="CloseImageModal">
         <div class="relative w-full max-w-6xl" style="height: 80vh;" @onclick:stopPropagation>
             <img src="@currentImagePath" 
                  alt="@GetLocalizedText(product?.ImageAlt, product?.ImageAltAr)"
@@ -710,89 +710,124 @@ else
 <!-- Review Modal -->
 @if (showReviewModal)
 {
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
-        <div class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div class="p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold">@Loc["WriteReview"]</h3>
-                    <button type="button" @onclick="CloseReviewModal" class="text-gray-400 hover:text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div @onclick="CloseReviewModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/60">
+        <div @onclick:stopPropagation class="relative bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <!-- Header -->
+            <div class="sticky top-0 bg-white px-6 py-4 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-semibold text-gray-900">@Loc["WriteReview"]</h3>
+                    <button type="button" @onclick="CloseReviewModal" 
+                            class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
                     </button>
                 </div>
+            </div>
 
+            <!-- Content -->
+            <div class="p-6">
                 @if (!string.IsNullOrEmpty(reviewSubmissionError))
                 {
-                    <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                        <p class="text-red-800 text-sm">@reviewSubmissionError</p>
+                    <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-800">
+                        @reviewSubmissionError
                     </div>
                 }
 
                 <EditForm Model="reviewSubmission" OnValidSubmit="SubmitReview">
                     <DataAnnotationsValidator />
                     
-                    <div class="space-y-4">
+                    <div class="space-y-5">
                         <!-- Rating -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">@Loc["Rating"] *</label>
-                            <div class="flex space-x-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                @Loc["Rating"] *
+                            </label>
+                            <div class="flex gap-1">
                                 @for (int i = 1; i <= 5; i++)
                                 {
-                                    int rating = i; // Capture for closure
+                                    int rating = i;
                                     <button type="button" 
                                             @onclick="() => reviewSubmission.Rating = rating"
-                                            class="text-2xl @(i <= reviewSubmission.Rating ? "text-yellow-400" : "text-gray-300") hover:text-yellow-400">
+                                            class="text-3xl transition-transform hover:scale-110 focus:outline-none @(i <= reviewSubmission.Rating ? "text-amber-400" : "text-gray-300")">
                                         ★
                                     </button>
                                 }
                             </div>
-                            <ValidationMessage For="() => reviewSubmission.Rating" class="text-red-600 text-sm mt-1" />
+                            <ValidationMessage For="() => reviewSubmission.Rating" class="text-red-600 text-xs mt-1" />
                         </div>
 
-                        <!-- Name -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">@Loc["Name"] *</label>
-                            <InputText @bind-Value="reviewSubmission.CustomerName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500" />
-                            <ValidationMessage For="() => reviewSubmission.CustomerName" class="text-red-600 text-sm mt-1" />
-                        </div>
+                        <!-- Name & Email Grid -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Name -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    @Loc["Name"] *
+                                </label>
+                                <InputText @bind-Value="reviewSubmission.CustomerName" 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
+                                           placeholder="@Loc["Name"]" />
+                                <ValidationMessage For="() => reviewSubmission.CustomerName" class="text-red-600 text-xs mt-1" />
+                            </div>
 
-                        <!-- Email -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">@Loc["Email"] *</label>
-                            <InputText @bind-Value="reviewSubmission.CustomerEmail" type="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500" />
-                            <ValidationMessage For="() => reviewSubmission.CustomerEmail" class="text-red-600 text-sm mt-1" />
+                            <!-- Email -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    @Loc["Email"] *
+                                </label>
+                                <InputText @bind-Value="reviewSubmission.CustomerEmail" 
+                                           type="email"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
+                                           placeholder="email@example.com" />
+                                <ValidationMessage For="() => reviewSubmission.CustomerEmail" class="text-red-600 text-xs mt-1" />
+                            </div>
                         </div>
 
                         <!-- Title -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">@Loc["ReviewTitle"] *</label>
-                            <InputText @bind-Value="reviewSubmission.Title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500" placeholder="@Loc["ReviewTitlePlaceholder"]" />
-                            <ValidationMessage For="() => reviewSubmission.Title" class="text-red-600 text-sm mt-1" />
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                @Loc["ReviewTitle"] *
+                            </label>
+                            <InputText @bind-Value="reviewSubmission.Title" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
+                                       placeholder="@Loc["ReviewTitlePlaceholder"]" />
+                            <ValidationMessage For="() => reviewSubmission.Title" class="text-red-600 text-xs mt-1" />
                         </div>
 
                         <!-- Content -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">@Loc["YourReview"] *</label>
-                            <InputTextArea @bind-Value="reviewSubmission.Content" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500" placeholder="@Loc["ReviewContentPlaceholder"]" />
-                            <ValidationMessage For="() => reviewSubmission.Content" class="text-red-600 text-sm mt-1" />
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                @Loc["YourReview"] *
+                            </label>
+                            <InputTextArea @bind-Value="reviewSubmission.Content" 
+                                           rows="4" 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 resize-none" 
+                                           placeholder="@Loc["ReviewContentPlaceholder"]" />
+                            <ValidationMessage For="() => reviewSubmission.Content" class="text-red-600 text-xs mt-1" />
                         </div>
 
-                        <div class="flex space-x-3 pt-4">
+                        <!-- Buttons -->
+                        <div class="flex flex-col-reverse sm:flex-row gap-2 pt-2">
+                            <button type="button" 
+                                    @onclick="CloseReviewModal" 
+                                    class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                                @Loc["Cancel"]
+                            </button>
                             <button type="submit" 
                                     disabled="@isSubmittingReview"
-                                    class="flex-1 bg-amber-600 text-white px-4 py-2 rounded-md font-medium hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                                    class="flex-1 sm:flex-none px-6 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2">
                                 @if (isSubmittingReview)
                                 {
+                                    <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
                                     <span>@Loc["Submitting"]...</span>
                                 }
                                 else
                                 {
                                     <span>@Loc["SubmitReview"]</span>
                                 }
-                            </button>
-                            <button type="button" @onclick="CloseReviewModal" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors">
-                                @Loc["Cancel"]
                             </button>
                         </div>
                     </div>
@@ -979,8 +1014,8 @@ else
             if (success)
             {
                 CloseReviewModal();
-                // Show success message (you can implement a toast notification)
-                await JSRuntime.InvokeVoidAsync("alert", Loc["ReviewSubmittedSuccess"]);
+                ToastService.ShowSuccess(Loc["ReviewSubmittedSuccess"]);
+                await LoadReviews(1); // Reload reviews to show the new one (if approved)
             }
             else
             {

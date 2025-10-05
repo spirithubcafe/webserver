@@ -1923,4 +1923,32 @@
   <data name="AboutUsManagement" xml:space="preserve">
     <value>إدارة صفحة من نحن</value>
   </data>
+  <data name="ManageReviews" xml:space="preserve">
+    <value>إدارة التقييمات</value>
+  </data>
+  <data name="ManageReviewsDescription" xml:space="preserve">
+    <value>مراجعة والموافقة على تقييمات العملاء</value>
+  </data>
+  <data name="NoReviewsFound" xml:space="preserve">
+    <value>لا توجد تقييمات</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>الكل</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>قيد الانتظار</value>
+  </data>
+  <data name="Approved" xml:space="preserve">
+    <value>تمت الموافقة</value>
+  </data>
+  <data name="Rejected" xml:space="preserve">
+    <value>مرفوض</value>
+  </data>
+  <data name="Unapprove" xml:space="preserve">
+    <value>إلغاء الموافقة</value>
+  </data>
+  <data name="Product" xml:space="preserve">
+    <value>المنتج</value>
+  </data>
 </root>
+

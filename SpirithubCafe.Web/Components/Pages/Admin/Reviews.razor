@@ -1,0 +1,259 @@
+@page "/admin/reviews"
+@using SpirithubCafe.Application.Interfaces
+@using SpirithubCafe.Domain.Entities
+@using SpirithubCafe.Langs
+@using Microsoft.Extensions.Localization
+@inject IReviewService ReviewService
+@inject IStringLocalizer<Resources> Loc
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<PageTitle>@Loc["ManageReviews"] - @Loc["Admin"]</PageTitle>
+
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">@Loc["ManageReviews"]</h1>
+            <p class="mt-2 text-sm text-gray-600">@Loc["ManageReviewsDescription"]</p>
+        </div>
+
+        @if (isLoading)
+        {
+            <div class="flex items-center justify-center py-12">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600"></div>
+            </div>
+        }
+        else if (reviews == null || !reviews.Any())
+        {
+            <div class="bg-white rounded-lg shadow p-8 text-center">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+                </svg>
+                <p class="mt-4 text-gray-500">@Loc["NoReviewsFound"]</p>
+            </div>
+        }
+        else
+        {
+            <!-- Filter Tabs -->
+            <div class="mb-6 border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8">
+                    <button @onclick="() => ChangeFilter(ReviewFilter.All)"
+                            class="py-4 px-1 border-b-2 font-medium text-sm @(currentFilter == ReviewFilter.All ? "border-amber-500 text-amber-600" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300")">
+                        @Loc["All"] (@totalCount)
+                    </button>
+                    <button @onclick="() => ChangeFilter(ReviewFilter.Pending)"
+                            class="py-4 px-1 border-b-2 font-medium text-sm @(currentFilter == ReviewFilter.Pending ? "border-amber-500 text-amber-600" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300")">
+                        @Loc["Pending"] (@pendingCount)
+                    </button>
+                    <button @onclick="() => ChangeFilter(ReviewFilter.Approved)"
+                            class="py-4 px-1 border-b-2 font-medium text-sm @(currentFilter == ReviewFilter.Approved ? "border-amber-500 text-amber-600" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300")">
+                        @Loc["Approved"] (@approvedCount)
+                    </button>
+                    <button @onclick="() => ChangeFilter(ReviewFilter.Rejected)"
+                            class="py-4 px-1 border-b-2 font-medium text-sm @(currentFilter == ReviewFilter.Rejected ? "border-amber-500 text-amber-600" : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300")">
+                        @Loc["Rejected"] (@rejectedCount)
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Reviews List -->
+            <div class="space-y-4">
+                @foreach (var review in reviews)
+                {
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <!-- Rating & Date -->
+                                <div class="flex items-center space-x-4 mb-2">
+                                    <div class="flex items-center">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            <svg class="w-4 h-4 @(i <= review.Rating ? "text-amber-400" : "text-gray-300")" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                            </svg>
+                                        }
+                                        <span class="ml-2 text-sm text-gray-600">@review.Rating/5</span>
+                                    </div>
+                                    <span class="text-sm text-gray-500">@review.CreatedAt.ToString("yyyy-MM-dd")</span>
+                                    
+                                    <!-- Status Badge -->
+                                    @if (review.IsApproved)
+                                    {
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            @Loc["Approved"]
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                            @Loc["Pending"]
+                                        </span>
+                                    }
+                                </div>
+
+                                <!-- Customer Info -->
+                                <div class="mb-2">
+                                    <span class="font-semibold text-gray-900">@review.CustomerName</span>
+                                    <span class="text-gray-500 text-sm ml-2">@review.CustomerEmail</span>
+                                </div>
+
+                                <!-- Product Name -->
+                                <div class="mb-2 text-sm text-gray-600">
+                                    @Loc["Product"]: <a href="/product/@review.ProductId" class="text-amber-600 hover:text-amber-700">@review.Product?.Name</a>
+                                </div>
+
+                                <!-- Review Title -->
+                                @if (!string.IsNullOrEmpty(review.Title))
+                                {
+                                    <h4 class="font-medium text-gray-900 mb-2">@review.Title</h4>
+                                }
+
+                                <!-- Review Content -->
+                                <p class="text-gray-700 mb-4">@review.Content</p>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="ml-4 flex flex-col gap-2">
+                                @if (!review.IsApproved)
+                                {
+                                    <button @onclick="() => ApproveReview(review.Id)" 
+                                            class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-md transition-colors">
+                                        @Loc["Approve"]
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button @onclick="() => RejectReview(review.Id)" 
+                                            class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white text-sm font-medium rounded-md transition-colors">
+                                        @Loc["Unapprove"]
+                                    </button>
+                                }
+                                <button @onclick="() => DeleteReview(review.Id)" 
+                                        class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors">
+                                    @Loc["Delete"]
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<Toast />
+
+@code {
+    private List<Review>? reviews;
+    private bool isLoading = true;
+    private ReviewFilter currentFilter = ReviewFilter.All;
+    
+    private int totalCount = 0;
+    private int pendingCount = 0;
+    private int approvedCount = 0;
+    private int rejectedCount = 0;
+
+    private enum ReviewFilter
+    {
+        All,
+        Pending,
+        Approved,
+        Rejected
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadReviews();
+    }
+
+    private async Task LoadReviews()
+    {
+        try
+        {
+            isLoading = true;
+            
+            // Load all reviews
+            var allReviews = await ReviewService.GetAllReviewsAsync();
+            
+            if (allReviews != null)
+            {
+                totalCount = allReviews.Count;
+                pendingCount = allReviews.Count(r => !r.IsApproved);
+                approvedCount = allReviews.Count(r => r.IsApproved);
+                rejectedCount = 0; // We don't have a rejected status yet, but keeping for future
+
+                // Filter based on current filter
+                reviews = currentFilter switch
+                {
+                    ReviewFilter.Pending => allReviews.Where(r => !r.IsApproved).ToList(),
+                    ReviewFilter.Approved => allReviews.Where(r => r.IsApproved).ToList(),
+                    ReviewFilter.Rejected => new List<Review>(), // Empty for now
+                    _ => allReviews
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading reviews: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task ChangeFilter(ReviewFilter filter)
+    {
+        currentFilter = filter;
+        await LoadReviews();
+    }
+
+    private async Task ApproveReview(int reviewId)
+    {
+        try
+        {
+            var success = await ReviewService.ApproveReviewAsync(reviewId);
+            if (success)
+            {
+                await LoadReviews();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error approving review: {ex.Message}");
+        }
+    }
+
+    private async Task RejectReview(int reviewId)
+    {
+        try
+        {
+            var success = await ReviewService.RejectReviewAsync(reviewId);
+            if (success)
+            {
+                await LoadReviews();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error rejecting review: {ex.Message}");
+        }
+    }
+
+    private async Task DeleteReview(int reviewId)
+    {
+        try
+        {
+            var success = await ReviewService.DeleteReviewAsync(reviewId);
+            if (success)
+            {
+                await LoadReviews();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting review: {ex.Message}");
+        }
+    }
+}

@@ -85,4 +85,64 @@ public class ReviewService
             return false;
         }
     }
+
+    public async Task<List<Review>> GetAllReviewsAsync()
+    {
+        return await _context.ProductReviews
+            .Include(r => r.Product)
+            .OrderByDescending(r => r.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<bool> ApproveReviewAsync(int reviewId)
+    {
+        try
+        {
+            var review = await _context.ProductReviews.FindAsync(reviewId);
+            if (review == null) return false;
+
+            review.IsApproved = true;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public async Task<bool> RejectReviewAsync(int reviewId)
+    {
+        try
+        {
+            var review = await _context.ProductReviews.FindAsync(reviewId);
+            if (review == null) return false;
+
+            review.IsApproved = false;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public async Task<bool> DeleteReviewAsync(int reviewId)
+    {
+        try
+        {
+            var review = await _context.ProductReviews.FindAsync(reviewId);
+            if (review == null) return false;
+
+            _context.ProductReviews.Remove(review);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
 }
+    
