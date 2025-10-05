@@ -7,6 +7,7 @@
 @using SpirithubCafe.Application.DTOs
 @using SpirithubCafe.Web.Components.Shared
 @inject IFAQService FAQService
+@inject IJSRuntime JSRuntime
 
 @rendermode InteractiveServer
 
@@ -707,5 +708,17 @@
         showDeleteCategoryConfirm = false;
         categoryToDelete = null;
         StateHasChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("window.scrollTo", 0, 0);
+            }
+            catch { }
+        }
     }
 }

@@ -17,6 +17,7 @@
 @inject ReviewService ReviewService
 @inject CartService CartService
 @inject ToastService ToastService
+@inject FavoriteService FavoriteService
 @inject IStringLocalizer<Resources> Loc
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
@@ -104,12 +105,31 @@ else
                             }
                         </div>
                         
-                        @if (product.IsFeatured)
-                        {
-                            <div class="bg-amber-500 text-white px-3 py-1.5 rounded-full text-sm font-medium shadow-lg">
-                                ⭐ @Loc["Featured"]
-                            </div>
-                        }
+                        <div class="flex flex-col space-y-2">
+                            <!-- Favorite Button -->
+                            <button @onclick="ToggleFavorite" 
+                                    class="bg-white/90 hover:bg-white p-2.5 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 group">
+                                @if (isFavorite)
+                                {
+                                    <svg class="w-6 h-6 text-red-500 fill-current" viewBox="0 0 24 24">
+                                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                    </svg>
+                                }
+                                else
+                                {
+                                    <svg class="w-6 h-6 text-gray-600 group-hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                    </svg>
+                                }
+                            </button>
+                            
+                            @if (product.IsFeatured)
+                            {
+                                <div class="bg-amber-500 text-white px-3 py-1.5 rounded-full text-sm font-medium shadow-lg">
+                                    ⭐ @Loc["Featured"]
+                                </div>
+                            }
+                        </div>
                     </div>
 
                     <!-- Zoom Icon -->
@@ -898,6 +918,7 @@ else
     private string? reviewSubmissionError;
     private ReviewsResponse? reviewsResponse;
     private int currentReviewPage = 1;
+    private bool isFavorite = false;
     
     private TabType activeTab = TabType.Details;
     private SubmitReviewRequest reviewSubmission = new();
@@ -944,6 +965,9 @@ else
                 // Set initial image and variant
                 currentImagePath = product.MainImage?.ImagePath ?? product.GalleryImages?.FirstOrDefault()?.ImagePath ?? "/images/no-image.jpg";
                 selectedVariant = product.Variants?.FirstOrDefault(v => v.IsDefault) ?? product.Variants?.FirstOrDefault();
+                
+                // Check if product is in favorites
+                isFavorite = await FavoriteService.IsFavoriteAsync(product.Id);
                 
                 // Load reviews
                 await LoadReviews();
@@ -1141,6 +1165,32 @@ else
         {
             isAddingToCart = false;
             StateHasChanged();
+        }
+    }
+    
+    private async Task ToggleFavorite()
+    {
+        if (product == null) return;
+        
+        try
+        {
+            isFavorite = await FavoriteService.ToggleFavoriteAsync(product.Id);
+            
+            if (isFavorite)
+            {
+                ToastService.ShowSuccess("Added to favorites");
+            }
+            else
+            {
+                ToastService.ShowSuccess("Removed from favorites");
+            }
+            
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error toggling favorite: {ex.Message}");
+            ToastService.ShowError("Error updating favorites");
         }
     }
 }

@@ -9,6 +9,7 @@
 @using SpirithubCafe.Web.Components.Shared
 @inject HomePageSettingsService HomePageSettingsService
 @inject ToastService ToastService
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
 <PageTitle>Home Page Settings - SpirithubCafe</PageTitle>
@@ -859,6 +860,18 @@
             case "newsletter":
                 settings.NewsletterOrder = newOrder;
                 break;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("window.scrollTo", 0, 0);
+            }
+            catch { }
         }
     }
 }

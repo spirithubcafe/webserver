@@ -13,6 +13,7 @@
 @inject ContactService ContactService
 @inject ToastService ToastService
 @inject IStringLocalizer<SpirithubCafe.Langs.Resources> Resources
+@inject IJSRuntime JSRuntime
 
 <PageTitle>@Resources["Contact"] - @Resources["BrandName"]</PageTitle>
 
@@ -432,6 +433,19 @@
         editContext.OnValidationRequested += HandleValidationRequested;
         editContext.OnFieldChanged += HandleFieldChanged;
         messageStore = new(editContext);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Scroll to top of page
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("window.scrollTo", 0, 0);
+            }
+            catch { }
+        }
     }
 
     private void HandleValidationRequested(object? sender, ValidationRequestedEventArgs e)

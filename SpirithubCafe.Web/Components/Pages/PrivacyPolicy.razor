@@ -239,10 +239,20 @@ else
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && aboutUsPage != null)
+        if (firstRender)
         {
+            // Scroll to top of page
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("window.scrollTo", 0, 0);
+            }
+            catch { }
+            
             // Apply inline styles for colors and background images
-            await ApplyBackgroundStyles();
+            if (aboutUsPage != null)
+            {
+                await ApplyBackgroundStyles();
+            }
         }
     }
 

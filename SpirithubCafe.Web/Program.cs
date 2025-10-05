@@ -151,6 +151,7 @@ builder.Services.AddScoped<IDeliveryPolicyService, DeliveryPolicyService>();
 builder.Services.AddScoped<IPrivacyPolicyService, PrivacyPolicyService>();
 builder.Services.AddScoped<IRefundPolicyService, RefundPolicyService>();
 builder.Services.AddScoped<ITermsConditionsService, TermsConditionsService>();
+builder.Services.AddScoped<FavoriteService>();
 builder.Services.AddScoped<SpirithubCafe.Application.Interfaces.IFooterService, SpirithubCafe.Application.Services.FooterService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<SpirithubCafe.Application.Services.ICheckoutService, SpirithubCafe.Application.Services.CheckoutService>();

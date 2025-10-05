@@ -235,4 +235,17 @@ else
     {
         return Localizer.GetString("Language").Value == "ar";
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Scroll to top of page
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("window.scrollTo", 0, 0);
+            }
+            catch { }
+        }
+    }
 }

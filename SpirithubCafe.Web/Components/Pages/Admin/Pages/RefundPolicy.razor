@@ -674,4 +674,15 @@
             { "image-only", ("Image Only", "w-8 h-8 mx-auto bg-gradient-to-r from-purple-100 to-purple-200 rounded flex items-center justify-center text-xs font-mono") }
         };
     }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("window.scrollTo", 0, 0);
+            }
+            catch { }
+        }
+    }
 }
