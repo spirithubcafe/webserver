@@ -50,6 +50,19 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<AboutUsPage> AboutUsPages { get; set; }
     public DbSet<AboutUsSection> AboutUsSections { get; set; }
     
+    // Contact Us entities
+    public DbSet<ContactUsPage> ContactUsPages { get; set; }
+    
+    // Policy Pages entities
+    public DbSet<DeliveryPolicyPage> DeliveryPolicyPages { get; set; }
+    public DbSet<DeliveryPolicySection> DeliveryPolicySections { get; set; }
+    public DbSet<PrivacyPolicyPage> PrivacyPolicyPages { get; set; }
+    public DbSet<PrivacyPolicySection> PrivacyPolicySections { get; set; }
+    public DbSet<RefundPolicyPage> RefundPolicyPages { get; set; }
+    public DbSet<RefundPolicySection> RefundPolicySections { get; set; }
+    public DbSet<TermsConditionsPage> TermsConditionsPages { get; set; }
+    public DbSet<TermsConditionsSection> TermsConditionsSections { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

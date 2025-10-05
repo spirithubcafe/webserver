@@ -145,6 +145,128 @@ namespace SpirithubCafe.Web.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("SpirithubCafe.Domain.Entities.AboutUsPage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("BgType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("BgValue")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Subtitle")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SubtitleAr")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TitleAr")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AboutUsPages");
+                });
+
+            modelBuilder.Entity("SpirithubCafe.Domain.Entities.AboutUsSection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("AboutUsPageId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("BgType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("BgValue")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ContentAr")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ImageAlt")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageAltAr")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImagePath")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("LayoutType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TitleAr")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AboutUsPageId");
+
+                    b.HasIndex("DisplayOrder")
+                        .HasDatabaseName("IX_AboutUsSections_DisplayOrder");
+
+                    b.ToTable("AboutUsSections");
+                });
+
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -364,7 +486,7 @@ namespace SpirithubCafe.Web.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AramexSettings", (string)null);
+                    b.ToTable("AramexSettings");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.Cart", b =>
@@ -388,7 +510,7 @@ namespace SpirithubCafe.Web.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Carts", (string)null);
+                    b.ToTable("Carts");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.CartItem", b =>
@@ -426,7 +548,7 @@ namespace SpirithubCafe.Web.Migrations
 
                     b.HasIndex("ProductVariantId");
 
-                    b.ToTable("CartItems", (string)null);
+                    b.ToTable("CartItems");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.Category", b =>
@@ -494,7 +616,7 @@ namespace SpirithubCafe.Web.Migrations
                         .IsUnique()
                         .HasDatabaseName("IX_Categories_Slug");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.CategoryImage", b =>
@@ -542,7 +664,104 @@ namespace SpirithubCafe.Web.Migrations
                         .IsUnique()
                         .HasDatabaseName("IX_CategoryImages_CategoryId");
 
-                    b.ToTable("CategoryImages", (string)null);
+                    b.ToTable("CategoryImages");
+                });
+
+            modelBuilder.Entity("SpirithubCafe.Domain.Entities.ChatMessage", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ChatSessionId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("SenderName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SenderType")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChatSessionId")
+                        .HasDatabaseName("IX_ChatMessages_ChatSessionId");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX_ChatMessages_CreatedAt");
+
+                    b.HasIndex("IsRead")
+                        .HasDatabaseName("IX_ChatMessages_IsRead");
+
+                    b.HasIndex("SenderType")
+                        .HasDatabaseName("IX_ChatMessages_SenderType");
+
+                    b.ToTable("ChatMessages");
+                });
+
+            modelBuilder.Entity("SpirithubCafe.Domain.Entities.ChatSession", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("HasUnreadAdminMessages")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("HasUnreadVisitorMessages")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("IpAddress")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("LastMessageAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("VisitorEmail")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("VisitorName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX_ChatSessions_CreatedAt");
+
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("IX_ChatSessions_IsActive");
+
+                    b.ToTable("ChatSessions");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.City", b =>
@@ -580,7 +799,125 @@ namespace SpirithubCafe.Web.Migrations
                     b.HasIndex("IsActive")
                         .HasDatabaseName("IX_Cities_IsActive");
 
-                    b.ToTable("Cities", (string)null);
+                    b.ToTable("Cities");
+                });
+
+            modelBuilder.Entity("SpirithubCafe.Domain.Entities.ContactUsPage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("BgType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("BgValue")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("BusinessHours")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("BusinessHoursAr")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ContactFormOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ContactInfoOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DescriptionAr")
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FormDescription")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FormDescriptionAr")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FormTitle")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FormTitleAr")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("MapAddress")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("MapAddressAr")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("MapEmbedCode")
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("MapOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("ShowContactForm")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("ShowContactInfo")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("ShowMap")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("ShowSocialMedia")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SocialMediaOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Subtitle")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SubtitleAr")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SuccessMessage")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SuccessMessageAr")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TitleAr")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContactUsPages");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.Country", b =>
@@ -617,7 +954,7 @@ namespace SpirithubCafe.Web.Migrations
                     b.HasIndex("IsActive")
                         .HasDatabaseName("IX_Countries_IsActive");
 
-                    b.ToTable("Countries", (string)null);
+                    b.ToTable("Countries");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.FAQ", b =>
@@ -672,7 +1009,7 @@ namespace SpirithubCafe.Web.Migrations
 
                     b.HasIndex("CategoryId", "Order");
 
-                    b.ToTable("FAQs", (string)null);
+                    b.ToTable("FAQs");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.FAQCategory", b =>
@@ -709,7 +1046,7 @@ namespace SpirithubCafe.Web.Migrations
                     b.HasIndex("Order")
                         .HasDatabaseName("IX_FAQCategories_Order");
 
-                    b.ToTable("FAQCategories", (string)null);
+                    b.ToTable("FAQCategories");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.FAQPage", b =>
@@ -759,7 +1096,7 @@ namespace SpirithubCafe.Web.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FAQPages", (string)null);
+                    b.ToTable("FAQPages");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.FooterMenu", b =>
@@ -814,7 +1151,7 @@ namespace SpirithubCafe.Web.Migrations
                     b.HasIndex("MenuType", "SortOrder")
                         .HasDatabaseName("IX_FooterMenus_MenuType_SortOrder");
 
-                    b.ToTable("FooterMenus", (string)null);
+                    b.ToTable("FooterMenus");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.FooterSettings", b =>
@@ -1007,7 +1344,7 @@ namespace SpirithubCafe.Web.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FooterSettings", (string)null);
+                    b.ToTable("FooterSettings");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.HomePageSettings", b =>
@@ -1200,7 +1537,39 @@ namespace SpirithubCafe.Web.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("HomePageSettings", (string)null);
+                    b.ToTable("HomePageSettings");
+                });
+
+            modelBuilder.Entity("SpirithubCafe.Domain.Entities.NewsletterSubscription", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Metadata")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("SubscribedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UnsubscribedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NewsletterSubscriptions");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.NoolShippingRate", b =>
@@ -1240,7 +1609,7 @@ namespace SpirithubCafe.Web.Migrations
                         .IsUnique()
                         .HasDatabaseName("IX_NoolShippingRates_ShippingMethod_City");
 
-                    b.ToTable("NoolShippingRates", (string)null);
+                    b.ToTable("NoolShippingRates");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.Order", b =>
@@ -1343,7 +1712,7 @@ namespace SpirithubCafe.Web.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.OrderItem", b =>
@@ -1393,7 +1762,7 @@ namespace SpirithubCafe.Web.Migrations
 
                     b.HasIndex("ProductVariantId");
 
-                    b.ToTable("OrderItems", (string)null);
+                    b.ToTable("OrderItems");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.Payment", b =>
@@ -1455,7 +1824,7 @@ namespace SpirithubCafe.Web.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("Payments", (string)null);
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.PaymentGatewaySettings", b =>
@@ -1533,7 +1902,7 @@ namespace SpirithubCafe.Web.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PaymentGatewaySettings", (string)null);
+                    b.ToTable("PaymentGatewaySettings");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.Product", b =>
@@ -1735,7 +2104,7 @@ namespace SpirithubCafe.Web.Migrations
                         .IsUnique()
                         .HasDatabaseName("IX_Products_Sku");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.ProductImage", b =>
@@ -1791,7 +2160,7 @@ namespace SpirithubCafe.Web.Migrations
                     b.HasIndex("ProductId")
                         .HasDatabaseName("IX_ProductImages_ProductId");
 
-                    b.ToTable("ProductImages", (string)null);
+                    b.ToTable("ProductImages");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.ProductReview", b =>
@@ -1870,7 +2239,7 @@ namespace SpirithubCafe.Web.Migrations
                     b.HasIndex("Rating")
                         .HasDatabaseName("IX_ProductReviews_Rating");
 
-                    b.ToTable("ProductReviews", (string)null);
+                    b.ToTable("ProductReviews");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.ProductVariant", b =>
@@ -1943,7 +2312,7 @@ namespace SpirithubCafe.Web.Migrations
                         .IsUnique()
                         .HasDatabaseName("IX_ProductVariants_VariantSku");
 
-                    b.ToTable("ProductVariants", (string)null);
+                    b.ToTable("ProductVariants");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.Setting", b =>
@@ -1992,7 +2361,7 @@ namespace SpirithubCafe.Web.Migrations
                     b.HasIndex("Key")
                         .IsUnique();
 
-                    b.ToTable("Settings", (string)null);
+                    b.ToTable("Settings");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.ShippingMethod", b =>
@@ -2054,7 +2423,7 @@ namespace SpirithubCafe.Web.Migrations
                         .IsUnique()
                         .HasDatabaseName("IX_ShippingMethods_Type");
 
-                    b.ToTable("ShippingMethods", (string)null);
+                    b.ToTable("ShippingMethods");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.Slide", b =>
@@ -2128,7 +2497,7 @@ namespace SpirithubCafe.Web.Migrations
                     b.HasIndex("Order")
                         .HasDatabaseName("IX_Slides_Order");
 
-                    b.ToTable("Slides", (string)null);
+                    b.ToTable("Slides");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -2182,6 +2551,17 @@ namespace SpirithubCafe.Web.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SpirithubCafe.Domain.Entities.AboutUsSection", b =>
+                {
+                    b.HasOne("SpirithubCafe.Domain.Entities.AboutUsPage", "AboutUsPage")
+                        .WithMany("Sections")
+                        .HasForeignKey("AboutUsPageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AboutUsPage");
+                });
+
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.CartItem", b =>
                 {
                     b.HasOne("SpirithubCafe.Domain.Entities.Cart", "Cart")
@@ -2217,6 +2597,17 @@ namespace SpirithubCafe.Web.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("SpirithubCafe.Domain.Entities.ChatMessage", b =>
+                {
+                    b.HasOne("SpirithubCafe.Domain.Entities.ChatSession", "ChatSession")
+                        .WithMany("Messages")
+                        .HasForeignKey("ChatSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ChatSession");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.City", b =>
@@ -2381,6 +2772,11 @@ namespace SpirithubCafe.Web.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("SpirithubCafe.Domain.Entities.AboutUsPage", b =>
+                {
+                    b.Navigation("Sections");
+                });
+
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.Cart", b =>
                 {
                     b.Navigation("Items");
@@ -2389,6 +2785,11 @@ namespace SpirithubCafe.Web.Migrations
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.Category", b =>
                 {
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("SpirithubCafe.Domain.Entities.ChatSession", b =>
+                {
+                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("SpirithubCafe.Domain.Entities.Country", b =>

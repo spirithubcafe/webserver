@@ -1,0 +1,282 @@
+@page "/terms-conditions"
+@using SpirithubCafe.Web.Services
+@using SpirithubCafe.Domain.Entities
+@inject ITermsConditionsService TermsConditionsService
+@inject IStringLocalizer<SpirithubCafe.Langs.Resources> Localizer
+@inject IJSRuntime JSRuntime
+@layout SpirithubCafe.Web.Components.Layout.PublicLayout
+@rendermode InteractiveServer
+
+<PageTitle>@GetLocalizedText(aboutUsPage?.Title, aboutUsPage?.TitleAr) - SpirithubCafe</PageTitle>
+
+@if (aboutUsPage != null && aboutUsPage.IsActive)
+{
+    <!-- Dynamic Page Header -->
+    <section class="relative min-h-[60vh] flex items-center justify-center @GetBackgroundClasses(aboutUsPage.BgType, aboutUsPage.BgValue)">
+        @if (aboutUsPage.BgType == "image" && !string.IsNullOrEmpty(aboutUsPage.BgValue))
+        {
+            <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+        }
+        
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 @(aboutUsPage.BgType == "image" ? "text-white" : "text-gray-900")">
+                @GetLocalizedText(aboutUsPage.Title, aboutUsPage.TitleAr)
+            </h1>
+            
+            @if (!string.IsNullOrEmpty(aboutUsPage.Subtitle) || !string.IsNullOrEmpty(aboutUsPage.SubtitleAr))
+            {
+                <p class="text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed @(aboutUsPage.BgType == "image" ? "text-white/90" : "text-gray-600")">
+                    @GetLocalizedText(aboutUsPage.Subtitle, aboutUsPage.SubtitleAr)
+                </p>
+            }
+        </div>
+    </section>
+
+    <!-- Dynamic Sections -->
+    @if (sections.Any())
+    {
+        @foreach (var currentSection in sections.OrderBy(s => s.DisplayOrder))
+        {
+            @if (currentSection.IsActive)
+            {
+                <section class="py-16 md:py-20 @GetBackgroundClasses(currentSection.BgType, currentSection.BgValue)">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        
+                        @if (currentSection.LayoutType == "image-right-text-left")
+                        {
+                            <!-- Image Right, Text Left -->
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                                <!-- Text Content -->
+                                <div class="space-y-6 @(IsRtlLayout() ? "lg:order-2" : "")">
+                                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                                        @GetLocalizedText(currentSection.Title, currentSection.TitleAr)
+                                    </h2>
+                                    
+                                    @if (!string.IsNullOrEmpty(currentSection.Content) || !string.IsNullOrEmpty(currentSection.ContentAr))
+                                    {
+                                        <div class="text-lg text-gray-600 leading-relaxed prose max-w-none">
+                                            @((MarkupString)GetLocalizedText(currentSection.Content, currentSection.ContentAr))
+                                        </div>
+                                    }
+                                </div>
+                                
+                                <!-- Image -->
+                                <div class="@(IsRtlLayout() ? "lg:order-1" : "")">
+                                    @if (!string.IsNullOrEmpty(currentSection.ImagePath))
+                                    {
+                                        <div class="relative">
+                                            <div class="aspect-w-4 aspect-h-3 rounded-2xl overflow-hidden shadow-2xl">
+                                                <img src="@currentSection.ImagePath" 
+                                                     alt="@GetLocalizedText(currentSection.ImageAlt, currentSection.ImageAltAr)" 
+                                                     class="w-full h-full object-cover" />
+                                            </div>
+                                            <!-- Decorative elements -->
+                                            <div class="absolute -top-4 -right-4 w-20 h-20 bg-amber-200 rounded-full opacity-60"></div>
+                                            <div class="absolute -bottom-4 -left-4 w-16 h-16 bg-amber-300 rounded-full opacity-40"></div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        else if (currentSection.LayoutType == "image-left-text-right")
+                        {
+                            <!-- Image Left, Text Right -->
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                                <!-- Image -->
+                                <div>
+                                    @if (!string.IsNullOrEmpty(currentSection.ImagePath))
+                                    {
+                                        <div class="relative">
+                                            <div class="aspect-w-4 aspect-h-3 rounded-2xl overflow-hidden shadow-2xl">
+                                                <img src="@currentSection.ImagePath" 
+                                                     alt="@GetLocalizedText(currentSection.ImageAlt, currentSection.ImageAltAr)" 
+                                                     class="w-full h-full object-cover" />
+                                            </div>
+                                            <!-- Decorative elements -->
+                                            <div class="absolute -top-4 -left-4 w-20 h-20 bg-blue-200 rounded-full opacity-60"></div>
+                                            <div class="absolute -bottom-4 -right-4 w-16 h-16 bg-blue-300 rounded-full opacity-40"></div>
+                                        </div>
+                                    }
+                                </div>
+                                
+                                <!-- Text Content -->
+                                <div class="space-y-6">
+                                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                                        @GetLocalizedText(currentSection.Title, currentSection.TitleAr)
+                                    </h2>
+                                    
+                                    @if (!string.IsNullOrEmpty(currentSection.Content) || !string.IsNullOrEmpty(currentSection.ContentAr))
+                                    {
+                                        <div class="text-lg text-gray-600 leading-relaxed prose max-w-none">
+                                            @((MarkupString)GetLocalizedText(currentSection.Content, currentSection.ContentAr))
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        else if (currentSection.LayoutType == "text-only")
+                        {
+                            <!-- Text Only -->
+                            <div class="max-w-4xl mx-auto text-center">
+                                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
+                                    @GetLocalizedText(currentSection.Title, currentSection.TitleAr)
+                                </h2>
+                                
+                                @if (!string.IsNullOrEmpty(currentSection.Content) || !string.IsNullOrEmpty(currentSection.ContentAr))
+                                {
+                                    <div class="text-lg text-gray-600 leading-relaxed prose prose-lg max-w-none">
+                                        @((MarkupString)GetLocalizedText(currentSection.Content, currentSection.ContentAr))
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else if (currentSection.LayoutType == "image-only")
+                        {
+                            <!-- Image Only -->
+                            <div class="max-w-5xl mx-auto">
+                                @if (!string.IsNullOrEmpty(currentSection.Title) || !string.IsNullOrEmpty(currentSection.TitleAr))
+                                {
+                                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-8 text-center">
+                                        @GetLocalizedText(currentSection.Title, currentSection.TitleAr)
+                                    </h2>
+                                }
+                                
+                                @if (!string.IsNullOrEmpty(currentSection.ImagePath))
+                                {
+                                    <div class="relative">
+                                        <div class="aspect-w-16 aspect-h-9 rounded-2xl overflow-hidden shadow-2xl">
+                                            <img src="@currentSection.ImagePath" 
+                                                 alt="@GetLocalizedText(currentSection.ImageAlt, currentSection.ImageAltAr)" 
+                                                 class="w-full h-full object-cover" />
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </section>
+            }
+        }
+    }
+    
+    <!-- Call-to-Action Section -->
+    <section class="py-20 bg-gray-900 text-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6">Ready to Experience Premium Coffee?</h2>
+            <p class="text-xl text-gray-300 mb-8">
+                Join thousands of coffee lovers across Oman who trust SpirithubCafe for their daily coffee ritual.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/products" class="bg-amber-600 hover:bg-amber-700 text-white px-8 py-4 rounded-lg font-semibold transition-colors duration-200 shadow-lg hover:shadow-xl">
+                    Shop Coffee
+                </a>
+                <a href="/contact" class="border border-gray-600 hover:border-gray-500 text-white px-8 py-4 rounded-lg font-semibold transition-colors duration-200">
+                    Contact Us
+                </a>
+            </div>
+        </div>
+    </section>
+}
+else
+{
+    <!-- Default content when no Terms & Conditions page is configured -->
+    <section class="relative bg-gradient-to-br from-amber-50 to-amber-100 py-20">
+        <div class="absolute inset-0 bg-black bg-opacity-5"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+                Terms & Conditions
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                Welcome to SpirithubCafe. Our Terms & Conditions page is being prepared for you.
+            </p>
+        </div>
+    </section>
+}
+
+@code {
+    private TermsConditionsPage? aboutUsPage;
+    private List<TermsConditionsSection> sections = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            aboutUsPage = await TermsConditionsService.GetTermsConditionsPageAsync();
+            if (aboutUsPage != null)
+            {
+                sections = aboutUsPage.Sections.Where(s => s.IsActive).OrderBy(s => s.DisplayOrder).ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error but don't break the page
+            Console.WriteLine($"Error loading Terms & Conditions page: {ex.Message}");
+        }
+    }
+
+    private string GetLocalizedText(string? englishText, string? arabicText)
+    {
+        // For now, return English text. This can be enhanced with proper localization
+        return !string.IsNullOrEmpty(englishText) ? englishText : (!string.IsNullOrEmpty(arabicText) ? arabicText : "");
+    }
+
+    private bool IsRtlLayout()
+    {
+        // This can be enhanced to detect current language
+        return false;
+    }
+
+    private string GetBackgroundClasses(string bgType, string bgValue)
+    {
+        return bgType switch
+        {
+            "image" when !string.IsNullOrEmpty(bgValue) => $"bg-cover bg-center bg-no-repeat",
+            "video" => "relative overflow-hidden",
+            "color" => "",
+            _ => "bg-white"
+        };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && aboutUsPage != null)
+        {
+            // Apply inline styles for colors and background images
+            await ApplyBackgroundStyles();
+        }
+    }
+
+    private async Task ApplyBackgroundStyles()
+    {
+        try
+        {
+            // Apply page background
+            if (aboutUsPage != null && aboutUsPage.BgType == "color")
+            {
+                await JSRuntime.InvokeVoidAsync("eval", $"document.querySelector('section').style.backgroundColor = '{aboutUsPage.BgValue}';");
+            }
+            else if (aboutUsPage != null && aboutUsPage.BgType == "image" && !string.IsNullOrEmpty(aboutUsPage.BgValue))
+            {
+                await JSRuntime.InvokeVoidAsync("eval", $"document.querySelector('section').style.backgroundImage = 'url({aboutUsPage.BgValue})';");
+            }
+
+            // Apply section backgrounds
+            foreach (var currentSection in sections.Where(s => s.IsActive))
+            {
+                var sectionIndex = sections.IndexOf(currentSection) + 1; // +1 because page header is first section
+                if (currentSection.BgType == "color")
+                {
+                    await JSRuntime.InvokeVoidAsync("eval", $"document.querySelectorAll('section')[{sectionIndex}].style.backgroundColor = '{currentSection.BgValue}';");
+                }
+                else if (currentSection.BgType == "image" && !string.IsNullOrEmpty(currentSection.BgValue))
+                {
+                    await JSRuntime.InvokeVoidAsync("eval", $"document.querySelectorAll('section')[{sectionIndex}].style.backgroundImage = 'url({currentSection.BgValue})';");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error applying background styles: {ex.Message}");
+        }
+    }
+}

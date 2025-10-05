@@ -1981,9 +1981,6 @@
   .order-first {
     order: -9999;
   }
-  .col-12 {
-    grid-column: 12;
-  }
   .col-span-2 {
     grid-column: span 2 / span 2;
   }
@@ -2081,9 +2078,6 @@
   }
   .my-2 {
     margin-block: calc(var(--spacing) * 2);
-  }
-  .me-2 {
-    margin-inline-end: calc(var(--spacing) * 2);
   }
   .mt-0\.5 {
     margin-top: calc(var(--spacing) * 0.5);
@@ -2228,17 +2222,6 @@
       & > * {
         place-items: center;
       }
-    }
-  }
-  .card-body {
-    display: flex;
-    flex: auto;
-    flex-direction: column;
-    gap: calc(0.25rem * 2);
-    padding: var(--card-p, 1.5rem);
-    font-size: var(--card-fs, 0.875rem);
-    :where(p) {
-      flex-grow: 1;
     }
   }
   .alert {
@@ -3346,9 +3329,6 @@
   .bg-pink-600 {
     background-color: var(--color-pink-600);
   }
-  .bg-primary {
-    background-color: var(--color-primary);
-  }
   .bg-purple-50 {
     background-color: var(--color-purple-50);
   }
@@ -3376,9 +3356,6 @@
   .bg-red-600 {
     background-color: var(--color-red-600);
   }
-  .bg-secondary {
-    background-color: var(--color-secondary);
-  }
   .bg-stone-600 {
     background-color: var(--color-stone-600);
   }
@@ -3387,9 +3364,6 @@
   }
   .bg-transparent {
     background-color: transparent;
-  }
-  .bg-warning {
-    background-color: var(--color-warning);
   }
   .bg-white {
     background-color: var(--color-white);
@@ -4139,9 +4113,6 @@
   .text-pink-600 {
     color: var(--color-pink-600);
   }
-  .text-primary {
-    color: var(--color-primary);
-  }
   .text-purple-100 {
     color: var(--color-purple-100);
   }
@@ -4178,9 +4149,6 @@
   .text-red-900 {
     color: var(--color-red-900);
   }
-  .text-secondary {
-    color: var(--color-secondary);
-  }
   .text-stone-400 {
     color: var(--color-stone-400);
   }
@@ -4195,9 +4163,6 @@
   }
   .text-teal-100 {
     color: var(--color-teal-100);
-  }
-  .text-warning {
-    color: var(--color-warning);
   }
   .text-white {
     color: var(--color-white);

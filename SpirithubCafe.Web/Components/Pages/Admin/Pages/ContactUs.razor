@@ -1,43 +1,299 @@
 @page "/admin/pages/contact"
+@using SpirithubCafe.Web.Services
+@using SpirithubCafe.Domain.Entities
+@using SpirithubCafe.Web.Components.Shared
+@inject IContactUsService ContactUsService
+@inject IStringLocalizer<SpirithubCafe.Langs.Resources> Localizer
+@inject ToastService ToastService
+@inject IJSRuntime JSRuntime
 @layout AdminLayout
 @attribute [Authorize(Roles = "Admin")]
+@rendermode InteractiveServer
 
 <PageTitle>Contact Us Page Management - SpirithubCafe</PageTitle>
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-warning text-dark">
-                    <h4 class="mb-0">
-                        <i class="fas fa-phone me-2"></i>
-                        Contact Us Page Management
-                    </h4>
+<div class="min-h-screen bg-[#F8F9FA] p-4">
+    <!-- Header Section -->
+    <div class="mb-8">
+        <div class="bg-white rounded-lg shadow-sm border border-[#D3DAD9]/20 overflow-hidden">
+            <div class="bg-[#37353E] text-[#D3DAD9] px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                        <h1 class="text-xl font-bold">Contact Us Page Management</h1>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-8">
-                            <p class="text-muted">
-                                Manage contact information, business hours, location details, and contact forms.
-                            </p>
+            </div>
+            
+            <!-- Page Settings -->
+            <div class="p-6">
+                <EditForm Model="contactUsPage" OnValidSubmit="SavePageSettings" FormName="ContactUsPageForm">
+                    <DataAnnotationsValidator />
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- English Fields -->
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-semibold text-[#37353E] border-b border-[#D3DAD9]/20 pb-2">English Content</h3>
                             
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle me-2"></i>
-                                This page is under development. Soon you'll be able to update your contact details.
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">Page Title</label>
+                                <InputText @bind-Value="contactUsPage.Title" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#37353E] focus:border-transparent" placeholder="Contact Us" />
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">Page Subtitle</label>
+                                <InputText @bind-Value="contactUsPage.Subtitle" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#37353E] focus:border-transparent" placeholder="Get in touch with us" />
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">Page Description</label>
+                                <InputTextArea @bind-Value="contactUsPage.Description" rows="3" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#37353E] focus:border-transparent" placeholder="Brief description about contact page" />
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="card bg-light">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-map-marker-alt text-warning" style="font-size: 3rem;"></i>
-                                    <h5 class="mt-3">Coming Soon</h5>
-                                    <p class="text-muted">Contact information editor</p>
+                        
+                        <!-- Arabic Fields -->
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-semibold text-[#37353E] border-b border-[#D3DAD9]/20 pb-2">Arabic Content</h3>
+                            
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">Page Title (Arabic)</label>
+                                <InputText @bind-Value="contactUsPage.TitleAr" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#37353E] focus:border-transparent text-right" placeholder="اتصل بنا" dir="rtl" />
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">Page Subtitle (Arabic)</label>
+                                <InputText @bind-Value="contactUsPage.SubtitleAr" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#37353E] focus:border-transparent text-right" placeholder="تواصل معنا" dir="rtl" />
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">Page Description (Arabic)</label>
+                                <InputTextArea @bind-Value="contactUsPage.DescriptionAr" rows="3" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#37353E] focus:border-transparent text-right" placeholder="وصف موجز عن صفحة التواصل" dir="rtl" />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Background Settings -->
+                    <div class="mt-6 space-y-4">
+                        <h3 class="text-lg font-semibold text-[#37353E] border-b border-[#D3DAD9]/20 pb-2">Background Settings</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">Background Type</label>
+                                <select @onchange="OnBgTypeChanged" value="@contactUsPage.BgType" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#37353E] focus:border-transparent">
+                                    <option value="color">Color</option>
+                                    <option value="image">Image</option>
+                                    <option value="video">Video</option>
+                                </select>
+                            </div>
+                            
+                            @if (contactUsPage.BgType == "color")
+                            {
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-semibold text-gray-700">Background Color</label>
+                                    <div class="flex gap-2">
+                                        <input type="color" @bind="contactUsPage.BgValue" class="w-12 h-10 border border-gray-200 rounded cursor-pointer" />
+                                        <InputText @bind-Value="contactUsPage.BgValue" class="flex-1 px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#37353E] focus:border-transparent" placeholder="#ffffff" />
+                                    </div>
+                                </div>
+                            }
+                            
+                            @if (contactUsPage.BgType == "image" || contactUsPage.BgType == "video")
+                            {
+                                <div class="md:col-span-2 space-y-2">
+                                    <label class="block text-sm font-semibold text-gray-700">@(contactUsPage.BgType == "image" ? "Background Image" : "Background Video")</label>
+                                    <FileUpload FileType="@contactUsPage.BgType" Folder="backgrounds" Prefix="@($"contact-{contactUsPage.BgType}")" @bind-CurrentFileUrl="contactUsPage.BgValue" />
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    
+                    <!-- Section Visibility Settings -->
+                    <div class="mt-6 space-y-4">
+                        <h3 class="text-lg font-semibold text-[#37353E] border-b border-[#D3DAD9]/20 pb-2">Section Visibility</h3>
+                        
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="flex items-center">
+                                <InputCheckbox @bind-Value="contactUsPage.ShowContactForm" class="w-4 h-4 text-[#37353E] bg-gray-100 border-gray-300 rounded focus:ring-[#37353E] focus:ring-2" />
+                                <label class="ml-2 text-sm font-medium text-gray-700">Show Contact Form</label>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <InputCheckbox @bind-Value="contactUsPage.ShowContactInfo" class="w-4 h-4 text-[#37353E] bg-gray-100 border-gray-300 rounded focus:ring-[#37353E] focus:ring-2" />
+                                <label class="ml-2 text-sm font-medium text-gray-700">Show Contact Info</label>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <InputCheckbox @bind-Value="contactUsPage.ShowMap" class="w-4 h-4 text-[#37353E] bg-gray-100 border-gray-300 rounded focus:ring-[#37353E] focus:ring-2" />
+                                <label class="ml-2 text-sm font-medium text-gray-700">Show Map</label>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <InputCheckbox @bind-Value="contactUsPage.ShowSocialMedia" class="w-4 h-4 text-[#37353E] bg-gray-100 border-gray-300 rounded focus:ring-[#37353E] focus:ring-2" />
+                                <label class="ml-2 text-sm font-medium text-gray-700">Show Social Media</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Contact Form Settings -->
+                    <div class="mt-6 space-y-4">
+                        <h3 class="text-lg font-semibold text-[#37353E] border-b border-[#D3DAD9]/20 pb-2">Contact Form Settings</h3>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- English Form Settings -->
+                            <div class="space-y-4">
+                                <h4 class="text-md font-semibold text-[#37353E]">English</h4>
+                                
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-semibold text-gray-700">Form Title</label>
+                                    <InputText @bind-Value="contactUsPage.FormTitle" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#37353E] focus:border-transparent" placeholder="Send us a Message" />
+                                </div>
+                                
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-semibold text-gray-700">Form Description</label>
+                                    <InputTextArea @bind-Value="contactUsPage.FormDescription" rows="2" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#37353E] focus:border-transparent" placeholder="Form description..." />
+                                </div>
+                                
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-semibold text-gray-700">Success Message</label>
+                                    <InputTextArea @bind-Value="contactUsPage.SuccessMessage" rows="2" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#37353E] focus:border-transparent" placeholder="Thank you message..." />
+                                </div>
+                            </div>
+                            
+                            <!-- Arabic Form Settings -->
+                            <div class="space-y-4">
+                                <h4 class="text-md font-semibold text-[#37353E]">Arabic</h4>
+                                
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-semibold text-gray-700">Form Title (Arabic)</label>
+                                    <InputText @bind-Value="contactUsPage.FormTitleAr" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#37353E] focus:border-transparent text-right" placeholder="أرسل لنا رسالة" dir="rtl" />
+                                </div>
+                                
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-semibold text-gray-700">Form Description (Arabic)</label>
+                                    <InputTextArea @bind-Value="contactUsPage.FormDescriptionAr" rows="2" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#37353E] focus:border-transparent text-right" placeholder="وصف النموذج..." dir="rtl" />
+                                </div>
+                                
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-semibold text-gray-700">Success Message (Arabic)</label>
+                                    <InputTextArea @bind-Value="contactUsPage.SuccessMessageAr" rows="2" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#37353E] focus:border-transparent text-right" placeholder="رسالة الشكر..." dir="rtl" />
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                    
+                    <!-- Business Hours -->
+                    <div class="mt-6 space-y-4">
+                        <h3 class="text-lg font-semibold text-[#37353E] border-b border-[#D3DAD9]/20 pb-2">Business Hours</h3>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">Business Hours (English)</label>
+                                <InputTextArea @bind-Value="contactUsPage.BusinessHours" rows="3" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#37353E] focus:border-transparent" placeholder="Monday - Friday: 9 AM - 6 PM" />
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">Business Hours (Arabic)</label>
+                                <InputTextArea @bind-Value="contactUsPage.BusinessHoursAr" rows="3" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#37353E] focus:border-transparent text-right" placeholder="الاثنين - الجمعة: 9 صباحاً - 6 مساءً" dir="rtl" />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Map Settings -->
+                    <div class="mt-6 space-y-4">
+                        <h3 class="text-lg font-semibold text-[#37353E] border-b border-[#D3DAD9]/20 pb-2">Map Settings</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700">Map Embed Code</label>
+                                <InputTextArea @bind-Value="contactUsPage.MapEmbedCode" rows="4" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#37353E] focus:border-transparent" placeholder="<iframe src=... ></iframe>" />
+                                <p class="text-xs text-gray-500">Paste the embed code from Google Maps</p>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-semibold text-gray-700">Map Address (English)</label>
+                                    <InputText @bind-Value="contactUsPage.MapAddress" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#37353E] focus:border-transparent" placeholder="123 Main St, City, Country" />
+                                </div>
+                                
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-semibold text-gray-700">Map Address (Arabic)</label>
+                                    <InputText @bind-Value="contactUsPage.MapAddressAr" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#37353E] focus:border-transparent text-right" placeholder="123 الشارع الرئيسي، المدينة، البلد" dir="rtl" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 flex justify-end">
+                        <button type="submit" disabled="@isLoading" class="bg-[#37353E] text-[#D3DAD9] px-6 py-3 rounded-lg hover:bg-[#44444E] transition-all duration-200 font-medium flex items-center">
+                            @if (isLoading)
+                            {
+                                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            }
+                            Save Contact Page Settings
+                        </button>
+                    </div>
+                </EditForm>
             </div>
         </div>
     </div>
 </div>
+
+@code {
+    private ContactUsPage contactUsPage = new();
+    private bool isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            var page = await ContactUsService.GetContactUsPageAsync();
+            if (page != null)
+            {
+                contactUsPage = page;
+            }
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError($"Error loading data: {ex.Message}");
+        }
+    }
+
+    private async Task SavePageSettings()
+    {
+        if (isLoading) return;
+
+        try
+        {
+            isLoading = true;
+            await ContactUsService.CreateOrUpdateContactUsPageAsync(contactUsPage);
+            ToastService.ShowSuccess("Contact page settings saved successfully!");
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError($"Error saving contact page settings: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void OnBgTypeChanged(ChangeEventArgs e)
+    {
+        contactUsPage.BgType = e.Value?.ToString() ?? "color";
+        if (contactUsPage.BgType == "color" && string.IsNullOrEmpty(contactUsPage.BgValue))
+        {
+            contactUsPage.BgValue = "#ffffff";
+        }
+        StateHasChanged();
+    }
+}
