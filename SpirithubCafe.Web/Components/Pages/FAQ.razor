@@ -14,18 +14,18 @@
     <!-- Page Header -->
     <section class="relative bg-gradient-to-br from-[#37353E] to-[#715A5A] text-white py-12 md:py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center">
+            <div>
                 <div class="inline-flex items-center justify-center w-16 h-16 mb-4 bg-white/10 rounded-full backdrop-blur-sm">
                     <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
-                <h1 class="text-3xl md:text-4xl font-bold mb-3">
+                <h1 class="text-2xl md:text-3xl font-bold mb-3">
                     @GetLocalizedText(pageSettings.TitleEn, pageSettings.TitleAr)
                 </h1>
                 @if (!string.IsNullOrEmpty(pageSettings.DescriptionEn) || !string.IsNullOrEmpty(pageSettings.DescriptionAr))
                 {
-                    <p class="text-lg md:text-xl text-white/90 max-w-3xl mx-auto">
+                    <p class="text-base md:text-lg text-white/90">
                         @GetLocalizedText(pageSettings.DescriptionEn, pageSettings.DescriptionAr)
                     </p>
                 }
