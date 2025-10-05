@@ -10,6 +10,7 @@
 @inject IStringLocalizer<SpirithubCafe.Langs.Resources> Localizer
 @inject IFooterService FooterService
 @inject IJSRuntime JSRuntime
+@inject ToastService ToastService
 @rendermode InteractiveServer
 
 <div class="container mx-auto px-4 py-6">
@@ -622,12 +623,11 @@
         try
         {
             await FooterService.UpdateFooterSettingsAsync(settings);
-            // Simple alert for now instead of toast
-            await JSRuntime.InvokeVoidAsync("alert", Localizer["SaveChanges"] + " - Success!");
+            ToastService.ShowSuccess(Localizer["SaveChanges"] + " - Success!");
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("alert", $"Error: {ex.Message}");
+            ToastService.ShowError($"Error: {ex.Message}");
         }
     }
 
@@ -738,12 +738,12 @@
                 }
             }
 
-            await JSRuntime.InvokeVoidAsync("alert", Localizer["SaveChanges"] + " - Success!");
+            ToastService.ShowSuccess(Localizer["SaveChanges"] + " - Success!");
             await LoadData(); // Reload to get updated IDs
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("alert", $"Error: {ex.Message}");
+            ToastService.ShowError($"Error: {ex.Message}");
         }
     }
 }

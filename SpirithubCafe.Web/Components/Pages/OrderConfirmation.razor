@@ -9,6 +9,7 @@
 @inject OrderService OrderService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
+@inject ToastService ToastService
 @rendermode InteractiveServer
 
 <div class="min-h-screen bg-gray-50 py-8">
@@ -297,12 +298,12 @@
         try
         {
             await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", trackingNumber);
-            await JSRuntime.InvokeVoidAsync("alert", "Tracking number copied to clipboard!");
+            ToastService.ShowSuccess("Tracking number copied to clipboard!");
         }
         catch (Exception)
         {
             // Fallback if clipboard API is not available
-            await JSRuntime.InvokeVoidAsync("alert", $"Tracking Number: {trackingNumber}");
+            ToastService.ShowInfo($"Tracking Number: {trackingNumber}");
         }
     }
 
@@ -311,7 +312,7 @@
         // This is a generic example - you can customize this based on your shipping provider
         // For example, if you use specific carriers, you can detect the carrier and use their tracking URL
         var message = $"Please use your tracking number '{trackingNumber}' on your shipping provider's website to track your package.\n\nCommon tracking websites:\n• Aramex: www.aramex.com/track\n• DHL: www.dhl.com/track\n• FedEx: www.fedex.com/track";
-        await JSRuntime.InvokeVoidAsync("alert", message);
+        ToastService.ShowInfo(message);
     }
 
     private string GetStatusBadgeClass(string status)
@@ -376,18 +377,18 @@
                 }
                 else
                 {
-                    await JSRuntime.InvokeVoidAsync("alert", "Failed to initiate payment. Please try again.");
+                    ToastService.ShowError("Failed to initiate payment. Please try again.");
                 }
             }
             else
             {
                 var error = await response.Content.ReadAsStringAsync();
-                await JSRuntime.InvokeVoidAsync("alert", $"Payment initiation failed: {error}");
+                ToastService.ShowError($"Payment initiation failed: {error}");
             }
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("alert", $"Error initiating payment: {ex.Message}");
+            ToastService.ShowError($"Error initiating payment: {ex.Message}");
         }
         finally
         {

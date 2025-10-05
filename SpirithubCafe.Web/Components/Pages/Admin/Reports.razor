@@ -1,5 +1,615 @@
 @page "/admin/reports"
 @layout AdminLayout
 @attribute [Authorize(Roles = "Admin")]
+@using Microsoft.EntityFrameworkCore
+@using SpirithubCafe.Web.Data
+@using SpirithubCafe.Domain.Entities
+@inject ApplicationDbContext DbContext
+@inject IStringLocalizer<Resources> Loc
+@rendermode InteractiveServer
 
-<PageTitle>Reports Management - SpirithubCafe</PageTitle>
+<PageTitle>@Loc["Reports"] - SpirithubCafe Admin</PageTitle>
+
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 md:p-8">
+    <!-- Header Section -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+                    📊 @Loc["Reports"]
+                </h1>
+                <p class="text-slate-600">@Loc["ComprehensiveBusinessReports"]</p>
+            </div>
+            
+            <!-- Date Range Filter -->
+            <div class="flex items-center gap-3 bg-white rounded-2xl shadow-lg p-2">
+                <button @onclick="() => SetDateRange(DateRangeType.Today)" 
+                        class="@GetDateRangeButtonClass(DateRangeType.Today)">
+                    @Loc["Today"]
+                </button>
+                <button @onclick="() => SetDateRange(DateRangeType.Week)" 
+                        class="@GetDateRangeButtonClass(DateRangeType.Week)">
+                    @Loc["ThisWeek"]
+                </button>
+                <button @onclick="() => SetDateRange(DateRangeType.Month)" 
+                        class="@GetDateRangeButtonClass(DateRangeType.Month)">
+                    @Loc["ThisMonth"]
+                </button>
+                <button @onclick="() => SetDateRange(DateRangeType.Year)" 
+                        class="@GetDateRangeButtonClass(DateRangeType.Year)">
+                    @Loc["ThisYear"]
+                </button>
+                <button @onclick="() => SetDateRange(DateRangeType.All)" 
+                        class="@GetDateRangeButtonClass(DateRangeType.All)">
+                    @Loc["AllTime"]
+                </button>
+            </div>
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="flex items-center justify-center h-64">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+        </div>
+    }
+    else
+    {
+        <!-- Key Metrics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Revenue -->
+            <div class="group bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-6 text-white shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <span class="text-emerald-100 text-sm font-semibold">@selectedRange</span>
+                </div>
+                <h3 class="text-3xl font-bold mb-2">$@totalRevenue.ToString("N2")</h3>
+                <p class="text-emerald-100 text-sm">@Loc["TotalRevenue"]</p>
+                <div class="mt-4 flex items-center text-sm">
+                    <span class="bg-white/20 px-3 py-1 rounded-full">↑ @revenueGrowth%</span>
+                    <span class="ml-2 text-emerald-100">@Loc["vsLastPeriod"]</span>
+                </div>
+            </div>
+
+            <!-- Total Orders -->
+            <div class="group bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 text-white shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                        </svg>
+                    </div>
+                    <span class="text-blue-100 text-sm font-semibold">@selectedRange</span>
+                </div>
+                <h3 class="text-3xl font-bold mb-2">@totalOrders</h3>
+                <p class="text-blue-100 text-sm">@Loc["TotalOrders"]</p>
+                <div class="mt-4 flex items-center text-sm">
+                    <span class="bg-white/20 px-3 py-1 rounded-full">@completedOrders @Loc["Completed"]</span>
+                </div>
+            </div>
+
+            <!-- Total Products -->
+            <div class="group bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl p-6 text-white shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                        </svg>
+                    </div>
+                    <span class="text-purple-100 text-sm font-semibold">@Loc["Active"]</span>
+                </div>
+                <h3 class="text-3xl font-bold mb-2">@totalProducts</h3>
+                <p class="text-purple-100 text-sm">@Loc["TotalProducts"]</p>
+                <div class="mt-4 flex items-center text-sm">
+                    <span class="bg-white/20 px-3 py-1 rounded-full">@lowStockProducts @Loc["LowStock"]</span>
+                </div>
+            </div>
+
+            <!-- Total Customers -->
+            <div class="group bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl p-6 text-white shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                    </div>
+                    <span class="text-amber-100 text-sm font-semibold">@Loc["Registered"]</span>
+                </div>
+                <h3 class="text-3xl font-bold mb-2">@totalCustomers</h3>
+                <p class="text-amber-100 text-sm">@Loc["TotalCustomers"]</p>
+                <div class="mt-4 flex items-center text-sm">
+                    <span class="bg-white/20 px-3 py-1 rounded-full">@newCustomers @Loc["New"]</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Sales Chart -->
+            <div class="bg-white rounded-2xl shadow-xl p-6">
+                <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center">
+                    <span class="w-2 h-8 bg-gradient-to-b from-blue-500 to-indigo-500 rounded-full mr-3"></span>
+                    📈 @Loc["SalesChart"]
+                </h3>
+                <div class="space-y-4">
+                    @foreach (var day in dailySales.TakeLast(7))
+                    {
+                        var percentage = totalRevenue > 0 ? (day.Revenue / totalRevenue * 100) : 0;
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm font-medium text-slate-700">@day.Date.ToString("MMM dd")</span>
+                                <span class="text-sm font-bold text-blue-600">$@day.Revenue.ToString("N2")</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                                <div class="bg-gradient-to-r from-blue-500 to-indigo-500 h-3 rounded-full transition-all duration-500 shadow-lg" 
+                                     style="width: @percentage%"></div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Order Status Distribution -->
+            <div class="bg-white rounded-2xl shadow-xl p-6">
+                <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center">
+                    <span class="w-2 h-8 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full mr-3"></span>
+                    📦 @Loc["OrderStatusDistribution"]
+                </h3>
+                <div class="space-y-4">
+                    @foreach (var status in orderStatusData)
+                    {
+                        var percentage = totalOrders > 0 ? ((decimal)status.Count / totalOrders * 100) : 0;
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm font-medium text-slate-700 flex items-center">
+                                    <span class="w-3 h-3 rounded-full mr-2" style="background: @status.Color"></span>
+                                    @status.Status
+                                </span>
+                                <span class="text-sm font-bold" style="color: @status.Color">@status.Count</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                                <div class="h-3 rounded-full transition-all duration-500 shadow-lg" 
+                                     style="width: @percentage%; background: @status.Color"></div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Products & Low Stock -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Top Selling Products -->
+            <div class="bg-white rounded-2xl shadow-xl p-6">
+                <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center">
+                    <span class="w-2 h-8 bg-gradient-to-b from-amber-500 to-orange-500 rounded-full mr-3"></span>
+                    🏆 @Loc["TopSellingProducts"]
+                </h3>
+                <div class="space-y-4">
+                    @foreach (var product in topProducts.Take(5))
+                    {
+                        <div class="flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-slate-100 rounded-xl hover:shadow-md transition-all duration-300">
+                            <div class="flex items-center gap-4 flex-1">
+                                @if (!string.IsNullOrEmpty(product.ImagePath))
+                                {
+                                    <img src="@product.ImagePath" alt="@product.Name" class="w-12 h-12 rounded-lg object-cover shadow-md">
+                                }
+                                else
+                                {
+                                    <div class="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-lg flex items-center justify-center text-white font-bold shadow-md">
+                                        @product.Name.Substring(0, 1)
+                                    </div>
+                                }
+                                <div class="flex-1">
+                                    <h4 class="font-semibold text-slate-800 truncate">@product.Name</h4>
+                                    <p class="text-sm text-slate-500">@product.OrderCount @Loc["Orders"]</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-emerald-600">$@product.Revenue.ToString("N2")</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Low Stock Alert -->
+            <div class="bg-white rounded-2xl shadow-xl p-6">
+                <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center">
+                    <span class="w-2 h-8 bg-gradient-to-b from-red-500 to-rose-500 rounded-full mr-3"></span>
+                    ⚠️ @Loc["LowStockAlert"]
+                </h3>
+                <div class="space-y-4">
+                    @if (lowStockItems.Any())
+                    {
+                        @foreach (var item in lowStockItems.Take(5))
+                        {
+                            <div class="flex items-center justify-between p-4 bg-gradient-to-r from-red-50 to-rose-50 rounded-xl border-l-4 border-red-500 hover:shadow-md transition-all duration-300">
+                                <div class="flex items-center gap-4 flex-1">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-red-400 to-rose-500 rounded-lg flex items-center justify-center text-white font-bold shadow-md">
+                                        !
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-slate-800 truncate">@item.ProductName</h4>
+                                        <p class="text-sm text-slate-500">SKU: @item.Sku</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-red-600">@item.Stock</p>
+                                    <p class="text-xs text-slate-500">@Loc["InStock"]</p>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center py-8">
+                            <div class="w-16 h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </div>
+                            <p class="text-slate-600 font-medium">@Loc["AllProductsWellStocked"]</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Summary -->
+        <div class="bg-white rounded-2xl shadow-xl p-8">
+            <h3 class="text-2xl font-bold text-slate-800 mb-8 flex items-center">
+                <span class="w-2 h-10 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-full mr-4"></span>
+                💰 @Loc["FinancialSummary"]
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Gross Revenue -->
+                <div class="p-6 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-xl border-2 border-indigo-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-sm font-semibold text-indigo-600 uppercase tracking-wide">@Loc["GrossRevenue"]</h4>
+                        <svg class="w-6 h-6 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                        </svg>
+                    </div>
+                    <p class="text-3xl font-bold text-indigo-700">$@totalRevenue.ToString("N2")</p>
+                    <p class="text-sm text-indigo-600 mt-2">@totalOrders @Loc["Transactions"]</p>
+                </div>
+
+                <!-- Average Order Value -->
+                <div class="p-6 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl border-2 border-emerald-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-sm font-semibold text-emerald-600 uppercase tracking-wide">@Loc["AverageOrderValue"]</h4>
+                        <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <p class="text-3xl font-bold text-emerald-700">$@averageOrderValue.ToString("N2")</p>
+                    <p class="text-sm text-emerald-600 mt-2">@Loc["PerOrder"]</p>
+                </div>
+
+                <!-- Conversion Rate -->
+                <div class="p-6 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border-2 border-purple-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-sm font-semibold text-purple-600 uppercase tracking-wide">@Loc["ConversionRate"]</h4>
+                        <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <p class="text-3xl font-bold text-purple-700">@conversionRate%</p>
+                    <p class="text-sm text-purple-600 mt-2">@Loc["VisitorsToCustomers"]</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Orders Table -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 mt-8">
+            <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center">
+                <span class="w-2 h-8 bg-gradient-to-b from-cyan-500 to-blue-500 rounded-full mr-3"></span>
+                🕒 @Loc["RecentOrders"]
+            </h3>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b-2 border-slate-200">
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-slate-700">@Loc["OrderID"]</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-slate-700">@Loc["Customer"]</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-slate-700">@Loc["Date"]</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-slate-700">@Loc["Amount"]</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-slate-700">@Loc["Status"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in recentOrders.Take(10))
+                        {
+                            <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                                <td class="py-4 px-4">
+                                    <span class="font-mono text-sm font-semibold text-blue-600">#@order.Id</span>
+                                </td>
+                                <td class="py-4 px-4">
+                                    <div>
+                                        <p class="font-medium text-slate-800">@order.FirstName @order.LastName</p>
+                                        <p class="text-sm text-slate-500">@order.Email</p>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-4 text-sm text-slate-600">
+                                    @order.CreatedAt.ToString("MMM dd, yyyy")
+                                </td>
+                                <td class="py-4 px-4">
+                                    <span class="font-bold text-emerald-600">$@order.TotalAmount.ToString("N2")</span>
+                                </td>
+                                <td class="py-4 px-4">
+                                    <span class="@GetOrderStatusBadgeClass(order.Status)">
+                                        @order.Status
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private bool isLoading = true;
+    private DateRangeType currentDateRange = DateRangeType.Month;
+    private string selectedRange = "This Month";
+    private DateTime startDate;
+    private DateTime endDate;
+
+    // Key Metrics
+    private decimal totalRevenue = 0;
+    private int totalOrders = 0;
+    private int completedOrders = 0;
+    private int totalProducts = 0;
+    private int lowStockProducts = 0;
+    private int totalCustomers = 0;
+    private int newCustomers = 0;
+    private decimal revenueGrowth = 0;
+    private decimal averageOrderValue = 0;
+    private decimal conversionRate = 0;
+
+    // Charts Data
+    private List<DailySale> dailySales = new();
+    private List<OrderStatusData> orderStatusData = new();
+    private List<TopProduct> topProducts = new();
+    private List<LowStockItem> lowStockItems = new();
+    private List<Order> recentOrders = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadReportData();
+    }
+
+    private async Task SetDateRange(DateRangeType rangeType)
+    {
+        currentDateRange = rangeType;
+        var now = DateTime.Now;
+
+        switch (rangeType)
+        {
+            case DateRangeType.Today:
+                startDate = now.Date;
+                endDate = now;
+                selectedRange = "Today";
+                break;
+            case DateRangeType.Week:
+                startDate = now.AddDays(-7);
+                endDate = now;
+                selectedRange = "This Week";
+                break;
+            case DateRangeType.Month:
+                startDate = now.AddMonths(-1);
+                endDate = now;
+                selectedRange = "This Month";
+                break;
+            case DateRangeType.Year:
+                startDate = now.AddYears(-1);
+                endDate = now;
+                selectedRange = "This Year";
+                break;
+            case DateRangeType.All:
+                startDate = DateTime.MinValue;
+                endDate = now;
+                selectedRange = "All Time";
+                break;
+        }
+
+        await LoadReportData();
+    }
+
+    private async Task LoadReportData()
+    {
+        isLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            // Load Orders within date range
+            var orders = await DbContext.Orders
+                .Where(o => o.CreatedAt >= startDate && o.CreatedAt <= endDate)
+                .Include(o => o.OrderItems)
+                .ToListAsync();
+
+            // Calculate metrics
+            totalOrders = orders.Count;
+            totalRevenue = orders.Sum(o => o.TotalAmount);
+            completedOrders = orders.Count(o => o.Status == "Completed" || o.Status == "Delivered");
+            averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+
+            // Load Products
+            var products = await DbContext.Products
+                .Include(p => p.Variants)
+                .ToListAsync();
+
+            totalProducts = products.Count(p => p.IsActive);
+            lowStockProducts = products.Count(p => p.Variants.Any(v => v.StockQuantity <= v.LowStockThreshold));
+
+            // Load Customers
+            var customers = await DbContext.Users.ToListAsync();
+            totalCustomers = customers.Count;
+            // Note: ApplicationUser doesn't have CreatedAt, so we'll count all as existing customers
+            newCustomers = 0; // You might want to add CreatedAt to ApplicationUser entity
+
+            // Calculate growth (comparing with previous period)
+            var previousStartDate = startDate.AddDays(-(endDate - startDate).Days);
+            var previousOrders = await DbContext.Orders
+                .Where(o => o.CreatedAt >= previousStartDate && o.CreatedAt < startDate)
+                .ToListAsync();
+            
+            var previousRevenue = previousOrders.Sum(o => o.TotalAmount);
+            revenueGrowth = previousRevenue > 0 ? Math.Round((totalRevenue - previousRevenue) / previousRevenue * 100, 1) : 0;
+
+            // Daily Sales Chart
+            dailySales = orders
+                .GroupBy(o => o.CreatedAt.Date)
+                .Select(g => new DailySale
+                {
+                    Date = g.Key,
+                    Revenue = g.Sum(o => o.TotalAmount),
+                    OrderCount = g.Count()
+                })
+                .OrderBy(d => d.Date)
+                .ToList();
+
+            // Order Status Distribution
+            orderStatusData = orders
+                .GroupBy(o => o.Status)
+                .Select(g => new OrderStatusData
+                {
+                    Status = g.Key,
+                    Count = g.Count(),
+                    Color = GetStatusColor(g.Key)
+                })
+                .ToList();
+
+            // Top Selling Products
+            topProducts = orders
+                .SelectMany(o => o.OrderItems)
+                .GroupBy(oi => new { oi.ProductId, oi.ProductName })
+                .Select(g => new TopProduct
+                {
+                    ProductId = g.Key.ProductId,
+                    Name = g.Key.ProductName,
+                    OrderCount = g.Count(),
+                    Revenue = g.Sum(oi => oi.UnitPrice * oi.Quantity),
+                    ImagePath = products.FirstOrDefault(p => p.Id == g.Key.ProductId)?.MainImage?.ImagePath
+                })
+                .OrderByDescending(p => p.Revenue)
+                .ToList();
+
+            // Low Stock Items
+            lowStockItems = products
+                .Where(p => p.Variants.Any(v => v.StockQuantity <= v.LowStockThreshold))
+                .SelectMany(p => p.Variants.Where(v => v.StockQuantity <= v.LowStockThreshold)
+                    .Select(v => new LowStockItem
+                    {
+                        ProductName = p.Name,
+                        Sku = v.VariantSku,
+                        Stock = v.StockQuantity,
+                        Threshold = v.LowStockThreshold
+                    }))
+                .OrderBy(i => i.Stock)
+                .ToList();
+
+            // Recent Orders
+            recentOrders = orders
+                .OrderByDescending(o => o.CreatedAt)
+                .ToList();
+
+            // Mock conversion rate (you would calculate this based on actual visitor data)
+            conversionRate = 3.5m;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading report data: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private string GetDateRangeButtonClass(DateRangeType rangeType)
+    {
+        var baseClass = "px-4 py-2 rounded-xl font-semibold text-sm transition-all duration-300";
+        return rangeType == currentDateRange
+            ? $"{baseClass} bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg"
+            : $"{baseClass} text-slate-600 hover:bg-slate-100";
+    }
+
+    private string GetStatusColor(string status)
+    {
+        return status switch
+        {
+            "Pending" => "#f59e0b",
+            "Processing" => "#3b82f6",
+            "Completed" => "#10b981",
+            "Delivered" => "#059669",
+            "Cancelled" => "#ef4444",
+            "Refunded" => "#8b5cf6",
+            _ => "#6b7280"
+        };
+    }
+
+    private string GetOrderStatusBadgeClass(string status)
+    {
+        var baseClass = "px-3 py-1 rounded-full text-xs font-semibold inline-block";
+        return status switch
+        {
+            "Pending" => $"{baseClass} bg-amber-100 text-amber-700",
+            "Processing" => $"{baseClass} bg-blue-100 text-blue-700",
+            "Completed" => $"{baseClass} bg-emerald-100 text-emerald-700",
+            "Delivered" => $"{baseClass} bg-teal-100 text-teal-700",
+            "Cancelled" => $"{baseClass} bg-red-100 text-red-700",
+            "Refunded" => $"{baseClass} bg-purple-100 text-purple-700",
+            _ => $"{baseClass} bg-slate-100 text-slate-700"
+        };
+    }
+
+    private enum DateRangeType
+    {
+        Today,
+        Week,
+        Month,
+        Year,
+        All
+    }
+
+    private class DailySale
+    {
+        public DateTime Date { get; set; }
+        public decimal Revenue { get; set; }
+        public int OrderCount { get; set; }
+    }
+
+    private class OrderStatusData
+    {
+        public string Status { get; set; } = string.Empty;
+        public int Count { get; set; }
+        public string Color { get; set; } = string.Empty;
+    }
+
+    private class TopProduct
+    {
+        public int ProductId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public int OrderCount { get; set; }
+        public decimal Revenue { get; set; }
+        public string? ImagePath { get; set; }
+    }
+
+    private class LowStockItem
+    {
+        public string ProductName { get; set; } = string.Empty;
+        public string Sku { get; set; } = string.Empty;
+        public int Stock { get; set; }
+        public int Threshold { get; set; }
+    }
+}

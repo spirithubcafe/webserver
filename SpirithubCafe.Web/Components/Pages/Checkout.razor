@@ -18,6 +18,7 @@
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ToastService ToastService
 @implements IDisposable
 @rendermode InteractiveServer
 
@@ -787,7 +788,7 @@ else
             shippingAddress.CountryId <= 0 ||
             shippingAddress.CityId <= 0)
         {
-            await JSRuntime.InvokeVoidAsync("alert", "❌ Please complete all shipping address fields before placing your order.");
+            ToastService.ShowError("❌ Please complete all shipping address fields before placing your order.");
             return;
         }
 
@@ -797,7 +798,7 @@ else
         // Validate that shipping method is selected
         if (string.IsNullOrEmpty(selectedShippingMethod))
         {
-            await JSRuntime.InvokeVoidAsync("alert", $"❌ Please select a shipping method before placing your order. Current value: '{selectedShippingMethod}'");
+            ToastService.ShowError($"❌ Please select a shipping method before placing your order. Current value: '{selectedShippingMethod}'");
             return;
         }
         
@@ -847,14 +848,14 @@ else
             await CartService.ClearCartAsync();
             
             // Show message and redirect to payment redirect page
-            await JSRuntime.InvokeVoidAsync("alert", $"🛒 Order #{order.OrderNumber} created successfully! Redirecting to payment...");
+            ToastService.ShowSuccess($"🛒 Order #{order.OrderNumber} created successfully! Redirecting to payment...");
             
             // Redirect to payment redirect page
             Navigation.NavigateTo($"/payment-redirect/{order.Id}", forceLoad: true);
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("alert", $"❌ Error placing order: {ex.Message}");
+            ToastService.ShowError($"❌ Error placing order: {ex.Message}");
         }
         finally
         {

@@ -1,4 +1,6 @@
 @page "/admin/reviews"
+@layout AdminLayout
+@attribute [Authorize(Roles = "Admin")]
 @using SpirithubCafe.Application.Interfaces
 @using SpirithubCafe.Domain.Entities
 @using SpirithubCafe.Langs
@@ -145,7 +147,7 @@
 <Toast />
 
 @code {
-    private List<Review>? reviews;
+    private List<ProductReview>? reviews;
     private bool isLoading = true;
     private ReviewFilter currentFilter = ReviewFilter.All;
     
@@ -188,7 +190,7 @@
                 {
                     ReviewFilter.Pending => allReviews.Where(r => !r.IsApproved).ToList(),
                     ReviewFilter.Approved => allReviews.Where(r => r.IsApproved).ToList(),
-                    ReviewFilter.Rejected => new List<Review>(), // Empty for now
+                    ReviewFilter.Rejected => new List<ProductReview>(), // Empty for now
                     _ => allReviews
                 };
             }

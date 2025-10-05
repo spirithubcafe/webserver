@@ -5,6 +5,7 @@
 @using Microsoft.Extensions.Localization
 @using Microsoft.JSInterop
 @using SpirithubCafe.Application.DTOs
+@using SpirithubCafe.Application.Interfaces
 @using SpirithubCafe.Domain.Entities
 @using SpirithubCafe.Web.Services
 @using SpirithubCafe.Web.Components.Shared
@@ -14,7 +15,7 @@
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 @inject ProductService ProductService
-@inject ReviewService ReviewService
+@inject IReviewService ReviewService
 @inject CartService CartService
 @inject ToastService ToastService
 @inject FavoriteService FavoriteService
@@ -1015,7 +1016,7 @@ else
             {
                 CloseReviewModal();
                 ToastService.ShowSuccess(Loc["ReviewSubmittedSuccess"]);
-                await LoadReviews(1); // Reload reviews to show the new one (if approved)
+                await LoadReviews(); // Reload reviews to show the new one (if approved)
             }
             else
             {

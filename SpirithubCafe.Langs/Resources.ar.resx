@@ -1950,5 +1950,111 @@
   <data name="Product" xml:space="preserve">
     <value>المنتج</value>
   </data>
+  <data name="ComprehensiveBusinessReports" xml:space="preserve">
+    <value>گزارشات جامع کسب و کار</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>امروز</value>
+  </data>
+  <data name="ThisWeek" xml:space="preserve">
+    <value>این هفته</value>
+  </data>
+  <data name="ThisMonth" xml:space="preserve">
+    <value>این ماه</value>
+  </data>
+  <data name="ThisYear" xml:space="preserve">
+    <value>امسال</value>
+  </data>
+  <data name="AllTime" xml:space="preserve">
+    <value>کل دوره</value>
+  </data>
+  <data name="TotalRevenue" xml:space="preserve">
+    <value>کل درآمد</value>
+  </data>
+  <data name="vsLastPeriod" xml:space="preserve">
+    <value>نسبت به دوره قبل</value>
+  </data>
+  <data name="TotalOrders" xml:space="preserve">
+    <value>کل سفارشات</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>تکمیل شده</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>فعال</value>
+  </data>
+  <data name="TotalProducts" xml:space="preserve">
+    <value>کل محصولات</value>
+  </data>
+  <data name="LowStock" xml:space="preserve">
+    <value>کم موجود</value>
+  </data>
+  <data name="Registered" xml:space="preserve">
+    <value>ثبت شده</value>
+  </data>
+  <data name="TotalCustomers" xml:space="preserve">
+    <value>کل مشتریان</value>
+  </data>
+  <data name="New" xml:space="preserve">
+    <value>جدید</value>
+  </data>
+  <data name="SalesChart" xml:space="preserve">
+    <value>نمودار فروش</value>
+  </data>
+  <data name="OrderStatusDistribution" xml:space="preserve">
+    <value>توزیع وضعیت سفارشات</value>
+  </data>
+  <data name="TopSellingProducts" xml:space="preserve">
+    <value>محصولات پرفروش</value>
+  </data>
+  <data name="Orders" xml:space="preserve">
+    <value>سفارش</value>
+  </data>
+  <data name="LowStockAlert" xml:space="preserve">
+    <value>هشدار موجودی کم</value>
+  </data>
+  <data name="InStock" xml:space="preserve">
+    <value>موجود</value>
+  </data>
+  <data name="AllProductsWellStocked" xml:space="preserve">
+    <value>همه محصولات موجودی کافی دارند!</value>
+  </data>
+  <data name="FinancialSummary" xml:space="preserve">
+    <value>خلاصه مالی</value>
+  </data>
+  <data name="GrossRevenue" xml:space="preserve">
+    <value>درآمد ناخالص</value>
+  </data>
+  <data name="Transactions" xml:space="preserve">
+    <value>تراکنش</value>
+  </data>
+  <data name="AverageOrderValue" xml:space="preserve">
+    <value>میانگین ارزش سفارش</value>
+  </data>
+  <data name="PerOrder" xml:space="preserve">
+    <value>به ازای هر سفارش</value>
+  </data>
+  <data name="ConversionRate" xml:space="preserve">
+    <value>نرخ تبدیل</value>
+  </data>
+  <data name="VisitorsToCustomers" xml:space="preserve">
+    <value>بازدیدکننده به مشتری</value>
+  </data>
+  <data name="RecentOrders" xml:space="preserve">
+    <value>سفارشات اخیر</value>
+  </data>
+  <data name="OrderID" xml:space="preserve">
+    <value>شناسه سفارش</value>
+  </data>
+  <data name="Customer" xml:space="preserve">
+    <value>مشتری</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>تاریخ</value>
+  </data>
+  <data name="Amount" xml:space="preserve">
+    <value>مبلغ</value>
+  </data>
 </root>
+
 

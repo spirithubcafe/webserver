@@ -1,11 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using SpirithubCafe.Application.DTOs;
+using SpirithubCafe.Application.Interfaces;
 using SpirithubCafe.Domain.Entities;
 using SpirithubCafe.Web.Data;
 
 namespace SpirithubCafe.Web.Services;
 
-public class ReviewService
+public class ReviewService : IReviewService
 {
     private readonly ApplicationDbContext _context;
 
@@ -86,7 +87,7 @@ public class ReviewService
         }
     }
 
-    public async Task<List<Review>> GetAllReviewsAsync()
+    public async Task<List<ProductReview>> GetAllReviewsAsync()
     {
         return await _context.ProductReviews
             .Include(r => r.Product)
