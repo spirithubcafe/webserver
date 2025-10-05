@@ -102,6 +102,22 @@ authBuilder.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
         };
     });
 
+// Add Google Authentication
+authBuilder.AddGoogle(googleOptions =>
+{
+    var googleAuthSection = builder.Configuration.GetSection("Authentication:Google");
+    googleOptions.ClientId = googleAuthSection["ClientId"] ?? throw new InvalidOperationException("Google ClientId not found in configuration.");
+    googleOptions.ClientSecret = googleAuthSection["ClientSecret"] ?? throw new InvalidOperationException("Google ClientSecret not found in configuration.");
+    googleOptions.CallbackPath = "/signin-google";
+    
+    // Request additional scopes
+    googleOptions.Scope.Add("profile");
+    googleOptions.Scope.Add("email");
+    
+    // Save tokens for later use
+    googleOptions.SaveTokens = true;
+});
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));

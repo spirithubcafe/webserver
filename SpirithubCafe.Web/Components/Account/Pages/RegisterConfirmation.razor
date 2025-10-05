@@ -10,23 +10,134 @@
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 
-<PageTitle>Register confirmation</PageTitle>
+<PageTitle>Registration Confirmation</PageTitle>
 
-<h1>Register confirmation</h1>
+<div class="min-h-screen bg-gradient-to-br from-amber-50 via-white to-orange-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        
+        <!-- Site Logo -->
+        <div class="w-32 h-32 mx-auto bg-white rounded-full flex items-center justify-center p-4 shadow-lg">
+            <img src="/images/logo.png" alt="SpirithubCafe Logo" class="w-full h-full object-contain" />
+        </div>
 
-<StatusMessage Message="@statusMessage" />
+        <!-- Header -->
+        <div class="text-center">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Check Your Email</h2>
+        </div>
 
-@if (emailConfirmationLink is not null)
-{
-    <p>
-        This app does not currently have a real email sender registered, see <a href="https://aka.ms/aspaccountconf">these docs</a> for how to configure a real email sender.
-        Normally this would be emailed: <a href="@emailConfirmationLink">Click here to confirm your account</a>
-    </p>
-}
-else
-{
-    <p role="alert">Please check your email to confirm your account.</p>
-}
+        <!-- Content -->
+        <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+            @if (!string.IsNullOrEmpty(statusMessage))
+            {
+                @if (statusMessage.Contains("Error") || statusMessage.Contains("error"))
+                {
+                    <!-- Error State -->
+                    <div class="flex flex-col items-center text-center space-y-4">
+                        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                            <svg class="h-10 w-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Registration Error</h3>
+                            <p class="text-gray-600">@statusMessage</p>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <!-- Success State -->
+                    <div class="flex flex-col items-center text-center space-y-4">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                            <svg class="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Registration Successful!</h3>
+                            <p class="text-gray-600">@statusMessage</p>
+                        </div>
+                    </div>
+                }
+            }
+
+            @if (emailConfirmationLink is not null)
+            {
+                <!-- Development Mode Notice -->
+                <div class="mt-6 rounded-lg bg-yellow-50 border border-yellow-200 p-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-yellow-800 mb-1">Development Mode</h3>
+                            <p class="text-sm text-yellow-700 mb-2">
+                                This app does not currently have a real email sender registered. 
+                                See <a href="https://aka.ms/aspaccountconf" class="underline font-semibold" target="_blank">these docs</a> for configuration.
+                            </p>
+                            <p class="text-sm text-yellow-700">
+                                Normally this would be emailed: 
+                                <a href="@emailConfirmationLink" class="underline font-semibold">Click here to confirm your account</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Email Instructions -->
+            <div class="mt-6 space-y-4">
+                <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
+                            <span class="text-amber-600 font-semibold text-sm">1</span>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-700">Check your inbox for <strong>@Email</strong></p>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
+                            <span class="text-amber-600 font-semibold text-sm">2</span>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-700">Click the confirmation link in the email</p>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
+                            <span class="text-amber-600 font-semibold text-sm">3</span>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-700">Sign in to your new account</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help Text -->
+            <div class="mt-6 pt-6 border-t border-gray-200">
+                <p class="text-xs text-gray-500 text-center">
+                    Didn't receive the email? Check your spam folder or 
+                    <a href="/Account/ResendEmailConfirmation" class="text-amber-600 hover:text-amber-700 font-semibold">resend confirmation email</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer Link -->
+        <div class="text-center">
+            <a href="/Account/Login" class="text-sm font-semibold text-amber-600 hover:text-amber-700 transition duration-200">
+                Back to Sign In
+            </a>
+        </div>
+
+    </div>
+</div>
 
 @code {
     private string? emailConfirmationLink;

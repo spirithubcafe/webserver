@@ -8,10 +8,70 @@
 @inject UserManager<ApplicationUser> UserManager
 @inject IdentityRedirectManager RedirectManager
 
-<PageTitle>Confirm email</PageTitle>
+<PageTitle>Confirm Email</PageTitle>
 
-<h1>Confirm email</h1>
-<StatusMessage Message="@statusMessage" />
+<div class="min-h-screen bg-gradient-to-br from-amber-50 via-white to-orange-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        
+        <!-- Site Logo -->
+        <div class="w-32 h-32 mx-auto bg-white rounded-full flex items-center justify-center p-4 shadow-lg">
+            <img src="/images/logo.png" alt="SpirithubCafe Logo" class="w-full h-full object-contain" />
+        </div>
+
+        <!-- Header -->
+        <div class="text-center">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Email Confirmation</h2>
+        </div>
+
+        <!-- Status Message -->
+        @if (!string.IsNullOrEmpty(statusMessage))
+        {
+            @if (statusMessage.Contains("Error") || statusMessage.Contains("error"))
+            {
+                <!-- Error Message -->
+                <div class="bg-white rounded-2xl shadow-xl border border-red-200 p-8">
+                    <div class="flex flex-col items-center text-center space-y-4">
+                        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                            <svg class="h-10 w-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Confirmation Failed</h3>
+                            <p class="text-gray-600">@statusMessage</p>
+                        </div>
+                        <a href="/Account/Login" 
+                           class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-amber-600 to-orange-600 text-white font-semibold rounded-lg hover:from-amber-700 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 transform transition duration-200 hover:scale-[1.02] shadow-lg">
+                            Back to Sign In
+                        </a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <!-- Success Message -->
+                <div class="bg-white rounded-2xl shadow-xl border border-green-200 p-8">
+                    <div class="flex flex-col items-center text-center space-y-4">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                            <svg class="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Email Confirmed!</h3>
+                            <p class="text-gray-600">@statusMessage</p>
+                        </div>
+                        <a href="/Account/Login" 
+                           class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-amber-600 to-orange-600 text-white font-semibold rounded-lg hover:from-amber-700 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 transform transition duration-200 hover:scale-[1.02] shadow-lg">
+                            Continue to Sign In
+                        </a>
+                    </div>
+                </div>
+            }
+        }
+
+    </div>
+</div>
 
 @code {
     private string? statusMessage;

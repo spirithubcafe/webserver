@@ -3143,11 +3143,6 @@
     --tw-border-style: dashed;
     border-style: dashed;
   }
-  .alert-info {
-    border-color: var(--color-info);
-    color: var(--color-info-content);
-    --alert-color: var(--color-info);
-  }
   .alert-warning {
     border-color: var(--color-warning);
     color: var(--color-warning-content);
