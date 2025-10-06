@@ -71,15 +71,6 @@
                 </svg>
             </button>
         </div>
-        
-        <!-- Slide Indicators -->
-        <div class="slide-indicators">
-            @for (int i = 0; i < slides.Count; i++)
-            {
-                var isActive = i == currentSlideIndex;
-                <button class="indicator @(isActive ? "active" : "")" @onclick="() => GoToSlide(i)" aria-label="Go to slide @(i + 1)"></button>
-            }
-        </div>
 
     }
     else
@@ -217,7 +208,7 @@
     }
     
     .slide-title {
-        font-size: clamp(2rem, 5vw, 3.5rem);
+        font-size: clamp(1.5rem, 4vw, 2.5rem);
         font-weight: 700;
         line-height: 1.2;
         margin-bottom: 1rem;
@@ -228,7 +219,7 @@
     }
     
     .slide-subtitle {
-        font-size: clamp(0.95rem, 2vw, 1.15rem);
+        font-size: clamp(0.875rem, 1.5vw, 1rem);
         line-height: 1.6;
         margin-bottom: 2rem;
         opacity: 0.95;
@@ -305,6 +296,12 @@
         padding: 0 2rem;
         z-index: 10;
         pointer-events: none;
+        opacity: 1;
+        transition: opacity 0.5s ease;
+    }
+    
+    .slideshow-controls.hidden {
+        opacity: 0;
     }
     
     .nav-button {
@@ -332,34 +329,6 @@
     .nav-button svg {
         width: 24px;
         height: 24px;
-    }
-    
-    /* Slide Indicators */
-    .slide-indicators {
-        position: absolute;
-        bottom: 2rem;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        gap: 0.75rem;
-        z-index: 10;
-    }
-    
-    .indicator {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        border: 2px solid rgba(255, 255, 255, 0.5);
-        background: transparent;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        position: relative;
-    }
-    
-    .indicator.active {
-        background: white;
-        border-color: white;
-        transform: scale(1.2);
     }
     
     /* Progress Bar */
@@ -439,15 +408,6 @@
         .slideshow-controls {
             padding: 0 1rem;
         }
-        
-        .slide-indicators {
-            bottom: 1rem;
-        }
-        
-        .indicator {
-            width: 10px;
-            height: 10px;
-        }
     }
     
     @@media (max-width: 480px) {
@@ -470,6 +430,53 @@
         }
     }
 </style>
+
+<script>
+    // Mouse movement handler for navigation controls
+    (function() {
+        let hideControlsTimeout;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const slideshow = document.getElementById('heroSlideshow');
+            const controls = document.querySelector('.slideshow-controls');
+            
+            if (!slideshow || !controls) return;
+            
+            // Function to show controls
+            function showControls() {
+                controls.classList.remove('hidden');
+            }
+            
+            // Function to hide controls
+            function hideControls() {
+                controls.classList.add('hidden');
+            }
+            
+            // Function to reset the hide timer
+            function resetHideTimer() {
+                showControls();
+                clearTimeout(hideControlsTimeout);
+                hideControlsTimeout = setTimeout(hideControls, 3000);
+            }
+            
+            // Listen for mouse movement on the slideshow
+            slideshow.addEventListener('mousemove', resetHideTimer);
+            slideshow.addEventListener('mouseenter', resetHideTimer);
+            
+            // Listen for mouse leave to hide immediately
+            slideshow.addEventListener('mouseleave', function() {
+                clearTimeout(hideControlsTimeout);
+                hideControlsTimeout = setTimeout(hideControls, 1000);
+            });
+            
+            // Touch support for mobile
+            slideshow.addEventListener('touchstart', resetHideTimer);
+            
+            // Initially hide controls after 3 seconds
+            hideControlsTimeout = setTimeout(hideControls, 3000);
+        });
+    })();
+</script>
 
 @code {
     private List<SlideDto> slides = new();
@@ -522,12 +529,6 @@
     private void PrevSlide()
     {
         currentSlideIndex = (currentSlideIndex - 1 + slides.Count) % slides.Count;
-        RestartTimer();
-    }
-
-    private void GoToSlide(int index)
-    {
-        currentSlideIndex = index;
         RestartTimer();
     }
 

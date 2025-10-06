@@ -6761,11 +6761,6 @@
       padding-block: calc(var(--spacing) * 8);
     }
   }
-  .lg\:pl-0 {
-    @media (width >= 64rem) {
-      padding-left: calc(var(--spacing) * 0);
-    }
-  }
   .lg\:text-3xl {
     @media (width >= 64rem) {
       font-size: var(--text-3xl);
@@ -6988,6 +6983,13 @@
       }
     }
   }
+  .lg\:ltr\:pl-0 {
+    @media (width >= 64rem) {
+      &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
+        padding-left: calc(var(--spacing) * 0);
+      }
+    }
+  }
   .rtl\:right-0 {
     &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
       right: calc(var(--spacing) * 0);
@@ -7133,6 +7135,13 @@
       &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
         --tw-translate-x: calc(var(--spacing) * 0);
         translate: var(--tw-translate-x) var(--tw-translate-y);
+      }
+    }
+  }
+  .lg\:rtl\:pr-0 {
+    @media (width >= 64rem) {
+      &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
+        padding-right: calc(var(--spacing) * 0);
       }
     }
   }
