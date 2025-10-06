@@ -6,6 +6,7 @@
 @inject NavigationManager Navigation
 @inject SpirithubCafe.Application.Services.ISettingService SettingService
 @inject SpirithubCafe.Web.Services.CategoryService CategoryService
+@inject AssetVersioningService AssetVersioning
 @using System.Globalization
 @using SpirithubCafe.Web.Services
 @using Microsoft.AspNetCore.Components.Authorization
@@ -34,7 +35,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&family=Tajawal:wght@200;300;400;500;700;800;900&family=Almarai:wght@300;400;700;800&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="dist.css" />
+    <link rel="stylesheet" href="@AssetVersioning.GetVersionedCssUrl("dist.css")" />
     <link rel="stylesheet" href="@Assets["SpirithubCafe.Web.styles.css"]" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <PageTitle>@Localizer["SiteTitle"]</PageTitle>

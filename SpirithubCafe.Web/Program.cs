@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using SpirithubCafe.Web.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -190,6 +191,9 @@ builder.Services.AddScoped<SpirithubCafe.Application.Services.ISettingService, S
 builder.Services.AddScoped<SpirithubCafe.Application.Services.IFAQService, SpirithubCafe.Infrastructure.Services.FAQService>();
 builder.Services.AddScoped<SpirithubCafe.Application.Interfaces.IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>()!);
 
+// Register Asset Versioning Service for CSS/JS cache busting
+builder.Services.AddSingleton<AssetVersioningService>();
+
 // Register API services
 builder.Services.AddScoped<IAuthApiService, AuthApiService<ApplicationUser>>();
 builder.Services.AddScoped<ICategoryApiService, CategoryApiService>();
@@ -303,6 +307,10 @@ app.UseAuthorization();
 app.UseAntiforgery();
 
 app.UseStaticFiles(); // Enable static file serving
+
+// Add static asset cache middleware after static files
+app.UseStaticAssetCache();
+
 app.MapStaticAssets();
 
 // Map controllers for culture switching FIRST
