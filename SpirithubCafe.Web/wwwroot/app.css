@@ -1694,3 +1694,45 @@ body.modal-open {
         height: 32px;
     }
 }
+
+/* RTL Improvements for Products Page and Modal */
+[dir="rtl"] .quick-view-modal .modal-content {
+    text-align: right;
+}
+
+[dir="rtl"] .flex.items-baseline.gap-2 {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .absolute.top-3.right-3 {
+    left: 12px;
+    right: auto;
+}
+
+[dir="rtl"] .absolute.top-3.left-3 {
+    right: 12px;
+    left: auto;
+}
+
+/* Fix select dropdown arrows for RTL */
+[dir="rtl"] select {
+    background-position: left 12px center;
+    padding-left: 40px;
+    padding-right: 16px;
+}
+
+[dir="rtl"] .absolute.right-3 {
+    left: 12px;
+    right: auto;
+}
+
+[dir="rtl"] .absolute.left-4 {
+    right: 16px;
+    left: auto;
+}
+
+/* Modal close button RTL fix */
+[dir="rtl"] .absolute.top-4.right-4 {
+    left: 16px;
+    right: auto;
+}
