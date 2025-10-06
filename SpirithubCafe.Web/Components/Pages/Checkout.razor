@@ -65,77 +65,7 @@ else
                         <span>SSL Secured</span>
                     </div>
                 </div>
-
-                <!-- Progress Steps -->
-                <div class="flex items-center justify-center">
-                    <ol class="flex items-center w-full max-w-2xl">
-                        <li class="flex items-center w-full relative">
-                            <div class="flex items-center">
-                                <div class="w-10 h-10 @(currentStep >= 1 ? "bg-orange-600" : "bg-gray-300") border-2 border-transparent rounded-full flex items-center justify-center">
-                                    @if (currentStep > 1)
-                                    {
-                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                        </svg>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-white font-semibold">1</span>
-                                    }
-                                </div>
-                                <span class="ml-3 text-sm font-medium @(currentStep >= 1 ? "text-orange-600" : "text-gray-500")">Address</span>
-                            </div>
-                            @if (currentStep > 1)
-                            {
-                                <div class="w-full h-1 ml-4 bg-orange-600"></div>
-                            }
-                            else
-                            {
-                                <div class="w-full h-1 ml-4 bg-gray-300"></div>
-                            }
-                        </li>
-                        <li class="flex items-center w-full relative">
-                            <div class="flex items-center">
-                                <div class="w-10 h-10 @(currentStep >= 2 ? "bg-orange-600" : "bg-gray-300") border-2 border-transparent rounded-full flex items-center justify-center">
-                                    @if (currentStep > 2)
-                                    {
-                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                        </svg>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-white font-semibold">2</span>
-                                    }
-                                </div>
-                                <span class="ml-3 text-sm font-medium @(currentStep >= 2 ? "text-orange-600" : "text-gray-500")">Shipping</span>
-                            </div>
-                            @if (currentStep > 2)
-                            {
-                                <div class="w-full h-1 ml-4 bg-orange-600"></div>
-                            }
-                            else
-                            {
-                                <div class="w-full h-1 ml-4 bg-gray-300"></div>
-                            }
-                        </li>
-                        <li class="flex items-center">
-                            <div class="w-10 h-10 @(currentStep >= 3 ? "bg-orange-600" : "bg-gray-300") border-2 border-transparent rounded-full flex items-center justify-center">
-                                @if (currentStep > 3)
-                                {
-                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                    </svg>
-                                }
-                                else
-                                {
-                                    <span class="text-white font-semibold">3</span>
-                                }
-                            </div>
-                            <span class="ml-3 text-sm font-medium @(currentStep >= 3 ? "text-orange-600" : "text-gray-500")">Review</span>
-                        </li>
-                    </ol>
-                </div>
+ 
             </div>
         </div>
 
@@ -146,6 +76,8 @@ else
                 <div class="lg:col-span-7">
                     @if (currentStep == 1)
                     {
+                        <!-- Step 1: Shipping Information (Address + Shipping Method) -->
+                        
                         <!-- Basic Information -->
                         <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
                             <div class="px-6 py-4 bg-[#715A5A] text-white">
@@ -154,7 +86,7 @@ else
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                                     </svg>
-                                    Basic Information
+                                    Shipping Address
                                 </h2>
                             </div>
                             
@@ -226,38 +158,26 @@ else
                                         </div>
                                     </div>
                                     
-                                    <div class="mt-6 flex items-center justify-between">
-                                        <div class="flex items-center">
-                                            <input type="checkbox" @bind="saveAddress" class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded">
-                                            <label class="ml-2 block text-sm text-gray-900">Save this address for future orders</label>
-                                        </div>
-                                        
-                                        <button type="submit" class="inline-flex items-center px-8 py-3 bg-[#715A5A] text-white font-semibold rounded-xl hover:bg-[#5d4a4a] transition-all duration-300 transform hover:scale-105 shadow-lg">
-                                            <span>Continue to Shipping</span>
-                                            <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                                            </svg>
-                                        </button>
+                                    <div class="mt-6 flex items-center">
+                                        <input type="checkbox" @bind="saveAddress" class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded">
+                                        <label class="ml-2 block text-sm text-gray-900">Save this address for future orders</label>
                                     </div>
                                 </EditForm>
                             </div>
                         </div>
-                    }
-                    else if (currentStep == 2)
-                    {
-                        <!-- Shipping Information -->
+                        
+                        <!-- Shipping Method (Same Tab) -->
                         <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
                             <div class="px-6 py-4 bg-[#715A5A] text-white">
                                 <h2 class="text-xl font-bold flex items-center">
                                     <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
                                     </svg>
                                     Shipping Method
                                 </h2>
                             </div>
                             
                             <div class="p-6">
-                                <!-- Shipping Methods -->
                                 <div class="mb-6">
                                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Select Shipping Method</h3>
                                     @foreach (var shipping in GetAvailableShippingMethods())
@@ -309,19 +229,9 @@ else
                                     }
                                 </div>
                                 
-                                <!-- Payment Methods -->
- 
-
-                                <div class="flex items-center justify-between">
-                                    <button @onclick="PreviousStep" class="inline-flex items-center px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-all duration-300">
-                                        <svg class="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"/>
-                                        </svg>
-                                        Back to Basic Information
-                                    </button>
-
+                                <div class="flex items-center justify-end">
                                     <button @onclick="NextStep" disabled="@(string.IsNullOrEmpty(selectedShippingMethod))" class="inline-flex items-center px-8 py-3 bg-[#715A5A] text-white font-semibold rounded-xl hover:bg-[#5d4a4a] transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
-                                        <span>Review Order</span>
+                                        <span>Continue to Review & Payment</span>
                                         <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                                         </svg>
@@ -330,9 +240,9 @@ else
                             </div>
                         </div>
                     }
-                    else if (currentStep == 3)
+                    else if (currentStep == 2)
                     {
-                        <!-- Order Review -->
+                        <!-- Step 2: Review & Payment -->
                         <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
                             <div class="px-6 py-4 bg-[#715A5A] text-white">
                                 <h2 class="text-xl font-bold flex items-center">
@@ -385,7 +295,7 @@ else
                                             </svg>
                                             Shipping Method
                                         </h3>
-                                        <button @onclick="() => currentStep = 2" class="text-orange-600 hover:text-orange-700 text-sm font-medium">Change</button>
+                                        <button @onclick="() => currentStep = 1" class="text-orange-600 hover:text-orange-700 text-sm font-medium">Change</button>
                                     </div>
                                     <div class="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
                                         @if (!string.IsNullOrEmpty(selectedShippingMethod))
@@ -498,7 +408,7 @@ else
                                         <svg class="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"/>
                                         </svg>
-                                        Back to Shipping
+                                        Back to Shipping Information
                                     </button>
                                     
                                     <button @onclick="PlaceOrder" disabled="@isProcessing" class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white font-bold rounded-xl hover:from-green-700 hover:to-green-800 transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
@@ -727,13 +637,12 @@ else
         }
     }
 
+    // This method is no longer used since address and shipping are in the same step
     private async Task HandleShippingSubmit()
     {
-        if (IsValidShippingAddress())
-        {
-            currentStep = 2;
-            await InvokeAsync(StateHasChanged);
-        }
+        // Address validation is handled by the form itself
+        // Shipping method selection is in the same step now
+        await Task.CompletedTask;
     }
 
     private bool IsValidShippingAddress()
@@ -748,7 +657,7 @@ else
 
     private async Task NextStep()
     {
-        if (currentStep < 3)
+        if (currentStep < 2)
         {
             currentStep++;
             await InvokeAsync(StateHasChanged);
@@ -772,7 +681,7 @@ else
 
     private async Task EditPayment()
     {
-        currentStep = 2;
+        currentStep = 1;
         await InvokeAsync(StateHasChanged);
     }
 
