@@ -299,11 +299,15 @@ else
                             <div>
                                 @if (selectedVariant.DiscountPrice.HasValue && selectedVariant.DiscountPrice > 0)
                                 {
-                                    <div class="flex items-baseline gap-2">
+                                    var discountPercent = Math.Round((selectedVariant.Price - selectedVariant.DiscountPrice.Value) / selectedVariant.Price * 100);
+                                    <div class="flex items-baseline gap-2 mb-1">
                                         <span class="text-xl font-bold text-red-600">@selectedVariant.DiscountPrice.Value.ToString("F3") OMR</span>
                                         <span class="text-sm text-gray-400 line-through">@selectedVariant.Price.ToString("F3")</span>
+                                        <span class="inline-block px-2 py-0.5 rounded text-xs font-bold bg-red-600 text-white">
+                                            @discountPercent% OFF
+                                        </span>
                                     </div>
-                                    <span class="inline-block mt-1 px-1.5 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                                    <span class="inline-block px-1.5 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
                                         Save @((selectedVariant.Price - selectedVariant.DiscountPrice.Value).ToString("F3")) OMR
                                     </span>
                                 }
