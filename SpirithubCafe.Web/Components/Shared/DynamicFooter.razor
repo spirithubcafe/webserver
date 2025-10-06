@@ -29,19 +29,8 @@
                        onloadeddata="this.play().catch(e => console.log('Auto-play prevented:', e));"
                        oncanplaythrough="this.play().catch(e => console.log('Play failed:', e));">
                     <source src="@settings.BgValue" type="video/mp4">
-                    <source src="@settings.BgValue.Replace(".mp4", ".webm")" type="video/webm">
-                    <source src="@settings.BgValue.Replace(".mp4", ".ogv")" type="video/ogg">
-                    <!-- Fallback image if video fails -->
                     Your browser does not support the video tag.
                 </video>
-                
-                <!-- Fallback background image in case video fails -->
-                <div class="absolute inset-0 w-full h-full bg-gray-800" 
-                     style="background-image: url('@(settings.BgValue.Replace(".mp4", ".jpg"))'); 
-                            background-size: cover; 
-                            background-position: center;
-                            background-repeat: no-repeat;
-                            z-index: -2;"></div>
             </div>
         }
         

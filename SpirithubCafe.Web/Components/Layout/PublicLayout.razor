@@ -38,10 +38,6 @@
     <link rel="stylesheet" href="@Assets["SpirithubCafe.Web.styles.css"]" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <PageTitle>@Localizer["SiteTitle"]</PageTitle>
-    
-    <!-- Chat JavaScript -->
-    <script src="~/js/chat.js"></script>
-    <script src="~/_framework/blazor.web.js"></script>
 </head>
 
 <body class="h-full font-arabic">
@@ -481,7 +477,9 @@
             CartService.OnCartChanged -= UpdateCartItemCount;
         }
     }
-
-</body>
+    
+    <!-- JavaScript files -->
+    <script src="js/chat.js"></script>
+ </body>
 
 </html>
