@@ -106,8 +106,8 @@
                        (href != "/" && currentPath.StartsWith(href.TrimStart('/')));
         
         return isActive 
-            ? "text-amber-600 hover:text-amber-700 transition-colors duration-200" 
-            : "text-gray-500 hover:text-amber-600 transition-colors duration-200";
+            ? "text-[#715A5A] hover:text-[#37353E] transition-colors duration-200" 
+            : "text-gray-500 hover:text-[#715A5A] transition-colors duration-200";
     }
 
     private string GetCartItemClasses()
@@ -116,8 +116,8 @@
         var isActive = currentPath.StartsWith("cart");
         
         return isActive 
-            ? "text-amber-600 hover:text-amber-700 transition-colors duration-200" 
-            : "text-gray-500 hover:text-amber-600 transition-colors duration-200";
+            ? "text-[#715A5A] hover:text-[#37353E] transition-colors duration-200" 
+            : "text-gray-500 hover:text-[#715A5A] transition-colors duration-200";
     }
 
     public void Dispose()

@@ -64,14 +64,14 @@
                             {
                                 <!-- Text Logo with Coffee Bean Icon -->
                                 <div
-                                    class="w-10 h-10 bg-gradient-to-br from-amber-500 to-amber-600 rounded-full flex items-center justify-center mr-3 shadow-md">
+                                    class="w-10 h-10 bg-gradient-to-br from-[#715A5A] to-[#37353E] rounded-full flex items-center justify-center mr-3 shadow-md">
                                     <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
                                         <path
                                             d="M18.5 3H6c-1.1 0-2 .9-2 2v5.71c0 3.83 2.95 7.18 6.78 7.29 3.96.12 7.22-3.06 7.22-7v-1h.5c1.93 0 3.5-1.57 3.5-3.5S20.43 3 18.5 3zM16 5v3h1.5c.83 0 1.5-.67 1.5-1.5S17.83 5 17 5h-1zM6 5h8v8.58c0 2.4-1.9 4.42-4.29 4.42S5.42 15.98 5.42 13.58V5z" />
                                     </svg>
                                 </div>
                                 <div class="flex flex-col">
-                                    <NavLink href="/" class="@($"{GetLogoTextClasses()} text-2xl font-bold hover:text-amber-600 transition-colors")">
+                                    <NavLink href="/" class="@($"{GetLogoTextClasses()} text-2xl font-bold hover:text-[#715A5A] transition-colors")">
                                         @{
                                             var currentLogoText = GetCurrentLogoText();
                                         }
@@ -103,7 +103,7 @@
                                     <button
                                         class="@GetUserMenuClasses() flex items-center space-x-3 p-2 text-sm rounded-lg transition-all duration-200">
                                         <div
-                                            class="w-8 h-8 bg-gradient-to-br from-amber-400 to-amber-500 rounded-full flex items-center justify-center text-white font-medium text-sm">
+                                            class="w-8 h-8 bg-gradient-to-br from-[#715A5A] to-[#37353E] rounded-full flex items-center justify-center text-white font-medium text-sm">
                                             @(context.User.Identity?.Name?.Substring(0, 1).ToUpper() ?? "U")
                                         </div>
                                         <div class="hidden sm:block text-left">
@@ -153,7 +153,7 @@
                                             </div>
 
                                             <NavLink href="/Account/Manage"
-                                                class="flex items-center px-4 py-3 text-sm text-gray-700 hover:text-amber-600 hover:bg-amber-50">
+                                                class="flex items-center px-4 py-3 text-sm text-gray-700 hover:text-[#715A5A] hover:bg-[#D3DAD9]/20">
                                                 <svg class="w-4 h-4 mr-3 text-gray-400" fill="currentColor"
                                                     viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd"
@@ -163,7 +163,7 @@
                                                 @Localizer["MyProfile"]
                                             </NavLink>
                                             <NavLink href="/orders"
-                                                class="flex items-center px-4 py-3 text-sm text-gray-700 hover:text-amber-600 hover:bg-amber-50">
+                                                class="flex items-center px-4 py-3 text-sm text-gray-700 hover:text-[#715A5A] hover:bg-[#D3DAD9]/20">
                                                 <svg class="w-4 h-4 mr-3 text-gray-400" fill="currentColor"
                                                     viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd"
@@ -173,7 +173,7 @@
                                                 @Localizer["MyOrders"]
                                             </NavLink>
                                             <NavLink href="/favorites"
-                                                class="flex items-center px-4 py-3 text-sm text-gray-700 hover:text-amber-600 hover:bg-amber-50">
+                                                class="flex items-center px-4 py-3 text-sm text-gray-700 hover:text-[#715A5A] hover:bg-[#D3DAD9]/20">
                                                 <svg class="w-4 h-4 mr-3 text-gray-400" fill="currentColor"
                                                     viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd"
@@ -217,7 +217,7 @@
                                         <NotAuthorized>
                                             <!-- Guest User Menu -->
                                             <NavLink href="/Account/Login"
-                                                class="flex items-center px-4 py-3 text-sm text-gray-700 hover:text-amber-600 hover:bg-amber-50">
+                                                class="flex items-center px-4 py-3 text-sm text-gray-700 hover:text-[#715A5A] hover:bg-[#D3DAD9]/20">
                                                 <svg class="w-4 h-4 mr-3 text-gray-400" fill="currentColor"
                                                     viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd"
@@ -227,7 +227,7 @@
                                                 @Localizer["Login"]
                                             </NavLink>
                                             <NavLink href="/Account/Register"
-                                                class="flex items-center px-4 py-3 text-sm text-white bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 rounded-lg mx-3 my-2 font-medium">
+                                                class="flex items-center px-4 py-3 text-sm text-white bg-gradient-to-r from-[#715A5A] to-[#37353E] hover:from-[#37353E] hover:to-[#44444E] rounded-lg mx-3 my-2 font-medium">
                                                 <svg class="w-4 h-4 mr-3" fill="currentColor" viewBox="0 0 20 20">
                                                     <path
                                                         d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z">

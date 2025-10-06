@@ -3,6 +3,13 @@
   themes: light --default, dark --prefersdark, coffee;
 }
 
+/* Modern Professional Typography with Inter Font */
+* {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 /* Professional Modern Scrollbars */
 * {
     scrollbar-width: thin;

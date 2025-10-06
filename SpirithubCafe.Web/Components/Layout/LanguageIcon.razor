@@ -2,10 +2,11 @@
 @inject NavigationManager Navigation
 @inject ILogger<LanguageIcon> Logger
 @rendermode InteractiveServer
+@implements IDisposable
 
 <div class="relative group">
     <button
-        class="flex items-center p-2 text-gray-600 hover:text-amber-600 bg-amber-50 rounded-lg transition-all duration-200">
+        class="@GetButtonClasses()">
         <!-- Language Icon -->
         <div class="relative">
             <svg class="w-6 h-6 group-hover:scale-105 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -20,21 +21,21 @@
         class="absolute right-0 mt-2 w-40 bg-white border border-gray-100 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[99999]">
         <div class="py-2">
             <button @onclick="@(() => ChangeLanguage("en"))" 
-               class="@GetMenuItemClass("en") flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:text-amber-600 hover:bg-amber-50">
+               class="@GetMenuItemClass("en") flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:text-[#715A5A] hover:bg-[#D3DAD9]/20">
                 <span class="flex-1 text-left">English</span>
                 @if (_selectedCulture == "en")
                 {
-                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 text-[#715A5A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
                 }
             </button>
             <button @onclick="@(() => ChangeLanguage("ar"))" 
-               class="@GetMenuItemClass("ar") flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:text-amber-600 hover:bg-amber-50">
+               class="@GetMenuItemClass("ar") flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:text-[#715A5A] hover:bg-[#D3DAD9]/20">
                 <span class="flex-1 text-left">العربية</span>
                 @if (_selectedCulture == "ar")
                 {
-                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 text-[#715A5A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
                 }
@@ -45,6 +46,21 @@
 
 @code {
     private string _selectedCulture = "en";
+
+    private bool IsHomePage()
+    {
+        var uri = new Uri(Navigation.Uri);
+        return uri.AbsolutePath == "/" || uri.AbsolutePath == "/index";
+    }
+
+    private string GetButtonClasses()
+    {
+        if (IsHomePage())
+        {
+            return "flex items-center p-2 text-white hover:text-white/80 hover:bg-white/10 rounded-lg transition-all duration-200 drop-shadow-md";
+        }
+        return "flex items-center p-2 text-gray-600 hover:text-[#715A5A] bg-[#D3DAD9]/20 rounded-lg transition-all duration-200";
+    }
 
     private void ChangeLanguage(string culture)
     {
@@ -71,5 +87,16 @@
     {
         var culture = CultureInfo.CurrentUICulture.Name;
         _selectedCulture = culture.StartsWith("ar") ? "ar" : "en";
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
     }
 }
