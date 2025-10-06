@@ -21,28 +21,39 @@
                 <p class="text-gray-600">@Loc["ComprehensiveBusinessReports"]</p>
             </div>
             
-            <!-- Date Range Filter -->
-            <div class="flex items-center gap-2 bg-white rounded-lg shadow p-1.5">
-                <button @onclick="() => SetDateRange(DateRangeType.Today)" 
-                        class="@GetDateRangeButtonClass(DateRangeType.Today)">
-                    @Loc["Today"]
-                </button>
-                <button @onclick="() => SetDateRange(DateRangeType.Week)" 
-                        class="@GetDateRangeButtonClass(DateRangeType.Week)">
-                    @Loc["ThisWeek"]
-                </button>
-                <button @onclick="() => SetDateRange(DateRangeType.Month)" 
-                        class="@GetDateRangeButtonClass(DateRangeType.Month)">
-                    @Loc["ThisMonth"]
-                </button>
-                <button @onclick="() => SetDateRange(DateRangeType.Year)" 
-                        class="@GetDateRangeButtonClass(DateRangeType.Year)">
-                    @Loc["ThisYear"]
-                </button>
-                <button @onclick="() => SetDateRange(DateRangeType.All)" 
-                        class="@GetDateRangeButtonClass(DateRangeType.All)">
-                    @Loc["AllTime"]
-                </button>
+            <div class="flex items-center gap-4">
+                <!-- Export Button -->
+                <a href="/api/reportsexport/excel?startDate=@startDate.ToString("yyyy-MM-dd")&endDate=@endDate.ToString("yyyy-MM-dd")" 
+                   class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                    Export to Excel
+                </a>
+                
+                <!-- Date Range Filter -->
+                <div class="flex items-center gap-2 bg-white rounded-lg shadow p-1.5">
+                    <button @onclick="() => SetDateRange(DateRangeType.Today)" 
+                            class="@GetDateRangeButtonClass(DateRangeType.Today)">
+                        @Loc["Today"]
+                    </button>
+                    <button @onclick="() => SetDateRange(DateRangeType.Week)" 
+                            class="@GetDateRangeButtonClass(DateRangeType.Week)">
+                        @Loc["ThisWeek"]
+                    </button>
+                    <button @onclick="() => SetDateRange(DateRangeType.Month)" 
+                            class="@GetDateRangeButtonClass(DateRangeType.Month)">
+                        @Loc["ThisMonth"]
+                    </button>
+                    <button @onclick="() => SetDateRange(DateRangeType.Year)" 
+                            class="@GetDateRangeButtonClass(DateRangeType.Year)">
+                        @Loc["ThisYear"]
+                    </button>
+                    <button @onclick="() => SetDateRange(DateRangeType.All)" 
+                            class="@GetDateRangeButtonClass(DateRangeType.All)">
+                        @Loc["AllTime"]
+                    </button>
+                </div>
             </div>
         </div>
     </div>
