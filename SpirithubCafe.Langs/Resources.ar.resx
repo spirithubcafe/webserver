@@ -1893,4 +1893,49 @@
   <data name="Amount" xml:space="preserve">
     <value>المبلغ</value>
   </data>
+  <data name="CoffeeInformation" xml:space="preserve">
+    <value>معلومات القهوة</value>
+  </data>
+  <data name="Origin" xml:space="preserve">
+    <value>المنشأ</value>
+  </data>
+  <data name="RoastLevel" xml:space="preserve">
+    <value>مستوى التحميص</value>
+  </data>
+  <data name="Process" xml:space="preserve">
+    <value>المعالجة</value>
+  </data>
+  <data name="Variety" xml:space="preserve">
+    <value>التنوع</value>
+  </data>
+  <data name="Altitude" xml:space="preserve">
+    <value>الارتفاع</value>
+  </data>
+  <data name="masl" xml:space="preserve">
+    <value>متر فوق مستوى سطح البحر</value>
+  </data>
+  <data name="TastingNotes" xml:space="preserve">
+    <value>ملاحظات التذوق</value>
+  </data>
+  <data name="AvailableSizes" xml:space="preserve">
+    <value>الأحجام المتاحة</value>
+  </data>
+  <data name="Reviews" xml:space="preserve">
+    <value>مراجعة</value>
+  </data>
+  <data name="Available" xml:space="preserve">
+    <value>متاح</value>
+  </data>
+  <data name="MoreSizesAvailable" xml:space="preserve">
+    <value>حجم إضافي متاح</value>
+  </data>
+  <data name="Intensity" xml:space="preserve">
+    <value>الشدة</value>
+  </data>
+  <data name="Farm" xml:space="preserve">
+    <value>المزرعة</value>
+  </data>
+  <data name="Uses" xml:space="preserve">
+    <value>الاستخدامات</value>
+  </data>
 </root>
