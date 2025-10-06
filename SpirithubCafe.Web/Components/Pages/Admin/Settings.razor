@@ -200,19 +200,19 @@
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["HomeLogoText"]</label>
                                         <input @bind="homeLogoTextValue" @bind:event="oninput" type="text" 
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
+                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-[#715A5A]" 
                                                placeholder="SpirithubCafe Home" />
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["HomeLogoTextArabic"] (@Localizer["Optional"])</label>
                                         <input @bind="homeLogoTextArValue" @bind:event="oninput" type="text" 
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
+                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-[#715A5A]" 
                                                placeholder="مقهى سبيريت هب" dir="rtl" />
                                     </div>
                                 </div>
                                 
                                 <!-- Home Logo Preview -->
-                                <div class="bg-white p-4 rounded-lg shadow-sm border-2 border-amber-200">
+                                <div class="bg-white p-4 rounded-lg shadow-sm border-2 border-[#D3DAD9]">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["HomePagePreview"]</label>
                                     <div class="text-xl font-bold text-amber-600">
                                         @(string.IsNullOrEmpty(homeLogoTextValue) ? "SpirithubCafe Home" : homeLogoTextValue)
@@ -242,7 +242,7 @@
                                 @if (!string.IsNullOrEmpty(homeLogoImageValue))
                                 {
                                     <!-- Current Home Logo Preview -->
-                                    <div class="bg-white p-4 rounded-lg shadow-sm border-2 border-amber-200">
+                                    <div class="bg-white p-4 rounded-lg shadow-sm border-2 border-[#D3DAD9]">
                                         <label class="block text-sm font-medium text-gray-700 mb-2">@Localizer["CurrentHomeLogo"]</label>
                                         <img src="@homeLogoImageValue" alt="Home Logo" class="h-16 w-auto" />
                                     </div>
@@ -252,7 +252,7 @@
                         else
                         {
                             <!-- Using Main Logo -->
-                            <div class="bg-white p-4 rounded-lg shadow-sm border-2 border-amber-200">
+                            <div class="bg-white p-4 rounded-lg shadow-sm border-2 border-[#D3DAD9]">
                                 <p class="text-sm text-gray-600">@Localizer["UsingMainLogoDescription"]</p>
                             </div>
                         }

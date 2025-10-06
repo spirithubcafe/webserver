@@ -11,9 +11,9 @@
 
 <PageTitle>@Localizer["Cart"] - @Localizer["SiteTitle"]</PageTitle>
 
-<div class="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50">
+<div class="min-h-screen bg-[#f5f5f5]">
     <!-- Header Section -->
-    <div class="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-8">
+    <div class="bg-[#715A5A] text-white py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between">
                 <div>
@@ -36,7 +36,7 @@
             <!-- Empty Cart State -->
             <div class="text-center py-16">
                 <div class="max-w-md mx-auto">
-                    <div class="w-32 h-32 mx-auto mb-8 bg-gradient-to-br from-orange-100 to-orange-200 rounded-full flex items-center justify-center">
+                    <div class="w-32 h-32 mx-auto mb-8 bg-[#D3DAD9] rounded-full flex items-center justify-center">
                         <svg class="w-16 h-16 text-orange-400" viewBox="0 0 24 24" fill="none">
                             <path d="M7.5 18C8.32843 18 9 18.6716 9 19.5C9 20.3284 8.32843 21 7.5 21C6.67157 21 6 20.3284 6 19.5C6 18.6716 6.67157 18 7.5 18Z" stroke="currentColor" stroke-width="1.5" />
                             <path d="M16.5 18.0001C17.3284 18.0001 18 18.6716 18 19.5001C18 20.3285 17.3284 21.0001 16.5 21.0001C15.6716 21.0001 15 20.3285 15 19.5001C15 18.6716 15.6716 18.0001 16.5 18.0001Z" stroke="currentColor" stroke-width="1.5" />
@@ -47,7 +47,7 @@
                     <p class="text-gray-600 mb-8">Looks like you haven't added any items to your cart yet. Start shopping to
                         fill it up!</p>
                     <a href="/"
-                        class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-orange-600 to-orange-700 text-white font-semibold rounded-xl hover:from-orange-700 hover:to-orange-800 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        class="inline-flex items-center px-8 py-3 bg-[#715A5A] text-white font-semibold rounded-xl hover:bg-[#5d4a4a] transition-all duration-300 transform hover:scale-105 shadow-lg">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -75,7 +75,7 @@
                                     <!-- Desktop Layout -->
                                     <div class="hidden md:flex items-center space-x-6">
                                         <!-- Product Image -->
-                                        <div class="flex-shrink-0 w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl overflow-hidden shadow-md">
+                                        <div class="flex-shrink-0 w-20 h-20 lg:w-24 lg:h-24 bg-[#D3DAD9] rounded-xl overflow-hidden shadow-md">
                                             @if (!string.IsNullOrEmpty(item.ImageUrl))
                                             {
                                                 <img src="@item.ImageUrl" alt="@item.Name" class="w-full h-full object-cover">
@@ -150,7 +150,7 @@
                                     <div class="md:hidden space-y-4">
                                         <div class="flex space-x-4">
                                             <!-- Product Image -->
-                                            <div class="flex-shrink-0 w-20 h-20 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl overflow-hidden shadow-md">
+                                            <div class="flex-shrink-0 w-20 h-20 bg-[#D3DAD9] rounded-xl overflow-hidden shadow-md">
                                                 @if (!string.IsNullOrEmpty(item.ImageUrl))
                                                 {
                                                     <img src="@item.ImageUrl" alt="@item.Name" class="w-full h-full object-cover">
@@ -257,7 +257,7 @@
                 <!-- Order Summary -->
                 <div class="lg:col-span-4 mt-8 lg:mt-0">
                     <div class="bg-white rounded-2xl shadow-xl overflow-hidden sticky top-8">
-                        <div class="px-6 py-4 bg-gradient-to-r from-orange-600 to-orange-700 text-white">
+                        <div class="px-6 py-4 bg-[#715A5A] text-white">
                             <h2 class="text-xl font-bold">Order Summary</h2>
                         </div>
 
@@ -295,7 +295,7 @@
                             <!-- Checkout Button -->
                             <div class="pt-4">
                                 <button @onclick="ProceedToCheckout"
-                                    class="w-full bg-gradient-to-r from-orange-600 to-orange-700 text-white font-bold py-4 px-6 rounded-xl hover:from-orange-700 hover:to-orange-800 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                    class="w-full bg-[#715A5A] text-white font-bold py-4 px-6 rounded-xl hover:bg-[#5d4a4a] transition-all duration-300 transform hover:scale-105 shadow-lg">
                                     <div class="flex items-center justify-center">
                                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

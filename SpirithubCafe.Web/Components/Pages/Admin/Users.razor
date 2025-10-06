@@ -166,7 +166,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-10 w-10">
-                                            <div class="h-10 w-10 rounded-full bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center">
+                                            <div class="h-10 w-10 rounded-full bg-[#715A5A] flex items-center justify-center">
                                                 <span class="text-sm font-medium text-white">
                                                     @(user.UserName?.Substring(0, 1).ToUpper() ?? "U")
                                                 </span>
@@ -225,7 +225,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div class="flex justify-end space-x-2">
                                         <button @onclick="() => EditUser(user)" 
-                                                class="text-amber-600 hover:text-amber-900 transition-colors">
+                                                class="text-amber-600 hover:text-[#37353E] transition-colors">
                                             @Localizer["Edit"]
                                         </button>
                                         <button @onclick="() => ManageRoles(user)" 

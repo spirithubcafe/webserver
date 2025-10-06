@@ -29,16 +29,16 @@
 <!-- Check if cart is empty -->
 @if (!CartService.Items.Any())
 {
-    <div class="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex items-center justify-center">
+    <div class="min-h-screen bg-[#f5f5f5] flex items-center justify-center">
         <div class="text-center max-w-md mx-auto px-4">
-            <div class="w-32 h-32 mx-auto mb-8 bg-gradient-to-br from-orange-100 to-orange-200 rounded-full flex items-center justify-center">
+            <div class="w-32 h-32 mx-auto mb-8 bg-[#D3DAD9] rounded-full flex items-center justify-center">
                 <svg class="w-16 h-16 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5-6m0 0h14.5M17 21a2 2 0 100-4 2 2 0 000 4zM9 21a2 2 0 100-4 2 2 0 000 4z"/>
                 </svg>
             </div>
             <h2 class="text-2xl font-bold text-gray-900 mb-4">Your cart is empty</h2>
             <p class="text-gray-600 mb-8">Add some coffee to your cart before proceeding to checkout.</p>
-            <a href="/products" class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-orange-600 to-orange-700 text-white font-semibold rounded-xl hover:from-orange-700 hover:to-orange-800 transition-all duration-300 transform hover:scale-105 shadow-lg">
+            <a href="/products" class="inline-flex items-center px-8 py-3 bg-[#715A5A] text-white font-semibold rounded-xl hover:bg-[#5d4a4a] transition-all duration-300 transform hover:scale-105 shadow-lg">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>
@@ -148,7 +148,7 @@ else
                     {
                         <!-- Basic Information -->
                         <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
-                            <div class="px-6 py-4 bg-gradient-to-r from-orange-600 to-orange-700 text-white">
+                            <div class="px-6 py-4 bg-[#715A5A] text-white">
                                 <h2 class="text-xl font-bold flex items-center">
                                     <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
@@ -232,7 +232,7 @@ else
                                             <label class="ml-2 block text-sm text-gray-900">Save this address for future orders</label>
                                         </div>
                                         
-                                        <button type="submit" class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-orange-600 to-orange-700 text-white font-semibold rounded-xl hover:from-orange-700 hover:to-orange-800 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                        <button type="submit" class="inline-flex items-center px-8 py-3 bg-[#715A5A] text-white font-semibold rounded-xl hover:bg-[#5d4a4a] transition-all duration-300 transform hover:scale-105 shadow-lg">
                                             <span>Continue to Shipping</span>
                                             <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
@@ -247,7 +247,7 @@ else
                     {
                         <!-- Shipping Information -->
                         <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
-                            <div class="px-6 py-4 bg-gradient-to-r from-orange-600 to-orange-700 text-white">
+                            <div class="px-6 py-4 bg-[#715A5A] text-white">
                                 <h2 class="text-xl font-bold flex items-center">
                                     <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
@@ -272,7 +272,7 @@ else
                                                        class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300">
                                                 <div class="ml-3 flex items-center justify-between w-full">
                                                     <div class="flex items-center">
-                                                        <div class="w-8 h-8 bg-gradient-to-br from-orange-100 to-orange-200 rounded-lg flex items-center justify-center mr-3">
+                                                        <div class="w-8 h-8 bg-[#D3DAD9] rounded-lg flex items-center justify-center mr-3">
                                                             @if (shipping.Type.ToLower() == "pickup")
                                                             {
                                                                 <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -320,7 +320,7 @@ else
                                         Back to Basic Information
                                     </button>
 
-                                    <button @onclick="NextStep" disabled="@(string.IsNullOrEmpty(selectedShippingMethod))" class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-orange-600 to-orange-700 text-white font-semibold rounded-xl hover:from-orange-700 hover:to-orange-800 transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <button @onclick="NextStep" disabled="@(string.IsNullOrEmpty(selectedShippingMethod))" class="inline-flex items-center px-8 py-3 bg-[#715A5A] text-white font-semibold rounded-xl hover:bg-[#5d4a4a] transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
                                         <span>Review Order</span>
                                         <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
@@ -334,7 +334,7 @@ else
                     {
                         <!-- Order Review -->
                         <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
-                            <div class="px-6 py-4 bg-gradient-to-r from-orange-600 to-orange-700 text-white">
+                            <div class="px-6 py-4 bg-[#715A5A] text-white">
                                 <h2 class="text-xl font-bold flex items-center">
                                     <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
@@ -424,7 +424,7 @@ else
                                         @foreach (var item in CartService.Items)
                                         {
                                             <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
-                                                <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-orange-100 to-orange-200 rounded-lg overflow-hidden">
+                                                <div class="flex-shrink-0 w-12 h-12 bg-[#D3DAD9] rounded-lg overflow-hidden">
                                                     @if (!string.IsNullOrEmpty(item.ImageUrl))
                                                     {
                                                         <img src="@item.ImageUrl" alt="@item.Name" class="w-full h-full object-cover">
@@ -537,7 +537,7 @@ else
                                 @foreach (var item in CartService.Items)
                                 {
                                     <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-xl">
-                                        <div class="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-200 rounded-lg overflow-hidden">
+                                        <div class="flex-shrink-0 w-16 h-16 bg-[#D3DAD9] rounded-lg overflow-hidden">
                                             @if (!string.IsNullOrEmpty(item.ImageUrl))
                                             {
                                                 <img src="@item.ImageUrl" alt="@item.Name" class="w-full h-full object-cover">

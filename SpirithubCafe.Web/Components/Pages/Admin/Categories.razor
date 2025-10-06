@@ -79,7 +79,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="bg-amber-50 rounded-lg p-4 border border-amber-200">
+                    <div class="bg-amber-50 rounded-lg p-4 border border-[#D3DAD9]">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
                                 <svg class="h-8 w-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -146,14 +146,14 @@
                                     @Localizer["NameEnglish"] <span class="text-red-500">@Localizer["Required"]</span>
                                 </label>
                                 <input type="text" @bind="currentCategory.Name" 
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-[#715A5A]" 
                                        placeholder="Coffee Beans" required />
                             </div>
                             
                             <div class="space-y-2">
                                 <label class="block text-sm font-medium text-gray-700">@Localizer["NameArabic"]</label>
                                 <input type="text" @bind="currentCategory.NameAr" 
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-[#715A5A]" 
                                        placeholder="حبوب القهوة" dir="rtl" />
                             </div>
                         </div>
@@ -163,7 +163,7 @@
                                 @Localizer["Slug"] <span class="text-red-500">@Localizer["Required"]</span>
                             </label>
                             <input type="text" @bind="currentCategory.Slug" 
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 font-mono" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-[#715A5A] font-mono" 
                                    placeholder="coffee-beans" required />
                             <p class="text-xs text-gray-500">@Localizer["SlugHelp"]</p>
                         </div>
@@ -172,14 +172,14 @@
                             <div class="space-y-2">
                                 <label class="block text-sm font-medium text-gray-700">@Localizer["DescriptionEnglish"]</label>
                                 <textarea @bind="currentCategory.Description" rows="3"
-                                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-[#715A5A]" 
                                           placeholder="Premium coffee beans from around the world"></textarea>
                             </div>
                             
                             <div class="space-y-2">
                                 <label class="block text-sm font-medium text-gray-700">@Localizer["DescriptionArabic"]</label>
                                 <textarea @bind="currentCategory.DescriptionAr" rows="3"
-                                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-[#715A5A]" 
                                           placeholder="حبوب قهوة مميزة من جميع أنحاء العالم" dir="rtl"></textarea>
                             </div>
                         </div>
@@ -192,7 +192,7 @@
                                 <div class="space-y-2">
                                     <label class="block text-sm font-medium text-gray-700">@Localizer["DisplayOrder"]</label>
                                     <input type="number" @bind="currentCategory.DisplayOrder" min="0"
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-[#715A5A]" 
                                            placeholder="0" />
                                     <p class="text-xs text-gray-500">@Localizer["DisplayOrderHelp"]</p>
                                 </div>
@@ -200,7 +200,7 @@
                                 <div class="space-y-2">
                                     <label class="block text-sm font-medium text-gray-700">@Localizer["TaxPercentage"]</label>
                                     <input type="number" @bind="currentCategory.TaxPercentage" min="0" max="100" step="0.1"
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-[#715A5A]" 
                                            placeholder="0" />
                                     <p class="text-xs text-gray-500">@Localizer["TaxPercentageHelp"]</p>
                                 </div>
@@ -264,9 +264,9 @@
             <div class="flex flex-col sm:flex-row gap-4">
                 <div class="flex-1">
                     <input type="text" placeholder="@Localizer["SearchCategories"]" @bind="searchTerm" @onkeyup="OnSearchChanged"
-                           class="w-full px-4 py-2 border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500">
+                           class="w-full px-4 py-2 border-gray-300 rounded-lg focus:ring-amber-500 focus:border-[#715A5A]">
                 </div>
-                <select @bind="selectedStatus" class="px-4 py-2 border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500">
+                <select @bind="selectedStatus" class="px-4 py-2 border-gray-300 rounded-lg focus:ring-amber-500 focus:border-[#715A5A]">
                     <option value="">@Localizer["AllStatus"]</option>
                     <option value="active">@Localizer["Active"]</option>
                     <option value="inactive">@Localizer["Inactive"]</option>
@@ -372,7 +372,7 @@
                                     <!-- Action Buttons -->
                                     <div class="flex space-x-2">
                                         <button @onclick="() => EditCategory(category)" 
-                                                class="flex-1 text-xs bg-amber-50 text-amber-700 hover:bg-amber-100 px-3 py-2 rounded-md border border-amber-200">
+                                                class="flex-1 text-xs bg-amber-50 text-amber-700 hover:bg-amber-100 px-3 py-2 rounded-md border border-[#D3DAD9]">
                                             @Localizer["Edit"]
                                         </button>
                                         <button @onclick="() => ToggleCategoryStatus(category.Id)" 
