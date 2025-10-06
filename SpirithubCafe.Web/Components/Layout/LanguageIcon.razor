@@ -18,11 +18,11 @@
 
     <!-- Language Dropdown -->
     <div
-        class="absolute right-0 mt-2 w-40 bg-white border border-gray-100 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[99999]">
+        class="absolute ltr:right-0 rtl:left-0 mt-2 w-40 bg-white border border-gray-100 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[99999]">
         <div class="py-2">
             <button @onclick="@(() => ChangeLanguage("en"))" 
                class="@GetMenuItemClass("en") flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:text-[#715A5A] hover:bg-[#D3DAD9]/20">
-                <span class="flex-1 text-left">English</span>
+                <span class="flex-1 ltr:text-left rtl:text-right">English</span>
                 @if (_selectedCulture == "en")
                 {
                     <svg class="w-4 h-4 text-[#715A5A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -32,7 +32,7 @@
             </button>
             <button @onclick="@(() => ChangeLanguage("ar"))" 
                class="@GetMenuItemClass("ar") flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:text-[#715A5A] hover:bg-[#D3DAD9]/20">
-                <span class="flex-1 text-left">العربية</span>
+                <span class="flex-1 ltr:text-left rtl:text-right">العربية</span>
                 @if (_selectedCulture == "ar")
                 {
                     <svg class="w-4 h-4 text-[#715A5A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1736,3 +1736,82 @@ body.modal-open {
     left: 16px;
     right: auto;
 }
+
+/* Navigation RTL Fixes */
+[dir="rtl"] .space-x-4 > * + * {
+    margin-left: 0;
+    margin-right: 1rem;
+}
+
+[dir="rtl"] .space-x-3 > * + * {
+    margin-left: 0;
+    margin-right: 0.75rem;
+}
+
+/* Dropdown positioning for RTL */
+[dir="rtl"] .absolute.right-0 {
+    left: 0;
+    right: auto;
+}
+
+/* Text alignment for RTL */
+[dir="rtl"] .text-left {
+    text-align: right;
+}
+
+/* Price display in cart icon for mobile RTL */
+@media (max-width: 1023px) {
+    [dir="rtl"] .price {
+        display: none !important;
+    }
+}
+
+/* Ensure proper spacing in navigation for RTL */
+[dir="rtl"] .flex.items-center.space-x-4 {
+    direction: rtl;
+}
+
+[dir="rtl"] .flex.items-center.space-x-3 {
+    direction: rtl;
+}
+
+/* Additional RTL spacing fixes for navigation */
+[dir="rtl"] .flex.items-center.space-x-4 > * + * {
+    margin-left: 0;
+    margin-right: 1.5rem; /* Increased from 1rem to 1.5rem for better spacing */
+}
+
+[dir="rtl"] .flex.items-center.space-x-3 > * + * {
+    margin-left: 0;
+    margin-right: 1rem; /* Increased from 0.75rem to 1rem for better spacing */
+}
+
+/* Better spacing for main navigation items in RTL */
+[dir="rtl"] .space-x-4 > * + * {
+    margin-left: 0 !important;
+    margin-right: 1.5rem !important;
+}
+
+/* Specific fix for navigation bar spacing */
+[dir="rtl"] nav .flex.items-center.space-x-4 > *,
+[dir="rtl"] nav .flex.items-center.space-x-6 > * {
+    margin-left: 0;
+    margin-right: 1.5rem;
+}
+
+[dir="rtl"] nav .flex.items-center.space-x-4 > *:first-child,
+[dir="rtl"] nav .flex.items-center.space-x-6 > *:first-child {
+    margin-right: 0;
+}
+
+/* RTL gap utility override */
+[dir="rtl"] .gap-6 {
+    gap: 1.5rem !important;
+}
+
+/* Enhanced RTL navigation spacing */
+[dir="rtl"] .space-x-reverse > * + * {
+    --tw-space-x-reverse: 1;
+    margin-right: calc(1.5rem * var(--tw-space-x-reverse));
+    margin-left: calc(1.5rem * calc(1 - var(--tw-space-x-reverse)));
+}

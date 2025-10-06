@@ -1,5 +1,6 @@
 @using SpirithubCafe.Web.Services
 @using Microsoft.Extensions.Localization
+@using System.Globalization
 @inject CartService CartService
 @inject NavigationManager Navigation
 
@@ -40,7 +41,7 @@
         @if (totalPrice > 0)
         {
             <span class="@GetPriceClasses()">
-                @totalPrice.ToString("C", new System.Globalization.CultureInfo("ar-OM"))
+                @GetFormattedPrice()
             </span>
         }
     </button>
@@ -75,9 +76,26 @@
     {
         if (IsHomePage())
         {
-            return "hidden lg:block mx-2 text-xs text-white/90 price drop-shadow-md";
+            return "hidden lg:block ltr:mx-2 rtl:mx-2 text-xs text-white/90 price drop-shadow-md";
         }
-        return "hidden lg:block mx-2 text-xs text-gray-500 price";
+        return "hidden lg:block ltr:mx-2 rtl:mx-2 text-xs text-gray-500 price";
+    }
+
+    private string GetFormattedPrice()
+    {
+        var currentCulture = System.Globalization.CultureInfo.CurrentUICulture;
+        
+        // Check if current language is Arabic
+        if (currentCulture.TwoLetterISOLanguageName == "ar")
+        {
+            // Use Arabic formatting with ر.ع symbol
+            return totalPrice.ToString("C", new System.Globalization.CultureInfo("ar-OM"));
+        }
+        else
+        {
+            // Use English formatting with OMR
+            return $"{totalPrice:F2} OMR";
+        }
     }
 
     protected override async Task OnInitializedAsync()
