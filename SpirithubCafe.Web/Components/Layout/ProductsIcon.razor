@@ -1,0 +1,85 @@
+@using System.Globalization
+@using SpirithubCafe.Web.Services
+@inject NavigationManager Navigation
+@inject CategoryService CategoryService
+@inject IStringLocalizer<Resources> Localizer
+@rendermode InteractiveServer
+
+<div class="relative group">
+    <button
+        class="flex items-center gap-2 p-2 text-gray-600 hover:text-amber-600 bg-amber-50 rounded-lg transition-all duration-200">
+        <!-- Products Icon -->
+        <svg class="w-6 h-6 group-hover:scale-105 transition-transform" viewBox="0 0 24 24" fill="none">
+            <path d="M22 22H2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            <path d="M20 22V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            <path d="M4 22V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            <path
+                d="M16.5278 2H7.47214C6.26932 2 5.66791 2 5.18461 2.2987C4.7013 2.5974 4.43234 3.13531 3.89443 4.21114L2.49081 7.75929C2.16652 8.57905 1.88279 9.54525 2.42867 10.2375C2.79489 10.7019 3.36257 11 3.99991 11C5.10448 11 5.99991 10.1046 5.99991 9C5.99991 10.1046 6.89534 11 7.99991 11C9.10448 11 9.99991 10.1046 9.99991 9C9.99991 10.1046 10.8953 11 11.9999 11C13.1045 11 13.9999 10.1046 13.9999 9C13.9999 10.1046 14.8953 11 15.9999 11C17.1045 11 17.9999 10.1046 17.9999 9C17.9999 10.1046 18.8953 11 19.9999 11C20.6373 11 21.205 10.7019 21.5712 10.2375C22.1171 9.54525 21.8334 8.57905 21.5091 7.75929L20.1055 4.21114C19.5676 3.13531 19.2986 2.5974 18.8153 2.2987C18.332 2 17.7306 2 16.5278 2Z"
+                stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+            <path
+                d="M9.5 21.5V18.5C9.5 17.5654 9.5 17.0981 9.70096 16.75C9.83261 16.522 10.022 16.3326 10.25 16.201C10.5981 16 11.0654 16 12 16C12.9346 16 13.4019 16 13.75 16.201C13.978 16.3326 14.1674 16.522 14.299 16.75C14.5 17.0981 14.5 17.5654 14.5 18.5V21.5"
+                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+        <!-- Products Text (Hidden on mobile) -->
+        <span class="hidden lg:block text-sm font-medium">@Localizer["Products"]</span>
+    </button>
+
+    <!-- Dropdown Menu -->
+    <div
+        class="absolute right-0 mt-2 w-64 bg-white border border-gray-100 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[99999]">
+        <div class="py-2">
+            <a href="/products"
+                class="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-amber-900 hover:bg-amber-50 border-b border-gray-100 font-medium">
+                <div
+                    class="w-8 h-8 bg-gradient-to-br from-amber-50 to-amber-100 rounded-md flex items-center justify-center mr-3 text-amber-800">
+                    <svg class="w-4 h-4 text-current" viewBox="0 0 24 24" fill="none">
+                        <path d="M17.625 21.0002C18.2666 20.4299 19.2334 20.4299 19.875 21.0002C20.3109 21.3876 21 21.0782 21 20.495V3.50519C21 2.92196 20.3109 2.61251 19.875 2.99999C19.2334 3.57029 18.2666 3.57029 17.625 2.99999C16.9834 2.42969 16.0166 2.42969 15.375 2.99999C14.7334 3.57029 13.7666 3.57029 13.125 2.99999C12.4834 2.42969 11.5166 2.42969 10.875 2.99999C10.2334 3.57029 9.26659 3.57029 8.625 2.99999C7.98341 2.42969 7.01659 2.42969 6.375 2.99999C5.73341 3.57029 4.76659 3.57029 4.125 2.99999C3.68909 2.61251 3 2.92196 3 3.50519V20.495C3 21.0782 3.68909 21.3876 4.125 21.0002C4.76659 20.4299 5.73341 20.4299 6.375 21.0002C7.01659 21.5705 7.98341 21.5705 8.625 21.0002C9.26659 20.4299 10.2334 20.4299 10.875 21.0002C11.5166 21.5705 12.4834 21.5705 13.125 21.0002C13.7666 20.4299 14.7334 20.4299 15.375 21.0002C16.0166 21.5705 16.9834 21.5705 17.625 21.0002Z" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M7.5 15.5H16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M7.5 12H16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M7.5 8.5H16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                @Localizer["AllProducts"]
+            </a>
+            @foreach (var category in categories.Take(8))
+            {
+                <a href="@($"/products/{category.Slug}")"
+                    class="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-amber-900 hover:bg-amber-50">
+                    <div
+                        class="w-8 h-8 bg-gradient-to-br from-amber-50 to-amber-100 rounded-md flex items-center justify-center mr-3 text-amber-800">
+                        <svg class="w-4 h-4 text-current" fill="none" viewBox="0 0 24 24">
+                            <path d="M16.755 2H7.24502C6.08614 2 5.50671 2 5.03939 2.16261C4.15322 2.47096 3.45748 3.18719 3.15795 4.09946C3 4.58055 3 5.17705 3 6.37006V20.3742C3 21.2324 3.985 21.6878 4.6081 21.1176C4.97417 20.7826 5.52583 20.7826 5.8919 21.1176L6.375 21.5597C7.01659 22.1468 7.98341 22.1468 8.625 21.5597C9.26659 20.9726 10.2334 20.9726 10.875 21.5597C11.5166 22.1468 12.4834 22.1468 13.125 21.5597C13.7666 20.9726 14.7334 20.9726 15.375 21.5597C16.0166 22.1468 16.9834 22.1468 17.625 21.5597L18.1081 21.1176C18.4742 20.7826 19.0258 20.7826 19.3919 21.1176C20.015 21.6878 21 21.2324 21 20.3742V6.37006C21 5.17705 21 4.58055 20.842 4.09946C20.5425 3.18719 19.8468 2.47096 18.9606 2.16261C18.4933 2 17.9139 2 16.755 2Z" stroke="currentColor" stroke-width="1.5"/>
+                            <path d="M9.5 10.4L10.9286 12L14.5 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M7.5 15.5H16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    @(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar" && !string.IsNullOrEmpty(category.NameAr) ? category.NameAr : category.Name)
+                </a>
+            }
+            @if (categories.Count > 8)
+            {
+                <a href="/products"
+                    class="flex items-center px-4 py-2 text-sm text-amber-600 hover:text-amber-700 hover:bg-amber-50 border-t border-gray-100 font-medium">
+                    <div
+                        class="w-8 h-8 bg-amber-100 rounded-md flex items-center justify-center mr-3 text-amber-600">
+                        <svg class="w-4 h-4 text-current" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    @Localizer["ViewAllCategories"]
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<SpirithubCafe.Domain.Entities.Category> categories = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        categories = await CategoryService.GetActiveCategoriesAsync();
+    }
+}

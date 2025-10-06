@@ -1,0 +1,75 @@
+@using System.Globalization
+@inject NavigationManager Navigation
+@inject ILogger<LanguageIcon> Logger
+@rendermode InteractiveServer
+
+<div class="relative group">
+    <button
+        class="flex items-center p-2 text-gray-600 hover:text-amber-600 bg-amber-50 rounded-lg transition-all duration-200">
+        <!-- Language Icon -->
+        <div class="relative">
+            <svg class="w-6 h-6 group-hover:scale-105 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                      d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
+            </svg>
+        </div>
+    </button>
+
+    <!-- Language Dropdown -->
+    <div
+        class="absolute right-0 mt-2 w-40 bg-white border border-gray-100 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[99999]">
+        <div class="py-2">
+            <button @onclick="@(() => ChangeLanguage("en"))" 
+               class="@GetMenuItemClass("en") flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:text-amber-600 hover:bg-amber-50">
+                <span class="flex-1 text-left">English</span>
+                @if (_selectedCulture == "en")
+                {
+                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                }
+            </button>
+            <button @onclick="@(() => ChangeLanguage("ar"))" 
+               class="@GetMenuItemClass("ar") flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:text-amber-600 hover:bg-amber-50">
+                <span class="flex-1 text-left">العربية</span>
+                @if (_selectedCulture == "ar")
+                {
+                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                }
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string _selectedCulture = "en";
+
+    private void ChangeLanguage(string culture)
+    {
+        if (_selectedCulture == culture || string.IsNullOrWhiteSpace(culture)) return;
+        
+        _selectedCulture = culture;
+        Logger.LogInformation("Language changed to: {Culture}", culture);
+
+        var currentUri = new Uri(Navigation.Uri);
+        var returnUrl = currentUri.PathAndQuery;
+
+        var url = $"/Culture/Set?culture={culture}&returnUrl={Uri.EscapeDataString(returnUrl)}";
+        Navigation.NavigateTo(url, forceLoad: true);
+    }
+
+    private string GetMenuItemClass(string culture)
+    {
+        return _selectedCulture == culture 
+            ? "font-medium" 
+            : "";
+    }
+
+    protected override void OnInitialized()
+    {
+        var culture = CultureInfo.CurrentUICulture.Name;
+        _selectedCulture = culture.StartsWith("ar") ? "ar" : "en";
+    }
+}
