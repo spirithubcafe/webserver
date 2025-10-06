@@ -1938,4 +1938,9 @@
   <data name="Uses" xml:space="preserve">
     <value>الاستخدامات</value>
   </data>
+  
+  <!-- Gift Section -->
+  <data name="GiftSurpriseTitle" xml:space="preserve">
+    <value>🎁 اجعل يوم أحدهم أجمل , أهدِ هذا الطلب</value>
+  </data>
 </root>

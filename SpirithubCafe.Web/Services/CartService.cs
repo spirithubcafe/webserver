@@ -133,15 +133,11 @@ public class CartService
     {
         try
         {
-            // Check if we're in server-side prerender mode
-            if (_jsRuntime is IJSInProcessRuntime)
+            var cartJson = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", CART_STORAGE_KEY);
+            if (!string.IsNullOrEmpty(cartJson))
             {
-                var cartJson = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", CART_STORAGE_KEY);
-                if (!string.IsNullOrEmpty(cartJson))
-                {
-                    var items = JsonSerializer.Deserialize<List<CartItemDto>>(cartJson);
-                    _cartItems = items ?? new List<CartItemDto>();
-                }
+                var items = JsonSerializer.Deserialize<List<CartItemDto>>(cartJson);
+                _cartItems = items ?? new List<CartItemDto>();
             }
         }
         catch (Exception ex)
@@ -156,12 +152,8 @@ public class CartService
     {
         try
         {
-            // Check if we're in server-side prerender mode
-            if (_jsRuntime is IJSInProcessRuntime)
-            {
-                var cartJson = JsonSerializer.Serialize(_cartItems);
-                await _jsRuntime.InvokeVoidAsync("localStorage.setItem", CART_STORAGE_KEY, cartJson);
-            }
+            var cartJson = JsonSerializer.Serialize(_cartItems);
+            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", CART_STORAGE_KEY, cartJson);
         }
         catch (Exception ex)
         {

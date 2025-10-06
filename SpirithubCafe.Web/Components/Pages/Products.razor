@@ -700,7 +700,7 @@
         
         var quantity = GetQuantity(productId);
         var variant = product.Variants?.FirstOrDefault();
-        var price = variant?.Price ?? 0;
+        var price = variant?.DiscountPrice ?? variant?.Price ?? 0;
         
         // Add to cart using CartService
         await CartService.AddToCartAsync(
@@ -729,7 +729,7 @@
         if (product == null) return;
         
         var variant = product.Variants?.FirstOrDefault();
-        var price = variant?.Price ?? 0;
+        var price = variant?.DiscountPrice ?? variant?.Price ?? 0;
         
         // Quick add with quantity 1
         await CartService.AddToCartAsync(

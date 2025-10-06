@@ -7,6 +7,7 @@
 @using SpirithubCafe.Domain.Entities
 @using System.ComponentModel.DataAnnotations
 @using System.Security.Claims
+@using System.Text.Json
 @attribute [Authorize]
 @layout PublicLayout
 @inject CartService CartService
@@ -19,6 +20,7 @@
 @inject IJSRuntime JSRuntime
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ToastService ToastService
+@inject IStringLocalizer<SpirithubCafe.Langs.Resources> Localizer
 @implements IDisposable
 @rendermode InteractiveServer
 
@@ -79,7 +81,7 @@ else
                         <!-- Step 1: Shipping Information (Address + Shipping Method) -->
                         
                         <!-- Basic Information -->
-                        <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
+                        <div class="bg-white rounded-2xl shadow-md overflow-hidden mb-8">
                             <div class="px-6 py-4 bg-[#715A5A] text-white">
                                 <h2 class="text-xl font-bold flex items-center">
                                     <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -166,10 +168,99 @@ else
                             </div>
                         </div>
                         
+                        <!-- Gift Address Section -->
+                        <div class="bg-white rounded-2xl shadow-md overflow-hidden mb-8 border-2 border-dashed border-orange-300">
+                            <div class="p-6">
+                                <div class="flex items-center mb-4">
+                                    <input type="checkbox" @bind="isGift" @bind:after="OnGiftCheckboxChanged" class="h-5 w-5 text-orange-600 focus:ring-orange-500 border-gray-300 rounded">
+                                    <label class="ml-3 block text-base font-semibold text-orange-600">
+                                        @Localizer["GiftSurpriseTitle"]
+                                    </label>
+                                </div>
+                                
+                                @if (isGift)
+                                {
+                                    <div class="mt-6 border-t pt-6">
+                                        <div class="mb-4">
+                                            <p class="text-sm text-gray-600 bg-orange-50 border-l-4 border-orange-500 p-3 rounded">
+                                                <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                                Please enter the recipient's delivery information
+                                            </p>
+                                        </div>
+                                        
+                                        <EditForm Model="giftAddress">
+                                            <DataAnnotationsValidator />
+                                            
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div class="md:col-span-2">
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Recipient Name *</label>
+                                                    <InputText @bind-Value="giftAddress.FullName" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="Enter recipient's full name" />
+                                                    <ValidationMessage For="() => giftAddress.FullName" class="text-red-600 text-sm mt-1" />
+                                                </div>
+                                                
+                                                <div class="md:col-span-2">
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Recipient Phone *</label>
+                                                    <InputText @bind-Value="giftAddress.Phone" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="+968 XX XXX XXX" />
+                                                    <ValidationMessage For="() => giftAddress.Phone" class="text-red-600 text-sm mt-1" />
+                                                </div>
+
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Country *</label>
+                                                    <select @onchange="OnGiftCountryChanged" value="@giftAddress.CountryId" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors">
+                                                        <option value="0">Select Country</option>
+                                                        @foreach (var country in countries)
+                                                        {
+                                                            <option value="@country.Id">@country.Name</option>
+                                                        }
+                                                    </select>
+                                                    <ValidationMessage For="() => giftAddress.CountryId" class="text-red-600 text-sm mt-1" />
+                                                </div>
+
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">City *</label>
+                                                    <select @onchange="OnGiftCityChanged" value="@giftAddress.CityId" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" disabled="@(giftAddress.CountryId == 0)">
+                                                        <option value="0">@(giftAddress.CountryId == 0 ? "First select a country" : "Select City")</option>
+                                                        @foreach (var city in availableGiftCities)
+                                                        {
+                                                            <option value="@city.Id">@city.Name</option>
+                                                        }
+                                                    </select>
+                                                    <ValidationMessage For="() => giftAddress.CityId" class="text-red-600 text-sm mt-1" />
+                                                </div>
+                                                
+                                                <div class="md:col-span-2">
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Delivery Address *</label>
+                                                    <InputText @bind-Value="giftAddress.Line1" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="Street address, building number" />
+                                                    <ValidationMessage For="() => giftAddress.Line1" class="text-red-600 text-sm mt-1" />
+                                                </div>
+                                                
+                                                <div class="md:col-span-2">
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Address Line 2 (Optional)</label>
+                                                    <InputText @bind-Value="giftAddress.Line2" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="Apartment, suite, etc." />
+                                                </div>
+                                                
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Postal Code</label>
+                                                    <InputText @bind-Value="giftAddress.PostalCode" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="XXX" />
+                                                </div>
+                                                
+                                                <div class="md:col-span-2">
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Gift Message (Optional)</label>
+                                                    <textarea @bind="giftMessage" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="Add a personal message for the recipient..."></textarea>
+                                                </div>
+                                            </div>
+                                        </EditForm>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        
                         <!-- Continue Button -->
                         @if (currentStep == 1)
                         {
-                            <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
+                            <div class="bg-white rounded-2xl shadow-md overflow-hidden mb-8">
                                 <div class="p-6">
                                     <div class="flex items-center justify-end">
                                         <button @onclick="NextStep" disabled="@(!IsValidShippingAddress() || string.IsNullOrEmpty(selectedShippingMethod))" class="inline-flex items-center px-8 py-3 bg-[#715A5A] text-white font-semibold rounded-xl hover:bg-[#5d4a4a] transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
@@ -186,7 +277,7 @@ else
                     else if (currentStep == 2)
                     {
                         <!-- Step 2: Review & Payment -->
-                        <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
+                        <div class="bg-white rounded-2xl shadow-md overflow-hidden mb-8">
                             <div class="px-6 py-4 bg-[#715A5A] text-white">
                                 <h2 class="text-xl font-bold flex items-center">
                                     <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -228,6 +319,46 @@ else
                                         <p>📧 @shippingAddress.Email</p>
                                     </div>
                                 </div>
+
+                                <!-- Gift Address Review (if applicable) -->
+                                @if (isGift && IsValidGiftAddress())
+                                {
+                                    <div class="border border-orange-200 bg-orange-50 rounded-xl p-4">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <h3 class="font-semibold text-gray-900 flex items-center">
+                                                <svg class="w-5 h-5 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/>
+                                                </svg>
+                                                🎁 Gift Recipient Address
+                                            </h3>
+                                            <button @onclick="EditShipping" class="text-orange-600 hover:text-orange-700 text-sm font-medium">Edit</button>
+                                        </div>
+                                        <div class="text-sm text-gray-600 bg-white p-3 rounded-lg border border-orange-200">
+                                            <p class="font-medium text-gray-900 mb-1">📦 Delivering to: @giftAddress.FullName</p>
+                                            <p class="mb-1">@giftAddress.Line1</p>
+                                            @if (!string.IsNullOrEmpty(giftAddress.Line2))
+                                            {
+                                                <p class="mb-1">@giftAddress.Line2</p>
+                                            }
+                                            @if (!string.IsNullOrEmpty(giftAddress.CityName) && !string.IsNullOrEmpty(giftAddress.CountryName))
+                                            {
+                                                <p class="mb-1">@giftAddress.CityName, @giftAddress.CountryName</p>
+                                            }
+                                            @if (!string.IsNullOrEmpty(giftAddress.PostalCode))
+                                            {
+                                                <p class="mb-1">Postal Code: @giftAddress.PostalCode</p>
+                                            }
+                                            <p class="mb-1">📞 @giftAddress.Phone</p>
+                                            @if (!string.IsNullOrEmpty(giftMessage))
+                                            {
+                                                <div class="mt-3 pt-3 border-t border-orange-200">
+                                                    <p class="font-medium text-gray-900 mb-1">💌 Gift Message:</p>
+                                                    <p class="italic text-gray-700">@giftMessage</p>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
 
                                 <!-- Shipping Method Review -->
                                 <div class="border border-gray-200 rounded-xl p-4">
@@ -383,7 +514,7 @@ else
                         <!-- Shipping Method Selection (Sidebar) -->
                         @if (currentStep == 1)
                         {
-                            <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+                            <div class="bg-white rounded-2xl shadow-md overflow-hidden">
                                 <div class="px-6 py-4 bg-[#715A5A] text-white">
                                     <h2 class="text-xl font-bold flex items-center">
                                         <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -448,7 +579,7 @@ else
                         }
                         
                         <!-- Order Summary -->
-                        <div class="bg-white rounded-2xl shadow-xl overflow-hidden sticky top-8">
+                        <div class="bg-white rounded-2xl shadow-md overflow-hidden sticky top-8">
                             <div class="px-6 py-4 bg-[#715A5A] text-white">
                                 <h2 class="text-xl font-bold flex items-center">
                                     <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -548,6 +679,12 @@ else
     private bool saveAddress = false;
     private bool isProcessing = false;
     
+    // Gift address fields
+    private bool isGift = false;
+    private ShippingAddress giftAddress = new();
+    private List<City> availableGiftCities = new();
+    private string giftMessage = "";
+    
     // Database data
     private List<Country> countries = new();
     private List<City> cities = new();
@@ -561,16 +698,8 @@ else
  
     protected override async Task OnInitializedAsync()
     {
-        await CartService.InitializeAsync();
-        
-        // Redirect if cart is empty
-        if (!CartService.Items.Any())
-        {
-            return; // Let the UI handle the empty cart display
-        }
-        
-        // Load countries, cities, and shipping methods
-        await LoadDataAsync();
+        // Just set up, don't load cart yet
+        // Cart will be loaded in OnAfterRenderAsync
     }
     
     private async Task LoadDataAsync()
@@ -616,6 +745,70 @@ else
         StateHasChanged();
     }
     
+    private async Task OnGiftCountryChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int countryId) && countryId > 0)
+        {
+            giftAddress.CountryId = countryId;
+            giftAddress.CityId = 0; // Reset city selection
+            
+            availableGiftCities = await LocationService.GetCitiesByCountryIdAsync(countryId);
+            
+            // Update country name for display
+            var selectedCountry = countries.FirstOrDefault(c => c.Id == countryId);
+            giftAddress.CountryName = selectedCountry?.Name ?? "";
+            
+            // Recalculate shipping cost if gift address is used
+            await CalculateShippingCostAsync();
+        }
+        else
+        {
+            giftAddress.CountryId = 0;
+            giftAddress.CityId = 0;
+            availableGiftCities.Clear();
+            giftAddress.CountryName = "";
+        }
+        
+        StateHasChanged();
+    }
+    
+    private async Task OnGiftCityChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int cityId) && cityId > 0)
+        {
+            giftAddress.CityId = cityId;
+            
+            // Update city name for display
+            var selectedCity = availableGiftCities.FirstOrDefault(c => c.Id == cityId);
+            giftAddress.CityName = selectedCity?.Name ?? "";
+            
+            // Recalculate shipping cost with gift address
+            await CalculateShippingCostAsync();
+        }
+        else
+        {
+            giftAddress.CityId = 0;
+            giftAddress.CityName = "";
+        }
+        
+        StateHasChanged();
+    }
+    
+    private async Task OnGiftCheckboxChanged()
+    {
+        if (!isGift)
+        {
+            // Reset gift address when unchecked
+            giftAddress = new ShippingAddress();
+            availableGiftCities.Clear();
+            giftMessage = "";
+        }
+        
+        // Recalculate shipping cost
+        await CalculateShippingCostAsync();
+        StateHasChanged();
+    }
+    
     private async Task OnCityChanged(ChangeEventArgs e)
     {
         if (int.TryParse(e.Value?.ToString(), out int cityId) && cityId > 0)
@@ -645,6 +838,25 @@ else
         {
             try
             {
+                // Load cart from localStorage after first render
+                await CartService.InitializeAsync();
+                
+                // Check if cart is empty after loading
+                if (!CartService.Items.Any())
+                {
+                    // Cart is empty, show empty cart message
+                    StateHasChanged();
+                    return;
+                }
+                
+                // Load countries, cities, and shipping methods
+                await LoadDataAsync();
+                
+                // Load saved address if exists
+                await LoadAddressFromStorage();
+                
+                StateHasChanged();
+                
                 // Scroll to top of page when component is first rendered
                 await JSRuntime.InvokeVoidAsync("window.scrollTo", 0, 0);
             }
@@ -665,18 +877,38 @@ else
 
     private bool IsValidShippingAddress()
     {
-        return !string.IsNullOrWhiteSpace(shippingAddress.FullName) &&
+        var mainAddressValid = !string.IsNullOrWhiteSpace(shippingAddress.FullName) &&
                !string.IsNullOrWhiteSpace(shippingAddress.Phone) &&
                !string.IsNullOrWhiteSpace(shippingAddress.Email) &&
                !string.IsNullOrWhiteSpace(shippingAddress.Line1) &&
                shippingAddress.CountryId > 0 &&
                shippingAddress.CityId > 0;
+        
+        // If gift is selected, validate gift address too
+        if (isGift)
+        {
+            var giftAddressValid = !string.IsNullOrWhiteSpace(giftAddress.FullName) &&
+                   !string.IsNullOrWhiteSpace(giftAddress.Phone) &&
+                   !string.IsNullOrWhiteSpace(giftAddress.Line1) &&
+                   giftAddress.CountryId > 0 &&
+                   giftAddress.CityId > 0;
+            
+            return mainAddressValid && giftAddressValid;
+        }
+        
+        return mainAddressValid;
     }
 
     private async Task NextStep()
     {
         if (currentStep < 2)
         {
+            // Save address if checkbox is checked
+            if (saveAddress)
+            {
+                await SaveAddressToStorage();
+            }
+            
             currentStep++;
             await InvokeAsync(StateHasChanged);
         }
@@ -749,6 +981,10 @@ else
             var nameParts = shippingAddress.FullName.Split(' ', 2);
             var firstName = nameParts[0];
             var lastName = nameParts.Length > 1 ? nameParts[1] : "";
+            
+            // Determine which address to use for shipping
+            var useGiftAddress = isGift && IsValidGiftAddress();
+            var finalShippingAddress = useGiftAddress ? giftAddress : shippingAddress;
 
             // Create order request
             var orderRequest = new CreateOrderRequest
@@ -758,14 +994,14 @@ else
                 LastName = lastName,
                 Email = shippingAddress.Email,
                 Phone = shippingAddress.Phone,
-                AddressLine1 = shippingAddress.Line1,
-                AddressLine2 = shippingAddress.Line2,
-                CountryId = shippingAddress.CountryId,
-                CityId = shippingAddress.CityId,
-                PostalCode = shippingAddress.PostalCode,
+                AddressLine1 = finalShippingAddress.Line1,
+                AddressLine2 = finalShippingAddress.Line2,
+                CountryId = finalShippingAddress.CountryId,
+                CityId = finalShippingAddress.CityId,
+                PostalCode = finalShippingAddress.PostalCode,
                 ShippingMethodId = selectedMethod.Id,
                 ShippingCost = calculatedShippingCost,
-                Notes = null // Could add a notes field to the form if needed
+                Notes = isGift ? $"🎁 GIFT ORDER\nRecipient: {giftAddress.FullName}\nPhone: {giftAddress.Phone}\n{(!string.IsNullOrEmpty(giftMessage) ? $"Message: {giftMessage}" : "")}" : null
             };
 
             // Create the order with payment
@@ -812,14 +1048,20 @@ else
 
     private async Task CalculateShippingCostAsync()
     {
-        if (!string.IsNullOrEmpty(selectedShippingMethod) && shippingAddress.CityId > 0)
+        // Determine which address to use for shipping calculation
+        var useGiftAddress = isGift && IsValidGiftAddress();
+        var targetAddress = useGiftAddress ? giftAddress : shippingAddress;
+        var targetCityId = targetAddress.CityId;
+        var targetCountryId = targetAddress.CountryId;
+        
+        if (!string.IsNullOrEmpty(selectedShippingMethod) && targetCityId > 0)
         {
             // If Aramex is selected, use AramexRateService
             if (selectedShippingMethod.ToLower() == "aramex")
             {
                 var totalWeight = CalculateTotalWeight();
-                var country = countries.FirstOrDefault(c => c.Id == shippingAddress.CountryId);
-                var city = cities.FirstOrDefault(c => c.Id == shippingAddress.CityId);
+                var country = countries.FirstOrDefault(c => c.Id == targetCountryId);
+                var city = cities.FirstOrDefault(c => c.Id == targetCityId);
                 
                 if (country != null && city != null && totalWeight > 0)
                 {
@@ -827,8 +1069,8 @@ else
                     {
                         DestinationCountryCode = country.Code,
                         DestinationCity = city.Name,
-                        DestinationAddress = shippingAddress.Line1,
-                        DestinationPostalCode = shippingAddress.PostalCode,
+                        DestinationAddress = targetAddress.Line1,
+                        DestinationPostalCode = targetAddress.PostalCode,
                         Weight = totalWeight
                     };
                     
@@ -843,8 +1085,8 @@ else
                         // Fallback to standard calculation if Aramex fails
                         calculatedShippingCost = await ShippingMethodService.CalculateShippingCostAsync(
                             selectedShippingMethod, 
-                            shippingAddress.CountryId, 
-                            shippingAddress.CityId);
+                            targetCountryId, 
+                            targetCityId);
                     }
                 }
                 else
@@ -856,14 +1098,23 @@ else
             {
                 calculatedShippingCost = await ShippingMethodService.CalculateShippingCostAsync(
                     selectedShippingMethod, 
-                    shippingAddress.CountryId, 
-                    shippingAddress.CityId);
+                    targetCountryId, 
+                    targetCityId);
             }
         }
         else
         {
             calculatedShippingCost = 0;
         }
+    }
+    
+    private bool IsValidGiftAddress()
+    {
+        return !string.IsNullOrWhiteSpace(giftAddress.FullName) &&
+               !string.IsNullOrWhiteSpace(giftAddress.Phone) &&
+               !string.IsNullOrWhiteSpace(giftAddress.Line1) &&
+               giftAddress.CountryId > 0 &&
+               giftAddress.CityId > 0;
     }
 
     private decimal GetShippingCost()
@@ -992,6 +1243,50 @@ else
     public void Dispose()
     {
         // Cleanup if needed
+    }
+    
+    private async Task SaveAddressToStorage()
+    {
+        try
+        {
+            var addressJson = JsonSerializer.Serialize(shippingAddress);
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "spirithub_saved_address", addressJson);
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", "Error saving address:", ex.Message);
+        }
+    }
+    
+    private async Task LoadAddressFromStorage()
+    {
+        try
+        {
+            var addressJson = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "spirithub_saved_address");
+            
+            if (!string.IsNullOrEmpty(addressJson))
+            {
+                var savedAddress = JsonSerializer.Deserialize<ShippingAddress>(addressJson);
+                
+                if (savedAddress != null)
+                {
+                    shippingAddress = savedAddress;
+                    
+                    // Load cities for the saved country
+                    if (shippingAddress.CountryId > 0)
+                    {
+                        availableCities = cities.Where(c => c.CountryId == shippingAddress.CountryId).ToList();
+                    }
+                    
+                    // Mark the checkbox as checked since we loaded a saved address
+                    saveAddress = true;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", "Error loading address:", ex.Message);
+        }
     }
 
     public class ShippingAddress

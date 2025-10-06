@@ -326,8 +326,7 @@
         display: flex;
         justify-content: space-between;
         padding: 0 2rem;
-        z-index: 10;
-        pointer-events: none;
+        z-index: 15;
         opacity: 0;
         transition: opacity 0.3s ease;
     }
@@ -346,16 +345,18 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        cursor: pointer;
+        cursor: pointer !important;
         transition: all 0.3s ease;
         backdrop-filter: blur(10px);
-        pointer-events: auto;
+        position: relative;
+        z-index: 20;
     }
     
     .nav-button:hover {
         background: rgba(255, 255, 255, 0.3);
         border-color: rgba(255, 255, 255, 0.8);
         transform: scale(1.15);
+        cursor: pointer !important;
     }
     
     .nav-button svg {

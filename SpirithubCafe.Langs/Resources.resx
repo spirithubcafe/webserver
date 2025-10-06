@@ -1951,4 +1951,9 @@
   <data name="Uses" xml:space="preserve">
     <value>Uses</value>
   </data>
+  
+  <!-- Gift Section -->
+  <data name="GiftSurpriseTitle" xml:space="preserve">
+    <value>🎁 Surprise Someone with a Gift</value>
+  </data>
 </root>
