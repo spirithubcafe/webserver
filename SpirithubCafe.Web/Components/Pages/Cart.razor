@@ -11,6 +11,23 @@
 
 <PageTitle>@Localizer["Cart"] - @Localizer["SiteTitle"]</PageTitle>
 
+<!-- Loading State -->
+@if (isLoading)
+{
+    <div class="min-h-screen bg-[#f5f5f5] flex items-center justify-center">
+        <div class="text-center">
+            <div class="w-16 h-16 mx-auto mb-4">
+                <svg class="animate-spin text-[#715A5A]" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </div>
+            <p class="text-gray-600 font-medium">Loading cart...</p>
+        </div>
+    </div>
+}
+else
+{
 <div class="min-h-screen bg-[#f5f5f5]">
     <!-- Header Section -->
     <div class="bg-[#715A5A] text-white py-8">
@@ -46,7 +63,7 @@
                     <h3 class="text-2xl font-bold text-gray-900 mb-4">Your cart is empty</h3>
                     <p class="text-gray-600 mb-8">Looks like you haven't added any items to your cart yet. Start shopping to
                         fill it up!</p>
-                    <a href="/"
+                    <a href="/products"
                         class="inline-flex items-center px-8 py-3 bg-[#715A5A] text-white font-semibold rounded-xl hover:bg-[#5d4a4a] transition-all duration-300 transform hover:scale-105 shadow-lg">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -235,7 +252,7 @@
 
                     <!-- Shopping Actions -->
                     <div class="mt-6 flex flex-col sm:flex-row gap-4">
-                        <a href="/"
+                        <a href="/products"
                             class="flex-1 inline-flex items-center justify-center px-6 py-3 border-2 border-orange-200 text-orange-700 font-semibold rounded-xl hover:bg-orange-50 transition-all duration-300">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -337,8 +354,11 @@
         }
     </div>
 </div>
+}
 
 @code {
+    private bool isLoading = true;
+    
     protected override async Task OnInitializedAsync()
     {
         CartService.OnCartChanged += StateHasChanged;
@@ -352,6 +372,9 @@
             {
                 // Load cart from localStorage after first render
                 await CartService.InitializeAsync();
+                
+                // Set loading to false after cart is loaded
+                isLoading = false;
                 StateHasChanged();
                 
                 // Scroll to top of page when component is first rendered
@@ -360,6 +383,7 @@
             catch (InvalidOperationException)
             {
                 // Ignore JS interop exceptions during prerendering
+                isLoading = false;
             }
         }
     }
