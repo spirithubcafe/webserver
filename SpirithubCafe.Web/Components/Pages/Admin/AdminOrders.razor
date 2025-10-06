@@ -197,6 +197,13 @@
                                     <div class="flex space-x-2">
                                         <button @onclick="@(() => ViewOrderDetails(order.OrderNumber))"
                                                 class="text-blue-600 hover:text-blue-900">View</button>
+                                        
+                                        <!-- Invoice Button -->
+                                        <a href="/api/invoice/@order.Id" target="_blank"
+                                           class="text-purple-600 hover:text-purple-900">
+                                            Invoice
+                                        </a>
+                                        
                                         @if (order.PaymentStatus == "Unpaid" || order.PaymentStatus == "Failed")
                                         {
                                             <button @onclick="@(() => InitiatePaymentForOrder(order.Id))"
