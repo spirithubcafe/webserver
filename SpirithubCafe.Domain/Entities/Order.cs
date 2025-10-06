@@ -133,6 +133,57 @@ public class Order
     public string? Notes { get; set; }
     
     /// <summary>
+    /// Indicates if this is a gift order
+    /// </summary>
+    public bool IsGift { get; set; }
+    
+    /// <summary>
+    /// Gift recipient's full name
+    /// </summary>
+    [MaxLength(200)]
+    public string? GiftRecipientName { get; set; }
+    
+    /// <summary>
+    /// Gift recipient's phone number
+    /// </summary>
+    [MaxLength(20)]
+    public string? GiftRecipientPhone { get; set; }
+    
+    /// <summary>
+    /// Gift recipient's address line 1
+    /// </summary>
+    [MaxLength(255)]
+    public string? GiftRecipientAddressLine1 { get; set; }
+    
+    /// <summary>
+    /// Gift recipient's address line 2
+    /// </summary>
+    [MaxLength(255)]
+    public string? GiftRecipientAddressLine2 { get; set; }
+    
+    /// <summary>
+    /// Gift recipient's country ID
+    /// </summary>
+    public int? GiftRecipientCountryId { get; set; }
+    
+    /// <summary>
+    /// Gift recipient's city ID
+    /// </summary>
+    public int? GiftRecipientCityId { get; set; }
+    
+    /// <summary>
+    /// Gift recipient's postal code
+    /// </summary>
+    [MaxLength(20)]
+    public string? GiftRecipientPostalCode { get; set; }
+    
+    /// <summary>
+    /// Gift message
+    /// </summary>
+    [MaxLength(500)]
+    public string? GiftMessage { get; set; }
+    
+    /// <summary>
     /// When the order was placed
     /// </summary>
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

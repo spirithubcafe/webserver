@@ -69,6 +69,15 @@ public class OrderService
             PostalCode = request.PostalCode,
             ShippingMethodId = request.ShippingMethodId,
             Notes = request.Notes,
+            IsGift = request.IsGift,
+            GiftRecipientName = request.GiftRecipientName,
+            GiftRecipientPhone = request.GiftRecipientPhone,
+            GiftRecipientAddressLine1 = request.GiftRecipientAddressLine1,
+            GiftRecipientAddressLine2 = request.GiftRecipientAddressLine2,
+            GiftRecipientCountryId = request.GiftRecipientCountryId,
+            GiftRecipientCityId = request.GiftRecipientCityId,
+            GiftRecipientPostalCode = request.GiftRecipientPostalCode,
+            GiftMessage = request.GiftMessage,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -374,4 +383,15 @@ public class CreateOrderRequest
     public int ShippingMethodId { get; set; }
     public decimal ShippingCost { get; set; }
     public string? Notes { get; set; }
+    
+    // Gift Order Properties
+    public bool IsGift { get; set; }
+    public string? GiftRecipientName { get; set; }
+    public string? GiftRecipientPhone { get; set; }
+    public string? GiftRecipientAddressLine1 { get; set; }
+    public string? GiftRecipientAddressLine2 { get; set; }
+    public int? GiftRecipientCountryId { get; set; }
+    public int? GiftRecipientCityId { get; set; }
+    public string? GiftRecipientPostalCode { get; set; }
+    public string? GiftMessage { get; set; }
 }

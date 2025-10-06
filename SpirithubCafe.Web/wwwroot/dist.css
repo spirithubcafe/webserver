@@ -2465,6 +2465,9 @@
   .h-6 {
     height: calc(var(--spacing) * 6);
   }
+  .h-7 {
+    height: calc(var(--spacing) * 7);
+  }
   .h-8 {
     height: calc(var(--spacing) * 8);
   }
@@ -2495,8 +2498,8 @@
   .h-64 {
     height: calc(var(--spacing) * 64);
   }
-  .h-\[18px\] {
-    height: 18px;
+  .h-\[20px\] {
+    height: 20px;
   }
   .h-\[calc\(100vh-85px\)\] {
     height: calc(100vh - 85px);
@@ -2572,6 +2575,9 @@
   }
   .w-6 {
     width: calc(var(--spacing) * 6);
+  }
+  .w-7 {
+    width: calc(var(--spacing) * 7);
   }
   .w-8 {
     width: calc(var(--spacing) * 8);
@@ -2690,8 +2696,8 @@
   .min-w-\[12rem\] {
     min-width: 12rem;
   }
-  .min-w-\[18px\] {
-    min-width: 18px;
+  .min-w-\[20px\] {
+    min-width: 20px;
   }
   .min-w-\[280px\] {
     min-width: 280px;
@@ -5976,6 +5982,18 @@
       opacity: 50%;
     }
   }
+  .disabled\:hover\:scale-100 {
+    &:disabled {
+      &:hover {
+        @media (hover: hover) {
+          --tw-scale-x: 100%;
+          --tw-scale-y: 100%;
+          --tw-scale-z: 100%;
+          scale: var(--tw-scale-x) var(--tw-scale-y);
+        }
+      }
+    }
+  }
   .sm\:top-3 {
     @media (width >= 40rem) {
       top: calc(var(--spacing) * 3);
@@ -6761,6 +6779,11 @@
       padding-block: calc(var(--spacing) * 8);
     }
   }
+  .lg\:pl-0 {
+    @media (width >= 64rem) {
+      padding-left: calc(var(--spacing) * 0);
+    }
+  }
   .lg\:text-3xl {
     @media (width >= 64rem) {
       font-size: var(--text-3xl);
@@ -6885,6 +6908,11 @@
       margin-left: calc(var(--spacing) * 1);
     }
   }
+  .ltr\:ml-3 {
+    &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
+      margin-left: calc(var(--spacing) * 3);
+    }
+  }
   .ltr\:ml-4 {
     &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
       margin-left: calc(var(--spacing) * 4);
@@ -6983,13 +7011,6 @@
       }
     }
   }
-  .lg\:ltr\:pl-0 {
-    @media (width >= 64rem) {
-      &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
-        padding-left: calc(var(--spacing) * 0);
-      }
-    }
-  }
   .rtl\:right-0 {
     &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
       right: calc(var(--spacing) * 0);
@@ -7033,6 +7054,11 @@
   .rtl\:mr-1 {
     &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
       margin-right: calc(var(--spacing) * 1);
+    }
+  }
+  .rtl\:mr-3 {
+    &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
+      margin-right: calc(var(--spacing) * 3);
     }
   }
   .rtl\:mr-4 {
@@ -7135,13 +7161,6 @@
       &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
         --tw-translate-x: calc(var(--spacing) * 0);
         translate: var(--tw-translate-x) var(--tw-translate-y);
-      }
-    }
-  }
-  .lg\:rtl\:pr-0 {
-    @media (width >= 64rem) {
-      &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
-        padding-right: calc(var(--spacing) * 0);
       }
     }
   }

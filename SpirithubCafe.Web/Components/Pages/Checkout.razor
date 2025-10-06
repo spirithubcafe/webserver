@@ -274,16 +274,14 @@ else
                         <!-- Continue Button -->
                         @if (currentStep == 1)
                         {
-                            <div class="bg-white rounded-2xl shadow-md overflow-hidden mb-8">
+                            <div class="bg-white rounded-2xl shadow-md border-2 border-[#715A5A]/20 overflow-hidden mb-8">
                                 <div class="p-6">
-                                    <div class="flex items-center justify-end">
-                                        <button @onclick="NextStep" disabled="@(!IsValidShippingAddress() || string.IsNullOrEmpty(selectedShippingMethod))" class="inline-flex items-center px-8 py-3 bg-[#715A5A] text-white font-semibold rounded-xl hover:bg-[#5d4a4a] transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
-                                            <span>Continue to Review & Payment</span>
-                                            <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                                            </svg>
-                                        </button>
-                                    </div>
+                                    <button @onclick="NextStep" disabled="@(!IsValidShippingAddress() || string.IsNullOrEmpty(selectedShippingMethod))" class="w-full inline-flex items-center justify-center px-8 py-4 bg-[#715A5A] text-white font-bold text-lg rounded-xl hover:bg-[#5d4a4a] transition-all duration-300 transform hover:scale-[1.02] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
+                                        <span>Continue to Review & Payment</span>
+                                        <svg class="ltr:ml-3 rtl:mr-3 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                        </svg>
+                                    </button>
                                 </div>
                             </div>
                         }
@@ -1020,7 +1018,17 @@ else
                 PostalCode = finalShippingAddress.PostalCode,
                 ShippingMethodId = selectedMethod.Id,
                 ShippingCost = calculatedShippingCost,
-                Notes = isGift ? $"🎁 GIFT ORDER\nRecipient: {giftAddress.FullName}\nPhone: {giftAddress.Phone}\n{(!string.IsNullOrEmpty(giftMessage) ? $"Message: {giftMessage}" : "")}" : null
+                Notes = isGift ? $"🎁 GIFT ORDER\nRecipient: {giftAddress.FullName}\nPhone: {giftAddress.Phone}\n{(!string.IsNullOrEmpty(giftMessage) ? $"Message: {giftMessage}" : "")}" : null,
+                // Gift Order Properties
+                IsGift = isGift,
+                GiftRecipientName = isGift ? giftAddress.FullName : null,
+                GiftRecipientPhone = isGift ? giftAddress.Phone : null,
+                GiftRecipientAddressLine1 = isGift ? giftAddress.Line1 : null,
+                GiftRecipientAddressLine2 = isGift ? giftAddress.Line2 : null,
+                GiftRecipientCountryId = isGift ? giftAddress.CountryId : null,
+                GiftRecipientCityId = isGift ? giftAddress.CityId : null,
+                GiftRecipientPostalCode = isGift ? giftAddress.PostalCode : null,
+                GiftMessage = isGift && !string.IsNullOrEmpty(giftMessage) ? giftMessage : null
             };
 
             // Create the order with payment
