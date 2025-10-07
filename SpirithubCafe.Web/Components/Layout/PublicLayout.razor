@@ -28,14 +28,43 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="Premium Coffee Roastery & Online Shop - فروشگاه آنلاین قهوه اسپیریت‌هاب" />
+    <meta name="theme-color" content="#715A5A" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Spirithub" />
     <base href="/" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" sizes="72x72" href="/images/icon-72x72.png" />
+    <link rel="apple-touch-icon" sizes="96x96" href="/images/icon-96x96.png" />
+    <link rel="apple-touch-icon" sizes="128x128" href="/images/icon-128x128.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/images/icon-144x144.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/images/icon-152x152.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/images/icon-192x192.png" />
+    <link rel="apple-touch-icon" sizes="384x384" href="/images/icon-384x384.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/images/icon-512x512.png" />
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- DNS Prefetch -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+    
     <!-- Beautiful Arabic Fonts with Vazir Matn -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&family=Tajawal:wght@200;300;400;500;700;800;900&family=Almarai:wght@300;400;700;800&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&family=Tajawal:wght@200;300;400;500;700;800;900&family=Almarai:wght@300;400;700;800&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    
+    <!-- Critical CSS -->
     <link rel="stylesheet" href="@AssetVersioning.GetVersionedCssUrl("dist.css")" />
     <link rel="stylesheet" href="@Assets["SpirithubCafe.Web.styles.css"]" />
+    
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <PageTitle>@Localizer["SiteTitle"]</PageTitle>
 </head>
@@ -480,6 +509,41 @@
     
     <!-- JavaScript files -->
     <script src="js/chat.js"></script>
+    
+    <!-- PWA Support -->
+    <script src="js/pwa.js" defer></script>
+    
+    <!-- Performance optimization script -->
+    <script>
+        // Defer non-critical CSS loading
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(() => {
+                document.querySelectorAll('link[media="print"]').forEach(link => {
+                    link.media = 'all';
+                });
+            });
+        }
+        
+        // Preload critical images
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        if (img.dataset.src) {
+                            img.src = img.dataset.src;
+                            img.removeAttribute('data-src');
+                            imageObserver.unobserve(img);
+                        }
+                    }
+                });
+            });
+            
+            document.addEventListener('DOMContentLoaded', () => {
+                document.querySelectorAll('img[data-src]').forEach(img => imageObserver.observe(img));
+            });
+        }
+    </script>
  </body>
 
 </html>
