@@ -51,6 +51,11 @@
     --footer-hover: #715A5A;
 }
 
+/* Custom Drop Shadow for Mobile Navigation Hover */
+.drop-shadow-amber {
+    filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3));
+}
+
 .footer-modern .social-link {
     background-color: var(--footer-accent) !important;
     transition: all 0.3s ease;

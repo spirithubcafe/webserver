@@ -1831,6 +1831,9 @@
   .inset-0 {
     inset: calc(var(--spacing) * 0);
   }
+  .inset-x-0 {
+    inset-inline: calc(var(--spacing) * 0);
+  }
   .inset-y-0 {
     inset-block: calc(var(--spacing) * 0);
   }
@@ -1894,11 +1897,11 @@
   .bottom-2 {
     bottom: calc(var(--spacing) * 2);
   }
-  .bottom-4 {
-    bottom: calc(var(--spacing) * 4);
-  }
   .bottom-6 {
     bottom: calc(var(--spacing) * 6);
+  }
+  .bottom-24 {
+    bottom: calc(var(--spacing) * 24);
   }
   .-left-4 {
     left: calc(var(--spacing) * -4);
@@ -2013,6 +2016,9 @@
   }
   .z-\[1\] {
     z-index: 1;
+  }
+  .z-\[60\] {
+    z-index: 60;
   }
   .z-\[99\] {
     z-index: 99;
@@ -2753,6 +2759,12 @@
     --tw-scale-x: 100%;
     --tw-scale-y: 100%;
     --tw-scale-z: 100%;
+    scale: var(--tw-scale-x) var(--tw-scale-y);
+  }
+  .scale-110 {
+    --tw-scale-x: 110%;
+    --tw-scale-y: 110%;
+    --tw-scale-z: 110%;
     scale: var(--tw-scale-x) var(--tw-scale-y);
   }
   .rotate-180 {
@@ -4117,6 +4129,9 @@
   .pb-20 {
     padding-bottom: calc(var(--spacing) * 20);
   }
+  .pb-24 {
+    padding-bottom: calc(var(--spacing) * 24);
+  }
   .pl-3 {
     padding-left: calc(var(--spacing) * 3);
   }
@@ -4704,6 +4719,13 @@
     &:is(:where(.group):hover *) {
       @media (hover: hover) {
         color: var(--color-amber-600);
+      }
+    }
+  }
+  .group-hover\:text-amber-700 {
+    &:is(:where(.group):hover *) {
+      @media (hover: hover) {
+        color: var(--color-amber-700);
       }
     }
   }
@@ -6024,6 +6046,11 @@
       cursor: not-allowed;
     }
   }
+  .disabled\:bg-gray-100 {
+    &:disabled {
+      background-color: var(--color-gray-100);
+    }
+  }
   .disabled\:bg-gray-400 {
     &:disabled {
       background-color: var(--color-gray-400);
@@ -6425,6 +6452,11 @@
     @media (width >= 40rem) {
       --tw-ring-offset-width: 2px;
       --tw-ring-offset-shadow: var(--tw-ring-inset,) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+    }
+  }
+  .md\:bottom-4 {
+    @media (width >= 48rem) {
+      bottom: calc(var(--spacing) * 4);
     }
   }
   .md\:col-span-2 {
@@ -7262,6 +7294,9 @@
   --footer-text-muted: rgba(211, 218, 217, 0.8);
   --footer-border: rgba(211, 218, 217, 0.2);
   --footer-hover: #715A5A;
+}
+.drop-shadow-amber {
+  filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3));
 }
 .footer-modern .social-link {
   background-color: var(--footer-accent) !important;
