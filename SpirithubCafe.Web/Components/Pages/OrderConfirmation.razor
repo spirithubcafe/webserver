@@ -307,12 +307,13 @@
         }
     }
 
-    private async Task OpenTrackingLink(string trackingNumber)
+    private Task OpenTrackingLink(string trackingNumber)
     {
         // This is a generic example - you can customize this based on your shipping provider
         // For example, if you use specific carriers, you can detect the carrier and use their tracking URL
         var message = $"Please use your tracking number '{trackingNumber}' on your shipping provider's website to track your package.\n\nCommon tracking websites:\n• Aramex: www.aramex.com/track\n• DHL: www.dhl.com/track\n• FedEx: www.fedex.com/track";
         ToastService.ShowInfo(message);
+        return Task.CompletedTask;
     }
 
     private string GetStatusBadgeClass(string status)

@@ -42,6 +42,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     // Newsletter entities
     public DbSet<NewsletterSubscription> NewsletterSubscriptions { get; set; }
     
+    // Contact Messages
+    public DbSet<ContactMessage> ContactMessages { get; set; }
+    
     // Chat entities
     public DbSet<ChatSession> ChatSessions { get; set; }
     public DbSet<ChatMessage> ChatMessages { get; set; }

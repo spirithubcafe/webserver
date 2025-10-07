@@ -79,7 +79,7 @@
 </div>
 
 @code {
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
     {
         try
         {
@@ -93,5 +93,7 @@
         {
             Logger.LogError(ex, "Error processing payment cancellation");
         }
+        
+        return Task.CompletedTask;
     }
 }

@@ -1,0 +1,334 @@
+@page "/admin/newsletter-subscribers"
+@layout AdminLayout
+@attribute [Authorize(Roles = "Admin")]
+@inject TranslationLocalizer Localizer
+@inject SpirithubCafe.Web.Data.ApplicationDbContext DbContext
+@inject ToastService ToastService
+@inject SpirithubCafe.Application.Services.IEmailService EmailService
+
+@rendermode InteractiveServer
+
+@using Microsoft.AspNetCore.Authorization
+@using SpirithubCafe.Web.Data
+@using SpirithubCafe.Domain.Entities
+@using Microsoft.EntityFrameworkCore
+
+<div class="p-6 bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">@Localizer["NewsletterSubscribers"]</h1>
+        <p class="text-gray-600">@Localizer["ManageNewsletterSubscribers"]</p>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600 mb-1">@Localizer["TotalSubscribers"]</p>
+                    <h3 class="text-2xl font-bold text-gray-900">@subscribers.Count</h3>
+                </div>
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600 mb-1">@Localizer["ActiveSubscribers"]</p>
+                    <h3 class="text-2xl font-bold text-green-600">@subscribers.Count(s => s.IsActive)</h3>
+                </div>
+                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600 mb-1">@Localizer["SelectedSubscribers"]</p>
+                    <h3 class="text-2xl font-bold text-orange-600">@selectedSubscribers.Count</h3>
+                </div>
+                <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Actions -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <div class="flex flex-wrap gap-3">
+            <button @onclick="SelectAllSubscribers" 
+                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                @Localizer["SelectAll"]
+            </button>
+            <button @onclick="DeselectAllSubscribers" 
+                    class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">
+                @Localizer["DeselectAll"]
+            </button>
+            <button @onclick="ShowEmailModal" 
+                    disabled="@(!selectedSubscribers.Any())"
+                    class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-lg transition-colors">
+                @Localizer["SendBulkEmail"] (@selectedSubscribers.Count)
+            </button>
+        </div>
+    </div>
+
+    <!-- Subscribers Table -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            @Localizer["Select"]
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            @Localizer["Email"]
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            @Localizer["Name"]
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            @Localizer["Status"]
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            @Localizer["SubscribedDate"]
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            @Localizer["Actions"]
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @if (subscribers.Any())
+                    {
+                        @foreach (var subscriber in subscribers)
+                        {
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4">
+                                    <input type="checkbox" 
+                                           checked="@selectedSubscribers.Contains(subscriber.Email)"
+                                           @onchange="@(() => ToggleSubscriber(subscriber.Email))"
+                                           class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm font-medium text-gray-900">@subscriber.Email</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-500">@(subscriber.Name ?? "-")</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    @if (subscriber.IsActive)
+                                    {
+                                        <span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">
+                                            @Localizer["Active"]
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-100 rounded-full">
+                                            @Localizer["Inactive"]
+                                        </span>
+                                    }
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-500">@subscriber.SubscribedAt.ToString("yyyy-MM-dd HH:mm")</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <button @onclick="@(() => SendSingleEmail(subscriber.Email))" 
+                                            class="text-blue-600 hover:text-blue-900 text-sm font-medium">
+                                        @Localizer["SendEmail"]
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                                @Localizer["NoDataAvailable"]
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Email Modal -->
+@if (showEmailModal)
+{
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">@Localizer["SendBulkEmail"]</h2>
+                    <button @onclick="CloseEmailModal" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <p class="text-sm text-blue-800">
+                            <strong>@Localizer["Recipients"]:</strong> @selectedSubscribers.Count @Localizer["Subscribers"]
+                        </p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            @Localizer["EmailSubject"]
+                        </label>
+                        <input type="text" @bind="emailSubject" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="@Localizer["EmailSubject"]" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            @Localizer["EmailMessage"]
+                        </label>
+                        <textarea @bind="emailMessage" 
+                                  rows="8"
+                                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  placeholder="@Localizer["EmailMessage"]"></textarea>
+                    </div>
+
+                    <div class="flex gap-3 justify-end">
+                        <button @onclick="CloseEmailModal" 
+                                class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                            @Localizer["Cancel"]
+                        </button>
+                        <button @onclick="SendBulkEmailAsync" 
+                                disabled="@isSending"
+                                class="px-6 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-lg transition-colors">
+                            @if (isSending)
+                            {
+                                <span>@Localizer["Sending"]...</span>
+                            }
+                            else
+                            {
+                                <span>@Localizer["SendEmail"]</span>
+                            }
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<NewsletterSubscription> subscribers = new();
+    private HashSet<string> selectedSubscribers = new();
+    private bool showEmailModal = false;
+    private bool isSending = false;
+    private string emailSubject = "";
+    private string emailMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSubscribers();
+    }
+
+    private async Task LoadSubscribers()
+    {
+        subscribers = await DbContext.NewsletterSubscriptions
+            .OrderByDescending(s => s.SubscribedAt)
+            .ToListAsync();
+    }
+
+    private void ToggleSubscriber(string email)
+    {
+        if (selectedSubscribers.Contains(email))
+            selectedSubscribers.Remove(email);
+        else
+            selectedSubscribers.Add(email);
+    }
+
+    private void SelectAllSubscribers()
+    {
+        selectedSubscribers.Clear();
+        foreach (var subscriber in subscribers.Where(s => s.IsActive))
+        {
+            selectedSubscribers.Add(subscriber.Email);
+        }
+    }
+
+    private void DeselectAllSubscribers()
+    {
+        selectedSubscribers.Clear();
+    }
+
+    private void ShowEmailModal()
+    {
+        if (selectedSubscribers.Any())
+        {
+            showEmailModal = true;
+        }
+    }
+
+    private void CloseEmailModal()
+    {
+        showEmailModal = false;
+        emailSubject = "";
+        emailMessage = "";
+    }
+
+    private async Task SendBulkEmailAsync()
+    {
+        if (string.IsNullOrWhiteSpace(emailSubject) || string.IsNullOrWhiteSpace(emailMessage))
+        {
+            ToastService.ShowWarning(Localizer["PleaseFillAllFields"]);
+            return;
+        }
+
+        isSending = true;
+        StateHasChanged();
+
+        try
+        {
+            foreach (var email in selectedSubscribers)
+            {
+                await EmailService.SendEmailAsync(email, emailSubject, emailMessage);
+            }
+
+            ToastService.ShowSuccess(Localizer["EmailSentSuccessfully"]);
+            CloseEmailModal();
+            DeselectAllSubscribers();
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError($"Error: {ex.Message}");
+        }
+        finally
+        {
+            isSending = false;
+            StateHasChanged();
+        }
+    }
+
+    private void SendSingleEmail(string email)
+    {
+        emailSubject = "";
+        emailMessage = "";
+        selectedSubscribers.Clear();
+        selectedSubscribers.Add(email);
+        ShowEmailModal();
+    }
+}

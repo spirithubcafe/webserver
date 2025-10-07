@@ -709,10 +709,11 @@ else
     private string selectedShippingMethod = "";
     private decimal calculatedShippingCost = 0;
  
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
     {
         // Just set up, don't load cart yet
         // Cart will be loaded in OnAfterRenderAsync
+        return Task.CompletedTask;
     }
     
     private async Task LoadDataAsync()

@@ -501,7 +501,7 @@
         };
     }
 
-    private async Task InitiatePaymentForOrder(int orderId)
+    private Task InitiatePaymentForOrder(int orderId)
     {
         try
         {
@@ -512,5 +512,7 @@
         {
             ToastService.ShowError($"Error initiating payment: {ex.Message}");
         }
+        
+        return Task.CompletedTask;
     }
 }

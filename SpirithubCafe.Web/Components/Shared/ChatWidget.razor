@@ -559,7 +559,7 @@
         }
     }
 
-    private async Task SimulateTyping()
+    private Task SimulateTyping()
     {
         isTyping = true;
         StateHasChanged();
@@ -574,6 +574,8 @@
         };
         typingTimer.AutoReset = false;
         typingTimer.Enabled = true;
+        
+        return Task.CompletedTask;
     }
 
     private async Task LoadMessages()

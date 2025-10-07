@@ -392,11 +392,12 @@
         }
     }
 
-    private async Task OnLogoRemoved()
+    private Task OnLogoRemoved()
     {
         logoImageValue = "";
         ToastService.ShowSuccess(Localizer["LogoRemovedSuccessfully"]);
         StateHasChanged();
+        return Task.CompletedTask;
     }
 
     private async Task OnHomeLogoUploaded(SpirithubCafe.Web.Components.Shared.FileUpload.UploadResult result)
@@ -413,11 +414,12 @@
         }
     }
 
-    private async Task OnHomeLogoRemoved()
+    private Task OnHomeLogoRemoved()
     {
         homeLogoImageValue = "";
         ToastService.ShowSuccess(Localizer["HomeLogoRemovedSuccessfully"]);
         StateHasChanged();
+        return Task.CompletedTask;
     }
 
     private async Task SaveLogoSettings()

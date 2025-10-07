@@ -202,7 +202,7 @@ public class OrderService
     {
         return await _context.Orders
             .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.Product)
+                .ThenInclude(oi => oi.Product!)
                     .ThenInclude(p => p.MainImage)
             .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.ProductVariant)
@@ -219,7 +219,7 @@ public class OrderService
     {
         var query = _context.Orders
             .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.Product)
+                .ThenInclude(oi => oi.Product!)
                     .ThenInclude(p => p.MainImage)
             .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.ProductVariant)
@@ -245,7 +245,7 @@ public class OrderService
     {
         var query = _context.Orders
             .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.Product)
+                .ThenInclude(oi => oi.Product!)
                     .ThenInclude(p => p.MainImage)
             .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.ProductVariant)

@@ -124,7 +124,7 @@ public class NewsletterController : ControllerBase
     /// <summary>
     /// Unsubscribe from newsletter
     /// </summary>
-    /// <param name="email">Email to unsubscribe</param>
+    /// <param name="request">Unsubscribe request containing email</param>
     /// <returns>Success or error response</returns>
     [HttpPost("unsubscribe")]
     public async Task<IActionResult> Unsubscribe([FromBody] UnsubscribeRequest request)

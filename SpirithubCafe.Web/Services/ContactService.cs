@@ -21,7 +21,7 @@ public class ContactService
     /// <summary>
     /// Submit a contact form
     /// </summary>
-    public async Task<ContactSubmissionResult> SubmitContactFormAsync(ContactFormSubmission submission)
+    public Task<ContactSubmissionResult> SubmitContactFormAsync(ContactFormSubmission submission)
     {
         try
         {
@@ -29,7 +29,7 @@ public class ContactService
             var validationResults = ValidateSubmission(submission);
             if (validationResults.Any())
             {
-                return ContactSubmissionResult.Error("Please correct the validation errors.", validationResults);
+                return Task.FromResult(ContactSubmissionResult.Error("Please correct the validation errors.", validationResults));
             }
 
             // Log the contact form submission (always works)
@@ -57,12 +57,12 @@ public class ContactService
             });
 
             // Always return success immediately
-            return ContactSubmissionResult.Success("Thank you! Your message has been received and we'll get back to you soon.");
+            return Task.FromResult(ContactSubmissionResult.Success("Thank you! Your message has been received and we'll get back to you soon."));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to process contact form for {Email}", submission.Email ?? "unknown");
-            return ContactSubmissionResult.Error("An error occurred while processing your message. Please try again later.");
+            return Task.FromResult(ContactSubmissionResult.Error("An error occurred while processing your message. Please try again later."));
         }
     }
 

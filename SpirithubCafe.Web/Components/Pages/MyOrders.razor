@@ -275,11 +275,12 @@
         }
     }
 
-    private async Task TrackOrder(string trackingNumber)
+    private Task TrackOrder(string trackingNumber)
     {
         // You can implement tracking logic here
         // For now, show the tracking number
         ToastService.ShowInfo($"Tracking Number: {trackingNumber}\n\nPlease visit your shipping provider's website to track your package.");
+        return Task.CompletedTask;
     }
 
     private string GetStatusBadgeClass(string status)
@@ -321,7 +322,7 @@
         };
     }
 
-    private async Task PayForOrder(int orderId)
+    private Task PayForOrder(int orderId)
     {
         try
         {
@@ -332,6 +333,8 @@
         {
             ToastService.ShowError($"Error initiating payment: {ex.Message}");
         }
+        
+        return Task.CompletedTask;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
