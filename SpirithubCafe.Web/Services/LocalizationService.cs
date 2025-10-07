@@ -1,6 +1,3 @@
-using Microsoft.Extensions.Localization;
-using SpirithubCafe.Langs;
-
 namespace SpirithubCafe.Web.Services;
 
 public interface ILocalizationService
@@ -11,9 +8,9 @@ public interface ILocalizationService
 
 public class LocalizationService : ILocalizationService
 {
-    private readonly IStringLocalizer<Resources> _localizer;
+    private readonly TranslationLocalizer _localizer;
 
-    public LocalizationService(IStringLocalizer<Resources> localizer)
+    public LocalizationService(TranslationLocalizer localizer)
     {
         _localizer = localizer;
     }

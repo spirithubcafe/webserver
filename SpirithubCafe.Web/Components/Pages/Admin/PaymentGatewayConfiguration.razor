@@ -4,13 +4,12 @@
 @using SpirithubCafe.Web.Services
 @using SpirithubCafe.Domain.Entities
 @using SpirithubCafe.Web.Components.Shared
-@using Microsoft.Extensions.Localization
 @using Microsoft.AspNetCore.Authorization
 @inject PaymentGatewaySettingsService PaymentGatewayService
 @inject ToastService ToastService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
-@inject IStringLocalizer<SpirithubCafe.Langs.Resources> Localizer
+@inject TranslationLocalizer Localizer
 @rendermode InteractiveServer
 
 <div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">

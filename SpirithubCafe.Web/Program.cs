@@ -48,7 +48,8 @@ builder.Services.AddControllers();
 
 // Add localization services
 builder.Services.AddLocalization();
-builder.Services.AddSingleton<IStringLocalizer<SpirithubCafe.Langs.Resources>, StringLocalizer<SpirithubCafe.Langs.Resources>>();
+// Old: builder.Services.AddSingleton<IStringLocalizer<SpirithubCafe.Langs.Resources>, StringLocalizer<SpirithubCafe.Langs.Resources>>();
+// Now using TranslationLocalizer instead - already registered above
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
     var supportedCultures = new[]
@@ -137,8 +138,17 @@ builder.Services.AddScoped<IEmailSender<ApplicationUser>, SpirithubCafe.Web.Serv
 // Add HttpClient for API calls
 builder.Services.AddHttpClient();
 
+// Add memory cache for translation caching
+builder.Services.AddMemoryCache();
+
 // Register localization service
 builder.Services.AddScoped<ILocalizationService, LocalizationService>();
+
+// Register translation service
+builder.Services.AddScoped<ITranslationService, SpirithubCafe.Application.Services.TranslationService>();
+builder.Services.AddScoped<LocalizationHelper>();
+builder.Services.AddScoped<IStringLocalizer, TranslationLocalizer>();
+builder.Services.AddScoped<TranslationLocalizer>();
 
 // Register cart service
 builder.Services.AddScoped<CartService>();

@@ -3,10 +3,8 @@
 @attribute [Authorize(Roles = "Admin")]
 @using SpirithubCafe.Application.Interfaces
 @using SpirithubCafe.Domain.Entities
-@using SpirithubCafe.Langs
-@using Microsoft.Extensions.Localization
 @inject IReviewService ReviewService
-@inject IStringLocalizer<Resources> Loc
+@inject TranslationLocalizer Loc
 @inject NavigationManager Navigation
 @rendermode InteractiveServer
 

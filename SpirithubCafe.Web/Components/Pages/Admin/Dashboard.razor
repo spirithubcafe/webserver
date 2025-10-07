@@ -2,12 +2,11 @@
 @page "/admin/dashboard"
 @layout AdminLayout
 @attribute [Authorize(Roles = "Admin")]
-@inject IStringLocalizer<SpirithubCafe.Langs.Resources> Localizer
+@inject TranslationLocalizer Localizer
 
 @rendermode InteractiveServer
 
 @using Microsoft.AspNetCore.Authorization
-@using Microsoft.Extensions.Localization
 
 <!-- Simple Odoo-Style Dashboard -->
 <div class="p-8 bg-gray-50 min-h-screen">

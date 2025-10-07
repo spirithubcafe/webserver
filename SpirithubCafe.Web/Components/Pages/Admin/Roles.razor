@@ -3,7 +3,7 @@
 @attribute [Authorize(Roles = "Admin")]
 @inject RoleManager<IdentityRole> RoleManager
 @inject UserManager<ApplicationUser> UserManager
-@inject IStringLocalizer<SpirithubCafe.Langs.Resources> Localizer
+@inject TranslationLocalizer Localizer
 @using Microsoft.AspNetCore.Identity
 @using SpirithubCafe.Web.Data
 @using Microsoft.AspNetCore.Authorization

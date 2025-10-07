@@ -2,14 +2,12 @@
 @page "/product/{slug}"
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Forms
-@using Microsoft.Extensions.Localization
 @using Microsoft.JSInterop
 @using SpirithubCafe.Application.DTOs
 @using SpirithubCafe.Application.Interfaces
 @using SpirithubCafe.Domain.Entities
 @using SpirithubCafe.Web.Services
 @using SpirithubCafe.Web.Components.Shared
-@using SpirithubCafe.Langs
 @using System.ComponentModel.DataAnnotations
 @layout SpirithubCafe.Web.Components.Layout.PublicLayout
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
@@ -19,7 +17,7 @@
 @inject CartService CartService
 @inject ToastService ToastService
 @inject FavoriteService FavoriteService
-@inject IStringLocalizer<Resources> Loc
+@inject TranslationLocalizer Loc
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
 

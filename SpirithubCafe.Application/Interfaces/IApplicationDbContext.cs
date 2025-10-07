@@ -34,6 +34,7 @@ public interface IApplicationDbContext
     DbSet<FooterMenu> FooterMenus { get; }
     DbSet<Payment> Payments { get; }
     DbSet<NewsletterSubscription> NewsletterSubscriptions { get; }
+    DbSet<Translation> Translations { get; }
     
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

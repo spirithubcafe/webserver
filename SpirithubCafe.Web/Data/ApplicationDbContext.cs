@@ -63,6 +63,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<TermsConditionsPage> TermsConditionsPages { get; set; }
     public DbSet<TermsConditionsSection> TermsConditionsSections { get; set; }
     
+    // Translation entities
+    public DbSet<Translation> Translations { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -1035,6 +1038,35 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 
             entity.HasIndex(e => e.DisplayOrder)
                 .HasDatabaseName("IX_AboutUsSections_DisplayOrder");
+        });
+        
+        // Configure Translation entity
+        builder.Entity<Translation>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.Key)
+                .IsRequired()
+                .HasMaxLength(500);
+                
+            entity.Property(e => e.ValueEn)
+                .IsRequired()
+                .HasMaxLength(5000);
+                
+            entity.Property(e => e.ValueAr)
+                .IsRequired()
+                .HasMaxLength(5000);
+                
+            entity.Property(e => e.Category)
+                .HasMaxLength(100);
+                
+            // Create unique index for Key
+            entity.HasIndex(e => e.Key)
+                .IsUnique()
+                .HasDatabaseName("IX_Translations_Key");
+                
+            entity.HasIndex(e => e.Category)
+                .HasDatabaseName("IX_Translations_Category");
         });
     }
 }

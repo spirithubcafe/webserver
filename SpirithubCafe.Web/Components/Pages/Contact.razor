@@ -7,12 +7,11 @@
 @using SpirithubCafe.Web.Services
 @using SpirithubCafe.Web.Components.Shared
 @using static SpirithubCafe.Web.Services.ToastService
-@using Microsoft.Extensions.Localization
 @using System.ComponentModel.DataAnnotations
 @using SpirithubCafe.Application.DTOs
 @inject ContactService ContactService
 @inject ToastService ToastService
-@inject IStringLocalizer<SpirithubCafe.Langs.Resources> Resources
+@inject TranslationLocalizer Resources
 @inject IJSRuntime JSRuntime
 
 <PageTitle>@Resources["Contact"] - @Resources["BrandName"]</PageTitle>
@@ -96,12 +95,12 @@
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-[#715A5A] transition-colors"
                             id="subject">
                             <option value="">@Resources["Subject"]</option>
-                            <option value="General Inquiry">General Inquiry</option>
-                            <option value="Order Support">Order Support</option>
-                            <option value="Product Information">Product Information</option>
-                            <option value="Shipping Question">Shipping Question</option>
-                            <option value="Feedback">Feedback</option>
-                            <option value="Other">Other</option>
+                            <option value="General Inquiry">@Resources["GeneralInquiry"]</option>
+                            <option value="Order Support">@Resources["OrderSupport"]</option>
+                            <option value="Product Information">@Resources["ProductInformation"]</option>
+                            <option value="Shipping Question">@Resources["ShippingQuestion"]</option>
+                            <option value="Feedback">@Resources["Feedback"]</option>
+                            <option value="Other">@Resources["Other"]</option>
                         </InputSelect>
                         @if (hasAttemptedSubmit)
                         {

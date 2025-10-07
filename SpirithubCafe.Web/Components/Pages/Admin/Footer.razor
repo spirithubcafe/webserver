@@ -1,13 +1,12 @@
 @page "/admin/footer"
 @layout AdminLayout
 @attribute [Authorize(Roles = "Admin")]
-@using Microsoft.Extensions.Localization
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Web
 @using SpirithubCafe.Domain.Entities
 @using SpirithubCafe.Application.Interfaces
 @using SpirithubCafe.Web.Components.Shared
-@inject IStringLocalizer<SpirithubCafe.Langs.Resources> Localizer
+@inject TranslationLocalizer Localizer
 @inject IFooterService FooterService
 @inject IJSRuntime JSRuntime
 @inject ToastService ToastService

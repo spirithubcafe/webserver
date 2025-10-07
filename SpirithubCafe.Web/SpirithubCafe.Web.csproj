@@ -35,7 +35,6 @@
     <PackageReference Include="System.Security.Cryptography.Algorithms" Version="4.3.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SpirithubCafe.Langs\SpirithubCafe.Langs.csproj" />
     <ProjectReference Include="..\SpirithubCafe.Domain\SpirithubCafe.Domain.csproj" />
     <ProjectReference Include="..\SpirithubCafe.Application\SpirithubCafe.Application.csproj" />
     <ProjectReference Include="..\SpirithubCafe.Infrastructure\SpirithubCafe.Infrastructure.csproj" />

@@ -2,7 +2,7 @@
 @layout AdminLayout
 @attribute [Authorize(Roles = "Admin")]
 @inject SpirithubCafe.Application.Services.ISettingService SettingService
-@inject IStringLocalizer<SpirithubCafe.Langs.Resources> Localizer
+@inject TranslationLocalizer Localizer
 @inject IJSRuntime JSRuntime
 @inject SpirithubCafe.Web.Services.ToastService ToastService
 @using SpirithubCafe.Application.DTOs

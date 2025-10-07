@@ -1,0 +1,343 @@
+@page "/admin/translations"
+@layout AdminLayout
+@using SpirithubCafe.Application.Interfaces
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin")]
+@inject ITranslationService TranslationService
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<PageTitle>Translation Management</PageTitle>
+
+<div class="container-fluid px-4 py-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Translation Management</h1>
+            <p class="text-gray-600 mt-2">Manage translations for English and Arabic languages</p>
+        </div>
+        <button @onclick="AddNewTranslation" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <i class="fas fa-plus mr-2"></i>Add Translation
+        </button>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="bg-white rounded-lg shadow-sm mb-6">
+        <div class="flex border-b">
+            <button @onclick='() => SetFilter("all")' 
+                    class="@(currentFilter == "all" ? "border-b-2 border-blue-500 text-blue-600" : "text-gray-600") px-6 py-3 font-medium transition-colors">
+                All Translations (@allCount)
+            </button>
+            <button @onclick='() => SetFilter("incomplete-en")' 
+                    class="@(currentFilter == "incomplete-en" ? "border-b-2 border-blue-500 text-blue-600" : "text-gray-600") px-6 py-3 font-medium transition-colors">
+                Incomplete (EN) (@incompleteEnCount)
+            </button>
+            <button @onclick='() => SetFilter("incomplete-ar")' 
+                    class="@(currentFilter == "incomplete-ar" ? "border-b-2 border-blue-500 text-blue-600" : "text-gray-600") px-6 py-3 font-medium transition-colors">
+                Incomplete (AR) (@incompleteArCount)
+            </button>
+        </div>
+    </div>
+
+    <!-- Search -->
+    <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+        <div class="flex gap-4">
+            <div class="flex-1">
+                <input type="text" @bind="searchTerm" @bind:event="oninput" @onkeyup="FilterTranslations"
+                       placeholder="Search by key, value, or category..."
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+        </div>
+    </div>
+
+    <!-- Translations Table -->
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+        @if (isLoading)
+        {
+            <div class="flex justify-center items-center py-12">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+        }
+        else if (filteredTranslations.Count == 0)
+        {
+            <div class="text-center py-12">
+                <i class="fas fa-language text-6xl text-gray-300 mb-4"></i>
+                <p class="text-gray-600">No translations found</p>
+            </div>
+        }
+        else
+        {
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Key</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">English</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Arabic</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        @foreach (var translation in filteredTranslations)
+                        {
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4">
+                                    <div class="text-sm font-medium text-gray-900 max-w-xs truncate" title="@translation.Key">
+                                        @translation.Key
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-900 max-w-md truncate" title="@translation.ValueEn">
+                                        @translation.ValueEn
+                                        @if (translation.ValueEn == translation.Key)
+                                        {
+                                            <span class="ml-2 px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                                <i class="fas fa-exclamation-triangle"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-900 max-w-md truncate" title="@translation.ValueAr" dir="rtl">
+                                        @translation.ValueAr
+                                        @if (translation.ValueAr == translation.Key)
+                                        {
+                                            <span class="ml-2 px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                                <i class="fas fa-exclamation-triangle"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-sm text-gray-600">@(translation.Category ?? "N/A")</span>
+                                </td>
+                                <td class="px-6 py-4 text-right space-x-2">
+                                    <button @onclick="() => EditTranslation(translation.Id)" 
+                                            class="text-blue-600 hover:text-blue-800 transition-colors">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button @onclick="() => DeleteTranslation(translation.Id)" 
+                                            class="text-red-600 hover:text-red-800 transition-colors">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Edit Modal -->
+@if (showEditModal)
+{
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @onclick="CloseModal">
+        <div class="bg-white rounded-lg shadow-xl max-w-3xl w-full mx-4" @onclick:stopPropagation>
+            <div class="px-6 py-4 border-b flex justify-between items-center">
+                <h2 class="text-xl font-bold text-gray-900">
+                    @(editingId == 0 ? "Add Translation" : "Edit Translation")
+                </h2>
+                <button @onclick="CloseModal" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="px-6 py-4 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Key *</label>
+                    <input type="text" @bind="editKey" 
+                           disabled="@(editingId != 0)"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @(editingId != 0 ? "bg-gray-100" : "")"
+                           placeholder="e.g., HomePage.Title">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">English Value *</label>
+                    <textarea @bind="editValueEn" rows="3"
+                              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              placeholder="English translation"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Arabic Value *</label>
+                    <textarea @bind="editValueAr" rows="3" dir="rtl"
+                              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              placeholder="الترجمة العربية"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                    <input type="text" @bind="editCategory" 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="e.g., UI, Product, HomePage">
+                </div>
+            </div>
+            
+            <div class="px-6 py-4 border-t flex justify-end space-x-3">
+                <button @onclick="CloseModal" 
+                        class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                    Cancel
+                </button>
+                <button @onclick="SaveTranslation" 
+                        class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-save mr-2"></i>Save
+                </button>
+            </div>
+        </div>
+    </div>
+}
+@code {
+    private List<TranslationItem> allTranslations = new();
+    private List<TranslationItem> filteredTranslations = new();
+    private string currentFilter = "all";
+    private string searchTerm = "";
+    private bool isLoading = true;
+    
+    private int allCount = 0;
+    private int incompleteEnCount = 0;
+    private int incompleteArCount = 0;
+    
+    // Edit Modal
+    private bool showEditModal = false;
+    private int editingId = 0;
+    private string editKey = "";
+    private string editValueEn = "";
+    private string editValueAr = "";
+    private string editCategory = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTranslations();
+    }
+
+    private async Task LoadTranslations()
+    {
+        isLoading = true;
+        var translations = await TranslationService.GetAllTranslationsAsync();
+        allTranslations = translations.Select(t => new TranslationItem
+        {
+            Id = t.Id,
+            Key = t.Key,
+            ValueEn = t.ValueEn,
+            ValueAr = t.ValueAr,
+            Category = t.Category
+        }).ToList();
+        
+        allCount = allTranslations.Count;
+        incompleteEnCount = allTranslations.Count(t => t.ValueEn == t.Key);
+        incompleteArCount = allTranslations.Count(t => t.ValueAr == t.Key);
+        
+        FilterTranslations();
+        isLoading = false;
+    }
+
+    private void SetFilter(string filter)
+    {
+        currentFilter = filter;
+        FilterTranslations();
+    }
+
+    private void FilterTranslations()
+    {
+        var query = allTranslations.AsEnumerable();
+        
+        // Apply status filter
+        if (currentFilter == "incomplete-en")
+        {
+            query = query.Where(t => t.ValueEn == t.Key);
+        }
+        else if (currentFilter == "incomplete-ar")
+        {
+            query = query.Where(t => t.ValueAr == t.Key);
+        }
+        
+        // Apply search filter
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            var search = searchTerm.ToLower();
+            query = query.Where(t => 
+                t.Key.ToLower().Contains(search) || 
+                t.ValueEn.ToLower().Contains(search) || 
+                t.ValueAr.ToLower().Contains(search) ||
+                (t.Category?.ToLower().Contains(search) ?? false));
+        }
+        
+        filteredTranslations = query.ToList();
+    }
+
+    private void AddNewTranslation()
+    {
+        editingId = 0;
+        editKey = "";
+        editValueEn = "";
+        editValueAr = "";
+        editCategory = "";
+        showEditModal = true;
+    }
+
+    private void EditTranslation(int id)
+    {
+        var translation = allTranslations.FirstOrDefault(t => t.Id == id);
+        if (translation != null)
+        {
+            editingId = id;
+            editKey = translation.Key;
+            editValueEn = translation.ValueEn;
+            editValueAr = translation.ValueAr;
+            editCategory = translation.Category ?? "";
+            showEditModal = true;
+        }
+    }
+
+    private async Task SaveTranslation()
+    {
+        if (string.IsNullOrWhiteSpace(editKey) || string.IsNullOrWhiteSpace(editValueEn) || string.IsNullOrWhiteSpace(editValueAr))
+        {
+            return;
+        }
+        
+        if (editingId == 0)
+        {
+            // For new translations, we need to use SetTranslationAsync for both languages
+            await TranslationService.SetTranslationAsync(editKey, "en", editValueEn, editCategory);
+            var translations = await TranslationService.GetAllTranslationsAsync();
+            var newTranslation = translations.FirstOrDefault(t => t.Key == editKey);
+            if (newTranslation.Id != 0)
+            {
+                await TranslationService.UpdateTranslationAsync(newTranslation.Id, editValueEn, editValueAr);
+            }
+        }
+        else
+        {
+            await TranslationService.UpdateTranslationAsync(editingId, editValueEn, editValueAr);
+        }
+        
+        CloseModal();
+        await LoadTranslations();
+    }
+
+    private async Task DeleteTranslation(int id)
+    {
+        if (await TranslationService.DeleteTranslationAsync(id))
+        {
+            await LoadTranslations();
+        }
+    }
+
+    private void CloseModal()
+    {
+        showEditModal = false;
+    }
+
+    private class TranslationItem
+    {
+        public int Id { get; set; }
+        public string Key { get; set; } = "";
+        public string ValueEn { get; set; } = "";
+        public string ValueAr { get; set; } = "";
+        public string? Category { get; set; }
+    }
+}

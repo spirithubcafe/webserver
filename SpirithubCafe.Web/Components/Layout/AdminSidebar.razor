@@ -1,7 +1,6 @@
-@using Microsoft.Extensions.Localization
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Web
-@inject IStringLocalizer<SpirithubCafe.Langs.Resources> Localizer
+@inject TranslationLocalizer Localizer
 @inject SpirithubCafe.Application.Services.ISettingService SettingService
 @implements IDisposable
 @rendermode InteractiveServer
@@ -323,6 +322,26 @@
                     <span>@Localizer["PaymentGatewaySettings"]</span>
                 </a>
             </li>
+
+            <!-- Translations -->
+            <li>
+                <a href="/admin/translations" @onclick="OnMenuItemClick" class="flex items-center space-x-3 rtl:space-x-reverse p-3 rounded-lg admin-text-primary admin-hover hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
+                    </svg>
+                    <span>Translations</span>
+                </a>
+            </li>
+            
+            <!-- Import Resources (Hidden - for one-time use) -->
+            @* <li>
+                <a href="/admin/import-resources" @onclick="OnMenuItemClick" class="flex items-center space-x-3 rtl:space-x-reverse p-3 rounded-lg admin-text-primary admin-hover hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                    </svg>
+                    <span>Import Resources</span>
+                </a>
+            </li> *@
             </ul>
         </nav>
     </div>

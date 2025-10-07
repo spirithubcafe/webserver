@@ -35,7 +35,7 @@
 @code {
     [Parameter] public HomePageSettings? homePageSettings { get; set; }
     [Parameter] public bool IsArabic { get; set; }
-    [Inject] public IStringLocalizer<SpirithubCafe.Langs.Resources> Localizer { get; set; } = default!;
+    [Inject] public TranslationLocalizer Localizer { get; set; } = default!;
 
     private string GetAboutUsTitle()
     {
