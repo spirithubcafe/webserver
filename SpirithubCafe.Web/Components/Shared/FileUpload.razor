@@ -121,28 +121,6 @@
         }
     };
 
-    // Folder configurations
-    private readonly Dictionary<string, string> _folderPaths = new()
-    {
-        { "categories", "images/categories" },
-        { "products", "images/products" },
-        { "slides", "images/slides" },
-        { "users", "images/users" },
-        { "brands", "images/brands" },
-        { "newsletters", "images/newsletters" },
-        { "newsletter", "images/newsletter" },
-        { "backgrounds", "images/backgrounds" },
-        { "about", "images/about" },
-        { "about-us", "images/about-us" },
-        { "banners", "images/banners" },
-        { "logos", "images/logos" },
-        { "footer", "images/footer" },
-        { "documents", "files/documents" },
-        { "videos", "files/videos" },
-        { "audio", "files/audio" },
-        { "temp", "files/temp" }
-    };
-
     protected override void OnInitialized()
     {
         if (!string.IsNullOrEmpty(CurrentFileUrl))
@@ -190,20 +168,15 @@
                 return;
             }
 
-            // Validate folder
-            if (!_folderPaths.ContainsKey(Folder))
-            {
-                ErrorMessage = $"Invalid folder: {Folder}";
-                return;
-            }
-
+            // Build dynamic folder path based on FileType
+            var relativePath = BuildRelativePath(Folder, FileType);
+            
             // Generate unique filename
             var fileName = $"{Prefix ?? Folder}_{DateTime.Now:yyyyMMdd_HHmmss}_{Guid.NewGuid().ToString("N")[..8]}{fileExtension}";
-            var relativePath = _folderPaths[Folder];
             var fullFolderPath = Path.Combine(WebHostEnvironment.WebRootPath, relativePath);
             var fullFilePath = Path.Combine(fullFolderPath, fileName);
 
-            // Ensure directory exists
+            // Ensure directory exists - Create if not exists
             Directory.CreateDirectory(fullFolderPath);
 
             // Save file
@@ -243,6 +216,28 @@
         }
     }
 
+    /// <summary>
+    /// Builds the relative path dynamically based on folder name and file type
+    /// </summary>
+    private string BuildRelativePath(string folder, string fileType)
+    {
+        // Normalize folder name
+        var normalizedFolder = folder.ToLowerInvariant().Trim();
+        
+        // Determine base directory based on file type
+        var baseDir = fileType.ToLowerInvariant() switch
+        {
+            "image" => "images",
+            "video" => "videos",
+            "audio" => "audio",
+            "document" => "documents",
+            _ => "files"
+        };
+
+        // Combine base directory with folder name
+        return Path.Combine(baseDir, normalizedFolder).Replace("\\", "/");
+    }
+
     private async Task RemoveFile()
     {
         if (!string.IsNullOrEmpty(CurrentFileUrl) && !string.IsNullOrEmpty(CurrentFileName))
@@ -250,7 +245,7 @@
             try
             {
                 // Delete physical file
-                var relativePath = _folderPaths[Folder];
+                var relativePath = BuildRelativePath(Folder, FileType);
                 var fullFilePath = Path.Combine(WebHostEnvironment.WebRootPath, relativePath, CurrentFileName);
                 
                 if (File.Exists(fullFilePath))
