@@ -4,7 +4,8 @@
 @attribute [Authorize(Roles = "Admin")]
 @inject TranslationLocalizer Localizer
 
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 @using Microsoft.AspNetCore.Authorization
 @using SpirithubCafe.Web.Data

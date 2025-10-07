@@ -10,7 +10,8 @@
 @inject HomePageSettingsService HomePageSettingsService
 @inject ToastService ToastService
 @inject IJSRuntime JSRuntime
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 <PageTitle>Home Page Settings - SpirithubCafe</PageTitle>
 

@@ -11,7 +11,8 @@
 @inject ShippingMethodService ShippingMethodService
 @inject ShippingService ShippingService
 @inject ToastService ToastService
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 <PageTitle>Shipping Methods Management - SpirithubCafe</PageTitle>
 

@@ -1,4 +1,5 @@
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 @inject SpirithubCafe.Application.Services.ISlideService SlideService
 @inject TranslationLocalizer Localizer
 @using SpirithubCafe.Application.DTOs

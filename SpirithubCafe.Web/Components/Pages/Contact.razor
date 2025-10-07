@@ -1,5 +1,6 @@
 @page "/contact"
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 @layout SpirithubCafe.Web.Components.Layout.PublicLayout
 @using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Forms

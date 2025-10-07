@@ -8,7 +8,8 @@
 @inject IJSRuntime JSRuntime
 @layout AdminLayout
 @attribute [Authorize(Roles = "Admin")]
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 <PageTitle>About Us Page Management - SpirithubCafe</PageTitle>
 

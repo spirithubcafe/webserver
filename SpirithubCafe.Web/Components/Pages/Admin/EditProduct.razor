@@ -10,7 +10,8 @@
 @using SpirithubCafe.Web.Components.Shared
 @using System.Linq
 @using System.IO
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 <Toast />
 

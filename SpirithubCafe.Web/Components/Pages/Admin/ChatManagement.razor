@@ -9,7 +9,8 @@
 @layout AdminLayout
 @attribute [Authorize(Roles = "Admin")]
 @implements IDisposable
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 <!-- Full Height Responsive Chat Management -->
 <div class="h-[calc(100vh-85px)] bg-[#F8F9FA] flex flex-col">

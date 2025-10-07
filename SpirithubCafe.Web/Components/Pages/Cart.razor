@@ -7,7 +7,8 @@
 @inject IJSRuntime JSRuntime
 @inject TranslationLocalizer Localizer
 @implements IDisposable
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 <PageTitle>@Localizer["Cart"] - @Localizer["SiteTitle"]</PageTitle>
 

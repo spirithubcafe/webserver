@@ -9,7 +9,8 @@
 @inject ToastService ToastService
 @inject IJSRuntime JSRuntime
 @implements IDisposable
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 @if (isChatWidgetEnabled)
 {

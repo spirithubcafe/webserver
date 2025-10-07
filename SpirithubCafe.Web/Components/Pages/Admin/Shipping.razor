@@ -11,7 +11,8 @@
 @inject ShippingMethodService ShippingMethodService
 @inject TranslationLocalizer Localizer
 @inject ToastService ToastService
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 <PageTitle>Shipping Management - SpirithubCafe</PageTitle>
 

@@ -6,7 +6,8 @@
 @inject ToastService ToastService
 @inject SpirithubCafe.Application.Services.IEmailService EmailService
 
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 @using Microsoft.AspNetCore.Authorization
 @using SpirithubCafe.Web.Data

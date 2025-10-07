@@ -5,7 +5,8 @@
 @inject RoleManager<IdentityRole> RoleManager
 @inject TranslationLocalizer Localizer
 
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 @using Microsoft.AspNetCore.Identity
 @using SpirithubCafe.Web.Data

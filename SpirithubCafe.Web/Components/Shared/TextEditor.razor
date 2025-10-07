@@ -1,5 +1,6 @@
 @using System.Text.RegularExpressions
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 <div class="text-editor-container bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
     <!-- Toolbar -->

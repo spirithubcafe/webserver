@@ -5,7 +5,8 @@
 @inject TranslationLocalizer Localizer
 @inject IJSRuntime JSRuntime
 @layout SpirithubCafe.Web.Components.Layout.PublicLayout
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 <PageTitle>@GetLocalizedText(pageSettings?.TitleEn, pageSettings?.TitleAr) - SpirithubCafe</PageTitle>
 

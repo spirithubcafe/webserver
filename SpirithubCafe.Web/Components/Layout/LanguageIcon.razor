@@ -1,7 +1,8 @@
 @using System.Globalization
 @inject NavigationManager Navigation
 @inject ILogger<LanguageIcon> Logger
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 @implements IDisposable
 
 <div class="relative group">

@@ -5,7 +5,8 @@
 
 @inject TranslationLocalizer Localizer
 @implements IDisposable
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 <div class="relative">
     <button @onclick="NavigateToCart"
         class="@GetButtonClasses()">

@@ -8,7 +8,8 @@
 @inject ApplicationDbContext DbContext
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 <PageTitle>Aramex Settings - Admin</PageTitle>
 

@@ -9,7 +9,8 @@
 @inject IFAQService FAQService
 @inject IJSRuntime JSRuntime
 
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 <div class="min-h-screen bg-gray-50">
     <div class="max-w-6xl mx-auto px-4 py-8">

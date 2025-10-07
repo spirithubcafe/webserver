@@ -22,7 +22,8 @@
 @inject ToastService ToastService
 @inject TranslationLocalizer Localizer
 @implements IDisposable
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 <div>
     <title>Checkout - SpirithubCafe</title>

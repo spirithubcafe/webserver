@@ -3,7 +3,8 @@
 @inject NavigationManager Navigation
 @inject CategoryService CategoryService
 @inject TranslationLocalizer Localizer
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 @implements IDisposable
 
 <div class="relative group">

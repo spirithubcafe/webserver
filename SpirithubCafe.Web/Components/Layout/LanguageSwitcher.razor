@@ -1,7 +1,8 @@
 @using System.Globalization
 @inject NavigationManager Navigation
 @inject ILogger<LanguageSwitcher> Logger
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 <div class="language-switcher">
     <details class="dropdown" data-theme="light">

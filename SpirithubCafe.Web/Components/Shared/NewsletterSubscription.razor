@@ -2,7 +2,8 @@
 @inject INewsletterService NewsletterService
 @inject TranslationLocalizer Localizer
 @inject ToastService ToastService
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 <!-- Toast Component -->
 <Toast />

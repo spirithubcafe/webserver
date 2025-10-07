@@ -2,7 +2,8 @@
 @using SpirithubCafe.Application.Interfaces
 @inject TranslationLocalizer Localizer
 @inject IFooterService FooterService
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 @if (settings != null && settings.ShowFooter)
 {

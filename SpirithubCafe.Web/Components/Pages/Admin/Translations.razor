@@ -6,7 +6,8 @@
 @inject ITranslationService TranslationService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 <PageTitle>Translation Management</PageTitle>
 

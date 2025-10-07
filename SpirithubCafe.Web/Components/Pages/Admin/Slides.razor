@@ -8,7 +8,8 @@
 @using SpirithubCafe.Domain.Entities
 @using Microsoft.AspNetCore.Authorization
 @using SpirithubCafe.Web.Components.Shared
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 <PageTitle>Slide Management - SpirithubCafe Admin</PageTitle>
 

@@ -7,7 +7,8 @@
 @inject CategoryService CategoryService
 @inject TranslationLocalizer Localizer
 @inject ToastService ToastService
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 <Toast />
 

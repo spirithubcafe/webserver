@@ -11,7 +11,8 @@
 @inject ShippingService ShippingService
 @inject ToastService ToastService
 @inject IJSRuntime JSRuntime
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 <PageTitle>Nool Rates Management - SpirithubCafe</PageTitle>
 

@@ -1,6 +1,7 @@
 @using SpirithubCafe.Web.Services
 @inject ToastService ToastService
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 @implements IDisposable
 
 <!-- Android-style Toast Container - Center Bottom -->
