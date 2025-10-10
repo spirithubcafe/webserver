@@ -9,7 +9,7 @@
 @inject ToastService ToastService
 @inject IJSRuntime JSRuntime
 @implements IDisposable
-@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 
 
 @if (isChatWidgetEnabled)
@@ -331,6 +331,12 @@
     {
         try
         {
+            // Skip during prerendering
+            if (JSRuntime is not IJSInProcessRuntime)
+            {
+                return;
+            }
+            
             storedSessionId = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "chatWidget_sessionId");
             if (!string.IsNullOrEmpty(storedSessionId) && Guid.TryParse(storedSessionId, out var parsedSessionId))
             {

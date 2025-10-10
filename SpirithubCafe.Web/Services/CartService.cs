@@ -133,6 +133,12 @@ public class CartService
     {
         try
         {
+            // Skip during prerendering
+            if (_jsRuntime is not IJSInProcessRuntime)
+            {
+                return;
+            }
+            
             var cartJson = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", CART_STORAGE_KEY);
             if (!string.IsNullOrEmpty(cartJson))
             {
@@ -152,6 +158,12 @@ public class CartService
     {
         try
         {
+            // Skip during prerendering
+            if (_jsRuntime is not IJSInProcessRuntime)
+            {
+                return;
+            }
+            
             var cartJson = JsonSerializer.Serialize(_cartItems);
             await _jsRuntime.InvokeVoidAsync("localStorage.setItem", CART_STORAGE_KEY, cartJson);
         }

@@ -1,4 +1,7 @@
 ﻿@using SpirithubCafe.Web.Components.Account.Shared
+
+@* Interactive rendering mode is set in App.razor *@
+
 <Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">

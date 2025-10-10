@@ -1,6 +1,4 @@
 @inherits LayoutComponentBase
-@implements IDisposable
-
 @inject TranslationLocalizer Localizer
 @inject CartService CartService
 @inject NavigationManager Navigation
@@ -510,40 +508,6 @@
     <!-- JavaScript files -->
     <script src="js/chat.js"></script>
     
-    <!-- PWA Support -->
-    <script src="js/pwa.js" defer></script>
-    
-    <!-- Performance optimization script -->
-    <script>
-        // Defer non-critical CSS loading
-        if ('requestIdleCallback' in window) {
-            requestIdleCallback(() => {
-                document.querySelectorAll('link[media="print"]').forEach(link => {
-                    link.media = 'all';
-                });
-            });
-        }
-        
-        // Preload critical images
-        if ('IntersectionObserver' in window) {
-            const imageObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        if (img.dataset.src) {
-                            img.src = img.dataset.src;
-                            img.removeAttribute('data-src');
-                            imageObserver.unobserve(img);
-                        }
-                    }
-                });
-            });
-            
-            document.addEventListener('DOMContentLoaded', () => {
-                document.querySelectorAll('img[data-src]').forEach(img => imageObserver.observe(img));
-            });
-        }
-    </script>
  </body>
 
 </html>

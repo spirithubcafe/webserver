@@ -18,6 +18,12 @@ public class FavoriteService
     {
         try
         {
+            // Skip during prerendering
+            if (_jsRuntime is not IJSInProcessRuntime)
+            {
+                return new List<int>();
+            }
+            
             var json = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", STORAGE_KEY);
             if (string.IsNullOrEmpty(json))
                 return new List<int>();
@@ -86,6 +92,12 @@ public class FavoriteService
     {
         try
         {
+            // Skip during prerendering
+            if (_jsRuntime is not IJSInProcessRuntime)
+            {
+                return;
+            }
+            
             var json = JsonSerializer.Serialize(favorites);
             await _jsRuntime.InvokeVoidAsync("localStorage.setItem", STORAGE_KEY, json);
         }
@@ -97,6 +109,12 @@ public class FavoriteService
 
     public async Task ClearFavoritesAsync()
     {
+        // Skip during prerendering
+        if (_jsRuntime is not IJSInProcessRuntime)
+        {
+            return;
+        }
+        
         await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", STORAGE_KEY);
     }
 }
