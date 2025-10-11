@@ -75,6 +75,30 @@ internal static class IdentityComponentsEndpointRouteBuilderExtensions
             return TypedResults.Challenge(properties, [provider]);
         });
 
+        // GET Logout endpoint for Blazor navigation
+        accountGroup.MapGet("/Logout", async (
+            ClaimsPrincipal user,
+            [FromServices] SignInManager<ApplicationUser> signInManager,
+            [FromQuery] string? ReturnUrl) =>
+        {
+            await signInManager.SignOutAsync();
+            
+            // Ensure we have a safe local redirect URL
+            var redirectUrl = string.IsNullOrEmpty(ReturnUrl) ? "~/" : ReturnUrl;
+            
+            // Make sure the URL starts with ~/ for local redirect
+            if (!redirectUrl.StartsWith("~/") && !redirectUrl.StartsWith("/"))
+            {
+                redirectUrl = $"~/{redirectUrl}";
+            }
+            else if (redirectUrl.StartsWith("/") && !redirectUrl.StartsWith("~/"))
+            {
+                redirectUrl = $"~{redirectUrl}";
+            }
+            
+            return TypedResults.LocalRedirect(redirectUrl);
+        });
+
         accountGroup.MapPost("/Logout", async (
             ClaimsPrincipal user,
             [FromServices] SignInManager<ApplicationUser> signInManager,

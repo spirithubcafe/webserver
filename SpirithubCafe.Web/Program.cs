@@ -25,6 +25,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
+// Add Antiforgery services
+builder.Services.AddAntiforgery(options =>
+{
+    options.HeaderName = "X-CSRF-TOKEN";
+    options.Cookie.Name = ".AspNetCore.Antiforgery";
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+});
+
 // Add HttpContextAccessor for Blazor Server
 builder.Services.AddHttpContextAccessor();
 
@@ -315,15 +325,14 @@ if (app.Environment.IsDevelopment())
 var localizationOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>();
 app.UseRequestLocalization(localizationOptions.Value);
 
+app.UseStaticFiles(); // Enable static file serving
+
+app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseAntiforgery();
-
-app.UseStaticFiles(); // Enable static file serving
-
-// Add static asset cache middleware after static files
-app.UseStaticAssetCache();
 
 app.MapStaticAssets();
 

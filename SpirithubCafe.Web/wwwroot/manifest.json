@@ -1,12 +1,39 @@
 {
-  "name": "Spirithub Cafe",
+  "name": "Spirithub Cafe - Premium Coffee Shop",
   "short_name": "Spirithub",
-  "description": "Premium Coffee Roastery & Online Shop",
+  "description": "Premium Coffee Roastery & Online Shop - فروشگاه آنلاین قهوه اسپیریت‌هاب",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#715A5A",
   "orientation": "portrait-primary",
+  "categories": ["shopping", "food", "lifestyle"],
+  "lang": "en",
+  "dir": "ltr",
+  "shortcuts": [
+    {
+      "name": "Products",
+      "short_name": "Products",
+      "description": "Browse our coffee products",
+      "url": "/products",
+      "icons": [{ "src": "/images/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Cart",
+      "short_name": "Cart",
+      "description": "View shopping cart",
+      "url": "/cart",
+      "icons": [{ "src": "/images/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Orders",
+      "short_name": "Orders",
+      "description": "View my orders",
+      "url": "/orders",
+      "icons": [{ "src": "/images/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ],
   "icons": [
     {
       "src": "/images/icon-72x72.png",
@@ -55,6 +82,20 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/images/screenshot-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/images/screenshot-mobile.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow"
     }
   ]
 }

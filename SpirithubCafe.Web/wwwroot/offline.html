@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#715A5A">
+    <title>Offline - Spirithub Cafe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .offline-container {
+            text-align: center;
+            max-width: 500px;
+            background: white;
+            padding: 48px 32px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+
+        .offline-icon {
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 32px;
+            background: linear-gradient(135deg, #715A5A 0%, #37353E 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s ease-in-out infinite;
+            box-shadow: 0 10px 30px rgba(113, 90, 90, 0.3);
+        }
+
+        .offline-icon svg {
+            width: 70px;
+            height: 70px;
+            fill: white;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: 700;
+            color: #37353E;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        p {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: linear-gradient(135deg, #715A5A 0%, #37353E 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(113, 90, 90, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(113, 90, 90, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .secondary-button {
+            background: transparent;
+            color: #715A5A;
+            border: 2px solid #715A5A;
+            box-shadow: none;
+        }
+
+        .secondary-button:hover {
+            background: #715A5A;
+            color: white;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            padding: 8px 16px;
+            background: #fff3cd;
+            color: #856404;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #ffc107;
+            border-radius: 50%;
+            animation: blink 1.5s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        .cached-pages {
+            margin-top: 40px;
+            padding-top: 32px;
+            border-top: 1px solid #eee;
+        }
+
+        .cached-pages h2 {
+            font-size: 18px;
+            color: #37353E;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .page-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .page-link {
+            display: block;
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            color: #715A5A;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .page-link:hover {
+            background: #e9ecef;
+            transform: translateX(4px);
+        }
+
+        @media (max-width: 600px) {
+            .offline-container {
+                padding: 32px 24px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="status-indicator">
+            <span class="status-dot"></span>
+            <span>No Internet Connection</span>
+        </div>
+
+        <div class="offline-icon">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+        </div>
+
+        <h1>You're Offline</h1>
+        <p>It looks like you've lost your internet connection. Some features may be limited, but you can still browse cached pages.</p>
+
+        <div class="button-group">
+            <button onclick="window.location.reload()">
+                🔄 Try Again
+            </button>
+            <button class="secondary-button" onclick="window.location.href='/'">
+                🏠 Go Home
+            </button>
+        </div>
+
+        <div class="cached-pages">
+            <h2>📦 Available Cached Pages</h2>
+            <div class="page-list">
+                <a href="/" class="page-link">🏠 Home Page</a>
+                <a href="/products" class="page-link">☕ Products</a>
+                <a href="/cart" class="page-link">🛒 Shopping Cart</a>
+                <a href="/about" class="page-link">ℹ️ About Us</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-retry when connection is restored
+        window.addEventListener('online', function() {
+            console.log('✅ Connection restored!');
+            
+            // Show success message
+            const container = document.querySelector('.offline-container');
+            container.innerHTML = `
+                <div class="offline-icon" style="background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);">
+                    <svg viewBox="0 0 24 24" style="fill: white;">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+                <h1 style="color: #37b24d;">Back Online!</h1>
+                <p>Your connection has been restored. Redirecting...</p>
+            `;
+            
+            // Reload after 1.5 seconds
+            setTimeout(function() {
+                window.location.reload();
+            }, 1500);
+        });
+
+        // Monitor connection status
+        function updateConnectionStatus() {
+            const indicator = document.querySelector('.status-indicator');
+            if (navigator.onLine) {
+                indicator.innerHTML = `
+                    <span class="status-dot" style="background: #51cf66;"></span>
+                    <span>Connection Restored!</span>
+                `;
+                indicator.style.background = '#d4edda';
+                indicator.style.color = '#155724';
+            }
+        }
+
+        setInterval(updateConnectionStatus, 1000);
+    </script>
+</body>
+</html>

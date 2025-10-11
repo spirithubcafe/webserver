@@ -20,6 +20,23 @@
 <body>
     @RenderBody()
     
+    <!-- Loading Screen -->
+    <div id="blazor-loading" style="position: fixed; inset: 0; background: #ffffff; display: flex; align-items: center; justify-content: center; z-index: 9999;">
+        <div style="text-align: center;">
+            <!-- Simple Spinning Circle -->
+            <div style="width: 48px; height: 48px; margin: 0 auto 16px; border: 3px solid #f0f0f0; border-top-color: #715A5A; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <!-- Loading Text -->
+            <p style="font-family: 'Inter', sans-serif; font-size: 14px; color: #666; margin: 0;">Loading...</p>
+        </div>
+    </div>
+    
+    <style>
+        @@keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    
     <!-- Error UI for connection issues -->
     <div id="blazor-error-ui">
         <environment include="Development">
@@ -40,7 +57,21 @@
     </script>
     
     <!-- Pure Server JavaScript -->
-    <script src="_framework/blazor.server.js"></script>
+    <script src="_framework/blazor.server.js" autostart="false"></script>
+    
+    <script>
+        // Hide loading screen when Blazor is ready
+        Blazor.start().then(() => {
+            const loadingScreen = document.getElementById('blazor-loading');
+            if (loadingScreen) {
+                loadingScreen.style.transition = 'opacity 0.5s ease-out';
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 500);
+            }
+        });
+    </script>
 </body>
 
 </html>
