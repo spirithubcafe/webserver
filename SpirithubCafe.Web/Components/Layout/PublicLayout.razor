@@ -154,11 +154,11 @@
                             @if (isUserMenuOpen)
                             {
                                 <!-- Single full-screen overlay (transparent) to capture outside clicks without affecting layout -->
-                                <div class="fixed inset-0 z-40 bg-transparent" @onclick="CloseUserMenu" aria-hidden="true"></div>
+                                <div class="fixed inset-0 z-[55] bg-transparent" @onclick="CloseUserMenu" aria-hidden="true"></div>
                             }
 
-                          <div class="absolute ltr:right-0 rtl:left-0" style="top:calc(100% + .5rem);">
-                          <div @onclick:stopPropagation="true" class="transform-gpu will-change-transform will-change-opacity transition-transform transition-opacity duration-250 ease-out origin-top-right z-50 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 py-2 @(isUserMenuOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none")">
+                            <div class="absolute ltr:right-0 rtl:left-0 mt-2">
+                                <div @onclick:stopPropagation="true" class="relative z-[60] w-56 bg-white rounded-xl shadow-2xl border border-gray-100 py-2 transition-all duration-300 ease-out @(isUserMenuOpen ? "opacity-100 translate-y-0 visible" : "opacity-0 -translate-y-2 invisible")">
                                     <AuthorizeView>
                                     <Authorized>
                                         <!-- User Info Header -->
@@ -168,38 +168,46 @@
                                         </div>
                                         
                                         <!-- Menu Items with Icons -->
-                                        <a href="/Account/Manage" @onclick="@(() => CloseUserMenuWithNavigation("/Account/Manage"))"
-                                           class="flex items-center px-4 py-3 text-sm text-gray-700 hover:text-[#715A5A] hover:bg-amber-50 cursor-pointer transition-all duration-200 group">
-                                            <svg class="w-4 h-4 ltr:mr-3 rtl:ml-3 text-gray-400 group-hover:text-[#715A5A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                            </svg>
-                                            @Localizer["MyProfile"]
+                                        <a href="/Account/Manage" @onclick="CloseUserMenu"
+                                           class="block px-4 py-3 text-sm text-gray-700 hover:text-[#715A5A] hover:bg-amber-50 cursor-pointer transition-all duration-200">
+                                            <div class="flex items-center">
+                                                <svg class="w-4 h-4 ltr:mr-3 rtl:ml-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                                </svg>
+                                                @Localizer["MyProfile"]
+                                            </div>
                                         </a>
-                                        <a href="/orders" @onclick="@(() => CloseUserMenuWithNavigation("/orders"))"
-                                           class="flex items-center px-4 py-3 text-sm text-gray-700 hover:text-[#8B6B3A] hover:bg-orange-50 cursor-pointer transition-all duration-200 group">
-                                            <svg class="w-4 h-4 ltr:mr-3 rtl:ml-3 text-gray-400 group-hover:text-[#8B6B3A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                                            </svg>
-                                            @Localizer["MyOrders"]
+                                        <a href="/orders" @onclick="CloseUserMenu"
+                                           class="block px-4 py-3 text-sm text-gray-700 hover:text-[#8B6B3A] hover:bg-orange-50 cursor-pointer transition-all duration-200">
+                                            <div class="flex items-center">
+                                                <svg class="w-4 h-4 ltr:mr-3 rtl:ml-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                                                </svg>
+                                                @Localizer["MyOrders"]
+                                            </div>
                                         </a>
-                                        <a href="/favorites" @onclick="@(() => CloseUserMenuWithNavigation("/favorites"))"
-                                           class="flex items-center px-4 py-3 text-sm text-gray-700 hover:text-[#A0522D] hover:bg-amber-50 cursor-pointer transition-all duration-200 group">
-                                            <svg class="w-4 h-4 ltr:mr-3 rtl:ml-3 text-gray-400 group-hover:text-[#A0522D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                                            </svg>
-                                            @Localizer["Favorites"]
+                                        <a href="/favorites" @onclick="CloseUserMenu"
+                                           class="block px-4 py-3 text-sm text-gray-700 hover:text-[#A0522D] hover:bg-amber-50 cursor-pointer transition-all duration-200">
+                                            <div class="flex items-center">
+                                                <svg class="w-4 h-4 ltr:mr-3 rtl:ml-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                                </svg>
+                                                @Localizer["Favorites"]
+                                            </div>
                                         </a>
 
                                         @if (context.User.IsInRole("Admin"))
                                         {
                                             <div class="border-t border-gray-100 my-2 mx-2"></div>
-                                            <a href="/admin/dashboard" @onclick="@(() => CloseUserMenuWithNavigation("/admin/dashboard"))"
-                                               class="flex items-center px-4 py-3 text-sm text-purple-600 hover:text-purple-700 hover:bg-purple-50 cursor-pointer transition-all duration-200 group font-medium">
-                                                <svg class="w-4 h-4 ltr:mr-3 rtl:ml-3 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                </svg>
-                                                @Localizer["AdminPanel"]
+                                            <a href="/admin/dashboard" @onclick="CloseUserMenu"
+                                               class="block px-4 py-3 text-sm text-purple-600 hover:text-purple-700 hover:bg-purple-50 cursor-pointer transition-all duration-200 font-medium">
+                                                <div class="flex items-center">
+                                                    <svg class="w-4 h-4 ltr:mr-3 rtl:ml-3 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                    </svg>
+                                                    @Localizer["AdminPanel"]
+                                                </div>
                                             </a>
                                         }
 

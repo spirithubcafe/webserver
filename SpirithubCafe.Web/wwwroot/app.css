@@ -1,6 +1,7 @@
 @import "tailwindcss";
-@plugin "daisyui" {
-  themes: light --default, dark --prefersdark, coffee;
+
+body {
+    background-color: oklch(97% .01 50);
 }
 
 /* Import Vazir Matn Font for Arabic */
