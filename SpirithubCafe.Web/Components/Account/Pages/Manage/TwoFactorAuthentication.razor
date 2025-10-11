@@ -8,6 +8,7 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject IdentityUserAccessor UserAccessor
 @inject IdentityRedirectManager RedirectManager
+@inject IHttpContextAccessor HttpContextAccessor
 
 <PageTitle>Two-factor Authentication (2FA) - SpirithubCafe</PageTitle>
 
@@ -271,25 +272,41 @@ else
     private bool is2faEnabled;
     private bool isMachineRemembered;
 
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
+    private HttpContext? HttpContext => HttpContextAccessor.HttpContext;
 
     protected override async Task OnInitializedAsync()
     {
-        var user = await UserAccessor.GetRequiredUserAsync(HttpContext);
-        canTrack = HttpContext.Features.Get<ITrackingConsentFeature>()?.CanTrack ?? true;
-        hasAuthenticator = await UserManager.GetAuthenticatorKeyAsync(user) is not null;
-        is2faEnabled = await UserManager.GetTwoFactorEnabledAsync(user);
-        isMachineRemembered = await SignInManager.IsTwoFactorClientRememberedAsync(user);
-        recoveryCodesLeft = await UserManager.CountRecoveryCodesAsync(user);
+        if (HttpContext is not null)
+        {
+            var user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+            canTrack = HttpContext.Features.Get<ITrackingConsentFeature>()?.CanTrack ?? true;
+            hasAuthenticator = await UserManager.GetAuthenticatorKeyAsync(user) is not null;
+            is2faEnabled = await UserManager.GetTwoFactorEnabledAsync(user);
+            
+            // In Blazor Server, this call can cause "response already started" error
+            try
+            {
+                isMachineRemembered = await SignInManager.IsTwoFactorClientRememberedAsync(user);
+            }
+            catch (InvalidOperationException)
+            {
+                // If response has already started, assume machine is not remembered
+                isMachineRemembered = false;
+            }
+            
+            recoveryCodesLeft = await UserManager.CountRecoveryCodesAsync(user);
+        }
     }
 
     private async Task OnSubmitForgetBrowserAsync()
     {
         await SignInManager.ForgetTwoFactorClientAsync();
 
-        RedirectManager.RedirectToCurrentPageWithStatus(
-            "The current browser has been forgotten. When you login again from this browser you will be prompted for your 2fa code.",
-            HttpContext);
+        if (HttpContext is not null)
+        {
+            RedirectManager.RedirectToCurrentPageWithStatus(
+                "The current browser has been forgotten. When you login again from this browser you will be prompted for your 2fa code.",
+                HttpContext);
+        }
     }
 }

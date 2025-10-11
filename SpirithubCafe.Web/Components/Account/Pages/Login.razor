@@ -11,6 +11,7 @@
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 @inject UserLoginService UserLoginService
+@inject IHttpContextAccessor HttpContextAccessor
 
 <PageTitle>Login - SpirithubCafe</PageTitle>
 
@@ -176,8 +177,7 @@
 @code {
     private string? errorMessage;
 
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
+    private HttpContext? HttpContext => HttpContextAccessor.HttpContext;
 
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
@@ -187,40 +187,24 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (HttpMethods.IsGet(HttpContext.Request.Method))
-        {
-            // Clear the existing external cookie to ensure a clean login process
-            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-        }
+        // Note: In Pure Blazor Server, SignOutAsync during OnInitializedAsync causes 
+        // "response already started" error, so we skip this operation.
+        // External scheme cleanup will happen during actual sign-in flow.
+        await Task.CompletedTask;
     }
 
-    public async Task LoginUser()
+    public void LoginUser()
     {
-        // This doesn't count login failures towards account lockout
-        // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-        var result = await SignInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-        if (result.Succeeded)
+        try
         {
-            // Update last login date
-            await UserLoginService.UpdateLastLoginDateByEmailAsync(Input.Email);
-            
-            Logger.LogInformation("User logged in.");
-            RedirectManager.RedirectTo(ReturnUrl);
+            // In Blazor Server, we need to perform login via endpoint to avoid "response already started" errors
+            // Redirect to the login GET endpoint that can handle the cookie setting
+            var loginUrl = $"/Account/PerformLogin?email={Uri.EscapeDataString(Input.Email)}&password={Uri.EscapeDataString(Input.Password)}&rememberMe={Input.RememberMe}&returnUrl={Uri.EscapeDataString(ReturnUrl ?? "/")}";
+            NavigationManager.NavigateTo(loginUrl, forceLoad: true);
         }
-        else if (result.RequiresTwoFactor)
+        catch (Exception ex)
         {
-            RedirectManager.RedirectTo(
-                "Account/LoginWith2fa",
-                new() { ["returnUrl"] = ReturnUrl, ["rememberMe"] = Input.RememberMe });
-        }
-        else if (result.IsLockedOut)
-        {
-            Logger.LogWarning("User account locked out.");
-            RedirectManager.RedirectTo("Account/Lockout");
-        }
-        else
-        {
-            errorMessage = "Error: Invalid login attempt.";
+            errorMessage = $"An error occurred: {ex.Message}";
         }
     }
 

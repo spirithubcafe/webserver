@@ -11,6 +11,7 @@
 @inject IEmailSender<ApplicationUser> EmailSender
 @inject IdentityUserAccessor UserAccessor
 @inject NavigationManager NavigationManager
+@inject IHttpContextAccessor HttpContextAccessor
 
 
 <div class="space-y-8">
@@ -170,19 +171,21 @@
     private string? email;
     private bool isEmailConfirmed;
 
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
+    private HttpContext? HttpContext => HttpContextAccessor.HttpContext;
 
     [SupplyParameterFromForm(FormName = "change-email")]
     private InputModel Input { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
-        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
-        email = await UserManager.GetEmailAsync(user);
-        isEmailConfirmed = await UserManager.IsEmailConfirmedAsync(user);
+        if (HttpContext is not null)
+        {
+            user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+            email = await UserManager.GetEmailAsync(user);
+            isEmailConfirmed = await UserManager.IsEmailConfirmedAsync(user);
 
-        Input.NewEmail ??= email;
+            Input.NewEmail ??= email;
+        }
     }
 
     private async Task OnValidSubmitAsync()

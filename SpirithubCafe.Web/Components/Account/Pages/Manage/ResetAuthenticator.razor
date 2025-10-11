@@ -8,6 +8,7 @@
 @inject IdentityUserAccessor UserAccessor
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<ResetAuthenticator> Logger
+@inject IHttpContextAccessor HttpContextAccessor
 
 <PageTitle>Reset Authenticator Key - SpirithubCafe</PageTitle>
 
@@ -130,22 +131,24 @@
 </div>
 
 @code {
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
+    private HttpContext? HttpContext => HttpContextAccessor.HttpContext;
 
     private async Task OnSubmitAsync()
     {
-        var user = await UserAccessor.GetRequiredUserAsync(HttpContext);
-        await UserManager.SetTwoFactorEnabledAsync(user, false);
-        await UserManager.ResetAuthenticatorKeyAsync(user);
-        var userId = await UserManager.GetUserIdAsync(user);
-        Logger.LogInformation("User with ID '{UserId}' has reset their authentication app key.", userId);
+        if (HttpContext is not null)
+        {
+            var user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+            await UserManager.SetTwoFactorEnabledAsync(user, false);
+            await UserManager.ResetAuthenticatorKeyAsync(user);
+            var userId = await UserManager.GetUserIdAsync(user);
+            Logger.LogInformation("User with ID '{UserId}' has reset their authentication app key.", userId);
 
-        await SignInManager.RefreshSignInAsync(user);
+            await SignInManager.RefreshSignInAsync(user);
 
-        RedirectManager.RedirectToWithStatus(
-            "Account/Manage/EnableAuthenticator",
-            "Your authenticator app key has been reset, you will need to configure your authenticator app using the new key.",
-            HttpContext);
+            RedirectManager.RedirectToWithStatus(
+                "Account/Manage/EnableAuthenticator",
+                "Your authenticator app key has been reset, you will need to configure your authenticator app using the new key.",
+                HttpContext);
+        }
     }
 }

@@ -15,6 +15,7 @@
 @inject UrlEncoder UrlEncoder
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<EnableAuthenticator> Logger
+@inject IHttpContextAccessor HttpContextAccessor
 
 <PageTitle>Configure Authenticator App - SpirithubCafe</PageTitle>
 
@@ -224,17 +225,18 @@ else
     private string? qrCodeDataUri;
     private IEnumerable<string>? recoveryCodes;
 
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
+    private HttpContext? HttpContext => HttpContextAccessor.HttpContext;
 
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
-        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
-
-        await LoadSharedKeyAndQrCodeUriAsync(user);
+        if (HttpContext is not null)
+        {
+            user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+            await LoadSharedKeyAndQrCodeUriAsync(user);
+        }
     }
 
     private async Task OnValidSubmitAsync()
@@ -261,7 +263,7 @@ else
         {
             recoveryCodes = await UserManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
         }
-        else
+        else if (HttpContext is not null)
         {
             RedirectManager.RedirectToWithStatus("Account/Manage/TwoFactorAuthentication", message, HttpContext);
         }

@@ -22,8 +22,11 @@ using SpirithubCafe.Web.Middleware;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+builder.Services.AddRazorPages();
+builder.Services.AddServerSideBlazor();
+
+// Add HttpContextAccessor for Blazor Server
+builder.Services.AddHttpContextAccessor();
 
 // Configure Circuit Options for better error handling
 builder.Services.Configure<Microsoft.AspNetCore.Components.Server.CircuitOptions>(options =>
@@ -332,8 +335,9 @@ app.MapControllerRoute(
 
 app.MapControllers();
 
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+app.MapRazorPages();
+app.MapBlazorHub();
+app.MapFallbackToPage("/_Host");
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();

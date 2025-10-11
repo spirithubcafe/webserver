@@ -8,6 +8,7 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject IdentityUserAccessor UserAccessor
 @inject IdentityRedirectManager RedirectManager
+@inject IHttpContextAccessor HttpContextAccessor
 
 
 
@@ -151,23 +152,27 @@
     private string? username;
     private string? phoneNumber;
 
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
+    private HttpContext? HttpContext => HttpContextAccessor.HttpContext;
 
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
-        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
-        username = await UserManager.GetUserNameAsync(user);
-        phoneNumber = await UserManager.GetPhoneNumberAsync(user);
+        if (HttpContext is not null)
+        {
+            user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+            username = await UserManager.GetUserNameAsync(user);
+            phoneNumber = await UserManager.GetPhoneNumberAsync(user);
 
-        Input.PhoneNumber ??= phoneNumber;
+            Input.PhoneNumber ??= phoneNumber;
+        }
     }
 
     private async Task OnValidSubmitAsync()
     {
+        if (HttpContext is null) return;
+        
         if (Input.PhoneNumber != phoneNumber)
         {
             var setPhoneResult = await UserManager.SetPhoneNumberAsync(user, Input.PhoneNumber);

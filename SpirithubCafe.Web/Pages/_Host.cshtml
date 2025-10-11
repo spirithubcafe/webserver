@@ -1,0 +1,9 @@
+@page "/"
+@namespace SpirithubCafe.Web.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using SpirithubCafe.Web.Components
+@{
+    Layout = "_Layout";
+}
+
+<component type="typeof(App)" render-mode="Server" />

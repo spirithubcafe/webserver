@@ -22,6 +22,40 @@ internal static class IdentityComponentsEndpointRouteBuilderExtensions
 
         var accountGroup = endpoints.MapGroup("/Account");
 
+        accountGroup.MapGet("/PerformLogin", async (
+            HttpContext context,
+            [FromServices] SignInManager<ApplicationUser> signInManager,
+            [FromServices] UserManager<ApplicationUser> userManager,
+            [FromServices] SpirithubCafe.Web.Services.UserLoginService userLoginService,
+            [FromServices] ILoggerFactory loggerFactory,
+            [FromQuery] string email,
+            [FromQuery] string password,
+            [FromQuery] bool rememberMe = false,
+            [FromQuery] string returnUrl = "/") =>
+        {
+            var logger = loggerFactory.CreateLogger("PerformLogin");
+            var result = await signInManager.PasswordSignInAsync(email, password, rememberMe, lockoutOnFailure: false);
+            if (result.Succeeded)
+            {
+                // Update last login date
+                await userLoginService.UpdateLastLoginDateByEmailAsync(email);
+                logger.LogInformation("User logged in via PerformLogin endpoint.");
+                return Results.Redirect(returnUrl);
+            }
+            else if (result.RequiresTwoFactor)
+            {
+                return Results.Redirect($"/Account/LoginWith2fa?ReturnUrl={Uri.EscapeDataString(returnUrl)}");
+            }
+            else if (result.IsLockedOut)
+            {
+                return Results.Redirect("/Account/Lockout");
+            }
+            else
+            {
+                return Results.Redirect($"/Account/Login?error=Invalid login attempt&ReturnUrl={Uri.EscapeDataString(returnUrl)}");
+            }
+        });
+
         accountGroup.MapPost("/PerformExternalLogin", (
             HttpContext context,
             [FromServices] SignInManager<ApplicationUser> signInManager,

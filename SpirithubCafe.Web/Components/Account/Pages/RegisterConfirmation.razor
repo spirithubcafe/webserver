@@ -9,6 +9,7 @@
 @inject IEmailSender<ApplicationUser> EmailSender
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+@inject IHttpContextAccessor HttpContextAccessor
 
 <PageTitle>Registration Confirmation</PageTitle>
 
@@ -143,8 +144,7 @@
     private string? emailConfirmationLink = null;
     private string? statusMessage;
 
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
+    private HttpContext? HttpContext => HttpContextAccessor.HttpContext;
 
     [SupplyParameterFromQuery]
     private string? Email { get; set; }
@@ -162,7 +162,10 @@
         var user = await UserManager.FindByEmailAsync(Email);
         if (user is null)
         {
-            HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+            if (HttpContext is not null)
+            {
+                HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+            }
             statusMessage = "Error finding user for unspecified email";
         }
         else

@@ -7,6 +7,7 @@
 
 @inject UserManager<ApplicationUser> UserManager
 @inject IdentityRedirectManager RedirectManager
+@inject IHttpContextAccessor HttpContextAccessor
 
 <PageTitle>Confirm Email</PageTitle>
 
@@ -76,8 +77,7 @@
 @code {
     private string? statusMessage;
 
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
+    private HttpContext? HttpContext => HttpContextAccessor.HttpContext;
 
     [SupplyParameterFromQuery]
     private string? UserId { get; set; }
@@ -95,7 +95,10 @@
         var user = await UserManager.FindByIdAsync(UserId);
         if (user is null)
         {
-            HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+            if (HttpContext is not null)
+            {
+                HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+            }
             statusMessage = $"Error loading user with ID {UserId}";
         }
         else

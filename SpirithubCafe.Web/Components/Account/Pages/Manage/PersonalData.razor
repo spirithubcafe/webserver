@@ -1,6 +1,7 @@
 ﻿@page "/Account/Manage/PersonalData"
 
 @inject IdentityUserAccessor UserAccessor
+@inject IHttpContextAccessor HttpContextAccessor
 
 <PageTitle>Personal Data - SpirithubCafe</PageTitle>
 
@@ -183,11 +184,13 @@
 </div>
 
 @code {
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
+    private HttpContext? HttpContext => HttpContextAccessor.HttpContext;
 
     protected override async Task OnInitializedAsync()
     {
-        _ = await UserAccessor.GetRequiredUserAsync(HttpContext);
+        if (HttpContext is not null)
+        {
+            _ = await UserAccessor.GetRequiredUserAsync(HttpContext);
+        }
     }
 }

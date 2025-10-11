@@ -13,6 +13,7 @@
 @inject IUserStore<ApplicationUser> UserStore
 @inject IEmailSender<ApplicationUser> EmailSender
 @inject NavigationManager NavigationManager
+@inject IHttpContextAccessor HttpContextAccessor
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<ExternalLogin> Logger
 
@@ -127,8 +128,7 @@
     private string? message;
     private ExternalLoginInfo? externalLoginInfo;
 
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
+    private HttpContext? HttpContext => HttpContextAccessor.HttpContext;
 
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
@@ -146,6 +146,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (HttpContext is null) return;
+
         if (RemoteError is not null)
         {
             RedirectManager.RedirectToWithStatus("Account/Login", $"Error from external provider: {RemoteError}", HttpContext);
@@ -177,7 +179,11 @@
     {
         if (externalLoginInfo is null)
         {
-            RedirectManager.RedirectToWithStatus("Account/Login", "Error loading external login information.", HttpContext);
+            if (HttpContext is not null)
+            {
+                RedirectManager.RedirectToWithStatus("Account/Login", "Error loading external login information.", HttpContext);
+            }
+            return;
         }
 
         // Sign in the user with this external login provider if the user already has a login.
@@ -209,10 +215,13 @@
 
     private async Task OnValidSubmitAsync()
     {
-        if (externalLoginInfo is null)
+        if (externalLoginInfo is null && HttpContext is not null)
         {
             RedirectManager.RedirectToWithStatus("Account/Login", "Error loading external login information during confirmation.", HttpContext);
+            return;
         }
+
+        if (externalLoginInfo is null) return;
 
         var emailStore = GetEmailStore();
         var user = CreateUser();

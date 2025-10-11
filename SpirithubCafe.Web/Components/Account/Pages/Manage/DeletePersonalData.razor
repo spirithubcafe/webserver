@@ -9,6 +9,7 @@
 @inject IdentityUserAccessor UserAccessor
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<DeletePersonalData> Logger
+@inject IHttpContextAccessor HttpContextAccessor
 
 <PageTitle>Delete Personal Data - SpirithubCafe</PageTitle>
 
@@ -199,8 +200,7 @@
     private ApplicationUser user = default!;
     private bool requirePassword;
 
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
+    private HttpContext? HttpContext => HttpContextAccessor.HttpContext;
 
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
@@ -208,8 +208,11 @@
     protected override async Task OnInitializedAsync()
     {
         Input ??= new();
-        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
-        requirePassword = await UserManager.HasPasswordAsync(user);
+        if (HttpContext is not null)
+        {
+            user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+            requirePassword = await UserManager.HasPasswordAsync(user);
+        }
     }
 
     private async Task OnValidSubmitAsync()

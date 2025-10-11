@@ -13,7 +13,6 @@
 @inject ToastService ToastService
 @inject SpirithubCafe.Application.Services.ISettingService SettingService
 @implements IDisposable
-@rendermode InteractiveServer
 
 <PageTitle>@Localizer["Products"] - @Localizer["SiteTitle"]</PageTitle>
 
@@ -653,10 +652,23 @@
     {
         await base.OnParametersSetAsync();
         
-        // Set flag to scroll to top when parameters change (e.g., when category is selected)
+        // Process category parameter when it changes
         if (!string.IsNullOrEmpty(Category))
         {
+            var categoryFromRoute = categories.FirstOrDefault(c => 
+                c.Slug.Equals(Category, StringComparison.OrdinalIgnoreCase));
+            if (categoryFromRoute != null)
+            {
+                selectedCategory = categoryFromRoute.Name;
+            }
             shouldScrollToTop = true;
+            StateHasChanged();
+        }
+        else
+        {
+            // Clear category filter when no category in URL
+            selectedCategory = string.Empty;
+            StateHasChanged();
         }
     }
     
