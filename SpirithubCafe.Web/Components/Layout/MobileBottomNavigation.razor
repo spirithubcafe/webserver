@@ -13,7 +13,9 @@
     <div class="absolute inset-x-0 top-0 h-full pointer-events-none">
         <div class="absolute h-full bg-gradient-to-r from-[#715A5A] to-[#5d4a4a] shadow-xl transition-all duration-500 ease-out"
              style="left: @GetIndicatorPosition(); width: 25%; top: 0; bottom: 0;"></div>
-    </div>        <!-- Home -->
+    </div>
+        
+        <!-- Home -->
         <a href="/" class="relative flex-1 group z-10">
             <div class="flex flex-col items-center py-2 px-4 relative transition-all duration-300">
                 <svg class="w-7 h-7 mb-1.5 transition-all duration-300 @(IsActive("/") ? "text-white scale-110" : "text-gray-600 group-hover:scale-110 group-hover:text-amber-700")" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -34,7 +36,7 @@
         </a>
 
         <!-- Cart -->
-        <button @onclick="NavigateToCart" class="relative flex-1 group z-10">
+        <a href="/cart" class="relative flex-1 group z-10 block">
             <div class="flex flex-col items-center py-2 px-4 relative transition-all duration-300">
                 <div class="relative">
                     <svg class="w-7 h-7 mb-1.5 transition-all duration-300 @(IsActive("/cart") ? "text-white scale-110" : "text-gray-600 group-hover:scale-110 group-hover:text-amber-700")" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -50,7 +52,7 @@
                 </div>
                 <span class="text-xs transition-all duration-300 @(IsActive("/cart") ? "font-bold text-white" : "font-semibold text-gray-600")">@Localizer["Cart"]</span>
             </div>
-        </button>
+        </a>
 
         <!-- Profile/Account -->
         <a href="/Account/Manage" class="relative flex-1 group z-10">
@@ -234,11 +236,6 @@
                 StateHasChanged();
             }
         });
-    }
-
-    private void NavigateToCart()
-    {
-        Navigation.NavigateTo("/cart");
     }
 
     private bool IsActive(string href)

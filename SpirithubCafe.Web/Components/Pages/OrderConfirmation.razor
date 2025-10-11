@@ -215,14 +215,14 @@
                         <span>Track Package</span>
                     </button>
                 }
-                <button @onclick="GoToOrders" 
-                        class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <a href="/my-orders" 
+                   class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center">
                     View My Orders
-                </button>
-                <button @onclick="ContinueShopping" 
-                        class="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
+                </a>
+                <a href="/products" 
+                   class="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors text-center">
                     Continue Shopping
-                </button>
+                </a>
             </div>
         }
         else if (isLoading)
@@ -244,10 +244,10 @@
                 </div>
                 <h1 class="text-2xl font-bold text-gray-900 mb-2">Order Not Found</h1>
                 <p class="text-gray-600 mb-6">We couldn't find an order with this number.</p>
-                <button @onclick="ContinueShopping" 
-                        class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <a href="/products" 
+                   class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center">
                     Continue Shopping
-                </button>
+                </a>
             </div>
         }
     </div>
@@ -283,15 +283,7 @@
         }
     }
 
-    private void GoToOrders()
-    {
-        Navigation.NavigateTo("/my-orders");
-    }
 
-    private void ContinueShopping()
-    {
-        Navigation.NavigateTo("/products");
-    }
 
     private async Task CopyTrackingNumber(string trackingNumber)
     {

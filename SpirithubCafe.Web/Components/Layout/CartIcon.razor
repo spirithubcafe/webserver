@@ -5,11 +5,8 @@
 
 @inject TranslationLocalizer Localizer
 @implements IDisposable
-
-
 <div class="relative">
-    <button @onclick="NavigateToCart"
-        class="@GetButtonClasses()">
+    <a href="/cart" class="@GetButtonClasses()">
         <!-- Cart Icon -->
         <div class="relative">
 
@@ -44,7 +41,7 @@
                 @GetFormattedPrice()
             </span>
         }
-    </button>
+    </a>
 </div>
 
 @code {

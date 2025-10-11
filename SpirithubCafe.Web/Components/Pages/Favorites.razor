@@ -37,13 +37,13 @@
                 </div>
                 <h2 class="text-2xl font-semibold text-gray-900 mb-3">No Favorites Yet</h2>
                 <p class="text-gray-600 mb-8 max-w-md mx-auto">Start exploring our products and add your favorites here by clicking the heart icon.</p>
-                <button @onclick="@(() => Navigation.NavigateTo("/products"))" 
-                        class="inline-flex items-center px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg transition-colors">
+                <a href="/products" 
+                   class="inline-flex items-center px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg transition-colors">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                     Browse Products
-                </button>
+                </a>
             </div>
         }
         else
@@ -69,21 +69,23 @@
                 {
                     <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
                         <!-- Product Image -->
-                        <div class="relative aspect-square bg-gray-100 cursor-pointer" @onclick="@(() => Navigation.NavigateTo($"/product/{product.Slug}"))">
-                            @if (product.MainImage != null && !string.IsNullOrEmpty(product.MainImage.ImagePath))
-                            {
-                                <img src="@product.MainImage.ImagePath" 
-                                     alt="@GetProductName(product)" 
-                                     class="w-full h-full object-cover">
-                            }
-                            else
-                            {
-                                <div class="w-full h-full flex items-center justify-center bg-gray-200">
-                                    <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                    </svg>
-                                </div>
-                            }
+                        <div class="relative aspect-square bg-gray-100">
+                            <a href="/product/@product.Slug" class="block w-full h-full">
+                                @if (product.MainImage != null && !string.IsNullOrEmpty(product.MainImage.ImagePath))
+                                {
+                                    <img src="@product.MainImage.ImagePath" 
+                                         alt="@GetProductName(product)" 
+                                         class="w-full h-full object-cover">
+                                }
+                                else
+                                {
+                                    <div class="w-full h-full flex items-center justify-center bg-gray-200">
+                                        <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                    </div>
+                                }
+                            </a>
                             
                             <!-- Remove from Favorites Button -->
                             <button @onclick="@(() => RemoveFromFavorites(product.Id))" 
@@ -104,10 +106,9 @@
 
                         <!-- Product Info -->
                         <div class="p-4">
-                            <h3 class="text-sm font-medium text-gray-900 mb-1 line-clamp-2 cursor-pointer hover:text-orange-600"
-                                @onclick="@(() => Navigation.NavigateTo($"/product/{product.Slug}"))">
+                            <a href="/product/@product.Slug" class="text-sm font-medium text-gray-900 mb-1 line-clamp-2 cursor-pointer hover:text-orange-600 block">
                                 @GetProductName(product)
-                            </h3>
+                            </a>
                             
                             <!-- Price & Actions -->
                             <div class="flex items-center justify-between mt-4">

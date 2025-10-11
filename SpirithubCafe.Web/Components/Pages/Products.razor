@@ -13,6 +13,7 @@
 @inject ToastService ToastService
 @inject SpirithubCafe.Application.Services.ISettingService SettingService
 @implements IDisposable
+@rendermode InteractiveServer
 
 <PageTitle>@Localizer["Products"] - @Localizer["SiteTitle"]</PageTitle>
 
@@ -278,7 +279,7 @@
                 {
                     <div class="bg-white rounded-lg sm:rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col relative">
                         <!-- Product Image -->
-                        <div @onclick="() => NavigateToProduct(product.Id)" class="block relative aspect-square bg-gradient-to-br from-stone-50 to-stone-100 cursor-pointer">
+                        <a href="/product/@product.Slug" class="block relative aspect-square bg-gradient-to-br from-stone-50 to-stone-100 cursor-pointer">
                             @if (product.GalleryImages?.Any() == true)
                             {
                                 <img 
@@ -331,15 +332,15 @@
                                 
  
                             </div>
-                        </div>
+                        </a>
                         
                         <!-- Product Info -->
                         <div class="p-3 sm:p-4 flex flex-col h-full">
                             <div class="flex-grow">
                                 <div class="flex items-start justify-between mb-2">
-                                    <div @onclick="() => NavigateToProduct(product.Id)" class="hover:text-stone-700 transition-colors cursor-pointer">
+                                    <a href="/product/@product.Slug" class="hover:text-stone-700 transition-colors cursor-pointer block">
                                         <h3 class="text-sm sm:text-base font-semibold text-gray-900 line-clamp-2 leading-tight">@GetProductName(product)</h3>
-                                    </div>
+                                    </a>
                                 </div>
                                 
                                 <!-- Tasting Notes -->
@@ -440,10 +441,10 @@
                                 
                                 <!-- View Details Button -->
                                 <div>
-                                    <button @onclick="() => NavigateToProduct(product.Id)"
+                                    <a href="/product/@product.Slug"
                                        class="block w-full text-center px-3 py-2 border border-amber-600 text-amber-600 hover:bg-amber-50 rounded-lg font-medium text-sm transition-colors duration-200">
                                         @Localizer["ViewDetails"]
-                                    </button>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -865,11 +866,6 @@
         isQuickViewVisible = false;
         selectedProduct = null;
         StateHasChanged();
-    }
-    
-    private void NavigateToProduct(int productId)
-    {
-        Navigation.NavigateTo($"/product/{productId}");
     }
     
     private async Task LoadShopSettings()
