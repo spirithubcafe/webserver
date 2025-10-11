@@ -11,8 +11,8 @@
         @* Background Video - Enhanced for cross-browser compatibility *@
         @if (settings.BgType == "video" && !string.IsNullOrEmpty(settings.BgValue))
         {
-            <div class="absolute inset-0 w-full h-full overflow-hidden z-behind" 
-                 style="z-index: -1; pointer-events: none;">
+            <div class="absolute inset-0 w-full h-full overflow-hidden" 
+                 style="z-index: 0; pointer-events: none;">
                 <video id="footer-bg-video" 
                        autoplay 
                        muted 
@@ -37,13 +37,13 @@
         @* Background Image with potential blur overlay *@
         @if (settings.BgType == "image" && !string.IsNullOrEmpty(settings.BgValue))
         {
-            <div class="absolute inset-0 z-behind" style="background-image: url('@settings.BgValue'); background-size: cover; background-position: center;"></div>
+            <div class="absolute inset-0" style="z-index: 0; background-image: url('@settings.BgValue'); background-size: cover; background-position: center;"></div>
         }
         
         @* Overlay for blur/mask/gradient effects *@
         @if (settings.BgType != "color" && settings.EnableOverlay)
         {
-            <div class="@GetOverlayClasses()" style="@GetOverlayStyles()"></div>
+            <div class="absolute inset-0" style="z-index: 1; @GetOverlayStyles()"></div>
         }
         
         <div class="relative z-10 max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -383,11 +383,6 @@
         }
         
         return string.Join("; ", styles);
-    }
-
-    private string GetOverlayClasses()
-    {
-        return "absolute inset-0 z-0";
     }
 
     private string GetOverlayStyles()
