@@ -49,17 +49,24 @@ window.blazorConnectionManager = {
         
         // Handle unhandled errors
         window.addEventListener('unhandledrejection', function(event) {
+            // Filter out noisy Blazor reconnection/rejoin messages
+            const reasonMessage = event.reason && event.reason.message ? String(event.reason.message) : '';
+            if (reasonMessage.includes('Rejoin failed') || reasonMessage.includes('Server disconnected')) {
+                // swallow this specific Blazor reconnect message to avoid default UI
+                event.preventDefault();
+                return;
+            }
+
             console.error('Unhandled promise rejection:', event.reason);
-            
-            // Check if it's a Blazor-related error
+
+            // Check if it's a Blazor-related important error
             if (event.reason && event.reason.message && 
                 (event.reason.message.includes('Invocation canceled') || 
                  event.reason.message.includes('Connection disconnected') ||
                  event.reason.message.includes('component records'))) {
-                
                 // Prevent the error from being logged to console
                 event.preventDefault();
-                
+
                 // Try to restart the connection if possible
                 setTimeout(() => {
                     if (Blazor && Blazor.start) {
@@ -70,16 +77,31 @@ window.blazorConnectionManager = {
             }
         });
         
-        // Monitor for component record errors
-        const originalLog = console.error;
+        // Monitor for component record errors and suppress Blazor reconnect UI messages
+        const originalError = console.error.bind(console);
         console.error = function(...args) {
-            const message = args.join(' ');
-            if (message.includes('component records is not valid')) {
+            const message = args.map(a => String(a)).join(' ');
+            // suppress Blazor's default 'Rejoin failed... trying again in' messages
+            if (message.includes('Rejoin failed') || message.includes('rejoin failed')) {
+                // do not forward to original error (prevents built-in UI)
+                return;
+            }
+            if (message.includes('component records is not valid') || message.includes('component records')) {
                 console.log('Detected component records error - attempting recovery');
                 self.handleComponentRecordsError();
                 return; // Don't log the error
             }
-            originalLog.apply(console, args);
+            originalError(...args);
+        };
+
+        // Also filter console.warn because Blazor sometimes logs rejoin messages as warnings
+        const originalWarn = console.warn.bind(console);
+        console.warn = function(...args) {
+            const message = args.map(a => String(a)).join(' ');
+            if (message.includes('Rejoin failed') || message.includes('rejoin failed')) {
+                return; // swallow
+            }
+            originalWarn(...args);
         };
     },
     
