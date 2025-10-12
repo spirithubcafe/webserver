@@ -5,207 +5,388 @@
 @inject TranslationLocalizer Localizer
 @implements IDisposable
 
-
-
-<!-- Mobile Bottom Navigation - Only visible on mobile -->
-<div class="fixed bottom-0 left-0 right-0 bg-white shadow-lg z-50 md:hidden">
-    <div class="flex items-center justify-around py-1 px-1 relative @(CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "flex-row-reverse" : "")">
-    <!-- Animated Background Indicator -->
-    <div class="absolute inset-x-0 top-0 h-full pointer-events-none">
-        <div class="absolute h-full bg-gradient-to-r from-[#715A5A] to-[#5d4a4a] shadow-xl transition-all duration-500 ease-out"
-             style="@(CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "right" : "left"): @GetIndicatorPosition(); width: 25%; top: 0; bottom: 0;"></div>
-    </div>
+<!-- Ultra-Compact Professional Mobile Navigation -->
+<div class="fixed bottom-0 left-0 right-0 z-50 md:hidden">
+    <!-- Minimal Glass Background -->
+    <div class="absolute inset-0 bg-white/90 backdrop-blur-lg border-t border-gray-200/60 shadow-xl"></div>
+    
+    <!-- Compact Navigation Container -->
+    <div class="relative px-4 py-2 @(CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "flex-row-reverse" : "") flex items-center justify-around">
         
-        <!-- Home -->
-        <a href="/" class="relative flex-1 group z-10">
-            <div class="flex flex-col items-center py-1.5 px-2 relative transition-all duration-300">
-                <svg class="w-6 h-6 mb-1 transition-all duration-300 @(IsActive("/") ? "text-white scale-110" : "text-gray-600 group-hover:scale-110 group-hover:text-amber-700")" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
-                <span class="text-xs transition-all duration-300 @(IsActive("/") ? "font-bold text-white" : "font-semibold text-gray-600")">@Localizer["Home"]</span>
+        <!-- Minimal Active Indicator -->
+        <div class="absolute top-0 left-0 right-0 h-0.5 pointer-events-none">
+            <div class="absolute h-full bg-gradient-to-r from-[#715A5A] via-amber-500 to-[#A0522D] rounded-b-full
+                        transition-all duration-300 ease-out"
+                 style="@(CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "right" : "left"): @GetIndicatorPosition(); 
+                        width: @GetIndicatorWidth(); transform: translateX(@GetIndicatorOffset());"></div>
+        </div>
+
+        <!-- Compact Home Button -->
+        <a href="/" class="@GetNavItemClasses("/") group relative flex-1 flex justify-center" @onclick="@(() => HandleNavClick("/"))">
+            <div class="relative p-2.5 rounded-xl transition-all duration-200 
+                        @(IsActive("/") ? "bg-[#715A5A] shadow-md" : "hover:bg-gray-100")">
+                
+ <svg class="w-6 h-6 transition-all duration-200 @(IsActive("/") ? "text-white" : "text-gray-600 group-hover:text-[#715A5A]")"  viewBox="0 0 24 24" fill="none">
+<path d="M22 22L2 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M2 11L10.1259 4.49931C11.2216 3.62279 12.7784 3.62279 13.8741 4.49931L22 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M15.5 5.5V3.5C15.5 3.22386 15.7239 3 16 3H18.5C18.7761 3 19 3.22386 19 3.5V8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M4 22V9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M20 22V9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M15 22V17C15 15.5858 15 14.8787 14.5607 14.4393C14.1213 14 13.4142 14 12 14C10.5858 14 9.87868 14 9.43934 14.4393C9 14.8787 9 15.5858 9 17V22" stroke="currentColor" stroke-width="1.5"/>
+<path d="M14 9.5C14 10.6046 13.1046 11.5 12 11.5C10.8954 11.5 10 10.6046 10 9.5C10 8.39543 10.8954 7.5 12 7.5C13.1046 7.5 14 8.39543 14 9.5Z" stroke="currentColor" stroke-width="1.5"/>
+</svg>
             </div>
         </a>
 
-        <!-- Products -->
-        <a href="/products" class="relative flex-1 group z-10">
-            <div class="flex flex-col items-center py-1.5 px-2 relative transition-all duration-300">
-                <svg class="w-6 h-6 mb-1 transition-all duration-300 @(IsActive("/products") ? "text-white scale-110" : "text-gray-600 group-hover:scale-110 group-hover:text-amber-700")" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-                <span class="text-xs transition-all duration-300 @(IsActive("/products") ? "font-bold text-white" : "font-semibold text-gray-600")">@Localizer["Products"]</span>
+        <!-- Compact Products Button -->
+        <a href="/products" class="@GetNavItemClasses("/products") group relative flex-1 flex justify-center" @onclick="@(() => HandleNavClick("/products"))">
+            <div class="relative p-2.5 rounded-xl transition-all duration-200 
+                        @(IsActive("/products") ? "bg-[#715A5A] shadow-md" : "hover:bg-gray-100")">
+ 
+
+                    <svg class="w-6 h-6 transition-all duration-200 @(IsActive("/products") ? "text-white" : "text-gray-600 group-hover:text-[#715A5A]")" viewBox="0 0 24 24" fill="none">
+            <path d="M22 22H2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            <path d="M20 22V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            <path d="M4 22V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            <path
+                d="M16.5278 2H7.47214C6.26932 2 5.66791 2 5.18461 2.2987C4.7013 2.5974 4.43234 3.13531 3.89443 4.21114L2.49081 7.75929C2.16652 8.57905 1.88279 9.54525 2.42867 10.2375C2.79489 10.7019 3.36257 11 3.99991 11C5.10448 11 5.99991 10.1046 5.99991 9C5.99991 10.1046 6.89534 11 7.99991 11C9.10448 11 9.99991 10.1046 9.99991 9C9.99991 10.1046 10.8953 11 11.9999 11C13.1045 11 13.9999 10.1046 13.9999 9C13.9999 10.1046 14.8953 11 15.9999 11C17.1045 11 17.9999 10.1046 17.9999 9C17.9999 10.1046 18.8953 11 19.9999 11C20.6373 11 21.205 10.7019 21.5712 10.2375C22.1171 9.54525 21.8334 8.57905 21.5091 7.75929L20.1055 4.21114C19.5676 3.13531 19.2986 2.5974 18.8153 2.2987C18.332 2 17.7306 2 16.5278 2Z"
+                stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+            <path
+                d="M9.5 21.5V18.5C9.5 17.5654 9.5 17.0981 9.70096 16.75C9.83261 16.522 10.022 16.3326 10.25 16.201C10.5981 16 11.0654 16 12 16C12.9346 16 13.4019 16 13.75 16.201C13.978 16.3326 14.1674 16.522 14.299 16.75C14.5 17.0981 14.5 17.5654 14.5 18.5V21.5"
+                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+ 
             </div>
         </a>
 
-        <!-- Cart -->
-        <a href="/cart" class="relative flex-1 group z-10 block">
-            <div class="flex flex-col items-center py-1.5 px-2 relative transition-all duration-300">
-                <div class="relative">
-                    <svg class="w-6 h-6 mb-1 transition-all duration-300 @(IsActive("/cart") ? "text-white scale-110" : "text-gray-600 group-hover:scale-110 group-hover:text-amber-700")" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    
-                    @if (itemCount > 0)
-                    {
-                        <div class="absolute -top-1 @(CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "-left-1" : "-right-1") bg-gradient-to-br from-red-500 to-red-600 text-white rounded-full text-[9px] font-bold min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow-lg border-2 border-white animate-bounce-subtle">
-                            @(itemCount > 99 ? "99+" : itemCount.ToString())
-                        </div>
-                    }
-                </div>
-                <span class="text-xs transition-all duration-300 @(IsActive("/cart") ? "font-bold text-white" : "font-semibold text-gray-600")">@Localizer["Cart"]</span>
+        <!-- Compact Cart Button with Badge -->
+        <a href="/cart" class="@GetNavItemClasses("/cart") group relative flex-1 flex justify-center" @onclick="@(() => HandleNavClick("/cart"))">
+            <div class="relative p-2.5 rounded-xl transition-all duration-200 
+                        @(IsActive("/cart") ? "bg-[#715A5A] shadow-md" : "hover:bg-gray-100")">
+
+            <svg class="w-6 h-6 transition-all duration-200 @(IsActive("/cart") ? "text-white" : "text-gray-600 group-hover:text-[#715A5A]")" viewBox="0 0 24 24" fill="none">
+                <path
+                    d="M7.5 18C8.32843 18 9 18.6716 9 19.5C9 20.3284 8.32843 21 7.5 21C6.67157 21 6 20.3284 6 19.5C6 18.6716 6.67157 18 7.5 18Z"
+                    stroke="currentColor" stroke-width="1.5" />
+                <path
+                    d="M16.5 18.0001C17.3284 18.0001 18 18.6716 18 19.5001C18 20.3285 17.3284 21.0001 16.5 21.0001C15.6716 21.0001 15 20.3285 15 19.5001C15 18.6716 15.6716 18.0001 16.5 18.0001Z"
+                    stroke="currentColor" stroke-width="1.5" />
+                <path
+                    d="M2.26121 3.09184L2.50997 2.38429H2.50997L2.26121 3.09184ZM2.24876 2.29246C1.85799 2.15507 1.42984 2.36048 1.29246 2.75124C1.15507 3.14201 1.36048 3.57016 1.75124 3.70754L2.24876 2.29246ZM4.58584 4.32298L5.20507 3.89983V3.89983L4.58584 4.32298ZM5.88772 14.5862L5.34345 15.1022H5.34345L5.88772 14.5862ZM20.6578 9.88275L21.3923 10.0342L21.3933 10.0296L20.6578 9.88275ZM20.158 12.3075L20.8926 12.4589L20.158 12.3075ZM20.7345 6.69708L20.1401 7.15439L20.7345 6.69708ZM19.1336 15.0504L18.6598 14.469L19.1336 15.0504ZM5.70808 9.76V7.03836H4.20808V9.76H5.70808ZM2.50997 2.38429L2.24876 2.29246L1.75124 3.70754L2.01245 3.79938L2.50997 2.38429ZM10.9375 16.25H16.2404V14.75H10.9375V16.25ZM5.70808 7.03836C5.70808 6.3312 5.7091 5.7411 5.65719 5.26157C5.60346 4.76519 5.48705 4.31247 5.20507 3.89983L3.96661 4.74613C4.05687 4.87822 4.12657 5.05964 4.1659 5.42299C4.20706 5.8032 4.20808 6.29841 4.20808 7.03836H5.70808ZM2.01245 3.79938C2.68006 4.0341 3.11881 4.18965 3.44166 4.34806C3.74488 4.49684 3.87855 4.61727 3.96661 4.74613L5.20507 3.89983C4.92089 3.48397 4.54304 3.21763 4.10241 3.00143C3.68139 2.79485 3.14395 2.60719 2.50997 2.38429L2.01245 3.79938ZM4.20808 9.76C4.20808 11.2125 4.22171 12.2599 4.35876 13.0601C4.50508 13.9144 4.79722 14.5261 5.34345 15.1022L6.43198 14.0702C6.11182 13.7325 5.93913 13.4018 5.83723 12.8069C5.72607 12.1578 5.70808 11.249 5.70808 9.76H4.20808ZM10.9375 14.75C9.52069 14.75 8.53763 14.7482 7.79696 14.6432C7.08215 14.5418 6.70452 14.3576 6.43198 14.0702L5.34345 15.1022C5.93731 15.7286 6.69012 16.0013 7.58636 16.1283C8.45674 16.2518 9.56535 16.25 10.9375 16.25V14.75ZM4.95808 6.87H17.0888V5.37H4.95808V6.87ZM19.9232 9.73135L19.4235 12.1561L20.8926 12.4589L21.3923 10.0342L19.9232 9.73135ZM17.0888 6.87C17.9452 6.87 18.6989 6.871 19.2937 6.93749C19.5893 6.97053 19.8105 7.01643 19.9659 7.07105C20.1273 7.12776 20.153 7.17127 20.1401 7.15439L21.329 6.23978C21.094 5.93436 20.7636 5.76145 20.4632 5.65587C20.1567 5.54818 19.8101 5.48587 19.4604 5.44678C18.7646 5.369 17.9174 5.37 17.0888 5.37V6.87ZM21.3933 10.0296C21.5625 9.18167 21.7062 8.47024 21.7414 7.90038C21.7775 7.31418 21.7108 6.73617 21.329 6.23978L20.1401 7.15439C20.2021 7.23508 20.2706 7.38037 20.2442 7.80797C20.2168 8.25191 20.1002 8.84478 19.9223 9.73595L21.3933 10.0296ZM16.2404 16.25C17.0021 16.25 17.6413 16.2513 18.1566 16.1882C18.6923 16.1227 19.1809 15.9794 19.6074 15.6318L18.6598 14.469C18.5346 14.571 18.3571 14.6525 17.9744 14.6994C17.5712 14.7487 17.0397 14.75 16.2404 14.75V16.25ZM19.4235 12.1561C19.2621 12.9389 19.1535 13.4593 19.0238 13.8442C18.9007 14.2095 18.785 14.367 18.6598 14.469L19.6074 15.6318C20.0339 15.2842 20.2729 14.8346 20.4453 14.3232C20.6111 13.8312 20.7388 13.2049 20.8926 12.4589L19.4235 12.1561Z"
+                    fill="currentColor" />
+            </svg>
+                
+                <!-- Compact Badge -->
+                @if (itemCount > 0)
+                {
+                    <div class="absolute -top-1 -right-1 min-w-[16px] h-[16px] flex items-center justify-center px-1
+                                bg-red-500 text-white text-[9px] font-bold rounded-full shadow-md border border-white">
+                        @(itemCount > 99 ? "99+" : itemCount.ToString())
+                    </div>
+                }
+                
+ 
             </div>
         </a>
 
-        <!-- Profile/Account -->
-        <a href="/Account/Manage" class="relative flex-1 group z-10">
-            <div class="flex flex-col items-center py-1.5 px-2 relative transition-all duration-300">
-                <svg class="w-6 h-6 mb-1 transition-all duration-300 @(IsActive("/Account") ? "text-white scale-110" : "text-gray-600 group-hover:scale-110 group-hover:text-amber-700")" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                <span class="text-xs transition-all duration-300 @(IsActive("/Account") ? "font-bold text-white" : "font-semibold text-gray-600")">@Localizer["Account"]</span>
+        <!-- Compact Account Button -->
+        <a href="/Account/Manage" class="@GetNavItemClasses("/Account") group relative flex-1 flex justify-center" @onclick="@(() => HandleNavClick("/Account/Manage"))">
+            <div class="relative p-2.5 rounded-xl transition-all duration-200 
+                        @(IsActive("/Account") ? "bg-[#715A5A] shadow-md" : "hover:bg-gray-100")">
+                <svg class="w-6 h-6 transition-all duration-200 @(IsActive("/Account") ? "text-white" : "text-gray-600 group-hover:text-[#715A5A]")"  viewBox="0 0 24 24" fill="none">
+<circle cx="12" cy="9" r="3" stroke="currentColor" stroke-width="1.5"/>
+<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+<path d="M17.9691 20C17.81 17.1085 16.9247 15 11.9999 15C7.07521 15 6.18991 17.1085 6.03076 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+</svg>
+ 
             </div>
         </a>
     </div>
 </div>
 
 <style>
-    @@keyframes fade-in {
-        from {
-            opacity: 0;
-            transform: scale(0.95);
-        }
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
+    /* Minimal Navigation Styles */
+    .animate-pulse-slow {
+        animation: pulse-slow 2s ease-in-out infinite;
     }
 
-    @@keyframes bounce-subtle {
+    .animate-bounce-gentle {
+        animation: bounce-gentle 1s ease-in-out infinite;
+    }
+
+    .animate-glow-pulse {
+        animation: glow-pulse 2s ease-in-out infinite;
+    }
+
+    /* Mobile Navigation Safe Areas */
+    .h-safe-area {
+        height: env(safe-area-inset-bottom, 0px);
+        max-height: 20px;
+    }
+
+    @@keyframes float {
         0%, 100% {
-            transform: translateY(0);
+            transform: translateY(0px);
         }
         50% {
-            transform: translateY(-3px);
+            transform: translateY(-2px);
         }
     }
 
-    @@keyframes liquid-flow {
+    @@keyframes shimmer {
         0% {
-            background-position: 0% 50%;
-            transform: scale(1) rotate(0deg);
-        }
-        25% {
-            background-position: 50% 100%;
-            transform: scale(1.1) rotate(2deg);
-        }
-        50% {
-            background-position: 100% 50%;
-            transform: scale(1.15) rotate(-1deg);
-        }
-        75% {
-            background-position: 50% 0%;
-            transform: scale(1.1) rotate(1deg);
+            background-position: -200% center;
         }
         100% {
-            background-position: 0% 50%;
-            transform: scale(1) rotate(0deg);
+            background-position: 200% center;
         }
     }
 
-    @@keyframes ripple {
+    @@keyframes ripple-effect {
         0% {
             transform: scale(0);
             opacity: 0.8;
         }
-        50% {
-            opacity: 0.4;
-        }
         100% {
-            transform: scale(2.5);
+            transform: scale(4);
             opacity: 0;
         }
     }
 
-    @@keyframes wave {
-        0% {
-            transform: translateX(-100%) skewX(-15deg);
-            opacity: 0;
-        }
-        50% {
-            opacity: 0.6;
-        }
-        100% {
-            transform: translateX(200%) skewX(-15deg);
-            opacity: 0;
-        }
+    /* Animation Classes */
+    .animate-pulse-slow {
+        animation: pulse-slow 3s ease-in-out infinite;
     }
 
-    .animate-fade-in {
-        animation: fade-in 0.3s ease-out;
+    .animate-bounce-gentle {
+        animation: bounce-gentle 2s ease-in-out infinite;
     }
 
-    .animate-bounce-subtle {
-        animation: bounce-subtle 2s ease-in-out infinite;
+    .animate-glow {
+        animation: glow-pulse 2s ease-in-out infinite;
     }
 
-    .liquid-bg {
-        background: linear-gradient(
-            135deg,
-            rgba(245, 158, 11, 0.1) 0%,
-            rgba(217, 119, 6, 0.15) 25%,
-            rgba(245, 158, 11, 0.2) 50%,
-            rgba(217, 119, 6, 0.15) 75%,
-            rgba(245, 158, 11, 0.1) 100%
-        );
-        background-size: 400% 400%;
-        animation: liquid-flow 4s ease-in-out infinite;
-        backdrop-filter: blur(2px);
+    .animate-float {
+        animation: float 3s ease-in-out infinite;
     }
 
-    .liquid-bg::before {
+    /* Professional Hover Effects */
+    .group:hover .icon-container {
+        animation: float 0.6s ease-in-out;
+    }
+
+    .group:active .icon-container {
+        transform: scale(0.95);
+        transition: transform 0.1s ease-out;
+    }
+
+    /* Glass Morphism Effects */
+    .glass-morphism {
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    /* Enhanced Drop Shadows */
+    .nav-shadow {
+        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+    }
+
+    .active-shadow {
+        filter: drop-shadow(0 2px 8px rgba(113, 90, 90, 0.3));
+    }
+
+    /* Gradient Badge Effect */
+    .badge-gradient {
+        background: linear-gradient(135deg, #ef4444, #dc2626, #b91c1c);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .badge-gradient::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        animation: shimmer 2s infinite;
+    }
+
+    /* Safe Area Support */
+    .h-safe-area {
+        height: env(safe-area-inset-bottom);
+        min-height: 8px;
+    }
+
+    /* RTL Support */
+    [dir="rtl"] .nav-item {
+        transform: scaleX(-1);
+    }
+
+    [dir="rtl"] .nav-item svg {
+        transform: scaleX(-1);
+    }
+
+    /* Enhanced Touch Targets */
+    .touch-target {
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    /* Professional Transitions */
+    .professional-transition {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Micro-interactions */
+    .micro-bounce:active {
+        transform: scale(0.98);
+        transition: transform 0.1s ease-out;
+    }
+
+    /* Enhanced Focus States */
+    .nav-focus:focus-visible {
+        outline: 2px solid #f59e0b;
+        outline-offset: 2px;
+        border-radius: 16px;
+    }
+
+    /* Status Indicators */
+    .status-online {
+        background: radial-gradient(circle, #10b981 0%, #059669 100%);
+        animation: pulse-slow 2s infinite;
+    }
+
+    /* Coffee Theme Gradients */
+    .coffee-gradient-primary {
+        background: linear-gradient(135deg, #715A5A 0%, #8B6B3A 50%, #A0522D 100%);
+    }
+
+    .coffee-gradient-secondary {
+        background: linear-gradient(135deg, rgba(113, 90, 90, 0.1) 0%, rgba(245, 158, 11, 0.1) 50%, rgba(160, 82, 45, 0.1) 100%);
+    }
+
+    /* Badge Pulse Animation */
+    .badge-pulse {
+        animation: bounce-gentle 2s ease-in-out infinite;
+    }
+
+    .badge-pulse::before {
         content: '';
         position: absolute;
         top: 50%;
         left: 50%;
         width: 100%;
         height: 100%;
-        background: radial-gradient(circle, rgba(245, 158, 11, 0.3) 0%, transparent 70%);
-        transform: translate(-50%, -50%) scale(0);
-        animation: ripple 2s ease-out infinite;
-        border-radius: 50%;
+        background: inherit;
+        border-radius: inherit;
+        transform: translate(-50%, -50%);
+        animation: ripple-effect 2s infinite;
+        opacity: 0.6;
     }
 
-    .liquid-bg::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 200%;
-        height: 100%;
-        background: linear-gradient(
-            90deg,
-            transparent 0%,
-            rgba(245, 158, 11, 0.2) 50%,
+    /* Professional Accessibility Enhancements */
+    .nav-item:focus-within {
+        transform: scale(1.05);
+        z-index: 10;
+    }
+
+    /* Professional Loading States */
+    .loading-shimmer {
+        background: linear-gradient(90deg, 
+            transparent 0%, 
+            rgba(255,255,255,0.4) 50%, 
             transparent 100%
         );
-        animation: wave 3s linear infinite;
+        background-size: 200px 100%;
+        animation: shimmer 1.5s infinite;
     }
 
-    /* Add smooth filter transition for glow effect */
-    .group:hover svg {
-        filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3));
-        transition: filter 0.3s ease;
+    /* Professional Dark Mode Adaptations */
+    @@media (prefers-color-scheme: dark) {
+        .glass-morphism {
+            background: rgba(30, 30, 30, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .coffee-gradient-secondary {
+            background: linear-gradient(135deg, 
+                rgba(113, 90, 90, 0.2) 0%, 
+                rgba(245, 158, 11, 0.15) 50%, 
+                rgba(160, 82, 45, 0.2) 100%
+            );
+        }
     }
 
-    /* Enhance active state with glow */
-    .group:has(.animate-fade-in) svg {
-        filter: drop-shadow(0 2px 6px rgba(245, 158, 11, 0.5));
+    /* Professional Reduced Motion Support */
+    @@media (prefers-reduced-motion: reduce) {
+        .animate-pulse-slow,
+        .animate-bounce-gentle,
+        .animate-glow,
+        .animate-float,
+        .badge-pulse,
+        .professional-transition {
+            animation: none !important;
+        }
+        
+        .professional-transition {
+            transition: transform 0.1s ease, opacity 0.1s ease !important;
+        }
+    }
+
+    /* Professional Small Screen Optimizations */
+    @@media (max-width: 320px) {
+        .mobile-nav-container {
+            height: 68px;
+            padding: 6px 8px;
+        }
+        
+        .nav-item {
+            padding: 6px;
+        }
+        
+        .nav-item span {
+            font-size: 9px;
+        }
+        
+        .nav-item .icon-container {
+            width: 24px;
+            height: 24px;
+        }
+        
+        .nav-item svg {
+            width: 14px;
+            height: 14px;
+        }
+    }
+
+    /* Professional High Contrast Mode */
+    @@media (prefers-contrast: high) {
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #000000;
+        }
+        
+        .coffee-gradient-primary {
+            background: #000000;
+        }
+        
+        .nav-item {
+            border: 1px solid #000000;
+        }
     }
 </style>
 
 @code {
+    // Professional State Management
     private int itemCount = 0;
     private decimal totalPrice = 0;
     private bool _disposed = false;
+    private string? lastClickedNav = null;
+    private DateTime lastClickTime = DateTime.MinValue;
 
     protected override async Task OnInitializedAsync()
     {
@@ -239,11 +420,28 @@
         });
     }
 
+    // Professional Navigation Methods
     private bool IsActive(string href)
     {
         var currentPath = Navigation.ToBaseRelativePath(Navigation.Uri);
         return (href == "/" && currentPath == "") || 
-               (href != "/" && currentPath.StartsWith(href.TrimStart('/')));
+               (href != "/" && currentPath.StartsWith(href.TrimStart('/'), StringComparison.OrdinalIgnoreCase));
+    }
+
+    private void HandleNavClick(string href)
+    {
+        // Professional click handling with debouncing
+        var now = DateTime.Now;
+        if (lastClickedNav == href && (now - lastClickTime).TotalMilliseconds < 300)
+        {
+            return; // Prevent rapid clicks
+        }
+        
+        lastClickedNav = href;
+        lastClickTime = now;
+        
+        // Add haptic feedback for better UX (if supported)
+        InvokeAsync(StateHasChanged);
     }
 
     private string GetIndicatorPosition()
@@ -251,68 +449,124 @@
         var currentPath = Navigation.ToBaseRelativePath(Navigation.Uri);
         bool isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
         
+        // Calculate precise positions for smooth animation
+        var positions = GetNavigationPositions(isRtl);
+        
+        if (currentPath == "" || currentPath == "/")
+            return positions["home"];
+        if (currentPath.StartsWith("products", StringComparison.OrdinalIgnoreCase))
+            return positions["products"];
+        if (currentPath.StartsWith("cart", StringComparison.OrdinalIgnoreCase))
+            return positions["cart"];
+        if (currentPath.StartsWith("Account", StringComparison.OrdinalIgnoreCase))
+            return positions["account"];
+            
+        return positions["home"];
+    }
+
+    private string GetIndicatorWidth()
+    {
+        // Compact width for ultra-minimal design
+        return "calc(25% - 8px)";
+    }
+
+    private string GetIndicatorOffset()
+    {
+        // Minimal offset for compact design
+        return "4px";
+    }
+
+    private Dictionary<string, string> GetNavigationPositions(bool isRtl)
+    {
         if (isRtl)
         {
-            // RTL Layout - positions are reversed
-            // Account (0%)
-            if (currentPath.StartsWith("Account"))
-                return "0%";
-            
-            // Cart (25%)
-            if (currentPath.StartsWith("cart"))
-                return "25%";
-            
-            // Products (50%)
-            if (currentPath.StartsWith("products"))
-                return "50%";
-            
-            // Home (75%)
-            if (currentPath == "" || currentPath == "/")
-                return "75%";
-            
-            return "75%";
+            return new Dictionary<string, string>
+            {
+                ["account"] = "0%",
+                ["cart"] = "25%",
+                ["products"] = "50%",
+                ["home"] = "75%"
+            };
         }
         else
         {
-            // LTR Layout - normal positions
-            // Home (0%)
-            if (currentPath == "" || currentPath == "/")
-                return "0%";
-            
-            // Products (25%)
-            if (currentPath.StartsWith("products"))
-                return "25%";
-            
-            // Cart (50%)
-            if (currentPath.StartsWith("cart"))
-                return "50%";
-            
-            // Account (75%)
-            if (currentPath.StartsWith("Account"))
-                return "75%";
-            
-            return "0%";
+            return new Dictionary<string, string>
+            {
+                ["home"] = "0%",
+                ["products"] = "25%",
+                ["cart"] = "50%",
+                ["account"] = "75%"
+            };
         }
     }
 
     private string GetNavItemClasses(string href)
     {
         var isActive = IsActive(href);
-        return isActive 
-            ? "text-[#715A5A] hover:text-[#37353E] transition-colors duration-200" 
-            : "text-gray-500 hover:text-[#715A5A] transition-colors duration-200";
+        return $"flex-1 professional-transition micro-bounce nav-focus touch-target {(isActive ? "active-shadow" : "nav-shadow")}";
     }
 
-    private string GetCartItemClasses()
+    private string GetActiveStateClasses(string href)
     {
-        var currentPath = Navigation.ToBaseRelativePath(Navigation.Uri);
-        var isActive = currentPath.StartsWith("cart");
-        
-        return isActive 
-            ? "text-[#715A5A] hover:text-[#37353E] transition-colors duration-200" 
-            : "text-gray-500 hover:text-[#715A5A] transition-colors duration-200";
+        return IsActive(href) 
+            ? "coffee-gradient-primary text-white shadow-lg animate-glow" 
+            : "bg-gray-200/50 text-gray-600 hover:bg-amber-200/70 hover:text-amber-700";
     }
 
+    private string GetLabelClasses(string href)
+    {
+        return IsActive(href)
+            ? "text-[#715A5A] font-bold tracking-wide"
+            : "text-gray-600 group-hover:text-amber-700 font-semibold";
+    }
+
+    private string GetBadgeClasses()
+    {
+        return itemCount > 0 
+            ? "badge-gradient badge-pulse animate-bounce-gentle transform hover:scale-110" 
+            : "hidden";
+    }
+
+    // Professional Helper Methods
+    private string GetCartBadgePosition()
+    {
+        bool isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+        return isRtl ? "-left-2" : "-right-2";
+    }
+
+    private string GetCartBadgeText()
+    {
+        if (itemCount == 0) return "";
+        return itemCount > 99 ? "99+" : itemCount.ToString();
+    }
+
+    private bool ShouldShowBadge()
+    {
+        return itemCount > 0;
+    }
+
+    // Professional Animation Methods
+    private string GetIconAnimationClasses(string href)
+    {
+        var baseClasses = "w-4 h-4 transition-all duration-300 professional-transition";
+        if (IsActive(href))
+        {
+            return $"{baseClasses} text-white scale-110 animate-float";
+        }
+        return $"{baseClasses} text-gray-600 group-hover:text-amber-700 group-hover:scale-110";
+    }
+
+    private string GetContainerAnimationClasses(string href)
+    {
+        var baseClasses = "flex flex-col items-center p-3 rounded-2xl professional-transition transform touch-target";
+        if (IsActive(href))
+        {
+            return $"{baseClasses} coffee-gradient-secondary scale-105 animate-glow";
+        }
+        return $"{baseClasses} hover:bg-gray-100/70 hover:scale-105 active:scale-95";
+    }
+
+    // Professional Cleanup
     public void Dispose()
     {
         _disposed = true;

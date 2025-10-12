@@ -7,7 +7,8 @@ const CACHE_NAME = 'spirithubcafe-simple';
 const CACHE_URLS = [
     '/',
     '/dist.css',
-    '/favicon.ico'
+    '/favicon.ico',
+    '/offline.html'
 ];
 
 // Install - cache basic files
@@ -24,7 +25,7 @@ self.addEventListener('activate', (event) => {
     event.waitUntil(self.clients.claim());
 });
 
-// Fetch - simple network first, cache fallback
+// Fetch - network first, with offline fallback
 self.addEventListener('fetch', (event) => {
     // Skip non-GET requests and special URLs
     if (event.request.method !== 'GET' ||
@@ -34,6 +35,19 @@ self.addEventListener('fetch', (event) => {
         return;
     }
     
+    // Handle navigation requests (HTML pages)
+    if (event.request.mode === 'navigate') {
+        event.respondWith(
+            fetch(event.request)
+                .catch(() => {
+                    // If network fails for navigation, show offline page
+                    return caches.match('/offline.html');
+                })
+        );
+        return;
+    }
+    
+    // Handle other requests
     event.respondWith(
         fetch(event.request)
             .catch(() => caches.match(event.request))

@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#715A5A">
+    
+    <!-- Cache Control -->
+    <meta http-equiv="Cache-Control" content="max-age=31536000, immutable">
+    <meta http-equiv="Expires" content="Mon, 01 Jan 2030 00:00:00 GMT">
+    <meta name="robots" content="noindex, nofollow">
+    
     <title>Offline - Spirithub Cafe</title>
     <style>
         * {
@@ -25,17 +31,18 @@
 
         .offline-container {
             text-align: center;
-            max-width: 500px;
+            max-width: 900px;
+            width: 90%;
             background: white;
-            padding: 48px 32px;
+            padding: 32px 40px;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
         }
 
         .offline-icon {
-            width: 140px;
-            height: 140px;
-            margin: 0 auto 32px;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
             background: linear-gradient(135deg, #715A5A 0%, #37353E 100%);
             border-radius: 50%;
             display: flex;
@@ -46,8 +53,8 @@
         }
 
         .offline-icon svg {
-            width: 70px;
-            height: 70px;
+            width: 50px;
+            height: 50px;
             fill: white;
         }
 
@@ -61,18 +68,18 @@
         }
 
         h1 {
-            font-size: 36px;
+            font-size: 28px;
             font-weight: 700;
             color: #37353E;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             line-height: 1.2;
         }
 
         p {
-            font-size: 16px;
+            font-size: 15px;
             color: #666;
-            line-height: 1.6;
-            margin-bottom: 32px;
+            line-height: 1.5;
+            margin-bottom: 20px;
         }
 
         .button-group {
@@ -120,12 +127,12 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            margin-bottom: 24px;
-            padding: 8px 16px;
+            margin-bottom: 20px;
+            padding: 6px 14px;
             background: #fff3cd;
             color: #856404;
             border-radius: 20px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
         }
 
@@ -146,34 +153,50 @@
             }
         }
 
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .content-left {
+            text-align: center;
+        }
+
+        .content-right {
+            text-align: left;
+        }
+
         .cached-pages {
-            margin-top: 40px;
-            padding-top: 32px;
+            margin-top: 0;
+            padding-top: 20px;
             border-top: 1px solid #eee;
         }
 
         .cached-pages h2 {
-            font-size: 18px;
+            font-size: 16px;
             color: #37353E;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             font-weight: 600;
         }
 
         .page-list {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
 
         .page-link {
             display: block;
-            padding: 12px 16px;
+            padding: 10px 14px;
             background: #f8f9fa;
             border-radius: 8px;
             color: #715A5A;
             text-decoration: none;
             transition: all 0.2s ease;
             font-weight: 500;
+            font-size: 14px;
         }
 
         .page-link:hover {
@@ -181,13 +204,23 @@
             transform: translateX(4px);
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
             .offline-container {
-                padding: 32px 24px;
+                padding: 24px 20px;
+                max-width: 95%;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .content-right {
+                text-align: center;
             }
 
             h1 {
-                font-size: 28px;
+                font-size: 24px;
             }
 
             .button-group {
@@ -197,6 +230,16 @@
             button {
                 width: 100%;
             }
+
+            .offline-icon {
+                width: 80px;
+                height: 80px;
+            }
+
+            .offline-icon svg {
+                width: 40px;
+                height: 40px;
+            }
         }
     </style>
 </head>
@@ -204,32 +247,41 @@
     <div class="offline-container">
         <div class="status-indicator">
             <span class="status-dot"></span>
-            <span>No Internet Connection</span>
+            <span>No Internet Connection / لا يوجد اتصال بالإنترنت</span>
         </div>
 
-        <div class="offline-icon">
-            <svg viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-            </svg>
-        </div>
+        <div class="main-content">
+            <div class="content-left">
+                <div class="offline-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                    </svg>
+                </div>
 
-        <h1>You're Offline</h1>
-        <p>It looks like you've lost your internet connection. Some features may be limited, but you can still browse cached pages.</p>
+                <h1>You're Offline</h1>
+                <h1 style="direction: rtl;">أنت غير متصل</h1>
+                <p>It looks like you've lost your internet connection. Some features may be limited, but you can still browse cached pages.</p>
+                <p style="direction: rtl;">يبدو أنك فقدت الاتصال بالإنترنت. قد تكون بعض الميزات محدودة، ولكن يمكنك تصفح الصفحات المحفوظة.</p>
 
-        <div class="button-group">
-            <button onclick="window.location.reload()">
-                 Try Again
-            </button>
-            <button class="secondary-button" onclick="window.location.href='/'">
-                 Go Home
-            </button>
-        </div>
+                <div class="button-group">
+                    <button onclick="checkConnectionAndRetry()">
+                         Try Again / حاول مرة أخرى
+                    </button>
+                    <button class="secondary-button" onclick="window.location.href='/'">
+                         Go Home / الصفحة الرئيسية
+                    </button>
+                </div>
+            </div>
 
-        <div class="cached-pages">
-            <h2>Available Cached Pages</h2>
-            <div class="page-list">
-                <a href="/" class="page-link">Home Page</a>
-                <a href="/products" class="page-link">Products</a>
+            <div class="content-right">
+                <div class="cached-pages">
+                    <h2>Available Cached Pages</h2>
+                    <h2 style="direction: rtl;">الصفحات المحفوظة المتاحة</h2>
+                    <div class="page-list">
+                        <a href="/" class="page-link">🏠 Home Page / الصفحة الرئيسية</a>
+                        <a href="/products" class="page-link">🛍️ Products / المنتجات</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -239,22 +291,33 @@
         window.addEventListener('online', function() {
             console.log('✅ Connection restored!');
             
-            // Show success message
-            const container = document.querySelector('.offline-container');
-            container.innerHTML = `
-                <div class="offline-icon" style="background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);">
-                    <svg viewBox="0 0 24 24" style="fill: white;">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                    </svg>
-                </div>
-                <h1 style="color: #37b24d;">Back Online!</h1>
-                <p>Your connection has been restored. Redirecting...</p>
-            `;
-            
-            // Reload after 1.5 seconds
-            setTimeout(function() {
-                window.location.reload();
-            }, 1500);
+            // Check actual server connectivity
+            fetch('/_health', { method: 'HEAD', cache: 'no-cache' })
+                .then(response => {
+                    if (response.ok) {
+                        // Show success message
+                        const container = document.querySelector('.offline-container');
+                        container.innerHTML = `
+                            <div class="offline-icon" style="background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);">
+                                <svg viewBox="0 0 24 24" style="fill: white;">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                </svg>
+                            </div>
+                            <h1 style="color: #37b24d;">Back Online!</h1>
+                            <h1 style="color: #37b24d; direction: rtl;">عدت للاتصال!</h1>
+                            <p>Your connection has been restored. Redirecting...</p>
+                            <p style="direction: rtl;">تم استعادة الاتصال. جاري التوجيه...</p>
+                        `;
+                        
+                        // Go back to main site after 1.5 seconds
+                        setTimeout(function() {
+                            window.location.href = '/';
+                        }, 1500);
+                    }
+                })
+                .catch(() => {
+                    console.log('Server still not available');
+                });
         });
 
         // Monitor connection status
@@ -271,6 +334,42 @@
         }
 
         setInterval(updateConnectionStatus, 1000);
+
+        // Function to check connection and retry
+        function checkConnectionAndRetry() {
+            const button = event.target;
+            const originalText = button.innerHTML;
+            
+            // Show loading state
+            button.innerHTML = '⏳ Checking... / جاري الفحص...';
+            button.disabled = true;
+            
+            fetch('/_health', { 
+                method: 'HEAD', 
+                cache: 'no-cache',
+                timeout: 5000 
+            })
+            .then(response => {
+                if (response.ok) {
+                    button.innerHTML = '✅ Connected! Redirecting... / متصل! جاري التوجيه...';
+                    button.style.background = 'linear-gradient(135deg, #51cf66 0%, #37b24d 100%)';
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1000);
+                } else {
+                    throw new Error('Server not available');
+                }
+            })
+            .catch(() => {
+                button.innerHTML = '❌ Still offline / لا يزال غير متصل';
+                button.style.background = 'linear-gradient(135deg, #f03e3e 0%, #c92a2a 100%)';
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.style.background = '';
+                    button.disabled = false;
+                }, 2000);
+            });
+        }
     </script>
 </body>
 </html>

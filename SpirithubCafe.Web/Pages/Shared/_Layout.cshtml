@@ -80,6 +80,12 @@
     <!-- Blazor Connection Manager for Error Handling -->
     <script src="/js/blazor-connection-manager.js"></script>
     
+    <!-- Offline Handler for Connection Issues -->
+    <script src="/js/offline-handler.js"></script>
+    
+    <!-- PWA Service Worker Registration -->
+    <script src="/pwa-register.js"></script>
+    
     <script>
         // Professional loading screen management for Blazor Server
         let loadingHidden = false;
@@ -135,6 +141,11 @@
         
         // Start Blazor Server
         Blazor.start();
+        
+        // Register Service Worker for offline support
+        if (typeof registerServiceWorker === 'function') {
+            registerServiceWorker();
+        }
     </script>
 </body>
 
