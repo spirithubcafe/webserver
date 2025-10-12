@@ -975,11 +975,11 @@
   .min-w-\[3rem\] {
     min-width: 3rem;
   }
+  .min-w-\[9rem\] {
+    min-width: 9rem;
+  }
   .min-w-\[10rem\] {
     min-width: 10rem;
-  }
-  .min-w-\[12rem\] {
-    min-width: 12rem;
   }
   .min-w-\[16px\] {
     min-width: 16px;
@@ -3484,6 +3484,13 @@
       }
     }
   }
+  .hover\:border-amber-400 {
+    &:hover {
+      @media (hover: hover) {
+        border-color: var(--color-amber-400);
+      }
+    }
+  }
   .hover\:border-blue-200 {
     &:hover {
       @media (hover: hover) {
@@ -5317,6 +5324,11 @@
       padding: calc(var(--spacing) * 8);
     }
   }
+  .md\:py-6 {
+    @media (width >= 48rem) {
+      padding-block: calc(var(--spacing) * 6);
+    }
+  }
   .md\:py-16 {
     @media (width >= 48rem) {
       padding-block: calc(var(--spacing) * 16);
@@ -5576,6 +5588,11 @@
       flex-wrap: nowrap;
     }
   }
+  .lg\:flex-wrap {
+    @media (width >= 64rem) {
+      flex-wrap: wrap;
+    }
+  }
   .lg\:items-center {
     @media (width >= 64rem) {
       align-items: center;
@@ -5584,6 +5601,11 @@
   .lg\:justify-between {
     @media (width >= 64rem) {
       justify-content: space-between;
+    }
+  }
+  .lg\:gap-4 {
+    @media (width >= 64rem) {
+      gap: calc(var(--spacing) * 4);
     }
   }
   .lg\:gap-8 {
@@ -5668,14 +5690,39 @@
       line-height: var(--tw-leading, var(--text-base--line-height));
     }
   }
+  .xl\:h-12 {
+    @media (width >= 80rem) {
+      height: calc(var(--spacing) * 12);
+    }
+  }
+  .xl\:h-14 {
+    @media (width >= 80rem) {
+      height: calc(var(--spacing) * 14);
+    }
+  }
   .xl\:w-1\/4 {
     @media (width >= 80rem) {
       width: calc(1/4 * 100%);
     }
   }
+  .xl\:w-80 {
+    @media (width >= 80rem) {
+      width: calc(var(--spacing) * 80);
+    }
+  }
   .xl\:max-w-xl {
     @media (width >= 80rem) {
       max-width: var(--container-xl);
+    }
+  }
+  .xl\:min-w-\[10rem\] {
+    @media (width >= 80rem) {
+      min-width: 10rem;
+    }
+  }
+  .xl\:min-w-\[12rem\] {
+    @media (width >= 80rem) {
+      min-width: 12rem;
     }
   }
   .xl\:grid-cols-2 {
@@ -5703,6 +5750,21 @@
       grid-template-columns: repeat(6, minmax(0, 1fr));
     }
   }
+  .xl\:gap-4 {
+    @media (width >= 80rem) {
+      gap: calc(var(--spacing) * 4);
+    }
+  }
+  .xl\:gap-6 {
+    @media (width >= 80rem) {
+      gap: calc(var(--spacing) * 6);
+    }
+  }
+  .xl\:gap-8 {
+    @media (width >= 80rem) {
+      gap: calc(var(--spacing) * 8);
+    }
+  }
   .xl\:gap-12 {
     @media (width >= 80rem) {
       gap: calc(var(--spacing) * 12);
@@ -5711,6 +5773,11 @@
   .xl\:gap-x-16 {
     @media (width >= 80rem) {
       column-gap: calc(var(--spacing) * 16);
+    }
+  }
+  .xl\:px-5 {
+    @media (width >= 80rem) {
+      padding-inline: calc(var(--spacing) * 5);
     }
   }
   .ltr\:-right-1 {
@@ -5842,11 +5909,6 @@
       padding-right: calc(var(--spacing) * 12);
     }
   }
-  .ltr\:pr-14 {
-    &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
-      padding-right: calc(var(--spacing) * 14);
-    }
-  }
   .ltr\:pl-4 {
     &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
       padding-left: calc(var(--spacing) * 4);
@@ -5889,6 +5951,13 @@
       &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
         --tw-translate-x: calc(var(--spacing) * 0);
         translate: var(--tw-translate-x) var(--tw-translate-y);
+      }
+    }
+  }
+  .xl\:ltr\:pr-14 {
+    @media (width >= 80rem) {
+      &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
+        padding-right: calc(var(--spacing) * 14);
       }
     }
   }
@@ -6040,11 +6109,6 @@
       padding-left: calc(var(--spacing) * 12);
     }
   }
-  .rtl\:pl-14 {
-    &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
-      padding-left: calc(var(--spacing) * 14);
-    }
-  }
   .rtl\:text-left {
     &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
       text-align: left;
@@ -6067,6 +6131,13 @@
       &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
         --tw-translate-x: calc(var(--spacing) * 0);
         translate: var(--tw-translate-x) var(--tw-translate-y);
+      }
+    }
+  }
+  .xl\:rtl\:pl-14 {
+    @media (width >= 80rem) {
+      &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
+        padding-left: calc(var(--spacing) * 14);
       }
     }
   }

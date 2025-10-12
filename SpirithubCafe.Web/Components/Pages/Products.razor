@@ -30,18 +30,47 @@
         <div class="absolute inset-0 bg-opacity-5"></div>
     }
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-             <h1 class="text-2xl md:text-3xl font-bold mb-4" style="color: @shopTitleTextColor">
-                @GetShopTitle()
-            </h1>
-            <p class="mx-auto" style="color: @shopSubtitleTextColor">
-                @GetShopSubtitle()
-            </p>
+        <div class="flex items-center justify-between gap-4">
+            <div class="flex-1">
+                <h1 class="text-2xl md:text-3xl font-bold mb-4" style="color: @shopTitleTextColor">
+                    @GetShopTitle()
+                </h1>
+                <p class="mx-auto" style="color: @shopSubtitleTextColor">
+                    @GetShopSubtitle()
+                </p>
+            </div>
+            
+            <!-- Filter Toggle Button -->
+            <button @onclick="ToggleFilters" 
+                    class="flex-shrink-0 flex items-center gap-2 px-4 py-3 rounded-xl
+                           bg-white/90 hover:bg-white border-2 border-gray-200 hover:border-amber-400
+                           text-gray-700 hover:text-amber-600 font-medium
+                           shadow-md hover:shadow-lg transition-all duration-300
+                           focus:outline-none focus:ring-3 focus:ring-amber-100">
+                @if (showFilters)
+                {
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                    <span class="hidden sm:inline">@(System.Globalization.CultureInfo.CurrentUICulture.Name.StartsWith("ar") ? "إخفاء الفلاتر" : "Hide Filters")</span>
+                }
+                else
+                {
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                    </svg>
+                    <span class="hidden sm:inline">@(System.Globalization.CultureInfo.CurrentUICulture.Name.StartsWith("ar") ? "إظهار الفلاتر" : "Show Filters")</span>
+                }
+            </button>
+        </div>
      </div>
 </section>
 
 <!-- Advanced Professional Filtering System -->
-<section class="py-6 bg-gradient-to-r from-white via-gray-50/50 to-white border-b border-gray-200/70 sticky top-20 z-40 backdrop-blur-md shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+@if (showFilters)
+{
+    <section class="py-4 md:py-6 bg-gradient-to-r from-white via-gray-50/50 to-white border-b border-gray-200/70 sticky top-20 z-40 backdrop-blur-md shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         @if (isLoading)
         {
             <!-- Enhanced Loading State -->
@@ -120,9 +149,9 @@
                     </div>
 
                     <!-- Mobile Filters with Professional Layout -->
-                    <div class="mt-6 grid grid-cols-2 gap-4">
+                    <div class="mt-4 grid grid-cols-2 gap-4">
                         <!-- Category Filter -->
-                        <div class="space-y-3">
+                        <div class="space-y-2">
                             <label class="flex items-center text-sm font-bold text-gray-700 tracking-wide">
                                 <svg class="w-4 h-4 mr-2 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
@@ -152,7 +181,7 @@
                         </div>
 
                         <!-- Sort Filter -->
-                        <div class="space-y-3">
+                        <div class="space-y-2">
                             <label class="flex items-center text-sm font-bold text-gray-700 tracking-wide">
                                 <svg class="w-4 h-4 mr-2 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4"></path>
@@ -182,10 +211,10 @@
                     </div>
                 </div>
 
-                <!-- Desktop Professional Layout -->
-                <div class="hidden lg:flex lg:items-center lg:justify-between lg:gap-8">
+                <!-- Desktop Professional Layout with Tablet Support -->
+                <div class="hidden lg:flex lg:flex-wrap lg:items-center lg:justify-between lg:gap-4 xl:gap-8">
                     <!-- Search Section -->
-                    <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-4 xl:gap-6 flex-shrink-0">
                         <div class="flex items-center text-sm font-bold text-gray-700 tracking-wide whitespace-nowrap">
                             <svg class="w-5 h-5 mr-2 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -193,7 +222,7 @@
                             @Localizer["Search"]
                         </div>
                         
-                        <div class="relative group">
+                        <div class="relative group flex-shrink-0">
                             <div class="absolute inset-y-0 ltr:left-0 rtl:right-0 ltr:pl-5 rtl:pr-5 flex items-center pointer-events-none z-10">
                                 <svg class="h-6 w-6 text-gray-400 group-focus-within:text-amber-500 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -206,7 +235,7 @@
                                 @onfocus="OnSearchFocus"
                                 @onblur="OnSearchBlur"
                                 placeholder="@GetSearchPlaceholder()"
-                                class="w-80 h-14 ltr:pl-14 rtl:pr-14 ltr:pr-6 rtl:pl-6 bg-white/80 backdrop-blur-sm border-2 border-gray-200/50 rounded-2xl
+                                class="w-64 xl:w-80 h-12 xl:h-14 ltr:pl-14 rtl:pr-14 ltr:pr-6 rtl:pl-6 bg-white/80 backdrop-blur-sm border-2 border-gray-200/50 rounded-2xl
                                        text-gray-900 placeholder-gray-500 text-base font-medium
                                        focus:border-amber-400 focus:ring-4 focus:ring-amber-100 focus:bg-white focus:outline-none
                                        hover:border-gray-300 hover:shadow-lg hover:bg-white
@@ -226,19 +255,19 @@
                     </div>
 
                     <!-- Filter Controls -->
-                    <div class="flex items-center gap-8">
+                    <div class="flex items-center gap-4 xl:gap-8 flex-wrap">
                         <!-- Category Filter -->
-                        <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-3 xl:gap-4 flex-shrink-0">
                             <label class="text-sm font-bold text-gray-700 tracking-wide whitespace-nowrap flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                                 </svg>
                                 @Localizer["Category"]
                             </label>
-                            <div class="relative">
+                            <div class="relative flex-shrink-0">
                                 <select @bind="selectedCategory" @bind:event="onchange"
-                                        class="h-12 px-5 ltr:pr-14 rtl:pl-14 bg-white/90 backdrop-blur-sm border-2 border-gray-200/70 rounded-xl
-                                               text-gray-800 text-sm font-semibold appearance-none cursor-pointer min-w-[12rem] relative z-10
+                                        class="h-11 xl:h-12 px-4 xl:px-5 ltr:pr-12 rtl:pl-12 xl:ltr:pr-14 xl:rtl:pl-14 bg-white/90 backdrop-blur-sm border-2 border-gray-200/70 rounded-xl
+                                               text-gray-800 text-sm font-semibold appearance-none cursor-pointer min-w-[10rem] xl:min-w-[12rem] relative z-10
                                                focus:border-amber-400 focus:ring-3 focus:ring-amber-100 focus:bg-white focus:outline-none
                                                hover:border-gray-300 hover:shadow-lg hover:bg-white
                                                transition-all duration-300 shadow-md
@@ -258,17 +287,17 @@
                         </div>
 
                         <!-- Sort Filter -->
-                        <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-3 xl:gap-4 flex-shrink-0">
                             <label class="text-sm font-bold text-gray-700 tracking-wide whitespace-nowrap flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4"></path>
                                 </svg>
                                 @Localizer["SortBy"]
                             </label>
-                            <div class="relative">
+                            <div class="relative flex-shrink-0">
                                 <select @bind="sortOption" @bind:event="onchange"
-                                        class="h-12 px-5 ltr:pr-14 rtl:pl-14 bg-white/90 backdrop-blur-sm border-2 border-gray-200/70 rounded-xl
-                                               text-gray-800 text-sm font-semibold appearance-none cursor-pointer min-w-[10rem] relative z-10
+                                        class="h-11 xl:h-12 px-4 xl:px-5 ltr:pr-12 rtl:pl-12 xl:ltr:pr-14 xl:rtl:pl-14 bg-white/90 backdrop-blur-sm border-2 border-gray-200/70 rounded-xl
+                                               text-gray-800 text-sm font-semibold appearance-none cursor-pointer min-w-[9rem] xl:min-w-[10rem] relative z-10
                                                focus:border-amber-400 focus:ring-3 focus:ring-amber-100 focus:bg-white focus:outline-none
                                                hover:border-gray-300 hover:shadow-lg hover:bg-white
                                                transition-all duration-300 shadow-md">
@@ -365,6 +394,7 @@
         }
     </div>
 </section>
+}
 
 <!-- Products Grid -->
 <section class="py-8 bg-gray-50">
@@ -686,6 +716,9 @@
     private readonly Dictionary<int, int> productQuantities = new();
     private bool shouldScrollToTop = false;
     private bool _disposed = false;
+    
+    // Filter Toggle State
+    private bool showFilters = true;
     
     // Professional UI State Management
     private bool isFocusedSearch = false;
@@ -1022,6 +1055,12 @@
     {
         selectedCategory = string.Empty;
         searchQuery = string.Empty;
+        StateHasChanged();
+    }
+    
+    private void ToggleFilters()
+    {
+        showFilters = !showFilters;
         StateHasChanged();
     }
     

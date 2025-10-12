@@ -2,35 +2,3 @@ HARDCODED TEXTS TO BE LOCALIZED
 =====================================
 Format: Key|English Text|Arabic Text
 
-# Account Management - Layout (ManageLayout.razor)
-AccountManagement|Account Management|إدارة الحساب
-ManageAccountSettings|Manage your account settings and preferences|إدارة إعدادات حسابك وتفضيلاتك
-Settings|Settings|الإعدادات
-
-# Account Management - Navigation Menu (ManageNavMenu.razor)
-Profile|Profile|الملف الشخصي
-Email|Email|البريد الإلكتروني
-Password|Password|كلمة المرور
-ExternalLogins|External logins|تسجيلات الدخول الخارجية
-TwoFactorAuthentication|Two-factor authentication|المصادقة الثنائية
-PersonalData|Personal data|البيانات الشخصية
-
-# Account Management - Profile Page (Index.razor)
-ProfileSettings|Profile Settings|إعدادات الملف الشخصي
-ManageAccountInformation|Manage your account information and preferences|إدارة معلومات حسابك وتفضيلاتك
-AccountHolder|Account holder|صاحب الحساب
-Username|Username|اسم المستخدم
-YourUsername|Your username|اسم المستخدم الخاص بك
-UsernameCannotBeChanged|Username cannot be changed|لا يمكن تغيير اسم المستخدم
-PhoneNumber|Phone Number|رقم الهاتف
-EnterYourPhoneNumber|Enter your phone number|أدخل رقم الهاتف الخاص بك
-SaveChanges|Save Changes|حفظ التغييرات
-AccountStatus|Account Status|حالة الحساب
-Active|Active|نشط
-EmailStatus|Email Status|حالة البريد الإلكتروني
-Verified|Verified|تم التحقق
-TwoFactorAuth|Two-Factor Auth|المصادقة الثنائية
-Enabled|Enabled|مفعل
-YourProfileHasBeenUpdated|Your profile has been updated|تم تحديث ملفك الشخصي
-ErrorFailedToSetPhoneNumber|Error: Failed to set phone number.|خطأ: فشل في تعيين رقم الهاتف.
-
