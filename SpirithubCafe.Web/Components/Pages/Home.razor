@@ -6,9 +6,9 @@
 @using SpirithubCafe.Web.Components.Shared
 @using SpirithubCafe.Domain.Entities
 @using SpirithubCafe.Web.Services
+@using SpirithubCafe.Application.Services
 
-<PageTitle>Specialty Coffee | Roastery in Oman | SpiritHub Coffee | Premium Coffee</PageTitle>
-
+<PageTitle>@Localizer["HomePageTitle"]</PageTitle>
 <!-- Dynamic Sections based on Order -->
 @{
     var orderedSections = GetOrderedSections();

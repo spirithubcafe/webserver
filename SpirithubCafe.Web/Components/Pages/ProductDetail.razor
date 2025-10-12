@@ -20,7 +20,7 @@
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
 
-<!-- PageTitle removed due to compilation issues -->
+<PageTitle>@(product?.Name ?? Loc["Product"]) - @Loc["SiteTitle"]</PageTitle>
 
 @if (isLoading)
 {

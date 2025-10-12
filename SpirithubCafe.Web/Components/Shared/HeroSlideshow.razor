@@ -332,6 +332,30 @@
         height: 24px;
     }
     
+    /* Ensure navigation arrows maintain consistent position in RTL/LTR */
+    [dir="rtl"] .nav-button svg,
+    [dir="ltr"] .nav-button svg {
+        transform: none !important;
+    }
+    
+    [dir="rtl"] .nav-button,
+    [dir="ltr"] .nav-button {
+        transform: none !important;
+    }
+    
+    [dir="rtl"] .nav-button:hover,
+    [dir="ltr"] .nav-button:hover {
+        transform: scale(1.1) !important;
+    }
+    
+    /* Ensure slideshow controls maintain consistent spacing in RTL/LTR */
+    [dir="rtl"] .slideshow-controls,
+    [dir="ltr"] .slideshow-controls {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 2rem;
+    }
+    
     /* Progress Bar */
     .progress-bar {
         position: absolute;

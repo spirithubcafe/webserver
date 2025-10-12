@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,8 +6,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <base href="/" />
-    <title>@ViewData["Title"] - SpirithubCafe</title>
     
+    <!-- Title will be set by Blazor components using HeadContent/PageTitle -->
+    <title>SpirithubCafe</title>
+     
     <!-- Inter Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,6 +18,9 @@
     <link rel="stylesheet" href="dist.css" />
     <link rel="stylesheet" href="SpirithubCafe.Web.styles.css" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    
+    <!-- Blazor HeadOutlet for dynamic head content -->
+    <component type="typeof(Microsoft.AspNetCore.Components.Web.HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
 
 <body>
