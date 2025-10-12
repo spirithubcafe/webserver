@@ -10,8 +10,9 @@
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<LoginWith2fa> Logger
 @inject UserLoginService UserLoginService
+@inject TranslationLocalizer Localizer
 
-<PageTitle>Two-Factor Authentication - SpirithubCafe</PageTitle>
+<PageTitle>@Localizer["TwoFactorAuthentication"]</PageTitle>
 
 <div class="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full space-y-8">
@@ -22,8 +23,8 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                 </svg>
             </div>
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Two-Factor Authentication</h1>
-            <p class="text-gray-600 mb-8">Your login is protected with an authenticator app. Enter your authenticator code below.</p>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">@Localizer["TwoFactorAuthentication"]</h1>
+            <p class="text-gray-600 mb-8">@Localizer["AuthenticatorCodePrompt"]</p>
         </div>
 
         <!-- Status Message -->
@@ -54,7 +55,7 @@
                     <!-- Authenticator Code Input -->
                     <div>
                         <label for="Input.TwoFactorCode" class="block text-sm font-medium text-gray-700 mb-2">
-                            Authenticator Code
+                            @Localizer["AuthenticatorCode"]
                         </label>
                         <div class="relative">
                             <InputText @bind-Value="Input.TwoFactorCode" 
@@ -70,7 +71,7 @@
                             </div>
                         </div>
                         <ValidationMessage For="() => Input.TwoFactorCode" class="text-red-600 text-sm mt-1" />
-                        <p class="text-xs text-gray-500 mt-1">Enter the 6-digit code from your authenticator app</p>
+                        <p class="text-xs text-gray-500 mt-1">@Localizer["Enter6DigitCode"]</p>
                     </div>
 
                     <!-- Remember Machine Checkbox -->
@@ -79,7 +80,7 @@
                                        id="remember-machine" 
                                        class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded" />
                         <label for="remember-machine" class="ml-3 block text-sm text-gray-700">
-                            Remember this machine for 30 days
+                            @Localizer["RememberMachine30Days"]
                         </label>
                     </div>
 
@@ -91,7 +92,7 @@
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        Verify and Log In
+                        @Localizer["VerifyAndLogIn"]
                     </button>
                 </div>
             </EditForm>

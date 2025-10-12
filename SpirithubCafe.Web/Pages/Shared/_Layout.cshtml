@@ -44,7 +44,7 @@
     </style>
     
     <!-- Error UI for connection issues -->
-    <div id="blazor-error-ui">
+    <div id="blazor-error-ui" style="display: none !important;">
         <environment include="Development">
             An unhandled exception has occurred. See browser dev tools for details.
         </environment>
@@ -54,6 +54,18 @@
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
+
+    <style>
+        /* Hide Blazor's default reconnection UI */
+        #components-reconnect-modal {
+            display: none !important;
+        }
+        
+        /* Hide any Blazor error UI */
+        #blazor-error-ui {
+            display: none !important;
+        }
+    </style>
 
     <script>
         window.blazorCulture = {
@@ -139,8 +151,23 @@
             setTimeout(hideLoadingScreen, 100);
         });
         
-        // Start Blazor Server
-        Blazor.start();
+        // Start Blazor Server with custom reconnection handler that does nothing
+        Blazor.start({
+            reconnectionHandler: {
+                onConnectionDown: () => {
+                    // Do nothing - no UI display when connection is lost
+                    console.log('Connection lost - UI notification disabled');
+                },
+                onConnectionUp: () => {
+                    // Do nothing
+                    console.log('Connection restored');
+                },
+                onReconnectionFailed: () => {
+                    // Do nothing - just fail silently
+                    console.log('Reconnection failed - no retry');
+                }
+            }
+        });
         
         // Register Service Worker for offline support
         if (typeof registerServiceWorker === 'function') {

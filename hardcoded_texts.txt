@@ -2,3 +2,99 @@ HARDCODED TEXTS TO BE LOCALIZED
 =====================================
 Format: Key|English Text|Arabic Text
 
+# Account Pages - Missing Translations
+AccessDenied|Access Denied|تم رفض الوصول
+AccountHolder|Account Holder|صاحب الحساب
+AccountStatus|Account Status|حالة الحساب
+Active|Active|نشط
+AlreadyHaveAccount|Already have an account|هل لديك حساب بالفعل
+BackToSignIn|Back to Sign In|العودة لتسجيل الدخول
+BecomePartOfCommunity|Become part of our coffee-loving community|كن جزءًا من مجتمع محبي القهوة
+CoffeeEducationNews|Coffee education and news|تعليم وأخبار القهوة
+ConfirmationFailed|Confirmation Failed|فشل التأكيد
+ConfirmEmail|Confirm Email|تأكيد البريد الإلكتروني
+ConfirmPasswordPlaceholder|Re-enter your password|أعد إدخال كلمة المرور
+ConfirmYourPassword|Confirm your password|تأكيد كلمة المرور
+ContinueToSignIn|Continue to Sign In|متابعة لتسجيل الدخول
+CreateOne|Create one|إنشاء حساب
+CreateStrongPassword|Create a strong password|إنشاء كلمة مرور قوية
+DontHaveAccount|Don't have an account|ليس لديك حساب
+EasyAccessFavoriteOrders|Easy access to favorite orders|وصول سهل إلى الطلبات المفضلة
+EmailAddress|Email Address|عنوان البريد الإلكتروني
+EmailConfirmation|Email Confirmation|تأكيد البريد الإلكتروني
+EmailConfirmed|Email Confirmed|تم تأكيد البريد الإلكتروني
+EmailPlaceholder|your@email.com|your@email.com
+EmailStatus|Email Status|حالة البريد الإلكتروني
+Enabled|Enabled|مفعّل
+EnterNewPasswordBelow|Enter your new password below|أدخل كلمة المرور الجديدة أدناه
+EnterYourEmail|Enter your email|أدخل بريدك الإلكتروني
+EnterYourPassword|Enter your password|أدخل كلمة المرور
+EnterYourPhoneNumber|Enter your phone number|أدخل رقم هاتفك
+ExclusiveMemberDiscounts|Exclusive member discounts|خصومات حصرية للأعضاء
+FastDeliveryOman|Fast delivery across Oman|توصيل سريع في جميع أنحاء عُمان
+FasterShippingOman|Faster shipping in Oman|شحن أسرع في عُمان
+ForgotPassword|Forgot Password|نسيت كلمة المرور
+ForgotYourPassword|Forgot Your Password|نسيت كلمة المرور
+GetSpecialPricing|Get special pricing|احصل على أسعار خاصة
+JoinSpirithubCafe|Join SpirithubCafe|انضم إلى SpirithubCafe
+LearnBrewingTechniques|Learn brewing techniques|تعلم تقنيات تحضير القهوة
+ManageAccountInformation|Manage account information|إدارة معلومات الحساب
+NewPasswordPlaceholder|Enter new password|أدخل كلمة المرور الجديدة
+NoPermissionAccess|You do not have permission to access this resource|ليس لديك إذن للوصول إلى هذا المورد
+NoWorriesResetInstructions|No worries! Enter your email and we'll send you reset instructions|لا تقلق! أدخل بريدك الإلكتروني وسنرسل لك تعليمات إعادة التعيين
+OrContinueWith|Or continue with|أو تابع باستخدام
+OrderHistoryReorder|Order history and reorder|سجل الطلبات وإعادة الطلب
+OrRegisterWith|Or register with|أو سجل باستخدام
+PhoneNumber|Phone Number|رقم الهاتف
+PleaseSignIn|Please sign in to continue|يرجى تسجيل الدخول للمتابعة
+PremiumCoffeeSelection|Premium coffee selection|مجموعة قهوة فاخرة
+PriorityDelivery|Priority delivery|توصيل ذو أولوية
+ProfileSettings|Profile Settings|إعدادات الملف الشخصي
+RegisterHere|Register here|سجل هنا
+RememberMe|Remember me|تذكرني
+RememberPassword|Remember your password|تذكر كلمة المرور
+ResendEmailConfirmation|Resend email confirmation|إعادة إرسال تأكيد البريد الإلكتروني
+ResetPassword|Reset Password|إعادة تعيين كلمة المرور
+ResetPasswordButton|Reset Password|إعادة تعيين كلمة المرور
+ResetYourPassword|Reset Your Password|إعادة تعيين كلمة المرور
+ReturnHome|Return Home|العودة للرئيسية
+SaveChanges|Save Changes|حفظ التغييرات
+SecurePaymentOptions|Secure payment options|خيارات دفع آمنة
+SendResetLink|Send Reset Link|إرسال رابط إعادة التعيين
+SignIn|Sign In|تسجيل الدخول
+SignInHere|Sign in here|سجل الدخول هنا
+SignInToAccount|Sign in to your account|تسجيل الدخول إلى حسابك
+SiteTitle|SpirithubCafe|SpirithubCafe
+TwoFactorAuth|Two-Factor Authentication|المصادقة الثنائية
+Username|Username|اسم المستخدم
+UsernameCannotBeChanged|Username cannot be changed|لا يمكن تغيير اسم المستخدم
+Verified|Verified|تم التحقق منه
+WelcomeBack|Welcome Back|مرحبًا بعودتك
+YourUsername|Your Username|اسم المستخدم الخاص بك
+
+# Additional Account Pages Texts
+PasswordResetSent|Password Reset Sent|تم إرسال إعادة تعيين كلمة المرور
+CheckYourEmail|Check Your Email|تحقق من بريدك الإلكتروني
+ResetLinkSent|Reset Link Sent!|تم إرسال رابط إعادة التعيين!
+PleaseCheckEmailForReset|Please check your email for password reset instructions|يرجى التحقق من بريدك الإلكتروني للحصول على تعليمات إعادة تعيين كلمة المرور
+CheckYourEmailInbox|Check your email inbox|تحقق من صندوق بريدك الإلكتروني
+ClickPasswordResetLink|Click the password reset link|انقر على رابط إعادة تعيين كلمة المرور
+CreateNewPassword|Create a new password|إنشاء كلمة مرور جديدة
+DidntReceiveEmail|Didn't receive the email? Check your spam folder or try again|لم تستلم البريد الإلكتروني؟ تحقق من مجلد الرسائل غير المرغوب فيها أو حاول مرة أخرى
+PasswordResetComplete|Password Reset Complete|اكتمل إعادة تعيين كلمة المرور
+YourPasswordHasBeenReset|Your password has been reset successfully|تم إعادة تعيين كلمة المرور بنجاح
+CheckInboxForEmail|Check your inbox for|تحقق من صندوق الوارد الخاص بك لـ
+ClickConfirmationLink|Click the confirmation link in the email|انقر على رابط التأكيد في البريد الإلكتروني
+TryAgain|Try again|حاول مرة أخرى
+ConfirmationEmailSent|A confirmation email has been sent. Please check your email to confirm your account|تم إرسال بريد إلكتروني للتأكيد. يرجى التحقق من بريدك الإلكتروني لتأكيد حسابك
+SpirithubCafeLogo|SpirithubCafe Logo|شعار SpirithubCafe
+
+Success|Success!|نجح!
+SignInNow|Sign In Now|سجل الدخول الآن
+NeedHelp|Need help?|تحتاج مساعدة؟
+ContactSupport|Contact Support|اتصل بالدعم
+SignInToNewAccount|Sign in to your new account|سجل الدخول إلى حسابك الجديد
+ResendConfirmationEmail|resend confirmation email|إعادة إرسال بريد التأكيد
+RegistrationConfirmation|Registration Confirmation|تأكيد التسجيل
+DidntReceiveEmailCheckSpam|Didn't receive the email? Check your spam folder or|لم تستلم البريد الإلكتروني؟ تحقق من مجلد الرسائل غير المرغوب فيها أو
+ErrorFindingUser|Error finding user for unspecified email|خطأ في العثور على المستخدم للبريد الإلكتروني غير المحدد
