@@ -2355,6 +2355,9 @@
   .pr-3 {
     padding-right: calc(var(--spacing) * 3);
   }
+  .pr-10 {
+    padding-right: calc(var(--spacing) * 10);
+  }
   .pr-12 {
     padding-right: calc(var(--spacing) * 12);
   }

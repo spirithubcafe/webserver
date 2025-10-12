@@ -12,8 +12,9 @@
 @inject IdentityRedirectManager RedirectManager
 @inject UserLoginService UserLoginService
 @inject IHttpContextAccessor HttpContextAccessor
+@inject TranslationLocalizer Localizer
 
-<PageTitle>Login - SpirithubCafe</PageTitle>
+<PageTitle>@Localizer["Login"] - @Localizer["SiteTitle"]</PageTitle>
 
 <!-- Login Page with Coffee Theme -->
 <div class="min-h-screen bg-gradient-to-br from-[#f5f5f5] to-[#e8e8e8] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -23,14 +24,14 @@
             <!-- Left Side - Coffee Image/Branding (Hidden on mobile) -->
             <div class="hidden lg:flex bg-gradient-to-br from-[#715A5A] to-[#5d4a4a] p-12 flex-col justify-center items-center text-white">
                 <div class="text-center">
-                    <h1 class="text-4xl font-bold mb-4">Welcome Back!</h1>
+                    <h1 class="text-4xl font-bold mb-4">@Localizer["WelcomeBack"]</h1>
                     <p class="text-xl mb-8 opacity-90">
-                        Sign in to your SpirithubCafe account and continue your coffee journey.
+                        @Localizer["SignInToAccount"]
                     </p>
                     
                     <!-- Site Logo -->
                     <div class="w-32 h-32 mx-auto mb-8 bg-white rounded-full flex items-center justify-center p-4 shadow-lg">
-                        <img src="/images/logo-s.png" alt="SpirithubCafe Logo" class="w-full h-full object-contain" />
+                        <img src="/images/logo-s.png" alt="@Localizer["SiteTitle"]" class="w-full h-full object-contain" />
                     </div>
                     
                     <div class="space-y-4 text-sm opacity-80">
@@ -38,19 +39,19 @@
                             <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                             </svg>
-                            Premium coffee selection
+                            @Localizer["PremiumCoffeeSelection"]
                         </div>
                         <div class="flex items-center justify-center">
                             <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                             </svg>
-                            Fast delivery across Oman
+                            @Localizer["FastDeliveryOman"]
                         </div>
                         <div class="flex items-center justify-center">
                             <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                             </svg>
-                            Secure payment options
+                            @Localizer["SecurePaymentOptions"]
                         </div>
                     </div>
                 </div>
@@ -60,8 +61,8 @@
             <div class="p-12">
                 <div class="max-w-md mx-auto">
                     <div class="text-center mb-8">
-                        <h2 class="text-3xl font-bold text-gray-900">Sign In</h2>
-                        <p class="mt-2 text-gray-600">Please sign in to your account</p>
+                        <h2 class="text-3xl font-bold text-gray-900">@Localizer["SignIn"]</h2>
+                        <p class="mt-2 text-gray-600">@Localizer["PleaseSignIn"]</p>
                     </div>
 
                     @if (!string.IsNullOrEmpty(errorMessage))
@@ -77,7 +78,7 @@
                         <!-- Email Field -->
                         <div>
                             <label for="Input.Email" class="block text-sm font-medium text-gray-700 mb-2">
-                                Email Address
+                                @Localizer["EmailAddress"]
                             </label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -90,7 +91,7 @@
                                           class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#715A5A] focus:border-[#715A5A]" 
                                           autocomplete="username" 
                                           aria-required="true" 
-                                          placeholder="Enter your email" />
+                                          placeholder="@Localizer["EnterYourEmail"]" />
                             </div>
                             <ValidationMessage For="() => Input.Email" class="text-red-500 text-sm mt-1" />
                         </div>
@@ -98,7 +99,7 @@
                         <!-- Password Field -->
                         <div>
                             <label for="Input.Password" class="block text-sm font-medium text-gray-700 mb-2">
-                                Password
+                                @Localizer["Password"]
                             </label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -110,7 +111,7 @@
                                           class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#715A5A] focus:border-[#715A5A]" 
                                           autocomplete="current-password" 
                                           aria-required="true" 
-                                          placeholder="Enter your password" />
+                                          placeholder="@Localizer["EnterYourPassword"]" />
                             </div>
                             <ValidationMessage For="() => Input.Password" class="text-red-500 text-sm mt-1" />
                         </div>
@@ -119,10 +120,10 @@
                         <div class="flex items-center justify-between">
                             <label class="flex items-center">
                                 <InputCheckbox @bind-Value="Input.RememberMe" class="h-4 w-4 text-[#715A5A] focus:ring-[#715A5A] border-gray-300 rounded" />
-                                <span class="ml-2 text-sm text-gray-600">Remember me</span>
+                                <span class="ml-2 text-sm text-gray-600">@Localizer["RememberMe"]</span>
                             </label>
                             <a href="Account/ForgotPassword" class="text-sm text-[#715A5A] hover:text-[#5d4a4a]">
-                                Forgot your password?
+                                @Localizer["ForgotPassword"]
                             </a>
                         </div>
 
@@ -133,22 +134,22 @@
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
                                 </svg>
-                                Sign In
+                                @Localizer["SignIn"]
                             </button>
                         </div>
 
                         <!-- Links -->
                         <div class="text-center space-y-2">
                             <p class="text-sm text-gray-600">
-                                Don't have an account?
+                                @Localizer["DontHaveAccount"]
                                 <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))" 
                                    class="font-medium text-[#715A5A] hover:text-[#5d4a4a]">
-                                    Register here
+                                    @Localizer["RegisterHere"]
                                 </a>
                             </p>
                             <p class="text-xs text-gray-500">
                                 <a href="Account/ResendEmailConfirmation" class="text-[#715A5A] hover:text-[#5d4a4a]">
-                                    Resend email confirmation
+                                    @Localizer["ResendEmailConfirmation"]
                                 </a>
                             </p>
                         </div>
@@ -161,7 +162,7 @@
                                 <div class="w-full border-t border-gray-300" />
                             </div>
                             <div class="relative flex justify-center text-sm">
-                                <span class="px-2 bg-white text-gray-500">Or continue with</span>
+                                <span class="px-2 bg-white text-gray-500">@Localizer["OrContinueWith"]</span>
                             </div>
                         </div>
                         <div class="mt-6">

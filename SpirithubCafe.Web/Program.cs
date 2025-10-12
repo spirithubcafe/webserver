@@ -18,6 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using SpirithubCafe.Web.Middleware;
+using Microsoft.AspNetCore.Components.Server.Circuits;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +39,7 @@ builder.Services.AddAntiforgery(options =>
 // Add HttpContextAccessor for Blazor Server
 builder.Services.AddHttpContextAccessor();
 
-// Configure Circuit Options for better error handling
+// Configure Circuit Options for better error handling and stability
 builder.Services.Configure<Microsoft.AspNetCore.Components.Server.CircuitOptions>(options =>
 {
     options.DetailedErrors = builder.Environment.IsDevelopment();
@@ -47,13 +48,29 @@ builder.Services.Configure<Microsoft.AspNetCore.Components.Server.CircuitOptions
     options.MaxBufferedUnacknowledgedRenderBatches = 10;
 });
 
-// Configure SignalR Hub options for better connection handling
+// Configure SignalR Hub options for better connection handling and stability
 builder.Services.Configure<Microsoft.AspNetCore.SignalR.HubOptions>(options =>
 {
     options.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
     options.KeepAliveInterval = TimeSpan.FromSeconds(15);
     options.HandshakeTimeout = TimeSpan.FromSeconds(15);
+    options.MaximumReceiveMessageSize = 64 * 1024; // 64KB
+    options.StreamBufferCapacity = 10;
+    options.EnableDetailedErrors = builder.Environment.IsDevelopment();
 });
+
+// Configure Blazor Server options for better performance and stability
+builder.Services.AddServerSideBlazor(options =>
+{
+    options.DetailedErrors = builder.Environment.IsDevelopment();
+    options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(3);
+    options.DisconnectedCircuitMaxRetained = 100;
+    options.JSInteropDefaultCallTimeout = TimeSpan.FromMinutes(1);
+    options.MaxBufferedUnacknowledgedRenderBatches = 10;
+});
+
+// Add Circuit Handler for better error handling
+builder.Services.AddScoped<CircuitHandler, SpirithubCafe.Web.Services.ErrorCircuitHandler>();
 
 // Circuit error handling will be done via global exception handling
 

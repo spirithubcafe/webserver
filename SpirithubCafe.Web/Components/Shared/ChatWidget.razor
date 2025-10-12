@@ -45,7 +45,7 @@
                     @if (currentSession != null)
                     {
                         <button @onclick="EndChatSession" class="text-white hover:text-red-200 text-xs px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full transition-all duration-200 font-medium hover:bg-red-500/20">
-                            End Chat
+                            @Localizer["EndChat"]
                         </button>
                     }
                     <button @onclick="ToggleChat" class="text-white hover:text-gray-200 p-1.5 rounded-full hover:bg-white/10 transition-all duration-200">
@@ -109,7 +109,7 @@
                                 </svg>
                             </div>
                             <h4 class="text-lg font-bold text-gray-800 mb-2">@Localizer["StartChat"]</h4>
-                            <p class="text-xs text-gray-600 leading-relaxed">We're here to help! Start a conversation with us and get instant support.</p>
+                            <p class="text-xs text-gray-600 leading-relaxed">@Localizer["WeAreHereToHelp"]</p>
                         </div>
                         
                         <div class="space-y-3 flex-1 flex flex-col">
@@ -124,7 +124,7 @@
                                 <div>
                                     <label class="block text-sm font-semibold text-gray-800 mb-2">@Localizer["YourEmail"]</label>
                                     <input @bind="chatForm.VisitorEmail" 
-                                           placeholder="example@email.com"
+                                           placeholder="@Localizer["EmailPlaceholder"]"
                                            type="email"
                                            class="modern-chat-input w-full px-3 py-2.5 border border-gray-200 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:border-transparent text-sm" />
                                 </div>
@@ -190,7 +190,7 @@
                                 <div class="mb-4 text-left animate-fade-in">
                                     <div class="inline-block bg-white border border-gray-100 px-6 py-4 rounded-2xl shadow-md">
                                         <div class="flex space-x-1.5 items-center">
-                                            <span class="text-xs text-gray-500 mr-2">Typing</span>
+                                            <span class="text-xs text-gray-500 mr-2">@Localizer["Typing"]</span>
                                             <div class="w-2 h-2 rounded-full animate-bounce" style="background-color: #37353E;"></div>
                                             <div class="w-2 h-2 rounded-full animate-bounce" style="background-color: #44444E; animation-delay: 0.1s;"></div>
                                             <div class="w-2 h-2 rounded-full animate-bounce" style="background-color: #715A5A; animation-delay: 0.2s;"></div>
@@ -210,7 +210,7 @@
                                         </svg>
                                     </div>
                                     <p class="text-gray-600 font-medium text-xs">@Localizer["TypeYourMessage"]...</p>
-                                    <p class="text-xs text-gray-400 mt-1">Start the conversation!</p>
+                                    <p class="text-xs text-gray-400 mt-1">@Localizer["StartTheConversation"]</p>
                                 </div>
                             </div>
                         }
@@ -446,7 +446,7 @@
             messageForm = new MessageForm();
             hasUnreadMessages = false;
             
-            ToastService.ShowSuccess("Chat session ended");
+            ToastService.ShowSuccess(Localizer["ChatSessionEnded"]);
             StateHasChanged();
         }
         catch (Exception ex)

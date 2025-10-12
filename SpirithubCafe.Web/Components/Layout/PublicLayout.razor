@@ -28,12 +28,12 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="description" content="Premium Coffee Roastery & Online Shop - فروشگاه آنلاین قهوه اسپیریت‌هاب" />
+    <meta name="description" content="@Localizer["SiteDescription"]" />
     <meta name="theme-color" content="#715A5A" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Spirithub" />
+    <meta name="apple-mobile-web-app-title" content="@Localizer["SiteTitle"]" />
     <base href="/" />
     
     <!-- PWA Manifest -->
@@ -69,6 +69,9 @@
     
     <!-- PWA Registration Script -->
     <script src="/pwa-register.js" defer></script>
+    
+    <!-- Blazor Connection Manager -->
+    <script src="/js/blazor-connection-manager.js"></script>
 </head>
 
 <body class="h-full font-arabic">
@@ -84,7 +87,7 @@
                             {
                                 <!-- Dynamic Image Logo -->
                                 <NavLink href="/" class="flex items-center cursor-pointer">
-                                    <img src="@GetCurrentLogoImage()" alt="@(GetCurrentLogoText() ?? "SpirithubCafe")" class="h-12 w-auto ltr:mr-3 rtl:ml-3" />
+                                    <img src="@GetCurrentLogoImage()" alt="@(GetCurrentLogoText() ?? Localizer["SiteTitle"])" class="h-12 w-auto ltr:mr-3 rtl:ml-3" />
                                 </NavLink>
                             }
                             else

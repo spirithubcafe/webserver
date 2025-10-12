@@ -10,6 +10,7 @@
 @inject NavigationManager Navigation
 @inject ILogger<PaymentSuccess> Logger
 @inject IJSRuntime JSRuntime
+@inject TranslationLocalizer Localizer
 
 
 
@@ -19,7 +20,7 @@
             @if (isLoading)
             {
                 <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-                <p class="text-lg text-gray-600">Verifying your payment...</p>
+                <p class="text-lg text-gray-600">@Localizer["VerifyingPayment"]...</p>
             }
             else if (paymentVerified)
             {
@@ -29,28 +30,28 @@
                     </svg>
                 </div>
                 
-                <h1 class="text-3xl font-bold text-gray-900 mb-4">Payment Successful!</h1>
-                <p class="text-lg text-gray-600 mb-6">Thank you for your order. Your payment has been processed successfully.</p>
+                <h1 class="text-3xl font-bold text-gray-900 mb-4">@Localizer["PaymentSuccessful"]!</h1>
+                <p class="text-lg text-gray-600 mb-6">@Localizer["ThankYouForOrder"]</p>
                 
                 @if (order != null)
                 {
                     <div class="bg-gray-50 rounded-lg p-6 mb-6">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Order Details</h2>
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">@Localizer["OrderDetails"]</h2>
                         <div class="grid grid-cols-2 gap-4 text-sm">
                             <div>
-                                <span class="font-medium text-gray-700">Order Number:</span>
+                                <span class="font-medium text-gray-700">@Localizer["OrderNumber"]:</span>
                                 <span class="text-gray-900">@order.OrderNumber</span>
                             </div>
                             <div>
-                                <span class="font-medium text-gray-700">Total Amount:</span>
+                                <span class="font-medium text-gray-700">@Localizer["TotalAmount"]:</span>
                                 <span class="text-gray-900">@order.TotalAmount.ToString("F3") OMR</span>
                             </div>
                             <div>
-                                <span class="font-medium text-gray-700">Payment Status:</span>
+                                <span class="font-medium text-gray-700">@Localizer["PaymentStatus"]:</span>
                                 <span class="text-green-600 font-medium">@order.PaymentStatus</span>
                             </div>
                             <div>
-                                <span class="font-medium text-gray-700">Order Status:</span>
+                                <span class="font-medium text-gray-700">@Localizer["OrderStatus"]:</span>
                                 <span class="text-blue-600 font-medium">@order.Status</span>
                             </div>
                         </div>
@@ -60,25 +61,25 @@
                 @if (payment != null)
                 {
                     <div class="bg-gray-50 rounded-lg p-6 mb-6">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Payment Details</h2>
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">@Localizer["PaymentDetails"]</h2>
                         <div class="grid grid-cols-2 gap-4 text-sm">
                             <div>
-                                <span class="font-medium text-gray-700">Payment Reference:</span>
+                                <span class="font-medium text-gray-700">@Localizer["PaymentReference"]:</span>
                                 <span class="text-gray-900">@payment.PaymentReference</span>
                             </div>
                             @if (!string.IsNullOrEmpty(payment.TransactionId))
                             {
                                 <div>
-                                    <span class="font-medium text-gray-700">Transaction ID:</span>
+                                    <span class="font-medium text-gray-700">@Localizer["TransactionId"]:</span>
                                     <span class="text-gray-900">@payment.TransactionId</span>
                                 </div>
                             }
                             <div>
-                                <span class="font-medium text-gray-700">Payment Method:</span>
-                                <span class="text-gray-900">@(payment.PaymentMethod ?? "Not specified")</span>
+                                <span class="font-medium text-gray-700">@Localizer["PaymentMethod"]:</span>
+                                <span class="text-gray-900">@(payment.PaymentMethod ?? @Localizer["NotSpecified"])</span>
                             </div>
                             <div>
-                                <span class="font-medium text-gray-700">Date:</span>
+                                <span class="font-medium text-gray-700">@Localizer["Date"]:</span>
                                 <span class="text-gray-900">@payment.CompletedAt?.ToString("dd/MM/yyyy HH:mm")</span>
                             </div>
                         </div>
@@ -88,11 +89,11 @@
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
                     <a href="/products" 
                        class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors text-center">
-                        Continue Shopping
+                        @Localizer["ContinueShopping"]
                     </a>
                     <a href="/account/orders" 
                        class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors text-center">
-                        View Orders
+                        @Localizer["ViewOrders"]
                     </a>
                 </div>
             }

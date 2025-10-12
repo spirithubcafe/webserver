@@ -9,6 +9,7 @@
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
 @inject ToastService ToastService
+@inject TranslationLocalizer Localizer
 
 
 
@@ -440,7 +441,7 @@
     {
         if (selectedOrder == null || string.IsNullOrWhiteSpace(trackingNumber))
         {
-            ToastService.ShowWarning("Please enter a tracking number");
+            ToastService.ShowWarning(Localizer["PleaseEnterTrackingNumber"]);
             return;
         }
 
@@ -454,7 +455,7 @@
                 trackingNumber = "";
                 await LoadOrders();
                 await LoadStats();
-                ToastService.ShowSuccess("Order shipped successfully!");
+                ToastService.ShowSuccess(Localizer["OrderShippedSuccessfully"]);
             }
         }
         catch (Exception ex)

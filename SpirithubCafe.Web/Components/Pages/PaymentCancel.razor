@@ -6,6 +6,7 @@
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
 @inject ILogger<PaymentCancel> Logger
+@inject TranslationLocalizer Localizer
 
 <div class="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 flex items-center justify-center">
     <div class="max-w-2xl mx-auto text-center px-4">
@@ -15,38 +16,38 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </div>
-            <h1 class="text-3xl md:text-4xl font-bold text-red-600 mb-4">Payment Cancelled</h1>
-            <p class="text-lg text-gray-600 mb-8">Your payment was cancelled or failed to process. No charges have been made to your account.</p>
+            <h1 class="text-3xl md:text-4xl font-bold text-red-600 mb-4">@Localizer["PaymentCancelled"]</h1>
+            <p class="text-lg text-gray-600 mb-8">@Localizer["PaymentCancelledDescription"]</p>
         </div>
 
         <div class="bg-white rounded-xl shadow-lg border border-red-100 p-8 mb-8">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">What happened?</h2>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">@Localizer["WhatHappened"]?</h2>
             <div class="text-left space-y-3">
                 <div class="flex items-start space-x-3">
                     <div class="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
-                    <p class="text-gray-600">Payment was cancelled by user</p>
+                    <p class="text-gray-600">@Localizer["PaymentCancelledByUser"]</p>
                 </div>
                 <div class="flex items-start space-x-3">
                     <div class="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
-                    <p class="text-gray-600">Payment gateway declined the transaction</p>
+                    <p class="text-gray-600">@Localizer["PaymentGatewayDeclined"]</p>
                 </div>
                 <div class="flex items-start space-x-3">
                     <div class="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
-                    <p class="text-gray-600">Session timeout or connection issue</p>
+                    <p class="text-gray-600">@Localizer["SessionTimeoutOrConnectionIssue"]</p>
                 </div>
             </div>
         </div>
 
         <div class="space-y-4">
             <p class="text-gray-600">
-                Don't worry! Your cart items are still saved. You can try again or contact us if you continue to experience issues.
+                @Localizer["DontWorryCartSaved"]
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
                 <NavLink href="/checkout" class="inline-flex items-center px-6 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                     </svg>
-                    Try Again
+                    @Localizer["TryAgain"]
                 </NavLink>
                 <NavLink href="/cart" class="inline-flex items-center px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

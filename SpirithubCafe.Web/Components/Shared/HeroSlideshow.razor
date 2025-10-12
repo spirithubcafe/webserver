@@ -59,14 +59,14 @@
         <!-- Navigation Controls -->
         <div class="slideshow-controls">
             <!-- Previous Button -->
-            <button class="nav-button prev-button" @onclick="PrevSlide" aria-label="Previous slide">
+            <button class="nav-button prev-button" @onclick="PrevSlide" aria-label="@Localizer["PreviousSlide"]">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                 </svg>
             </button>
             
             <!-- Next Button -->
-            <button class="nav-button next-button" @onclick="NextSlide" aria-label="Next slide">
+            <button class="nav-button next-button" @onclick="NextSlide" aria-label="@Localizer["NextSlide"]">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                 </svg>

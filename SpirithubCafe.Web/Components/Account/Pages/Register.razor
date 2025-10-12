@@ -14,8 +14,9 @@
 @inject ILogger<Register> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+@inject TranslationLocalizer Localizer
 
-<PageTitle>Register - SpirithubCafe</PageTitle>
+<PageTitle>@Localizer["Register"] - SpirithubCafe</PageTitle>
 
 <!-- Register Page with Coffee Theme -->
 <div class="min-h-screen bg-gradient-to-br from-[#f5f5f5] to-[#e8e8e8] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -26,8 +27,8 @@
             <div class="p-12">
                 <div class="max-w-md mx-auto">
                     <div class="text-center mb-8">
-                        <h2 class="text-3xl font-bold text-gray-900">Create Account</h2>
-                        <p class="mt-2 text-gray-600">Join SpirithubCafe and start your coffee journey</p>
+                        <h2 class="text-3xl font-bold text-gray-900">@Localizer["CreateAccount"]</h2>
+                        <p class="mt-2 text-gray-600">@Localizer["JoinSpirithubCafe"]</p>
                     </div>
 
                     @if (!string.IsNullOrEmpty(Message))
@@ -43,7 +44,7 @@
                         <!-- Email Field -->
                         <div>
                             <label for="Input.Email" class="block text-sm font-medium text-gray-700 mb-2">
-                                Email Address
+                                @Localizer["EmailAddress"]
                             </label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -56,7 +57,7 @@
                                           class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#715A5A] focus:border-[#715A5A]" 
                                           autocomplete="username" 
                                           aria-required="true" 
-                                          placeholder="Enter your email address" />
+                                          placeholder="@Localizer["EnterYourEmail"]" />
                             </div>
                             <ValidationMessage For="() => Input.Email" class="text-red-500 text-sm mt-1" />
                         </div>
@@ -64,7 +65,7 @@
                         <!-- Password Field -->
                         <div>
                             <label for="Input.Password" class="block text-sm font-medium text-gray-700 mb-2">
-                                Password
+                                @Localizer["Password"]
                             </label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -76,7 +77,7 @@
                                           class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#715A5A] focus:border-[#715A5A]" 
                                           autocomplete="new-password" 
                                           aria-required="true" 
-                                          placeholder="Create a strong password" />
+                                          placeholder="@Localizer["CreateStrongPassword"]" />
                             </div>
                             <ValidationMessage For="() => Input.Password" class="text-red-500 text-sm mt-1" />
                         </div>
@@ -84,7 +85,7 @@
                         <!-- Confirm Password Field -->
                         <div>
                             <label for="Input.ConfirmPassword" class="block text-sm font-medium text-gray-700 mb-2">
-                                Confirm Password
+                                @Localizer["ConfirmPassword"]
                             </label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -96,7 +97,7 @@
                                           class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#715A5A] focus:border-[#715A5A]" 
                                           autocomplete="new-password" 
                                           aria-required="true" 
-                                          placeholder="Confirm your password" />
+                                          placeholder="@Localizer["ConfirmYourPassword"]" />
                             </div>
                             <ValidationMessage For="() => Input.ConfirmPassword" class="text-red-500 text-sm mt-1" />
                         </div>
@@ -108,16 +109,16 @@
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
                                 </svg>
-                                Create Account
+                                @Localizer["CreateAccount"]
                             </button>
                         </div>
 
                         <!-- Links -->
                         <div class="text-center space-y-2">
                             <p class="text-sm text-gray-600">
-                                Already have an account?
+                                @Localizer["AlreadyHaveAccount"]?
                                 <a href="Account/Login" class="font-medium text-[#715A5A] hover:text-[#5d4a4a]">
-                                    Sign in here
+                                    @Localizer["SignInHere"]
                                 </a>
                             </p>
                         </div>
@@ -130,7 +131,7 @@
                                 <div class="w-full border-t border-gray-300" />
                             </div>
                             <div class="relative flex justify-center text-sm">
-                                <span class="px-2 bg-white text-gray-500">Or register with</span>
+                                <span class="px-2 bg-white text-gray-500">@Localizer["OrRegisterWith"]</span>
                             </div>
                         </div>
                         <div class="mt-6">
@@ -143,14 +144,14 @@
             <!-- Right Side - Benefits/Features (Hidden on mobile) -->
             <div class="hidden lg:flex bg-gradient-to-br from-[#715A5A] to-[#5d4a4a] p-12 flex-col justify-center items-center text-white">
                 <div class="text-center">
-                    <h1 class="text-4xl font-bold mb-4">Join SpirithubCafe</h1>
+                    <h1 class="text-4xl font-bold mb-4">@Localizer["JoinSpirithubCafe"]</h1>
                     <p class="text-xl mb-8 opacity-90">
-                        Become part of our coffee community and enjoy exclusive benefits.
+                        @Localizer["BecomePartOfCommunity"]
                     </p>
                     
                     <!-- Site Logo -->
                     <div class="w-32 h-32 mx-auto mb-8 bg-white rounded-full flex items-center justify-center p-4 shadow-lg">
-                        <img src="/images/logo-s.png" alt="SpirithubCafe Logo" class="w-full h-full object-contain" />
+                        <img src="/images/logo-s.png" alt="@Localizer["SiteTitle"]" class="w-full h-full object-contain" />
                     </div>
                     
                     <div class="space-y-6 text-left">
@@ -161,8 +162,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="font-semibold">Exclusive Member Discounts</h3>
-                                <p class="text-sm opacity-80">Get special pricing on premium coffee selections</p>
+                                <h3 class="font-semibold">@Localizer["ExclusiveMemberDiscounts"]</h3>
+                                <p class="text-sm opacity-80">@Localizer["GetSpecialPricing"]</p>
                             </div>
                         </div>
                         
@@ -173,8 +174,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="font-semibold">Priority Delivery</h3>
-                                <p class="text-sm opacity-80">Faster shipping across Oman for members</p>
+                                <h3 class="font-semibold">@Localizer["PriorityDelivery"]</h3>
+                                <p class="text-sm opacity-80">@Localizer["FasterShippingOman"]</p>
                             </div>
                         </div>
                         
@@ -185,8 +186,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="font-semibold">Order History & Reorder</h3>
-                                <p class="text-sm opacity-80">Easy access to your favorite orders</p>
+                                <h3 class="font-semibold">@Localizer["OrderHistoryReorder"]</h3>
+                                <p class="text-sm opacity-80">@Localizer["EasyAccessFavoriteOrders"]</p>
                             </div>
                         </div>
                         
@@ -197,8 +198,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="font-semibold">Coffee Education & News</h3>
-                                <p class="text-sm opacity-80">Learn about brewing techniques and coffee origins</p>
+                                <h3 class="font-semibold">@Localizer["CoffeeEducationNews"]</h3>
+                                <p class="text-sm opacity-80">@Localizer["LearnBrewingTechniques"]</p>
                             </div>
                         </div>
                     </div>

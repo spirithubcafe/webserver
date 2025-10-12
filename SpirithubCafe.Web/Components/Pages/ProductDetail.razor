@@ -1093,11 +1093,11 @@ else
             
             if (isFavorite)
             {
-                ToastService.ShowSuccess("Added to favorites");
+                ToastService.ShowSuccess(Loc["AddedToFavorites"]);
             }
             else
             {
-                ToastService.ShowSuccess("Removed from favorites");
+                ToastService.ShowSuccess(Loc["RemovedFromFavorites"]);
             }
             
             StateHasChanged();
@@ -1105,7 +1105,7 @@ else
         catch (Exception ex)
         {
             Console.WriteLine($"Error toggling favorite: {ex.Message}");
-            ToastService.ShowError("Error updating favorites");
+            ToastService.ShowError(Loc["ErrorUpdatingFavorites"]);
         }
     }
 }

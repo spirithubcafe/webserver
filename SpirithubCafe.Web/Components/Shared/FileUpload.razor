@@ -1,6 +1,8 @@
 @using System.IO
 @using Microsoft.AspNetCore.Components.Forms
+@using SpirithubCafe.Application.Interfaces
 @inject IWebHostEnvironment WebHostEnvironment
+@inject ITranslationService Localizer
 
 <div class="space-y-4">
     @if (!string.IsNullOrEmpty(CurrentFileUrl))
@@ -21,7 +23,7 @@
             <span class="text-sm text-gray-600">@CurrentFileName</span>
             <button type="button" @onclick="RemoveFile" 
                     class="text-red-600 hover:text-red-800 text-sm">
-                Remove
+                @(Localizer.GetTranslationAsync("Remove", "en").Result)
             </button>
         </div>
     }
@@ -39,7 +41,7 @@
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        <span class="text-blue-600">Uploading...</span>
+                        <span class="text-blue-600">@(Localizer.GetTranslationAsync("Uploading", "en").Result)...</span>
                     </div>
                 }
                 else
@@ -49,9 +51,9 @@
                     </svg>
                     <div class="text-sm text-gray-600">
                         <span class="font-medium text-blue-600 hover:text-blue-500">
-                            Click to select file
+                            @(Localizer.GetTranslationAsync("ClickToSelectFile", "en").Result)
                         </span>
-                        or drag and drop
+                        @(Localizer.GetTranslationAsync("OrDragAndDrop", "en").Result)
                     </div>
                     <p class="text-xs text-gray-500 mt-1">
                         @GetFileTypeDescription()
@@ -139,7 +141,7 @@
         {
             if (e.File == null)
             {
-                ErrorMessage = "No file selected";
+                ErrorMessage = await Localizer.GetTranslationAsync("NoFileSelected", "en");
                 return;
             }
 
@@ -284,7 +286,7 @@
     private string GetFileTypeDescription()
     {
         if (!_fileTypeConfigs.ContainsKey(FileType))
-            return "All file types";
+            return Localizer.GetTranslationAsync("AllFileTypes", "en").Result;
 
         var config = _fileTypeConfigs[FileType];
         var maxSizeMB = config.MaxSizeBytes / (1024 * 1024);

@@ -1,6 +1,8 @@
 @using Microsoft.AspNetCore.Components.Web
+@using SpirithubCafe.Application.Interfaces
 @inherits ErrorBoundaryBase
 @inject ILogger<CustomErrorBoundary> Logger
+@inject ITranslationService Localizer
 
 @if (CurrentException is null)
 {
@@ -24,16 +26,16 @@ else
                     </div>
                     <div class="ml-3">
                         <h3 class="text-sm font-medium text-red-800">
-                            Something went wrong
+                            @(Localizer.GetTranslationAsync("SomethingWentWrong", "en").Result)
                         </h3>
                         <div class="mt-2 text-sm text-red-700">
                             <p>
-                                We're sorry, but something unexpected happened. The page will try to recover automatically.
+                                @(Localizer.GetTranslationAsync("ErrorMessage", "en").Result)
                             </p>
                             @if (Environment.IsDevelopment())
                             {
                                 <details class="mt-2">
-                                    <summary class="cursor-pointer text-red-600 underline">Show technical details</summary>
+                                    <summary class="cursor-pointer text-red-600 underline">@(Localizer.GetTranslationAsync("ShowTechnicalDetails", "en").Result)</summary>
                                     <div class="mt-2 p-2 bg-red-100 rounded text-xs font-mono">
                                         @CurrentException.ToString()
                                     </div>
@@ -44,11 +46,11 @@ else
                             <div class="flex space-x-3">
                                 <button @onclick="Recover" 
                                         class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                                    Try again
+                                    @(Localizer.GetTranslationAsync("TryAgain", "en").Result)
                                 </button>
                                 <button @onclick="GoToHome" 
                                         class="inline-flex items-center px-3 py-2 border border-red-300 text-sm leading-4 font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                                    Go to home page
+                                    @(Localizer.GetTranslationAsync("GoToHomePage", "en").Result)
                                 </button>
                             </div>
                         </div>

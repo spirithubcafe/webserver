@@ -8,6 +8,7 @@
 @inject IPaymentService PaymentService
 @inject IPaymentGatewayService PaymentGatewayService
 @inject ILogger<PaymentRedirect> Logger
+@inject TranslationLocalizer Localizer
 
 
 
@@ -19,8 +20,8 @@
                 <div class="w-20 h-20 mx-auto mb-6 relative">
                     <div class="w-20 h-20 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
                 </div>
-                <h2 class="text-2xl font-bold text-gray-900 mb-4">Redirecting to Payment Gateway</h2>
-                <p class="text-gray-600">Please wait while we prepare your secure payment...</p>
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">@Localizer["RedirectingToPaymentGateway"]</h2>
+                <p class="text-gray-600">@Localizer["PleasewaitWhilePrepareSecurePayment"]</p>
             </div>
         }
         else if (!string.IsNullOrEmpty(errorMessage))
@@ -31,13 +32,13 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"/>
                     </svg>
                 </div>
-                <h2 class="text-2xl font-bold text-red-600 mb-4">Payment Error</h2>
+                <h2 class="text-2xl font-bold text-red-600 mb-4">@Localizer["PaymentError"]</h2>
                 <p class="text-gray-600 mb-6">@errorMessage</p>
                 <a href="/checkout" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
-                    Back to Checkout
+                    @Localizer["BackToCheckout"]
                 </a>
             </div>
         }
@@ -51,8 +52,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                 </div>
-                <h2 class="text-2xl font-bold text-gray-900 mb-4">Payment Ready</h2>
-                <p class="text-gray-600 mb-6">You will be redirected to Bank Muscat secure payment gateway...</p>
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">@Localizer["PaymentReady"]</h2>
+                <p class="text-gray-600 mb-6">@Localizer["YouWillBeRedirectedToBankMuscatSecurePaymentGateway"]</p>
                 
                 <!-- Auto-submit form like in Go code -->
                 <form method="post" name="bankMuscatRedirect" action="@gatewayUrl">
@@ -64,9 +65,9 @@
                             <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v2a2 2 0 002 2z"/>
                             </svg>
-                            Proceed to Payment
+                            @Localizer["ProceedToPayment"]
                         </button>
-                        <p class="text-sm text-gray-500 mt-3">Secure payment powered by Bank Muscat</p>
+                        <p class="text-sm text-gray-500 mt-3">@Localizer["SecurePaymentPoweredByBankMuscat"]</p>
                     </div>
                 </form>
 
@@ -131,7 +132,7 @@
                 OrderId = OrderId,
                 Amount = order.TotalAmount,
                 Currency = "OMR",
-                Gateway = "Bank Muscat"
+                Gateway = Localizer["BankMuscat"]
             };
             payment = await PaymentService.CreatePaymentAsync(createPaymentDto);
         }

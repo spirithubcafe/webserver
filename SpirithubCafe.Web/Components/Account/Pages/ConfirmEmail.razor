@@ -8,20 +8,21 @@
 @inject UserManager<ApplicationUser> UserManager
 @inject IdentityRedirectManager RedirectManager
 @inject IHttpContextAccessor HttpContextAccessor
+@inject TranslationLocalizer Localizer
 
-<PageTitle>Confirm Email</PageTitle>
+<PageTitle>@Localizer["ConfirmEmail"]</PageTitle>
 
 <div class="min-h-screen bg-gradient-to-br from-[#f5f5f5] via-white to-[#e8e8e8] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full space-y-8">
         
         <!-- Site Logo -->
         <div class="w-32 h-32 mx-auto bg-white rounded-full flex items-center justify-center p-4 shadow-lg">
-            <img src="/images/logo.png" alt="SpirithubCafe Logo" class="w-full h-full object-contain" />
+            <img src="/images/logo.png" alt="@Localizer["SiteTitle"]" class="w-full h-full object-contain" />
         </div>
 
         <!-- Header -->
         <div class="text-center">
-            <h2 class="text-3xl font-bold text-gray-900 mb-2">Email Confirmation</h2>
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">@Localizer["EmailConfirmation"]</h2>
         </div>
 
         <!-- Status Message -->
@@ -38,12 +39,12 @@
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Confirmation Failed</h3>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">@Localizer["ConfirmationFailed"]</h3>
                             <p class="text-gray-600">@statusMessage</p>
                         </div>
                         <a href="/Account/Login" 
                            class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#715A5A] to-[#715A5A] text-white font-semibold rounded-lg hover:from-[#5d4a4a] hover:to-[#5d4a4a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#715A5A] transform transition duration-200 hover:scale-[1.02] shadow-lg">
-                            Back to Sign In
+                            @Localizer["BackToSignIn"]
                         </a>
                     </div>
                 </div>
@@ -59,12 +60,12 @@
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Email Confirmed!</h3>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">@Localizer["EmailConfirmed"]</h3>
                             <p class="text-gray-600">@statusMessage</p>
                         </div>
                         <a href="/Account/Login" 
                            class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#715A5A] to-[#715A5A] text-white font-semibold rounded-lg hover:from-[#5d4a4a] hover:to-[#5d4a4a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#715A5A] transform transition duration-200 hover:scale-[1.02] shadow-lg">
-                            Continue to Sign In
+                            @Localizer["ContinueToSignIn"]
                         </a>
                     </div>
                 </div>

@@ -43,11 +43,11 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
                     </svg>
                 </div>
-                <h2 class="text-xl font-semibold text-gray-900 mb-2">No Orders Yet</h2>
-                <p class="text-gray-600 mb-6">You haven't placed any orders yet. Start shopping to see your orders here.</p>
+                <h2 class="text-xl font-semibold text-gray-900 mb-2">@Localizer["NoOrdersYet"]</h2>
+                <p class="text-gray-600 mb-6">@Localizer["NoOrdersMessage"]</p>
                 <a href="/" 
                    class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                    Start Shopping
+                    @Localizer["StartShopping"]
                 </a>
             </div>
         }
@@ -74,36 +74,36 @@
                                         </span>
                                     </div>
                                     <div class="mt-1 flex flex-col sm:flex-row sm:space-x-6 text-sm text-gray-500">
-                                        <p>Placed on @order.CreatedAt.ToString("MMM dd, yyyy")</p>
-                                        <p>Total: @order.TotalAmount.ToString("F3") OMR</p>
-                                        <p>Items: @order.OrderItems.Count</p>
-                                        <p>Payment: @GetPaymentStatusText(order.PaymentStatus)</p>
+                                        <p>@Localizer["PlacedOn"] @order.CreatedAt.ToString("MMM dd, yyyy")</p>
+                                        <p>@Localizer["Total"]: @order.TotalAmount.ToString("F3") OMR</p>
+                                        <p>@Localizer["Items"]: @order.OrderItems.Count</p>
+                                        <p>@Localizer["Payment"]: @GetPaymentStatusText(order.PaymentStatus)</p>
                                     </div>
                                 </div>
                                 <div class="mt-4 sm:mt-0 flex flex-wrap gap-2">
                                     <button @onclick="@(() => ViewOrderDetails(order.OrderNumber))"
                                             class="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
-                                        View Details
+                                        @Localizer["ViewDetails"]
                                     </button>
                                     @if (order.PaymentStatus == "Unpaid" || order.PaymentStatus == "Failed")
                                     {
                                         <button @onclick="@(() => PayForOrder(order.Id))"
                                                 class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors">
-                                            Pay Now
+                                            @Localizer["PayNow"]
                                         </button>
                                     }
                                     @if (order.Status == "Pending" && order.PaymentStatus == "Unpaid")
                                     {
                                         <button @onclick="@(() => CancelOrder(order.OrderNumber))"
                                                 class="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
-                                            Cancel Order
+                                            @Localizer["CancelOrder"]
                                         </button>
                                     }
                                     @if (!string.IsNullOrEmpty(order.TrackingNumber))
                                     {
                                         <button @onclick="@(() => TrackOrder(order.TrackingNumber))"
                                                 class="px-4 py-2 text-sm font-medium text-green-600 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
-                                            Track Order
+                                            @Localizer["TrackOrder"]
                                         </button>
                                     }
                                 </div>
@@ -131,14 +131,14 @@
                                         }
                                         <div class="flex-1 min-w-0">
                                             <p class="text-sm font-medium text-gray-900 truncate">@item.ProductName</p>
-                                            <p class="text-sm text-gray-500">Qty: @item.Quantity × @item.UnitPrice.ToString("F3") OMR</p>
+                                            <p class="text-sm text-gray-500">@Localizer["Qty"]: @item.Quantity × @item.UnitPrice.ToString("F3") OMR</p>
                                         </div>
                                     </div>
                                 }
                                 @if (order.OrderItems.Count > 3)
                                 {
                                     <div class="flex items-center justify-center text-sm text-gray-500">
-                                        +@(order.OrderItems.Count - 3) more items
+                                        +@(order.OrderItems.Count - 3) @Localizer["MoreItems"]
                                     </div>
                                 }
                             </div>
@@ -152,7 +152,7 @@
                                     <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
-                                    <span class="text-sm font-medium text-blue-900">Tracking Number: @order.TrackingNumber</span>
+                                    <span class="text-sm font-medium text-blue-900">@Localizer["TrackingNumber"]: @order.TrackingNumber</span>
                                 </div>
                             </div>
                         }
@@ -169,7 +169,7 @@
                         {
                             <button @onclick="@(() => LoadPage(currentPage - 1))"
                                     class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-                                Previous
+                                @Localizer["Previous"]
                             </button>
                         }
                         
@@ -185,7 +185,7 @@
                         {
                             <button @onclick="@(() => LoadPage(currentPage + 1))"
                                     class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-                                Next
+                                @Localizer["Next"]
                             </button>
                         }
                     </nav>
@@ -251,7 +251,7 @@
 
     private async Task CancelOrder(string orderNumber)
     {
-        if (await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to cancel this order?"))
+        if (await JSRuntime.InvokeAsync<bool>("confirm", Localizer["ConfirmCancelOrder"]))
         {
             try
             {
@@ -262,15 +262,15 @@
                 }
                 else
                 {
-                    ToastService.ShowError("Order not found!");
+                    ToastService.ShowError(Localizer["OrderNotFound"]);
                     return;
                 }
                 await LoadUserOrders(); // Refresh the list
-                ToastService.ShowSuccess("Order cancelled successfully!");
+                ToastService.ShowSuccess(Localizer["OrderCancelledSuccessfully"]);
             }
             catch (Exception ex)
             {
-                ToastService.ShowError($"Error cancelling order: {ex.Message}");
+                ToastService.ShowError($"{Localizer["ErrorCancellingOrder"]}: {ex.Message}");
             }
         }
     }
@@ -279,7 +279,7 @@
     {
         // You can implement tracking logic here
         // For now, show the tracking number
-        ToastService.ShowInfo($"Tracking Number: {trackingNumber}\n\nPlease visit your shipping provider's website to track your package.");
+        ToastService.ShowInfo($"{Localizer["TrackingNumber"]}: {trackingNumber}\n\n{Localizer["VisitShippingProviderWebsite"]}");
         return Task.CompletedTask;
     }
 
@@ -313,12 +313,12 @@
     {
         return paymentStatus?.ToLower() switch
         {
-            "paid" => "Paid",
-            "unpaid" => "Unpaid",
-            "failed" => "Failed",
-            "refunded" => "Refunded",
-            "pending" => "Processing",
-            _ => "Unknown"
+            "paid" => Localizer["PaymentStatusPaid"],
+            "unpaid" => Localizer["PaymentStatusUnpaid"],
+            "failed" => Localizer["PaymentStatusFailed"],
+            "refunded" => Localizer["PaymentStatusRefunded"],
+            "pending" => Localizer["PaymentStatusProcessing"],
+            _ => Localizer["PaymentStatusUnknown"]
         };
     }
 
@@ -331,7 +331,7 @@
         }
         catch (Exception ex)
         {
-            ToastService.ShowError($"Error initiating payment: {ex.Message}");
+            ToastService.ShowError($"{Localizer["ErrorInitiatingPayment"]}: {ex.Message}");
         }
         
         return Task.CompletedTask;
