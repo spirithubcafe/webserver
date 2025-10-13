@@ -6,6 +6,15 @@
 (function() {
     'use strict';
 
+    // Check if already initialized
+    if (window.PWARegistered) {
+        console.log('PWA already registered, skipping...');
+        return;
+    }
+    
+    // Mark as initialized
+    window.PWARegistered = true;
+
     // Check if service workers are supported
     if (!('serviceWorker' in navigator)) {
         console.log('Service Workers not supported');
