@@ -27,7 +27,7 @@
     @RenderBody()
     
     <!-- Error UI for connection issues -->
-    <div id="blazor-error-ui" style="display: none !important;">
+    <div id="blazor-error-ui">
         <environment include="Development">
             An unhandled exception has occurred. See browser dev tools for details.
         </environment>
@@ -60,36 +60,11 @@
     <!-- Dropdown Helper - For mobile-friendly dropdowns -->
     <script src="/js/dropdown-helper.js"></script>
     
-    <!-- Blazor Connection Manager - Must load BEFORE blazor.server.js -->
+    <!-- Blazor Connection Manager -->
     <script src="/js/blazor-connection-manager.js"></script>
     
     <!-- Blazor Server JavaScript -->
-    <script src="_framework/blazor.server.js" autostart="false"></script>
-    
-    <script>
-        // Start Blazor Server with optimized configuration for silent fallback
-        Blazor.start({
-            configureSignalR: function (builder) {
-                // Configure transport options - try WebSocket, fallback to Long Polling
-                builder.withUrl('/_blazor', {
-                    transport: 4 | 1, // WebSockets (4) | LongPolling (1)
-                    skipNegotiation: false,
-                    logLevel: 0 // None - suppress all logging
-                });
-            },
-            reconnectionOptions: {
-                maxRetries: 3,
-                retryIntervalMilliseconds: 2000
-            },
-            reconnectionHandler: {
-                onConnectionDown: () => {}, // Silent
-                onConnectionUp: () => {},   // Silent  
-                onReconnectionFailed: () => {} // Silent
-            }
-        }).catch(() => {
-            // Silent error handling
-        });
-    </script>
+    <script src="_framework/blazor.server.js"></script>
 </body>
 
 </html>
