@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#715A5A">
+    <!-- Theme color moved to web manifest for broader compatibility; provide platform fallbacks -->
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <meta name="msapplication-TileColor" content="#715A5A">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     
     <!-- Cache Control -->
     <meta http-equiv="Cache-Control" content="max-age=31536000, immutable">
@@ -181,6 +185,10 @@
             font-weight: 600;
         }
 
+        .rtl {
+            direction: rtl;
+        }
+
         .page-list {
             display: flex;
             flex-direction: column;
@@ -259,9 +267,9 @@
                 </div>
 
                 <h1>You're Offline</h1>
-                <h1 style="direction: rtl;">أنت غير متصل</h1>
+                <h1 class="rtl">أنت غير متصل</h1>
                 <p>It looks like you've lost your internet connection. Some features may be limited, but you can still browse cached pages.</p>
-                <p style="direction: rtl;">يبدو أنك فقدت الاتصال بالإنترنت. قد تكون بعض الميزات محدودة، ولكن يمكنك تصفح الصفحات المحفوظة.</p>
+                <p class="rtl">يبدو أنك فقدت الاتصال بالإنترنت. قد تكون بعض الميزات محدودة، ولكن يمكنك تصفح الصفحات المحفوظة.</p>
 
                 <div class="button-group">
                     <button onclick="checkConnectionAndRetry()">
@@ -270,13 +278,13 @@
                     <button class="secondary-button" onclick="window.location.href='/'">
                          Go Home / الصفحة الرئيسية
                     </button>
-                </div>
-            </div>
-
-            <div class="content-right">
                 <div class="cached-pages">
                     <h2>Available Cached Pages</h2>
-                    <h2 style="direction: rtl;">الصفحات المحفوظة المتاحة</h2>
+                    <h2 class="rtl">الصفحات المحفوظة المتاحة</h2>
+                    <div class="page-list">
+                <div class="cached-pages">
+                    <h2>Available Cached Pages</h2>
+                    <h2 class="rtl">الصفحات المحفوظة المتاحة</h2>
                     <div class="page-list">
                         <a href="/" class="page-link">🏠 Home Page / الصفحة الرئيسية</a>
                         <a href="/products" class="page-link">🛍️ Products / المنتجات</a>

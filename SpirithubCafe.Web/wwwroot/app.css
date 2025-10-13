@@ -221,7 +221,11 @@ body {
 
 /* Custom TailwindCSS utilities for Blazor */
 .blazor-error-boundary {
-    @apply bg-red-600 text-white p-4 rounded-lg border-l-4 border-red-800;
+    background-color: #dc2626;
+    color: #ffffff;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border-left: 4px solid #991b1b;
 }
 
 .blazor-error-boundary::after {
@@ -244,15 +248,32 @@ body {
 
 /* Form validation styles with TailwindCSS */
 .valid.modified:not([type=checkbox]) {
-    @apply border-green-500 focus:ring-green-200;
+    /* Tailwind's border-green-500 */
+    border-color: #10B981;
+}
+.valid.modified:not([type=checkbox]):focus,
+.valid.modified:not([type=checkbox]):focus-visible {
+    /* Approximate Tailwind's focus:ring-green-200 */
+    box-shadow: 0 0 0 3px rgba(187, 247, 208, 0.45);
+    outline: none;
 }
 
 .invalid {
-    @apply border-red-500 focus:ring-red-200;
+    /* Tailwind's border-red-500 */
+    border-color: #EF4444;
+}
+.invalid:focus,
+.invalid:focus-visible {
+    /* Approximate Tailwind's focus:ring-red-200 */
+    box-shadow: 0 0 0 3px rgba(254, 202, 202, 0.45);
+    outline: none;
 }
 
 .validation-message {
-    @apply text-red-500 text-sm mt-1;
+    /* Tailwind's text-red-500 text-sm mt-1 */
+    color: #EF4444;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
 }
 
 *:focus-visible {
@@ -266,8 +287,8 @@ body {
 }
 
 .backdrop-blur-effect {
-    backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
 }
 
 
@@ -468,11 +489,24 @@ body {
 
 /* Language Switcher */
 .language-switcher {
-    @apply text-sm;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
 }
 
 .language-switcher select {
-    @apply w-full px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    color: #374151; /* approximate Tailwind text-gray-700 */
+    background-color: #ffffff;
+    border: 1px solid #D1D5DB; /* approximate Tailwind border-gray-300 */
+    border-radius: 0.5rem; /* approximate Tailwind rounded-lg */
+    box-sizing: border-box;
+}
+
+.language-switcher select:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15); /* approximate ring-2 + ring-orange-500 */
+    border-color: transparent;
 }
 
 [dir="rtl"] .language-switcher select {
@@ -612,8 +646,8 @@ body {
 
 /* Quick View Modal Enhancements */
 .quick-view-modal {
-    backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
     background-color: rgba(0, 0, 0, 0.4);
 }
 
