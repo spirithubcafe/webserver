@@ -114,7 +114,7 @@
                     <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 md:gap-6">
                         @foreach (var product in latestProducts)
                         {
-                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md hover:border-stone-200 transition-all duration-300 transform hover:-translate-y-1">
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md hover:border-stone-200 transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full">
                                 <div class="aspect-square bg-gray-50 relative overflow-hidden">
                                     @if (product.MainImage?.ImagePath != null)
                                     {
@@ -131,55 +131,91 @@
                                             </svg>
                                         </div>
                                     }
-                                </div>
-                                <div class="p-3 md:p-4">
-                                    <h3 class="text-sm md:text-base font-semibold mb-1 md:mb-2 line-clamp-1 text-gray-900">@GetProductName(product)</h3>
-                                    
-                                    <!-- Notes/Tasting Notes -->
-                                    @{
-                                        var notes = IsArabic && !string.IsNullOrEmpty(product.NotesAr) 
-                                            ? product.NotesAr 
-                                            : product.Notes;
-                                    }
-                                    @if (!string.IsNullOrEmpty(notes))
-                                    {
-                                        <p class="text-xs text-stone-600 mb-2 line-clamp-2 leading-tight">@notes</p>
-                                    }
                                     
                                     @{
-                                        var defaultVariant = product.Variants?.FirstOrDefault(v => v.IsDefault) ?? product.Variants?.FirstOrDefault();
-                                        var discountPercent = 0;
-                                        if (defaultVariant != null && defaultVariant.DiscountPrice.HasValue && defaultVariant.DiscountPrice.Value > 0 && defaultVariant.DiscountPrice.Value < defaultVariant.Price)
-                                        {
-                                            discountPercent = (int)Math.Round(((defaultVariant.Price - defaultVariant.DiscountPrice.Value) / defaultVariant.Price) * 100);
-                                        }
+                                        var badgeVariant = product.Variants?
+                                            .Where(v => v.DiscountPrice.HasValue && v.DiscountPrice.Value > 0 && v.DiscountPrice.Value < v.Price)
+                                            .FirstOrDefault() 
+                                        ?? product.Variants?.FirstOrDefault(v => v.IsDefault) 
+                                        ?? product.Variants?.FirstOrDefault();
+                                        var badgePrice = badgeVariant?.Price ?? 0;
+                                        var badgeDiscountPrice = badgeVariant?.DiscountPrice ?? 0;
+                                        var badgeHasDiscount = badgeDiscountPrice > 0 && badgeDiscountPrice < badgePrice;
+                                        var badgeDiscountPercent = badgeHasDiscount ? Math.Round((badgePrice - badgeDiscountPrice) / badgePrice * 100) : 0;
                                     }
-                                    @if (defaultVariant != null)
+                                    
+                                    <!-- Discount Badge (Top Right) -->
+                                    @if (badgeHasDiscount)
                                     {
-                                        <div class="flex flex-col gap-2 mt-2">
-                                            @if (defaultVariant.DiscountPrice.HasValue && defaultVariant.DiscountPrice.Value > 0 && defaultVariant.DiscountPrice.Value < defaultVariant.Price)
-                                            {
-                                                <div class="flex items-center gap-2 flex-wrap">
-                                                    <span class="text-sm md:text-base text-gray-400 line-through">@defaultVariant.Price.ToString("N0") @Localizer["Currency"]</span>
-                                                    <span class="text-lg md:text-xl font-bold text-red-600">@defaultVariant.DiscountPrice.Value.ToString("N0") @Localizer["Currency"]</span>
-                                                </div>
-                                                @if (discountPercent > 0)
-                                                {
-                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800 w-fit">
-                                                        @discountPercent% @Localizer["Off"]
-                                                    </span>
-                                                }
-                                            }
-                                            else
-                                            {
-                                                <span class="text-lg md:text-xl font-bold text-stone-700">@GetProductPrice(product)</span>
-                                            }
-                                            
-                                            <NavLink href="@($"/product/{product.Slug}")" class="bg-stone-600 hover:bg-stone-700 text-white px-3 py-2 rounded-lg text-xs md:text-sm font-medium transition-colors text-center">
-                                                @Localizer["ViewProduct"]
-                                            </NavLink>
+                                        <div class="absolute top-3 right-3 z-20">
+                                            <div class="bg-red-600 text-white px-2.5 py-1 rounded-lg shadow-lg text-xs sm:text-sm font-bold">
+                                                @badgeDiscountPercent% OFF
+                                            </div>
                                         </div>
                                     }
+                                </div>
+                                
+                                <!-- Content area that grows to push button down -->
+                                <div class="p-3 md:p-4 flex flex-col flex-grow">
+                                    <h3 class="text-sm md:text-base font-semibold mb-1 md:mb-2 line-clamp-1 text-gray-900">@GetProductName(product)</h3>
+                                    
+                                    <!-- Tasting Notes -->
+                                    @{
+                                        var currentCulture = System.Globalization.CultureInfo.CurrentUICulture.Name;
+                                        var tastingNotes = currentCulture.StartsWith("ar") && !string.IsNullOrEmpty(product.TastingNotesAr) 
+                                            ? product.TastingNotesAr 
+                                            : product.TastingNotes;
+                                    }
+                                    @if (!string.IsNullOrEmpty(tastingNotes))
+                                    {
+                                        <p class="text-xs text-stone-600 mb-2 line-clamp-2 leading-tight">@tastingNotes</p>
+                                    }
+                                    
+                                    <!-- Price -->
+                                    @{
+                                        var variant = product.Variants?
+                                            .Where(v => v.DiscountPrice.HasValue && v.DiscountPrice.Value > 0 && v.DiscountPrice.Value < v.Price)
+                                            .FirstOrDefault() 
+                                        ?? product.Variants?.FirstOrDefault(v => v.IsDefault) 
+                                        ?? product.Variants?.FirstOrDefault();
+                                        
+                                        var price = variant?.Price ?? 0;
+                                        var discountPrice = variant?.DiscountPrice ?? 0;
+                                        var hasDiscount = discountPrice > 0 && discountPrice < price;
+                                    }
+                                    
+                                    <div class="mb-3 flex-grow">
+                                        @if (hasDiscount)
+                                        {
+                                            <div class="space-y-1">
+                                                <div class="flex items-baseline gap-2">
+                                                    <span class="text-base sm:text-lg font-bold text-red-600">
+                                                        @discountPrice.ToString("0.000") <span class="text-xs">OMR</span>
+                                                    </span>
+                                                    <span class="text-xs sm:text-sm text-gray-400 line-through">
+                                                        @price.ToString("0.000")
+                                                    </span>
+                                                </div>
+                                                @{
+                                                    var discountPercentage = ((price - discountPrice) / price * 100);
+                                                }
+                                                <span class="inline-block bg-red-100 text-red-700 px-2 py-0.5 rounded text-xs font-semibold">
+                                                    @discountPercentage.ToString("0")% OFF
+                                                </span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="text-base sm:text-lg font-bold text-gray-900">
+                                                @price.ToString("0.000") <span class="text-xs">OMR</span>
+                                            </div>
+                                        }
+                                    </div>
+                                    
+                                    <!-- Full width button at bottom -->
+                                    <NavLink href="@($"/product/{product.Slug}")" class="w-full bg-stone-600 hover:bg-stone-700 text-white py-2 px-3 rounded-lg text-xs md:text-sm font-medium transition-colors text-center block mt-auto">
+                                        @Localizer["ViewProduct"]
+                                    </NavLink>
                                 </div>
                             </div>
                         }

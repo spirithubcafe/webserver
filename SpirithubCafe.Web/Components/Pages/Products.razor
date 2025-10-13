@@ -453,7 +453,11 @@
                             }
                             
                             @{
-                                var badgeVariant = product.Variants?.FirstOrDefault();
+                                var badgeVariant = product.Variants?
+                                    .Where(v => v.DiscountPrice.HasValue && v.DiscountPrice.Value > 0 && v.DiscountPrice.Value < v.Price)
+                                    .FirstOrDefault() 
+                                ?? product.Variants?.FirstOrDefault(v => v.IsDefault) 
+                                ?? product.Variants?.FirstOrDefault();
                                 var badgePrice = badgeVariant?.Price ?? 0;
                                 var badgeDiscountPrice = badgeVariant?.DiscountPrice ?? 0;
                                 var badgeHasDiscount = badgeDiscountPrice > 0 && badgeDiscountPrice < badgePrice;
@@ -513,7 +517,12 @@
                                 <!-- Price -->
                                 <div class="mb-3">
                                     @{
-                                        var variant = product.Variants?.FirstOrDefault();
+                                        var variant = product.Variants?
+                                            .Where(v => v.DiscountPrice.HasValue && v.DiscountPrice.Value > 0 && v.DiscountPrice.Value < v.Price)
+                                            .FirstOrDefault() 
+                                        ?? product.Variants?.FirstOrDefault(v => v.IsDefault) 
+                                        ?? product.Variants?.FirstOrDefault();
+                                        
                                         var price = variant?.Price ?? 0;
                                         var discountPrice = variant?.DiscountPrice ?? 0;
                                         var hasDiscount = discountPrice > 0 && discountPrice < price;
