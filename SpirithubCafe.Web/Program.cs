@@ -19,8 +19,25 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using SpirithubCafe.Web.Middleware;
 using Microsoft.AspNetCore.Components.Server.Circuits;
+using Microsoft.AspNetCore.HttpOverrides;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure Forwarded Headers for reverse proxy (NGINX, IIS, etc.)
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | 
+                               ForwardedHeaders.XForwardedProto | 
+                               ForwardedHeaders.XForwardedHost;
+    
+    // Clear known networks and proxies to allow any proxy
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+    
+    // Required for WebSocket connections behind reverse proxy
+    options.AllowedHosts.Clear();
+});
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -189,7 +206,14 @@ builder.Services.AddScoped<ToastService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 
 // Add SignalR
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = builder.Environment.IsDevelopment();
+    options.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
+    options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+    options.HandshakeTimeout = TimeSpan.FromSeconds(15);
+    options.MaximumReceiveMessageSize = 64 * 1024; // 64KB
+});
 
 // Register admin services
 builder.Services.AddScoped<UserManagementService>();
@@ -302,6 +326,9 @@ builder.Services.AddScoped<DataSeederService>();
 
 var app = builder.Build();
 
+// Use Forwarded Headers middleware (must be before other middleware)
+app.UseForwardedHeaders();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -341,6 +368,9 @@ if (app.Environment.IsDevelopment())
 // Add localization middleware
 var localizationOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>();
 app.UseRequestLocalization(localizationOptions.Value);
+
+// Enable WebSockets
+app.UseWebSockets();
 
 app.UseStaticFiles(); // Enable static file serving
 
