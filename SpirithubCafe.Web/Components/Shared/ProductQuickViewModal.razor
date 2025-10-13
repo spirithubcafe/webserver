@@ -335,14 +335,28 @@
 
                             <!-- Actions -->
                             <div class="flex gap-3 pt-5 border-t border-gray-200 sticky bottom-0 bg-white">
-                                <button @onclick="ViewFullDetails" 
-                                        class="flex-1 inline-flex justify-center items-center px-6 py-3 border-2 border-[#715A5A] rounded-xl text-sm font-semibold text-[#715A5A] bg-white hover:bg-[#715A5A] hover:text-white transition-all duration-200 no-underline shadow-sm hover:shadow-md">
-                                    <svg class="w-4 h-4 ltr:mr-2 rtl:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                    </svg>
-                                    @Localizer["ViewFullDetails"]
-                                </button>
+                                @if (!string.IsNullOrEmpty(Product?.Slug))
+                                {
+                                    <a href="/product/@Product.Slug" @onclick="CloseModal"
+                                       class="flex-1 inline-flex justify-center items-center px-6 py-3 border-2 border-[#715A5A] rounded-xl text-sm font-semibold text-[#715A5A] bg-white hover:bg-[#715A5A] hover:text-white transition-all duration-200 no-underline shadow-sm hover:shadow-md">
+                                        <svg class="w-4 h-4 ltr:mr-2 rtl:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        @Localizer["ViewFullDetails"]
+                                    </a>
+                                }
+                                else
+                                {
+                                    <button disabled 
+                                            class="flex-1 inline-flex justify-center items-center px-6 py-3 border-2 border-gray-300 rounded-xl text-sm font-semibold text-gray-400 bg-gray-100 cursor-not-allowed shadow-sm">
+                                        <svg class="w-4 h-4 ltr:mr-2 rtl:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        @Localizer["ViewFullDetails"]
+                                    </button>
+                                }
                                 <button @onclick="CloseModal" 
                                         class="px-6 py-3 border border-gray-300 rounded-xl text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200 shadow-sm hover:shadow-md">
                                     @Localizer["Close"]
@@ -369,15 +383,6 @@
         IsVisible = false;
         await RemoveBodyScrollLock();
         await OnClose.InvokeAsync();
-    }
-    
-    private async Task ViewFullDetails()
-    {
-        if (Product?.Slug != null)
-        {
-            await CloseModal();
-            Navigation.NavigateTo($"/product/{Product.Slug}");
-        }
     }
 
     protected override async Task OnParametersSetAsync()
