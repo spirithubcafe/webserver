@@ -29,7 +29,7 @@
                        onloadeddata="this.play().catch(e => console.log('Auto-play prevented:', e));"
                        oncanplaythrough="this.play().catch(e => console.log('Play failed:', e));">
                     <source src="@settings.BgValue" type="video/mp4">
-                    Your browser does not support the video tag.
+                    @Localizer["Footer.VideoNotSupported"]
                 </video>
             </div>
         }
