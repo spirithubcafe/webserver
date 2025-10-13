@@ -2,14 +2,16 @@
 
 @using Microsoft.AspNetCore.Identity
 @using SpirithubCafe.Web.Data
+@using SpirithubCafe.Web.Services
 
 @inject UserManager<ApplicationUser> UserManager
 @inject IdentityUserAccessor UserAccessor
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<Disable2fa> Logger
 @inject IHttpContextAccessor HttpContextAccessor
+@inject TranslationLocalizer Localizer
 
-<PageTitle>Disable Two-Factor Authentication - SpirithubCafe</PageTitle>
+<PageTitle>@Localizer["Disable2FA.PageTitle"] - SpirithubCafe</PageTitle>
 
 <div class="max-w-3xl mx-auto p-6 space-y-8">
     <!-- Page Header -->
@@ -21,8 +23,8 @@
                 </svg>
             </div>
             <div>
-                <h1 class="text-3xl font-bold">Disable Two-Factor Authentication</h1>
-                <p class="text-[#D3DAD9] mt-1">Turn off 2FA protection for your account</p>
+                <h1 class="text-3xl font-bold">@Localizer["Disable2FA.Title"]</h1>
+                <p class="text-red-100 mt-1">@Localizer["Disable2FA.Subtitle"]</p>
             </div>
         </div>
     </div>
@@ -38,16 +40,16 @@
                 </svg>
             </div>
             <div class="ml-3">
-                <h3 class="text-lg font-medium text-yellow-800 mb-3">⚠️ Important Information</h3>
+                <h3 class="text-lg font-medium text-yellow-800 mb-3">⚠️ @Localizer["Disable2FA.ImportantInfo"]</h3>
                 <div class="text-yellow-700 space-y-2">
                     <p class="font-semibold">
-                        This action only disables 2FA - it doesn't affect your authenticator apps.
+                        @Localizer["Disable2FA.OnlyDisables"]
                     </p>
                     <ul class="list-disc pl-5 space-y-1">
-                        <li>Your authenticator app keys will remain the same</li>
-                        <li>You can re-enable 2FA at any time using the same authenticator app</li>
-                        <li>To change authenticator keys, you need to <a href="Account/Manage/ResetAuthenticator" class="text-yellow-600 hover:text-yellow-800 underline font-medium">reset your authenticator keys</a></li>
-                        <li>Your recovery codes will still be valid</li>
+                        <li>@Localizer["Disable2FA.KeysRemain"]</li>
+                        <li>@Localizer["Disable2FA.CanReEnable"]</li>
+                        <li>@Localizer["Disable2FA.ChangeKeys"] <a href="Account/Manage/ResetAuthenticator" class="text-yellow-600 hover:text-yellow-800 underline font-medium">@Localizer["Disable2FA.ResetKeys"]</a></li>
+                        <li>@Localizer["Disable2FA.RecoveryValid"]</li>
                     </ul>
                 </div>
             </div>
@@ -63,14 +65,14 @@
                 </svg>
             </div>
             <div class="ml-3">
-                <h3 class="text-lg font-medium text-red-800 mb-3">Security Impact</h3>
+                <h3 class="text-lg font-medium text-red-800 mb-3">@Localizer["Disable2FA.SecurityImpact"]</h3>
                 <div class="text-red-700 space-y-2">
-                    <p>Disabling 2FA will reduce your account security:</p>
+                    <p>@Localizer["Disable2FA.ReduceSecurity"]:</p>
                     <ul class="list-disc pl-5 space-y-1">
-                        <li>Your account will only be protected by your password</li>
-                        <li>Login will no longer require a second verification step</li>
-                        <li>Your account may be more vulnerable to unauthorized access</li>
-                        <li>We recommend keeping 2FA enabled for maximum security</li>
+                        <li>@Localizer["Disable2FA.OnlyPassword"]</li>
+                        <li>@Localizer["Disable2FA.NoSecondStep"]</li>
+                        <li>@Localizer["Disable2FA.MoreVulnerable"]</li>
+                        <li>@Localizer["Disable2FA.RecommendKeep"]</li>
                     </ul>
                 </div>
             </div>
@@ -79,30 +81,30 @@
 
     <!-- Disable Action -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">Disable Two-Factor Authentication</h2>
+        <h2 class="text-xl font-semibold text-red-900 mb-4">@Localizer["Disable2FA.DisableTitle"]</h2>
         
         <div class="space-y-4">
             <p class="text-gray-600">
-                Are you sure you want to disable two-factor authentication? This will make your account less secure.
+                @Localizer["Disable2FA.AreYouSure"]
             </p>
             
             <div class="bg-gray-50 rounded-xl p-4">
                 <div class="space-y-3">
                     <div class="flex items-start space-x-3">
                         <div class="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
-                        <span class="text-gray-700">2FA will be turned off immediately</span>
+                        <span class="text-gray-700">@Localizer["Disable2FA.TurnedOffImmediately"]</span>
                     </div>
                     <div class="flex items-start space-x-3">
                         <div class="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
-                        <span class="text-gray-700">You can re-enable it anytime from security settings</span>
+                        <span class="text-gray-700">@Localizer["Disable2FA.ReEnableAnytime"]</span>
                     </div>
                     <div class="flex items-start space-x-3">
                         <div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                        <span class="text-gray-700">Your authenticator app settings will be preserved</span>
+                        <span class="text-gray-700">@Localizer["Disable2FA.AppSettingsPreserved"]</span>
                     </div>
                     <div class="flex items-start space-x-3">
                         <div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                        <span class="text-gray-700">Recovery codes remain valid</span>
+                        <span class="text-gray-700">@Localizer["Disable2FA.RecoveryCodesRemain"]</span>
                     </div>
                 </div>
             </div>
@@ -114,17 +116,17 @@
                     <div class="flex justify-between items-center">
                         <div>
                             <p class="text-sm text-gray-600 mb-2">
-                                This action will reduce your account security. Consider the risks before proceeding.
+                                @Localizer["Disable2FA.ConsiderRisks"]
                             </p>
                         </div>
                         <div class="flex space-x-3">
                             <a href="/Account/Manage/TwoFactorAuthentication" 
                                class="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-300">
-                                Cancel
+                                @Localizer["Disable2FA.Cancel"]
                             </a>
                             <button type="submit" 
                                     class="px-6 py-3 bg-orange-600 text-white font-semibold rounded-xl hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all duration-300">
-                                Disable 2FA
+                                @Localizer["Disable2FA.DisableButton"]
                             </button>
                         </div>
                     </div>
@@ -142,10 +144,9 @@
                 </svg>
             </div>
             <div class="ml-3">
-                <h3 class="text-sm font-medium text-blue-800 mb-2">Re-enabling 2FA</h3>
+                <h3 class="text-sm font-medium text-blue-800 mb-2">@Localizer["Disable2FA.ReEnabling"]</h3>
                 <p class="text-sm text-blue-700">
-                    You can re-enable two-factor authentication at any time from your security settings. 
-                    Your existing authenticator app setup will work without needing to scan a new QR code.
+                    @Localizer["Disable2FA.ReEnableInfo"]
                 </p>
             </div>
         </div>
@@ -182,9 +183,10 @@
         Logger.LogInformation("User with ID '{UserId}' has disabled 2fa.", userId);
         if (HttpContext is not null)
         {
+            var successMessage = Localizer["Disable2FA.SuccessMessage"];
             RedirectManager.RedirectToWithStatus(
                 "Account/Manage/TwoFactorAuthentication",
-                "2fa has been disabled. You can reenable 2fa when you setup an authenticator app",
+                successMessage,
                 HttpContext);
         }
     }

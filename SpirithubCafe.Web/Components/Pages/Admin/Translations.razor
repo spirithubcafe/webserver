@@ -137,8 +137,7 @@
                 <table class="w-full">
                     <thead class="bg-gray-50 border-b">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Key</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">English</th>
+                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">English</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Arabic</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
                             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -148,11 +147,7 @@
                         @foreach (var translation in pagedTranslations)
                         {
                             <tr class="hover:bg-gray-50 transition-colors">
-                                <td class="px-6 py-4">
-                                    <div class="text-sm font-medium text-gray-900 max-w-xs truncate" title="@translation.Key">
-                                        @translation.Key
-                                    </div>
-                                </td>
+ 
                                 <td class="px-6 py-4">
                                     <div class="text-sm text-gray-900 max-w-md truncate" title="@translation.ValueEn">
                                         @translation.ValueEn

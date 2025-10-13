@@ -2,14 +2,15 @@
 
 @using Microsoft.AspNetCore.Identity
 @using SpirithubCafe.Web.Data
-
+@using SpirithubCafe.Web.Services
 @inject UserManager<ApplicationUser> UserManager
 @inject IdentityUserAccessor UserAccessor
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<GenerateRecoveryCodes> Logger
 @inject IHttpContextAccessor HttpContextAccessor
+@inject TranslationLocalizer Localizer
 
-<PageTitle>Generate two-factor authentication (2FA) recovery codes</PageTitle>
+<PageTitle>@Localizer["GenerateRecoveryCodes.PageTitle"]</PageTitle>
 
 @if (recoveryCodes is not null)
 {
@@ -17,25 +18,53 @@
 }
 else
 {
-    <h3>Generate two-factor authentication (2FA) recovery codes</h3>
-    <div class="alert alert-warning" role="alert">
-        <p>
-            <span class="glyphicon glyphicon-warning-sign"></span>
-            <strong>Put these codes in a safe place.</strong>
-        </p>
-        <p>
-            If you lose your device and don't have the recovery codes you will lose access to your account.
-        </p>
-        <p>
-            Generating new recovery codes does not change the keys used in authenticator apps. If you wish to change the key
-            used in an authenticator app you should <a href="Account/Manage/ResetAuthenticator">reset your authenticator keys.</a>
-        </p>
-    </div>
-    <div>
-        <form @formname="generate-recovery-codes" @onsubmit="OnSubmitAsync" method="post">
-            <AntiforgeryToken />
-            <button class="btn btn-danger" type="submit">Generate Recovery Codes</button>
-        </form>
+    <div class="max-w-3xl mx-auto p-6 space-y-8">
+        <!-- Page Header -->
+        <div class="bg-orange-600 rounded-2xl p-8 text-white">
+            <div class="flex items-center space-x-3">
+                <div class="p-3 bg-white/20 rounded-xl">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.031 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold">@Localizer["GenerateRecoveryCodes.MainTitle"]</h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- Warning Section -->
+        <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-lg font-medium text-yellow-800 mb-3">⚠️ @Localizer["GenerateRecoveryCodes.Warning"]</h3>
+                    <div class="text-yellow-700 space-y-2">
+                        <p>@Localizer["GenerateRecoveryCodes.WarningLoseAccess"]</p>
+                        <p>
+                            @Localizer["GenerateRecoveryCodes.AuthenticatorNote"]
+                            <a href="Account/Manage/ResetAuthenticator" class="text-yellow-600 hover:text-yellow-800 underline font-medium">@Localizer["GenerateRecoveryCodes.ResetAuthenticatorLink"]</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Generate Form -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <form @formname="generate-recovery-codes" @onsubmit="OnSubmitAsync" method="post">
+                <AntiforgeryToken />
+                <div class="text-center">
+                    <button type="submit" class="px-8 py-3 bg-orange-600 text-white font-semibold rounded-xl hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105">
+                        @Localizer["GenerateRecoveryCodes.GenerateButton"]
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 }
 
@@ -43,14 +72,16 @@ else
     private string? message;
     private ApplicationUser user = default!;
     private IEnumerable<string>? recoveryCodes;
-
+    
     private HttpContext? HttpContext => HttpContextAccessor.HttpContext;
 
     protected override async Task OnInitializedAsync()
     {
-        if (HttpContext is not null)
+        // Load translations
+        var httpContext = HttpContext;
+        if (httpContext is not null)
         {
-            user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+            user = await UserAccessor.GetRequiredUserAsync(httpContext);
 
             var isTwoFactorEnabled = await UserManager.GetTwoFactorEnabledAsync(user);
             if (!isTwoFactorEnabled)
@@ -64,7 +95,7 @@ else
     {
         var userId = await UserManager.GetUserIdAsync(user);
         recoveryCodes = await UserManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
-        message = "You have generated new recovery codes.";
+        message = Localizer["GenerateRecoveryCodes.SuccessMessage"];
 
         Logger.LogInformation("User with ID '{UserId}' has generated new 2FA recovery codes.", userId);
     }

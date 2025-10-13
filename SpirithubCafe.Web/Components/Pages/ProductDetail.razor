@@ -181,7 +181,7 @@ else
                         <div class="text-xs text-gray-600">
                             <span class="font-bold text-gray-900">@reviewsResponse.AverageRating.ToString("F1")</span>
                             <span class="mx-1">·</span>
-                            <span>@reviewsResponse.TotalCount reviews</span>
+                            <span>@reviewsResponse.TotalCount @Loc["reviews"]</span>
                         </div>
                     </div>
                 }
@@ -368,15 +368,15 @@ else
                                                 </div>
                                                 @if (variant.StockQuantity <= 0)
                                                 {
-                                                    <span class="text-[10px] text-red-600 font-medium">Out of Stock</span>
+                                                    <span class="text-[10px] text-red-600 font-medium">@Loc["OutofStock"]</span>
                                                 }
                                                 else if (variant.StockQuantity <= variant.LowStockThreshold)
                                                 {
-                                                    <span class="text-[10px] text-orange-600 font-medium">Only @variant.StockQuantity left</span>
+                                                    <span class="text-[10px] text-orange-600 font-medium">@Loc["Only"] @variant.StockQuantity @Loc["LeftInStock"]</span>
                                                 }
                                                 else
                                                 {
-                                                    <span class="text-[10px] text-green-600 font-medium">In Stock</span>
+                                                    <span class="text-[10px] text-green-600 font-medium">@Loc["InStock"]</span>
                                                 }
                                             </div>
                                         </div>
@@ -446,11 +446,11 @@ else
                     <div class="mt-1.5 text-xs text-center">
                         @if (selectedVariant.StockQuantity <= selectedVariant.LowStockThreshold)
                         {
-                            <span class="text-orange-600">Only @selectedVariant.StockQuantity left</span>
+                            <span class="text-orange-600">@Loc["Only"] @selectedVariant.StockQuantity @Loc["LeftInStock"]</span>
                         }
                         else
                         {
-                            <span class="text-green-600">@selectedVariant.StockQuantity in stock</span>
+                            <span class="text-green-600">@selectedVariant.StockQuantity @Loc["InStock"]</span>
                         }
                     </div>
                 }

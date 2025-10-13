@@ -16,8 +16,9 @@
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<EnableAuthenticator> Logger
 @inject IHttpContextAccessor HttpContextAccessor
+@inject TranslationLocalizer Localizer
 
-<PageTitle>Configure Authenticator App - SpirithubCafe</PageTitle>
+<PageTitle>@Localizer["EnableAuthenticator.PageTitle"] - SpirithubCafe</PageTitle>
 
 @if (recoveryCodes is not null)
 {
@@ -35,8 +36,8 @@ else
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-3xl font-bold">Configure Authenticator App</h1>
-                    <p class="text-green-100 mt-1">Set up your authenticator app for enhanced security</p>
+                    <h1 class="text-3xl font-bold">@Localizer["EnableAuthenticator.Title"]</h1>
+                    <p class="text-green-100 mt-1">@Localizer["EnableAuthenticator.Subtitle"]</p>
                 </div>
             </div>
         </div>
@@ -45,7 +46,7 @@ else
 
         <!-- Setup Instructions -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 class="text-xl font-semibold text-gray-900 mb-6">Setup Instructions</h2>
+            <h2 class="text-xl font-semibold text-gray-900 mb-6">@Localizer["EnableAuthenticator.SetupInstructions"]</h2>
             
             <div class="space-y-6">
                 <!-- Step 1: Download App -->
@@ -56,8 +57,8 @@ else
                         </div>
                     </div>
                     <div class="flex-1">
-                        <h3 class="text-lg font-medium text-gray-900 mb-3">Download an Authenticator App</h3>
-                        <p class="text-gray-600 mb-4">Choose one of these recommended authenticator apps:</p>
+                        <h3 class="text-lg font-medium text-gray-900 mb-3">@Localizer["EnableAuthenticator.DownloadApp"]</h3>
+                        <p class="text-gray-600 mb-4">@Localizer["EnableAuthenticator.ChooseApp"]</p>
                         
                         <!-- App Options -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -66,14 +67,14 @@ else
                                     <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                                         <span class="text-white font-bold text-sm">M</span>
                                     </div>
-                                    <h4 class="font-semibold text-gray-900">Microsoft Authenticator</h4>
+                                    <h4 class="font-semibold text-gray-900">@Localizer["EnableAuthenticator.MicrosoftAuthenticator"]</h4>
                                 </div>
                                 <div class="flex space-x-2">
                                     <a href="https://go.microsoft.com/fwlink/?Linkid=825072" 
-                                       class="text-blue-600 hover:text-blue-800 text-sm font-medium">Android</a>
+                                       class="text-blue-600 hover:text-blue-800 text-sm font-medium">@Localizer["EnableAuthenticator.Android"]</a>
                                     <span class="text-gray-400">|</span>
                                     <a href="https://go.microsoft.com/fwlink/?Linkid=825073" 
-                                       class="text-blue-600 hover:text-blue-800 text-sm font-medium">iOS</a>
+                                       class="text-blue-600 hover:text-blue-800 text-sm font-medium">@Localizer["EnableAuthenticator.iOS"]</a>
                                 </div>
                             </div>
                             
@@ -82,14 +83,14 @@ else
                                     <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center">
                                         <span class="text-white font-bold text-sm">G</span>
                                     </div>
-                                    <h4 class="font-semibold text-gray-900">Google Authenticator</h4>
+                                    <h4 class="font-semibold text-gray-900">@Localizer["EnableAuthenticator.GoogleAuthenticator"]</h4>
                                 </div>
                                 <div class="flex space-x-2">
                                     <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en" 
-                                       class="text-blue-600 hover:text-blue-800 text-sm font-medium">Android</a>
+                                       class="text-blue-600 hover:text-blue-800 text-sm font-medium">@Localizer["EnableAuthenticator.Android"]</a>
                                     <span class="text-gray-400">|</span>
                                     <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8" 
-                                       class="text-blue-600 hover:text-blue-800 text-sm font-medium">iOS</a>
+                                       class="text-blue-600 hover:text-blue-800 text-sm font-medium">@Localizer["EnableAuthenticator.iOS"]</a>
                                 </div>
                             </div>
                         </div>
@@ -104,7 +105,7 @@ else
                         </div>
                     </div>
                     <div class="flex-1">
-                        <h3 class="text-lg font-medium text-gray-900 mb-3">Scan QR Code or Enter Key</h3>
+                        <h3 class="text-lg font-medium text-gray-900 mb-3">@Localizer["EnableAuthenticator.ScanQRCode"]</h3>
                         
                         <div class="bg-gray-50 rounded-xl p-6 mb-4">
                             <div class="text-center">
@@ -114,7 +115,7 @@ else
                                         <img src="@qrCodeDataUri" alt="QR Code for Authenticator Setup" class="w-48 h-48" />
                                     </div>
                                     <p class="text-sm text-gray-600 mb-4">
-                                        Scan this QR code with your authenticator app
+                                        @Localizer["EnableAuthenticator.ScanQRInstruction"]
                                     </p>
                                 }
                                 else
@@ -128,20 +129,20 @@ else
                                 
                                 <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
                                     <p class="text-sm text-blue-800 mb-2">
-                                        <strong>Can't scan the QR code?</strong> 
-                                        Use the manual entry key below instead.
+                                        <strong>@Localizer["EnableAuthenticator.CantScanQR"]</strong> 
+                                        @Localizer["EnableAuthenticator.UseManualEntry"]
                                     </p>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
-                            <h4 class="font-medium text-yellow-800 mb-2">Manual Entry Key:</h4>
+                            <h4 class="font-medium text-yellow-800 mb-2">@Localizer["EnableAuthenticator.ManualEntryKey"]</h4>
                             <div class="bg-white rounded-lg p-3 font-mono text-lg tracking-wider text-center border">
                                 @sharedKey
                             </div>
                             <p class="text-sm text-yellow-700 mt-2">
-                                Spaces and casing do not matter when entering this key manually.
+                                @Localizer["EnableAuthenticator.SpacesDoNotMatter"]
                             </p>
                         </div>
                     </div>
@@ -155,10 +156,9 @@ else
                         </div>
                     </div>
                     <div class="flex-1">
-                        <h3 class="text-lg font-medium text-gray-900 mb-3">Verify Your Setup</h3>
+                        <h3 class="text-lg font-medium text-gray-900 mb-3">@Localizer["EnableAuthenticator.VerifySetup"]</h3>
                         <p class="text-gray-600 mb-4">
-                            Once you have scanned the QR code or entered the key above, your authenticator app will provide you
-                            with a unique code. Enter the code in the verification box below.
+                            @Localizer["EnableAuthenticator.VerifyInstruction"]
                         </p>
                         
                         <div class="bg-white border border-gray-200 rounded-xl p-6">
@@ -168,13 +168,13 @@ else
                                 <div class="space-y-4">
                                     <div>
                                         <label for="Input.Code" class="block text-sm font-medium text-gray-700 mb-2">
-                                            Verification Code
+                                            @Localizer["EnableAuthenticator.VerificationCode"]
                                         </label>
                                         <InputText @bind-Value="Input.Code" 
                                                    id="Input.Code" 
                                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-center text-lg font-mono tracking-wider" 
                                                    autocomplete="off" 
-                                                   placeholder="Enter 6-digit code" 
+                                                   placeholder="@Localizer["EnableAuthenticator.EnterCode"]" 
                                                    maxlength="7" />
                                         <ValidationMessage For="() => Input.Code" class="text-red-600 text-sm mt-1" />
                                     </div>
@@ -183,7 +183,7 @@ else
                                     
                                     <button type="submit" 
                                             class="w-full py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-300">
-                                        Verify and Enable 2FA
+                                        @Localizer["EnableAuthenticator.VerifyAndEnable"]
                                     </button>
                                 </div>
                             </EditForm>
@@ -202,12 +202,12 @@ else
                     </svg>
                 </div>
                 <div class="ml-3">
-                    <h3 class="text-sm font-medium text-blue-800 mb-2">Security Tips</h3>
+                    <h3 class="text-sm font-medium text-blue-800 mb-2">@Localizer["EnableAuthenticator.SecurityTips"]</h3>
                     <ul class="text-sm text-blue-700 space-y-1">
-                        <li>• Keep your authenticator app secure and up to date</li>
-                        <li>• Save your recovery codes in a safe place</li>
-                        <li>• Consider setting up multiple authenticator apps for backup</li>
-                        <li>• Never share your authenticator codes with anyone</li>
+                        <li>• @Localizer["EnableAuthenticator.Tip1"]</li>
+                        <li>• @Localizer["EnableAuthenticator.Tip2"]</li>
+                        <li>• @Localizer["EnableAuthenticator.Tip3"]</li>
+                        <li>• @Localizer["EnableAuthenticator.Tip4"]</li>
                     </ul>
                 </div>
             </div>
@@ -249,7 +249,7 @@ else
 
         if (!is2faTokenValid)
         {
-            message = "Error: Verification code is invalid.";
+            message = Localizer["EnableAuthenticator.ErrorInvalidCode"];
             return;
         }
 
@@ -257,7 +257,7 @@ else
         var userId = await UserManager.GetUserIdAsync(user);
         Logger.LogInformation("User with ID '{UserId}' has enabled 2FA with an authenticator app.", userId);
 
-        message = "Your authenticator app has been verified.";
+        message = Localizer["EnableAuthenticator.SuccessVerified"];
 
         if (await UserManager.CountRecoveryCodesAsync(user) == 0)
         {

@@ -2,15 +2,16 @@
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
 @using SpirithubCafe.Web.Data
-
+@using SpirithubCafe.Web.Services
 @inject UserManager<ApplicationUser> UserManager
 @inject SignInManager<ApplicationUser> SignInManager
 @inject IdentityUserAccessor UserAccessor
 @inject IUserStore<ApplicationUser> UserStore
 @inject IdentityRedirectManager RedirectManager
 @inject IHttpContextAccessor HttpContextAccessor
+@inject TranslationLocalizer Localizer
 
-<PageTitle>External Logins - SpirithubCafe</PageTitle>
+<PageTitle>@Localizer["ExternalLogins.PageTitle"] - SpirithubCafe</PageTitle>
 
 <div class="max-w-4xl mx-auto p-6 space-y-8">
     <!-- Page Header -->
@@ -22,8 +23,8 @@
                 </svg>
             </div>
             <div>
-                <h1 class="text-3xl font-bold">External Logins</h1>
-                <p class="text-purple-100 mt-1">Manage your connected social accounts</p>
+                <h1 class="text-3xl font-bold">@Localizer["ExternalLogins.PageTitle"]</h1>
+                <p class="text-purple-100 mt-1">@Localizer["ExternalLogins.PageDescription"]</p>
             </div>
         </div>
     </div>
@@ -38,7 +39,7 @@
                 <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-                <h2 class="text-xl font-semibold text-gray-900">Connected Accounts</h2>
+                <h2 class="text-xl font-semibold text-gray-900">@Localizer["ExternalLogins.ConnectedAccounts"]</h2>
             </div>
             
             <div class="space-y-4">
@@ -117,11 +118,11 @@
                 <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                 </svg>
-                <h2 class="text-xl font-semibold text-gray-900">Add External Login</h2>
+                <h2 class="text-xl font-semibold text-gray-900">@Localizer["ExternalLogins.AddExternalLogin"]</h2>
             </div>
             
             <p class="text-gray-600 mb-6">
-                Connect additional social accounts to make signing in easier. You can use any of these services to log in to your account.
+                @Localizer["ExternalLogins.ConnectAdditionalAccounts"]
             </p>
             
             <form class="space-y-4" action="Account/Manage/LinkExternalLogin" method="post">
@@ -181,12 +182,12 @@
                 </svg>
             </div>
             <div class="ml-3">
-                <h3 class="text-sm font-medium text-blue-800 mb-2">About External Logins</h3>
+                <h3 class="text-sm font-medium text-blue-800 mb-2">@Localizer["ExternalLogins.AboutTitle"]</h3>
                 <ul class="text-sm text-blue-700 space-y-1">
-                    <li>• External logins allow you to sign in using social media accounts</li>
-                    <li>• You can connect multiple providers for convenience</li>
-                    <li>• Your account data remains secure and separate from social providers</li>
-                    <li>• You can remove external logins if you have a password or other login methods</li>
+                    <li>• @Localizer["ExternalLogins.AboutPoint1"]</li>
+                    <li>• @Localizer["ExternalLogins.AboutPoint2"]</li>
+                    <li>• @Localizer["ExternalLogins.AboutPoint3"]</li>
+                    <li>• @Localizer["ExternalLogins.AboutPoint4"]</li>
                 </ul>
             </div>
         </div>
@@ -200,7 +201,7 @@
     private IList<UserLoginInfo>? currentLogins;
     private IList<AuthenticationScheme>? otherLogins;
     private bool showRemoveButton;
-
+    
     private HttpContext? HttpContext => HttpContextAccessor.HttpContext;
 
     [SupplyParameterFromForm]
@@ -214,9 +215,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (HttpContext is not null)
+        // Load translations
+        var httpContext = HttpContext;
+        if (httpContext is not null)
         {
-            user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+            user = await UserAccessor.GetRequiredUserAsync(httpContext);
             currentLogins = await UserManager.GetLoginsAsync(user);
             otherLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync())
                 .Where(auth => currentLogins.All(ul => auth.Name != ul.LoginProvider))
@@ -225,12 +228,12 @@
             string? passwordHash = null;
             if (UserStore is IUserPasswordStore<ApplicationUser> userPasswordStore)
             {
-                passwordHash = await userPasswordStore.GetPasswordHashAsync(user, HttpContext.RequestAborted);
+                passwordHash = await userPasswordStore.GetPasswordHashAsync(user, httpContext.RequestAborted);
             }
 
             showRemoveButton = passwordHash is not null || currentLogins.Count > 1;
 
-            if (HttpMethods.IsGet(HttpContext.Request.Method) && Action == LinkLoginCallbackAction)
+            if (HttpMethods.IsGet(httpContext.Request.Method) && Action == LinkLoginCallbackAction)
             {
                 await OnGetLinkLoginCallbackAsync();
             }
@@ -244,12 +247,12 @@
             var result = await UserManager.RemoveLoginAsync(user, LoginProvider!, ProviderKey!);
             if (!result.Succeeded)
             {
-                RedirectManager.RedirectToCurrentPageWithStatus("Error: The external login was not removed.", HttpContext);
+                RedirectManager.RedirectToCurrentPageWithStatus(Localizer["ExternalLogins.ErrorNotRemoved"], HttpContext);
             }
             else
             {
                 await SignInManager.RefreshSignInAsync(user);
-                RedirectManager.RedirectToCurrentPageWithStatus("The external login was removed.", HttpContext);
+                RedirectManager.RedirectToCurrentPageWithStatus(Localizer["ExternalLogins.SuccessRemoved"], HttpContext);
             }
         }
     }
@@ -262,21 +265,21 @@
             var info = await SignInManager.GetExternalLoginInfoAsync(userId);
             if (info is null)
             {
-                RedirectManager.RedirectToCurrentPageWithStatus("Error: Could not load external login info.", HttpContext);
+                RedirectManager.RedirectToCurrentPageWithStatus(Localizer["ExternalLogins.ErrorCouldNotLoad"], HttpContext);
                 return;
             }
 
             var result = await UserManager.AddLoginAsync(user, info);
             if (!result.Succeeded)
             {
-                RedirectManager.RedirectToCurrentPageWithStatus("Error: The external login was not added. External logins can only be associated with one account.", HttpContext);
+                RedirectManager.RedirectToCurrentPageWithStatus(Localizer["ExternalLogins.ErrorNotAdded"], HttpContext);
                 return;
             }
 
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
-            RedirectManager.RedirectToCurrentPageWithStatus("The external login was added.", HttpContext);
+            RedirectManager.RedirectToCurrentPageWithStatus(Localizer["ExternalLogins.SuccessAdded"], HttpContext);
         }
     }
 }

@@ -1,9 +1,10 @@
 ﻿@page "/Account/Manage/PersonalData"
-
+@using SpirithubCafe.Web.Services
 @inject IdentityUserAccessor UserAccessor
 @inject IHttpContextAccessor HttpContextAccessor
+@inject TranslationLocalizer Localizer
 
-<PageTitle>Personal Data - SpirithubCafe</PageTitle>
+<PageTitle>@Localizer["PersonalData.PageTitle"] - SpirithubCafe</PageTitle>
 
 <div class="max-w-4xl mx-auto p-6 space-y-8">
     <!-- Page Header -->
@@ -15,8 +16,8 @@
                 </svg>
             </div>
             <div>
-                <h1 class="text-3xl font-bold">Personal Data</h1>
-                <p class="text-purple-100 mt-1">Manage your personal information and data privacy</p>
+                <h1 class="text-3xl font-bold">@Localizer["PersonalData.PageTitle"]</h1>
+                <p class="text-purple-100 mt-1">@Localizer["PersonalData.PageDescription"]</p>
             </div>
         </div>
         
@@ -25,10 +26,10 @@
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <div class="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
-                    <span class="font-semibold">Data Management Available</span>
+                    <span class="font-semibold">@Localizer["PersonalData.DataManagementAvailable"]</span>
                 </div>
                 <div class="text-sm bg-blue-500/20 px-3 py-1 rounded-full">
-                    GDPR Compliant
+                    @Localizer["PersonalData.GDPRCompliant"]
                 </div>
             </div>
         </div>
@@ -42,7 +43,7 @@
             <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
             </svg>
-            <h2 class="text-xl font-semibold text-gray-900">Your Personal Data</h2>
+            <h2 class="text-xl font-semibold text-gray-900">@Localizer["PersonalData.YourPersonalData"]</h2>
         </div>
         
         <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
@@ -51,8 +52,8 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 <div>
-                    <h3 class="font-semibold text-blue-800">Data Collection Notice</h3>
-                    <p class="text-blue-700 mt-2">Your account contains personal data that you have provided to us. This includes your profile information, purchase history, preferences, and communication records. We are committed to protecting your privacy and giving you control over your data.</p>
+                    <h3 class="font-semibold text-blue-800">@Localizer["PersonalData.DataCollectionNotice"]</h3>
+                    <p class="text-blue-700 mt-2">@Localizer["PersonalData.DataCollectionText"]</p>
                 </div>
             </div>
         </div>
@@ -64,27 +65,27 @@
                     <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
-                    <h4 class="font-medium text-gray-900">Profile Data</h4>
+                    <h4 class="font-medium text-gray-900">@Localizer["PersonalData.ProfileData"]</h4>
                 </div>
-                <p class="text-sm text-gray-600">Name, email, phone, preferences</p>
+                <p class="text-sm text-gray-600">@Localizer["PersonalData.ProfileDataDesc"]</p>
             </div>
             <div class="bg-gray-50 rounded-lg p-4">
                 <div class="flex items-center space-x-2 mb-2">
                     <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17M17 13v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6.28"/>
                     </svg>
-                    <h4 class="font-medium text-gray-900">Purchase History</h4>
+                    <h4 class="font-medium text-gray-900">@Localizer["PersonalData.PurchaseHistory"]</h4>
                 </div>
-                <p class="text-sm text-gray-600">Orders, transactions, shipping</p>
+                <p class="text-sm text-gray-600">@Localizer["PersonalData.PurchaseHistoryDesc"]</p>
             </div>
             <div class="bg-gray-50 rounded-lg p-4">
                 <div class="flex items-center space-x-2 mb-2">
                     <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                     </svg>
-                    <h4 class="font-medium text-gray-900">Usage Data</h4>
+                    <h4 class="font-medium text-gray-900">@Localizer["PersonalData.UsageData"]</h4>
                 </div>
-                <p class="text-sm text-gray-600">Activity logs, browsing patterns</p>
+                <p class="text-sm text-gray-600">@Localizer["PersonalData.UsageDataDesc"]</p>
             </div>
         </div>
     </div>
@@ -97,17 +98,17 @@
                 <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
-                <h3 class="text-lg font-semibold text-gray-900">Download Your Data</h3>
+                <h3 class="text-lg font-semibold text-gray-900">@Localizer["PersonalData.DownloadYourData"]</h3>
             </div>
             
-            <p class="text-gray-600 mb-6">Get a complete copy of all your personal data in a machine-readable format. This includes all information associated with your account.</p>
+            <p class="text-gray-600 mb-6">@Localizer["PersonalData.DownloadDescription"]</p>
             
             <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
                 <div class="flex items-center space-x-2">
                     <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    <span class="text-sm font-medium text-green-800">GDPR Compliant Export</span>
+                    <span class="text-sm font-medium text-green-800">@Localizer["PersonalData.GDPRCompliantExport"]</span>
                 </div>
             </div>
             
@@ -118,7 +119,7 @@
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
-                    Download My Data
+                    @Localizer["PersonalData.DownloadButton"]
                 </button>
             </form>
         </div>
@@ -129,10 +130,10 @@
                 <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                 </svg>
-                <h3 class="text-lg font-semibold text-gray-900">Delete Account</h3>
+                <h3 class="text-lg font-semibold text-gray-900">@Localizer["PersonalData.DeleteAccount"]</h3>
             </div>
             
-            <p class="text-gray-600 mb-4">Permanently remove your account and all associated data. This action cannot be undone.</p>
+            <p class="text-gray-600 mb-4">@Localizer["PersonalData.DeleteDescription"]</p>
             
             <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
                 <div class="flex items-start space-x-3">
@@ -140,12 +141,12 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
                     </svg>
                     <div>
-                        <h4 class="font-semibold text-red-800">Warning: This action is irreversible</h4>
+                        <h4 class="font-semibold text-red-800">@Localizer["PersonalData.WarningIrreversible"]</h4>
                         <ul class="text-sm text-red-700 mt-2 space-y-1">
-                            <li>• All your personal data will be permanently deleted</li>
-                            <li>• Your order history will be removed</li>
-                            <li>• You will lose access to your account immediately</li>
-                            <li>• This action cannot be recovered</li>
+                            <li>• @Localizer["PersonalData.IrreversibleDetails1"]</li>
+                            <li>• @Localizer["PersonalData.IrreversibleDetails2"]</li>
+                            <li>• @Localizer["PersonalData.IrreversibleDetails3"]</li>
+                            <li>• @Localizer["PersonalData.IrreversibleDetails4"]</li>
                         </ul>
                     </div>
                 </div>
@@ -156,7 +157,7 @@
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                 </svg>
-                Delete My Account
+                @Localizer["PersonalData.DeleteAccountButton"]
             </a>
         </div>
     </div>
@@ -168,15 +169,9 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
             <div>
-                <h3 class="text-sm font-medium text-indigo-800">Your Privacy Rights</h3>
+                <h3 class="text-sm font-medium text-indigo-800">@Localizer["PersonalData.YourPrivacyRights"]</h3>
                 <div class="mt-2 text-sm text-indigo-700">
-                    <ul class="list-disc pl-5 space-y-1">
-                        <li>You have the right to access your personal data</li>
-                        <li>You can request corrections to inaccurate information</li>
-                        <li>You may download all your data in a portable format</li>
-                        <li>You can delete your account and all associated data</li>
-                        <li>You can contact us regarding any privacy concerns</li>
-                    </ul>
+                    <p>@Localizer["PersonalData.RightsDescription"]</p>
                 </div>
             </div>
         </div>
@@ -184,13 +179,15 @@
 </div>
 
 @code {
-    private HttpContext? HttpContext => HttpContextAccessor.HttpContext;
+        private HttpContext? HttpContext => HttpContextAccessor.HttpContext;
 
     protected override async Task OnInitializedAsync()
     {
-        if (HttpContext is not null)
+        // Load translations
+        var httpContext = HttpContext;
+        if (httpContext is not null)
         {
-            _ = await UserAccessor.GetRequiredUserAsync(HttpContext);
+            _ = await UserAccessor.GetRequiredUserAsync(httpContext);
         }
     }
 }

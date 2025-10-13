@@ -9,8 +9,9 @@
 @inject IdentityUserAccessor UserAccessor
 @inject IdentityRedirectManager RedirectManager
 @inject IHttpContextAccessor HttpContextAccessor
+@inject TranslationLocalizer Localizer
 
-<PageTitle>Two-factor Authentication (2FA) - SpirithubCafe</PageTitle>
+<PageTitle>@Localizer["TwoFactorAuth.PageTitle"] - SpirithubCafe</PageTitle>
 
 <div class="max-w-4xl mx-auto p-6 space-y-8">
     <!-- Page Header -->
@@ -22,8 +23,8 @@
                 </svg>
             </div>
             <div>
-                <h1 class="text-3xl font-bold">Two-Factor Authentication</h1>
-                <p class="text-indigo-100 mt-1">Enhance your account security with 2FA</p>
+                <h1 class="text-3xl font-bold">@Localizer["TwoFactorAuth.Title"]</h1>
+                <p class="text-indigo-100 mt-1">@Localizer["TwoFactorAuth.Subtitle"]</p>
             </div>
         </div>
         
@@ -34,24 +35,24 @@
                     @if (is2faEnabled)
                     {
                         <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                        <span class="font-semibold">2FA Enabled</span>
+                        <span class="font-semibold">@Localizer["TwoFactorAuth.Enabled"]</span>
                     }
                     else
                     {
                         <div class="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
-                        <span class="font-semibold">2FA Disabled</span>
+                        <span class="font-semibold">@Localizer["TwoFactorAuth.Disabled"]</span>
                     }
                 </div>
                 @if (is2faEnabled)
                 {
                     <div class="text-sm bg-green-500/20 px-3 py-1 rounded-full">
-                        Protected
+                        @Localizer["TwoFactorAuth.Protected"]
                     </div>
                 }
                 else
                 {
                     <div class="text-sm bg-yellow-500/20 px-3 py-1 rounded-full">
-                        Unprotected
+                        @Localizer["TwoFactorAuth.Unprotected"]
                     </div>
                 }
             </div>
@@ -69,7 +70,7 @@
                 <svg class="w-6 h-6 text-[#715A5A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-3a1 1 0 011-1h2.586l6.243-6.243C11.97 9.86 12 9.682 12 9.5a.5.5 0 01.5-.5z"/>
                 </svg>
-                <h2 class="text-xl font-semibold text-gray-900">Recovery Codes Status</h2>
+                <h2 class="text-xl font-semibold text-gray-900">@Localizer["TwoFactorAuth.RecoveryCodesStatus"]</h2>
             </div>
             
             @if (recoveryCodesLeft == 0)
@@ -80,8 +81,8 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
                         </svg>
                         <div>
-                            <h3 class="font-semibold text-red-800">You have no recovery codes left!</h3>
-                            <p class="text-red-700 mt-1">You must generate a new set of recovery codes before you can log in with a recovery code.</p>
+                            <h3 class="font-semibold text-red-800">@Localizer["TwoFactorAuth.NoRecoveryCodes"]</h3>
+                            <p class="text-red-700 mt-1">@Localizer["TwoFactorAuth.MustGenerateNew"]</p>
                         </div>
                     </div>
                 </div>
@@ -94,8 +95,8 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
                         </svg>
                         <div>
-                            <h3 class="font-semibold text-red-800">You have 1 recovery code left!</h3>
-                            <p class="text-red-700 mt-1">You should generate a new set of recovery codes.</p>
+                            <h3 class="font-semibold text-red-800">@Localizer["TwoFactorAuth.OneRecoveryCode"]</h3>
+                            <p class="text-red-700 mt-1">@Localizer["TwoFactorAuth.ShouldGenerateNew"]</p>
                         </div>
                     </div>
                 </div>
@@ -108,8 +109,8 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
                         </svg>
                         <div>
-                            <h3 class="font-semibold text-yellow-800">You have @recoveryCodesLeft recovery codes left</h3>
-                            <p class="text-yellow-700 mt-1">You should generate a new set of recovery codes.</p>
+                            <h3 class="font-semibold text-yellow-800">@Localizer["TwoFactorAuth.FewRecoveryCodes", recoveryCodesLeft]</h3>
+                            <p class="text-yellow-700 mt-1">@Localizer["TwoFactorAuth.ShouldGenerateNew"]</p>
                         </div>
                     </div>
                 </div>
@@ -122,8 +123,8 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                         <div>
-                            <h3 class="font-semibold text-green-800">You have @recoveryCodesLeft recovery codes remaining</h3>
-                            <p class="text-green-700 mt-1">Your recovery codes are in good condition.</p>
+                            <h3 class="font-semibold text-green-800">@Localizer["TwoFactorAuth.RecoveryCodesRemaining", recoveryCodesLeft]</h3>
+                            <p class="text-green-700 mt-1">@Localizer["TwoFactorAuth.CodesGoodCondition"]</p>
                         </div>
                     </div>
                 </div>
@@ -136,7 +137,7 @@
                 <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                 </svg>
-                <h2 class="text-xl font-semibold text-gray-900">Device Management</h2>
+                <h2 class="text-xl font-semibold text-gray-900">@Localizer["TwoFactorAuth.DeviceManagement"]</h2>
             </div>
             
             @if (isMachineRemembered)
@@ -147,7 +148,7 @@
                             <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
-                            <span class="text-blue-800 font-medium">This browser is remembered</span>
+                            <span class="text-blue-800 font-medium">@Localizer["TwoFactorAuth.BrowserRemembered"]</span>
                         </div>
                         <form style="display: inline-block" @formname="forget-browser" @onsubmit="OnSubmitForgetBrowserAsync" method="post">
                             <AntiforgeryToken />
@@ -156,7 +157,7 @@
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                 </svg>
-                                Forget Browser
+                                @Localizer["TwoFactorAuth.ForgetBrowser"]
                             </button>
                         </form>
                     </div>
@@ -170,7 +171,7 @@
                 <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                 </svg>
-                <h2 class="text-xl font-semibold text-gray-900">Security Actions</h2>
+                <h2 class="text-xl font-semibold text-gray-900">@Localizer["TwoFactorAuth.SecurityActions"]</h2>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -179,14 +180,14 @@
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"/>
                     </svg>
-                    Disable 2FA
+                    @Localizer["TwoFactorAuth.Disable2FA"]
                 </a>
                 <a href="Account/Manage/GenerateRecoveryCodes" 
                    class="flex items-center justify-center px-6 py-3 bg-orange-600 text-white font-semibold rounded-xl hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                     </svg>
-                    Reset Recovery Codes
+                    @Localizer["TwoFactorAuth.ResetRecoveryCodes"]
                 </a>
             </div>
         </div>
@@ -198,7 +199,7 @@
             <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
             </svg>
-            <h2 class="text-xl font-semibold text-gray-900">Authenticator App</h2>
+            <h2 class="text-xl font-semibold text-gray-900">@Localizer["TwoFactorAuth.AuthenticatorApp"]</h2>
         </div>
         
         @if (!hasAuthenticator)
@@ -207,13 +208,13 @@
                 <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                 </svg>
-                <p class="text-gray-600 mb-6">No authenticator app configured. Add one to enhance your security.</p>
+                <p class="text-gray-600 mb-6">@Localizer["TwoFactorAuth.NoAuthenticator"]</p>
                 <a href="Account/Manage/EnableAuthenticator" 
                    class="inline-flex items-center px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
-                    Add Authenticator App
+                    @Localizer["TwoFactorAuth.AddAuthenticator"]
                 </a>
             </div>
         }
@@ -224,7 +225,7 @@
                     <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    <span class="text-green-800 font-medium">Authenticator app is configured</span>
+                    <span class="text-green-800 font-medium">@Localizer["TwoFactorAuth.AuthenticatorConfigured"]</span>
                 </div>
             </div>
             
@@ -235,14 +236,14 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                     </svg>
-                    Setup Authenticator
+                    @Localizer["TwoFactorAuth.SetupAuthenticator"]
                 </a>
                 <a href="Account/Manage/ResetAuthenticator" 
                    class="flex items-center justify-center px-6 py-3 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                     </svg>
-                    Reset Authenticator
+                    @Localizer["TwoFactorAuth.ResetAuthenticator"]
                 </a>
             </div>
         }
@@ -257,8 +258,8 @@ else
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
             </svg>
             <div>
-                <h3 class="font-semibold text-red-800">Privacy and Cookie Policy Required</h3>
-                <p class="text-red-700 mt-1">You must accept the privacy and cookie policy before you can enable two factor authentication.</p>
+                <h3 class="font-semibold text-red-800">@Localizer["TwoFactorAuth.PrivacyPolicyRequired"]</h3>
+                <p class="text-red-700 mt-1">@Localizer["TwoFactorAuth.MustAcceptPolicy"]</p>
             </div>
         </div>
     </div>
@@ -305,7 +306,7 @@ else
         if (HttpContext is not null)
         {
             RedirectManager.RedirectToCurrentPageWithStatus(
-                "The current browser has been forgotten. When you login again from this browser you will be prompted for your 2fa code.",
+                Localizer["TwoFactorAuth.BrowserForgotten"],
                 HttpContext);
         }
     }
