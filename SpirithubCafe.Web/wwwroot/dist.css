@@ -807,6 +807,9 @@
   .max-h-40 {
     max-height: calc(var(--spacing) * 40);
   }
+  .max-h-96 {
+    max-height: calc(var(--spacing) * 96);
+  }
   .max-h-\[90vh\] {
     max-height: 90vh;
   }
@@ -1022,6 +1025,10 @@
   }
   .-translate-y-1\/2 {
     --tw-translate-y: calc(calc(1/2 * 100%) * -1);
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+  .-translate-y-2 {
+    --tw-translate-y: calc(var(--spacing) * -2);
     translate: var(--tw-translate-x) var(--tw-translate-y);
   }
   .-translate-y-4 {
@@ -1622,6 +1629,9 @@
   }
   .bg-\[\#D3DAD9\] {
     background-color: #D3DAD9;
+  }
+  .bg-\[\#D3DAD9\]\/10 {
+    background-color: color-mix(in oklab, #D3DAD9 10%, transparent);
   }
   .bg-\[\#D3DAD9\]\/20 {
     background-color: color-mix(in oklab, #D3DAD9 20%, transparent);
@@ -3110,16 +3120,13 @@
     --tw-ease: var(--ease-out);
     transition-timing-function: var(--ease-out);
   }
+  .select-none {
+    -webkit-user-select: none;
+    user-select: none;
+  }
   .group-focus-within\:text-amber-500 {
     &:is(:where(.group):focus-within *) {
       color: var(--color-amber-500);
-    }
-  }
-  .group-hover\:visible {
-    &:is(:where(.group):hover *) {
-      @media (hover: hover) {
-        visibility: visible;
-      }
     }
   }
   .group-hover\:translate-x-1 {
@@ -3248,13 +3255,6 @@
     &:is(:where(.group):hover *) {
       @media (hover: hover) {
         color: var(--color-white);
-      }
-    }
-  }
-  .group-hover\:opacity-100 {
-    &:is(:where(.group):hover *) {
-      @media (hover: hover) {
-        opacity: 100%;
       }
     }
   }
@@ -3670,6 +3670,13 @@
     &:hover {
       @media (hover: hover) {
         background-color: color-mix(in oklab, #D3DAD9 20%, transparent);
+      }
+    }
+  }
+  .hover\:bg-\[\#D3DAD9\]\/30 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: color-mix(in oklab, #D3DAD9 30%, transparent);
       }
     }
   }
@@ -4755,6 +4762,19 @@
   .active\:scale-\[0\.98\] {
     &:active {
       scale: 0.98;
+    }
+  }
+  .active\:bg-\[\#D3DAD9\]\/40 {
+    &:active {
+      background-color: color-mix(in oklab, #D3DAD9 40%, transparent);
+    }
+  }
+  .active\:bg-white\/20 {
+    &:active {
+      background-color: color-mix(in srgb, #fff 20%, transparent);
+      @supports (color: color-mix(in lab, red, red)) {
+        background-color: color-mix(in oklab, var(--color-white) 20%, transparent);
+      }
     }
   }
   .disabled\:transform-none {
@@ -7846,6 +7866,41 @@ body.modal-open {
 }
 #components-reconnect-modal {
   color: #37353E;
+}
+button, a, [role="button"], .cursor-pointer, summary, details > summary {
+  cursor: pointer !important;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  touch-action: manipulation;
+}
+@media (max-width: 768px) {
+  button, a, [role="button"], [role="menuitem"] {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  button:active, a:active, [role="button"]:active, [role="menuitem"]:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+}
+.dropdown-menu {
+  transition: opacity 200ms ease, transform 200ms ease, visibility 200ms ease;
+}
+button, [role="button"], summary {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+button:focus-visible, a:focus-visible, [role="button"]:focus-visible {
+  outline: 2px solid #715A5A;
+  outline-offset: 2px;
+}
+button:focus:not(:focus-visible), a:focus:not(:focus-visible), [role="button"]:focus:not(:focus-visible) {
+  outline: none;
 }
 @property --tw-translate-x {
   syntax: "*";

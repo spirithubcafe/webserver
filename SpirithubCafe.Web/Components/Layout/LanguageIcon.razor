@@ -1,16 +1,22 @@
 @using System.Globalization
 @inject NavigationManager Navigation
 @inject ILogger<LanguageIcon> Logger
-
+@inject IJSRuntime JS
 
 @implements IDisposable
 
-<div class="relative group">
+<div class="relative" @ref="dropdownRef">
     <button
-        class="@GetButtonClasses()">
+        @onclick="ToggleDropdown"
+        @onclick:stopPropagation="true"
+        class="@GetButtonClasses() cursor-pointer select-none"
+        type="button"
+        aria-haspopup="true"
+        aria-expanded="@_isOpen">
         <!-- Language Icon -->
-        <div class="relative">
-            <svg class="w-6 h-6 group-hover:scale-105 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="relative pointer-events-none">
+            <svg class="w-6 h-6 transition-transform @(_isOpen ? "scale-110" : "")" 
+                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                       d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
             </svg>
@@ -19,24 +25,35 @@
 
     <!-- Language Dropdown -->
     <div
-        class="absolute ltr:right-0 rtl:left-0 mt-2 w-40 bg-white border border-gray-100 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[99999]">
+        class="@GetDropdownClasses()"
+        role="menu"
+        aria-orientation="vertical"
+        @onclick:stopPropagation="true">
         <div class="py-2">
-            <button @onclick="@(() => ChangeLanguage("en"))" 
-               class="@GetMenuItemClass("en") flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:text-[#715A5A] hover:bg-[#D3DAD9]/20">
-                <span class="flex-1 ltr:text-left rtl:text-right">English</span>
+            <button 
+                @onclick="@(() => ChangeLanguage("en"))" 
+                @onclick:stopPropagation="true"
+                type="button"
+                role="menuitem"
+                class="@GetMenuItemClass("en") flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:text-[#715A5A] hover:bg-[#D3DAD9]/20 cursor-pointer transition-colors active:bg-[#D3DAD9]/40">
+                <span class="flex-1 ltr:text-left rtl:text-right font-medium">English</span>
                 @if (_selectedCulture == "en")
                 {
-                    <svg class="w-4 h-4 text-[#715A5A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 text-[#715A5A] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
                 }
             </button>
-            <button @onclick="@(() => ChangeLanguage("ar"))" 
-               class="@GetMenuItemClass("ar") flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:text-[#715A5A] hover:bg-[#D3DAD9]/20">
-                <span class="flex-1 ltr:text-left rtl:text-right">العربية</span>
+            <button 
+                @onclick="@(() => ChangeLanguage("ar"))" 
+                @onclick:stopPropagation="true"
+                type="button"
+                role="menuitem"
+                class="@GetMenuItemClass("ar") flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:text-[#715A5A] hover:bg-[#D3DAD9]/20 cursor-pointer transition-colors active:bg-[#D3DAD9]/40">
+                <span class="flex-1 ltr:text-left rtl:text-right font-medium">العربية</span>
                 @if (_selectedCulture == "ar")
                 {
-                    <svg class="w-4 h-4 text-[#715A5A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 text-[#715A5A] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
                 }
@@ -47,6 +64,9 @@
 
 @code {
     private string _selectedCulture = "en";
+    private bool _isOpen = false;
+    private ElementReference dropdownRef;
+    private DotNetObjectReference<LanguageIcon>? _dotNetRef;
 
     private bool IsHomePage()
     {
@@ -56,31 +76,64 @@
 
     private string GetButtonClasses()
     {
+        var baseClasses = "flex items-center p-2 rounded-lg transition-all duration-200";
+        
         if (IsHomePage())
         {
-            return "flex items-center p-2 text-white hover:text-white/80 hover:bg-white/10 rounded-lg transition-all duration-200 drop-shadow-md cursor-pointer";
+            return $"{baseClasses} text-white hover:text-white/80 hover:bg-white/10 drop-shadow-md active:bg-white/20";
         }
-        return "flex items-center p-2 text-gray-600 hover:text-[#715A5A] bg-[#D3DAD9]/20 rounded-lg transition-all duration-200 cursor-pointer";
+        return $"{baseClasses} text-gray-600 hover:text-[#715A5A] bg-[#D3DAD9]/20 hover:bg-[#D3DAD9]/30 active:bg-[#D3DAD9]/40";
     }
 
-    private void ChangeLanguage(string culture)
+    private string GetDropdownClasses()
+    {
+        var baseClasses = "absolute ltr:right-0 rtl:left-0 mt-2 w-40 bg-white border border-gray-100 rounded-lg shadow-lg transition-all duration-200 z-[99999]";
+        
+        if (_isOpen)
+        {
+            return $"{baseClasses} opacity-100 visible translate-y-0";
+        }
+        return $"{baseClasses} opacity-0 invisible -translate-y-2 pointer-events-none";
+    }
+
+    private void ToggleDropdown()
+    {
+        _isOpen = !_isOpen;
+        StateHasChanged();
+    }
+
+    private void CloseDropdown()
+    {
+        if (_isOpen)
+        {
+            _isOpen = false;
+            StateHasChanged();
+        }
+    }
+
+    private async void ChangeLanguage(string culture)
     {
         if (_selectedCulture == culture || string.IsNullOrWhiteSpace(culture)) return;
         
         _selectedCulture = culture;
+        _isOpen = false;
+        
         Logger.LogInformation("Language changed to: {Culture}", culture);
 
         var currentUri = new Uri(Navigation.Uri);
         var returnUrl = currentUri.PathAndQuery;
 
         var url = $"/Culture/Set?culture={culture}&returnUrl={Uri.EscapeDataString(returnUrl)}";
+        
+        // Small delay for smooth UX
+        await Task.Delay(150);
         Navigation.NavigateTo(url, forceLoad: true);
     }
 
     private string GetMenuItemClass(string culture)
     {
         return _selectedCulture == culture 
-            ? "font-medium" 
+            ? "bg-[#D3DAD9]/10" 
             : "";
     }
 
@@ -89,15 +142,40 @@
         var culture = CultureInfo.CurrentUICulture.Name;
         _selectedCulture = culture.StartsWith("ar") ? "ar" : "en";
         Navigation.LocationChanged += OnLocationChanged;
+        
+        _dotNetRef = DotNetObjectReference.Create(this);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await JS.InvokeVoidAsync("setupClickOutside", _dotNetRef, "CloseDropdown");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "Failed to setup click outside handler");
+            }
+        }
+    }
+
+    [JSInvokable]
+    public void CloseDropdownFromJs()
+    {
+        CloseDropdown();
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
+        CloseDropdown();
         InvokeAsync(StateHasChanged);
     }
 
     public void Dispose()
     {
         Navigation.LocationChanged -= OnLocationChanged;
+        _dotNetRef?.Dispose();
     }
 }

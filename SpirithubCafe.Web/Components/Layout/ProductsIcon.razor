@@ -3,15 +3,20 @@
 @inject NavigationManager Navigation
 @inject CategoryService CategoryService
 @inject TranslationLocalizer Localizer
-
+@inject IJSRuntime JS
 
 @implements IDisposable
 
-<div class="relative group">
+<div class="relative" @ref="dropdownRef">
     <button
-        class="@GetButtonClasses()">
+        @onclick="ToggleDropdown"
+        @onclick:stopPropagation="true"
+        type="button"
+        aria-haspopup="true"
+        aria-expanded="@_isOpen"
+        class="@GetButtonClasses() cursor-pointer select-none">
         <!-- Products Icon -->
-        <svg class="w-6 h-6 group-hover:scale-105 transition-transform" viewBox="0 0 24 24" fill="none">
+        <svg class="w-6 h-6 transition-transform @(_isOpen ? "scale-110" : "")" viewBox="0 0 24 24" fill="none">
             <path d="M22 22H2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
             <path d="M20 22V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
             <path d="M4 22V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
@@ -28,10 +33,13 @@
 
     <!-- Dropdown Menu -->
     <div
-        class="absolute ltr:right-0 rtl:left-0 mt-2 w-64 bg-white border border-gray-100 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[99999]">
-        <div class="py-2">
+        class="@GetDropdownClasses()"
+        role="menu"
+        aria-orientation="vertical"
+        @onclick:stopPropagation="true">
+        <div class="py-2 max-h-96 overflow-y-auto">
             <a href="/products"
-                class="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-[#37353E] hover:bg-[#D3DAD9]/20 border-b border-gray-100 font-medium">
+                class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:text-[#37353E] hover:bg-[#D3DAD9]/20 active:bg-[#D3DAD9]/40 border-b border-gray-100 font-medium cursor-pointer transition-colors">
                 <div
                     class="w-8 h-8 bg-gradient-to-br from-[#D3DAD9]/30 to-[#D3DAD9]/50 rounded-md flex items-center justify-center ltr:mr-3 rtl:ml-3 text-[#715A5A]">
                     <svg class="w-4 h-4 text-current" viewBox="0 0 24 24" fill="none">
@@ -46,7 +54,7 @@
             @foreach (var category in categories.Take(8))
             {
                 <a href="@($"/products/{category.Slug}")"
-                    class="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-[#37353E] hover:bg-[#D3DAD9]/20">
+                    class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:text-[#37353E] hover:bg-[#D3DAD9]/20 active:bg-[#D3DAD9]/40 cursor-pointer transition-colors">
                     <div
                         class="w-8 h-8 bg-gradient-to-br from-[#D3DAD9]/30 to-[#D3DAD9]/50 rounded-md flex items-center justify-center ltr:mr-3 rtl:ml-3 text-[#715A5A]">
                         <svg class="w-4 h-4 text-current" fill="none" viewBox="0 0 24 24">
@@ -61,7 +69,7 @@
             @if (categories.Count > 8)
             {
                 <a href="/products"
-                    class="flex items-center px-4 py-2 text-sm text-[#715A5A] hover:text-[#37353E] hover:bg-[#D3DAD9]/20 border-t border-gray-100 font-medium">
+                    class="flex items-center px-4 py-2.5 text-sm text-[#715A5A] hover:text-[#37353E] hover:bg-[#D3DAD9]/20 active:bg-[#D3DAD9]/40 border-t border-gray-100 font-medium cursor-pointer transition-colors">
                     <div
                         class="w-8 h-8 bg-[#D3DAD9]/40 rounded-md flex items-center justify-center ltr:mr-3 rtl:ml-3 text-[#715A5A]">
                         <svg class="w-4 h-4 text-current" fill="currentColor" viewBox="0 0 20 20">
@@ -79,6 +87,9 @@
 
 @code {
     private List<SpirithubCafe.Domain.Entities.Category> categories = new();
+    private bool _isOpen = false;
+    private ElementReference dropdownRef;
+    private DotNetObjectReference<ProductsIcon>? _dotNetRef;
 
     private bool IsHomePage()
     {
@@ -88,11 +99,24 @@
 
     private string GetButtonClasses()
     {
+        var baseClasses = "flex items-center gap-2 p-2 rounded-lg transition-all duration-200";
+        
         if (IsHomePage())
         {
-            return "flex items-center gap-2 p-2 text-white hover:text-white/80 hover:bg-white/10 rounded-lg transition-all duration-200 drop-shadow-md cursor-pointer";
+            return $"{baseClasses} text-white hover:text-white/80 hover:bg-white/10 drop-shadow-md active:bg-white/20";
         }
-        return "flex items-center gap-2 p-2 text-gray-600 hover:text-[#715A5A] bg-[#D3DAD9]/20 rounded-lg transition-all duration-200 cursor-pointer";
+        return $"{baseClasses} text-gray-600 hover:text-[#715A5A] bg-[#D3DAD9]/20 hover:bg-[#D3DAD9]/30 active:bg-[#D3DAD9]/40";
+    }
+
+    private string GetDropdownClasses()
+    {
+        var baseClasses = "absolute ltr:right-0 rtl:left-0 mt-2 w-80 bg-white border border-gray-100 rounded-lg shadow-lg transition-all duration-200 z-[99999]";
+        
+        if (_isOpen)
+        {
+            return $"{baseClasses} opacity-100 visible translate-y-0";
+        }
+        return $"{baseClasses} opacity-0 invisible -translate-y-2 pointer-events-none";
     }
 
     private string GetTextClasses()
@@ -104,19 +128,59 @@
         return "hidden lg:block text-sm font-medium";
     }
 
+    private void ToggleDropdown()
+    {
+        _isOpen = !_isOpen;
+        StateHasChanged();
+    }
+
+    private void CloseDropdown()
+    {
+        if (_isOpen)
+        {
+            _isOpen = false;
+            StateHasChanged();
+        }
+    }
+
+    [JSInvokable]
+    public void CloseDropdownFromJs()
+    {
+        CloseDropdown();
+    }
+
     protected override async Task OnInitializedAsync()
     {
         categories = await CategoryService.GetActiveCategoriesAsync();
         Navigation.LocationChanged += OnLocationChanged;
+        
+        _dotNetRef = DotNetObjectReference.Create(this);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await JS.InvokeVoidAsync("setupClickOutside", _dotNetRef, "CloseDropdown");
+            }
+            catch (Exception)
+            {
+                // Silent fail - JavaScript not yet loaded
+            }
+        }
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
+        CloseDropdown();
         InvokeAsync(StateHasChanged);
     }
 
     public void Dispose()
     {
         Navigation.LocationChanged -= OnLocationChanged;
+        _dotNetRef?.Dispose();
     }
 }
