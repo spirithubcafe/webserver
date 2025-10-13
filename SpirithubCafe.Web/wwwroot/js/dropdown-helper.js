@@ -1,4 +1,4 @@
-// Dropdown Helper - Professional click outside handler for Blazor components
+// Dropdown Helper - Silent click outside handler for Blazor components
 (function () {
     'use strict';
 
@@ -7,7 +7,6 @@
     // Setup click outside handler for a Blazor component
     window.setupClickOutside = function (dotNetRef, methodName) {
         if (!dotNetRef || !methodName) {
-            console.warn('setupClickOutside: Invalid parameters');
             return;
         }
 
@@ -28,9 +27,9 @@
 
             if (clickedOutside) {
                 try {
-                    dotNetRef.invokeMethodAsync(methodName);
+                    dotNetRef.invokeMethodAsync(methodName).catch(() => {});
                 } catch (error) {
-                    console.warn('Failed to invoke close method:', error);
+                    // Silent error handling
                 }
             }
         };
@@ -39,6 +38,7 @@
         const dropdownId = Math.random().toString(36).substring(7);
         activeDropdowns.set(dropdownId, {
             dotNetRef,
+            methodName,
             handler: handleClickOutside
         });
 
@@ -72,9 +72,9 @@
         if (event.key === 'Escape' || event.keyCode === 27) {
             activeDropdowns.forEach((dropdown) => {
                 try {
-                    dropdown.dotNetRef.invokeMethodAsync('CloseDropdownFromJs');
+                    dropdown.dotNetRef.invokeMethodAsync(dropdown.methodName).catch(() => {});
                 } catch (error) {
-                    console.warn('Failed to close dropdown on escape:', error);
+                    // Silent error handling
                 }
             });
         }
@@ -91,5 +91,4 @@
         document.body.style.touchAction = '';
     };
 
-    console.log('Dropdown Helper initialized successfully');
 })();
