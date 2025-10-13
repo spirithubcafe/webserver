@@ -57,29 +57,35 @@
         };
     </script>
     
-    <!-- Pure Server JavaScript -->
-    <script src="_framework/blazor.server.js" autostart="false"></script>
-    
-    <!-- Blazor Connection Manager for Error Handling -->
+    <!-- Blazor Connection Manager - Must load BEFORE blazor.server.js -->
     <script src="/js/blazor-connection-manager.js"></script>
     
-    <!-- Offline Handler for Connection Issues -->
-    <script src="/js/offline-handler.js"></script>
+    <!-- Blazor Server JavaScript -->
+    <script src="_framework/blazor.server.js" autostart="false"></script>
     
     <script>
-        // Start Blazor Server with custom reconnection handler
+        // Start Blazor Server with optimized configuration for silent fallback
         Blazor.start({
+            configureSignalR: function (builder) {
+                // Configure transport options - try WebSocket, fallback to Long Polling
+                builder.withUrl('/_blazor', {
+                    transport: 4 | 1, // WebSockets (4) | LongPolling (1)
+                    skipNegotiation: false,
+                    logLevel: 0 // None - suppress all logging
+                });
+            },
+            reconnectionOptions: {
+                maxRetries: 3,
+                retryIntervalMilliseconds: 2000
+            },
             reconnectionHandler: {
-                onConnectionDown: () => console.log('Connection lost'),
-                onConnectionUp: () => console.log('Connection restored'),
-                onReconnectionFailed: () => console.log('Reconnection failed')
+                onConnectionDown: () => {}, // Silent
+                onConnectionUp: () => {},   // Silent  
+                onReconnectionFailed: () => {} // Silent
             }
+        }).catch(() => {
+            // Silent error handling
         });
-        
-        // Register Service Worker for offline support
-        if (typeof registerServiceWorker === 'function') {
-            registerServiceWorker();
-        }
     </script>
 </body>
 
