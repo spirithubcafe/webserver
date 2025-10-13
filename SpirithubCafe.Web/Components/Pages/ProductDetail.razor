@@ -22,6 +22,31 @@
 
 <PageTitle>@(product?.Name ?? Loc["Product"]) - @Loc["SiteTitle"]</PageTitle>
 
+<HeadContent>
+    @if (product != null)
+    {
+        var description = GetCurrentCulture().StartsWith("ar") && !string.IsNullOrEmpty(product.DescriptionAr) 
+            ? product.DescriptionAr 
+            : product.Description;
+        var truncatedDescription = description?.Length > 160 
+            ? description.Substring(0, 157) + "..." 
+            : description ?? Loc["Product.DefaultMetaDescription"];
+        
+        <meta name="description" content="@truncatedDescription" />
+        <meta property="og:title" content="@product.Name - @Loc["SiteTitle"]" />
+        <meta property="og:description" content="@truncatedDescription" />
+        <meta property="og:type" content="product" />
+        @if (product.MainImage?.ImagePath != null)
+        {
+            <meta property="og:image" content="@product.MainImage.ImagePath" />
+        }
+    }
+    else
+    {
+        <meta name="description" content="@Loc["Product.DefaultMetaDescription"]" />
+    }
+</HeadContent>
+
 @if (isLoading)
 {
     <div class="flex justify-center items-center min-h-screen">
@@ -1107,6 +1132,11 @@ else
             Console.WriteLine($"Error toggling favorite: {ex.Message}");
             ToastService.ShowError(Loc["ErrorUpdatingFavorites"]);
         }
+    }
+
+    private string GetCurrentCulture()
+    {
+        return System.Globalization.CultureInfo.CurrentUICulture.Name;
     }
 }
 

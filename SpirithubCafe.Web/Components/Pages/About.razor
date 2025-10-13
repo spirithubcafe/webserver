@@ -10,6 +10,13 @@
 
 <PageTitle>@GetLocalizedText(aboutUsPage?.Title, aboutUsPage?.TitleAr) - SpirithubCafe</PageTitle>
 
+<HeadContent>
+    <meta name="description" content="@Localizer["About.MetaDescription"]" />
+    <meta property="og:title" content="@GetLocalizedText(aboutUsPage?.Title, aboutUsPage?.TitleAr) - SpirithubCafe" />
+    <meta property="og:description" content="@Localizer["About.MetaDescription"]" />
+    <meta property="og:type" content="website" />
+</HeadContent>
+
 @if (aboutUsPage != null && aboutUsPage.IsActive)
 {
     <!-- Dynamic Page Header -->

@@ -9,6 +9,17 @@
 @using SpirithubCafe.Application.Services
 
 <PageTitle>@Localizer["HomePageTitle"]</PageTitle>
+
+<HeadContent>
+    <meta name="description" content="@Localizer["Home.MetaDescription"]" />
+    <meta property="og:title" content="@Localizer["HomePageTitle"]" />
+    <meta property="og:description" content="@Localizer["Home.MetaDescription"]" />
+    <meta property="og:type" content="website" />
+</HeadContent>
+
+<!-- Hidden H1 for SEO (visually hidden but accessible to screen readers and search engines) -->
+<h1 class="sr-only">@Localizer["Home.MainHeading"]</h1>
+
 <!-- Dynamic Sections based on Order -->
 @{
     var orderedSections = GetOrderedSections();
@@ -89,10 +100,26 @@
                     }
                     @if (!string.IsNullOrEmpty(GetMissionText()))
                     {
-                        <div class="prose prose-lg mx-auto text-gray-600 leading-relaxed">
+                        <div class="prose prose-lg mx-auto text-gray-600 leading-relaxed mb-8">
                             @((MarkupString)GetMissionText().Replace("\n", "<br>"))
                         </div>
                     }
+                    
+                    <!-- Internal Links for better SEO -->
+                    <div class="flex flex-wrap gap-4 justify-center mt-8">
+                        <NavLink href="/products" class="inline-flex items-center px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-lg transition-colors">
+                            @Localizer["ExploreProducts"]
+                            <svg class="@(Localizer.GetString("Language") == "ar" ? "mr-2 rotate-180" : "ml-2") w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </NavLink>
+                        <NavLink href="/contact" class="inline-flex items-center px-6 py-3 bg-white hover:bg-gray-50 text-gray-900 font-semibold rounded-lg border-2 border-gray-300 transition-colors">
+                            @Localizer["ContactUs"]
+                            <svg class="@(Localizer.GetString("Language") == "ar" ? "mr-2 rotate-180" : "ml-2") w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                        </NavLink>
+                    </div>
                 </div>
             </div>
         </section>
@@ -290,10 +317,20 @@
                         }
                         @if (!string.IsNullOrEmpty(GetAboutUsText()))
                         {
-                            <div class="prose prose-lg max-w-none text-gray-700">
+                            <div class="prose prose-lg max-w-none text-gray-700 mb-6">
                                 @((MarkupString)GetAboutUsText().Replace("\n", "<br>"))
                             </div>
                         }
+                        
+                        <!-- Internal Link to About Page -->
+                        <div class="mt-8">
+                            <NavLink href="/about" class="inline-flex items-center px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-lg transition-colors">
+                                @Localizer["LearnMoreAboutUs"]
+                                <svg class="@(Localizer.GetString("Language") == "ar" ? "mr-2 rotate-180" : "ml-2") w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </NavLink>
+                        </div>
                     </div>
                     
                     <!-- About Us Image -->

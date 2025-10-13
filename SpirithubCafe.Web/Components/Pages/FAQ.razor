@@ -13,6 +13,13 @@
 
 <PageTitle>@GetLocalizedText(pageSettings?.TitleEn, pageSettings?.TitleAr) - SpirithubCafe</PageTitle>
 
+<HeadContent>
+    <meta name="description" content="@Localizer["FAQ.MetaDescription"]" />
+    <meta property="og:title" content="@GetLocalizedText(pageSettings?.TitleEn, pageSettings?.TitleAr) - SpirithubCafe" />
+    <meta property="og:description" content="@Localizer["FAQ.MetaDescription"]" />
+    <meta property="og:type" content="website" />
+</HeadContent>
+
 @if (pageSettings != null)
 {
     <!-- Page Header -->
