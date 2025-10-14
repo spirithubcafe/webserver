@@ -85,8 +85,8 @@
         {
             <div class="@GetEditPanelClass()">
                 <textarea @ref="textareaRef" 
-                          @bind="Content" 
-                          @bind:event="oninput"
+                          value="@Content" 
+                          @oninput="OnContentInput"
                           @onselect="HandleTextSelection"
                           @onkeydown="HandleKeyDown"
                           placeholder="@Placeholder"
@@ -146,6 +146,15 @@
     protected override void OnInitialized()
     {
         CurrentMode = DefaultMode;
+    }
+    
+    private async Task OnContentInput(ChangeEventArgs e)
+    {
+        if (e.Value is string newValue)
+        {
+            Content = newValue;
+            await ContentChanged.InvokeAsync(Content);
+        }
     }
     
     protected override async Task OnAfterRenderAsync(bool firstRender)

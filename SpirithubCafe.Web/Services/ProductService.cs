@@ -100,7 +100,8 @@ public class ProductService
             .Include(p => p.GalleryImages)
             .Include(p => p.Variants)
             .Include(p => p.Reviews.Where(r => r.IsApproved))
-            .FirstOrDefaultAsync(p => p.Id == id && p.IsActive);
+            .AsTracking() // Enable change tracking for editing
+            .FirstOrDefaultAsync(p => p.Id == id);
     }
 
     /// <summary>
@@ -276,11 +277,31 @@ public class ProductService
     /// </summary>
     public async Task<Product> UpdateProductAsync(Product product)
     {
-        product.UpdatedAt = DateTime.UtcNow;
-        
-        _context.Products.Update(product);
-        await _context.SaveChangesAsync();
-        return product;
+        try
+        {
+            product.UpdatedAt = DateTime.UtcNow;
+            
+            // Detach any existing tracked entity with the same ID
+            var existingEntry = _context.ChangeTracker.Entries<Product>()
+                .FirstOrDefault(e => e.Entity.Id == product.Id);
+            
+            if (existingEntry != null && existingEntry.Entity != product)
+            {
+                existingEntry.State = EntityState.Detached;
+            }
+            
+            // Update the product
+            _context.Products.Update(product);
+            await _context.SaveChangesAsync();
+            
+            // Reload the product with all relationships
+            return await GetProductByIdAsync(product.Id) ?? product;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating product {ProductId}", product.Id);
+            throw;
+        }
     }
 
     /// <summary>

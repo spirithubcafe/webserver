@@ -167,7 +167,8 @@
                             <div class="space-y-2">
                                 <label class="block text-sm font-medium text-gray-700">Description (English)</label>
                                 <div class="w-full">
-                                    <TextEditor @bind-Content="@product.Description" 
+                                    <TextEditor Content="@product.Description" 
+                                               ContentChanged="@((value) => { product.Description = value; StateHasChanged(); })"
                                                Placeholder="Describe this coffee product in detail..."
                                                MinHeight="300"
                                                DefaultMode="TextEditor.EditorMode.Split" />
@@ -178,7 +179,8 @@
                             <div class="space-y-2">
                                 <label class="block text-sm font-medium text-gray-700">Description (Arabic)</label>
                                 <div class="w-full" dir="rtl">
-                                    <TextEditor @bind-Content="@product.DescriptionAr" 
+                                    <TextEditor Content="@product.DescriptionAr" 
+                                               ContentChanged="@((value) => { product.DescriptionAr = value; StateHasChanged(); })"
                                                Placeholder="وصف منتج القهوة بالتفصيل..."
                                                MinHeight="300"
                                                DefaultMode="TextEditor.EditorMode.Split" />
@@ -925,6 +927,25 @@
         saving = true;
         try
         {
+            // Validate required fields
+            if (string.IsNullOrWhiteSpace(product.Name))
+            {
+                ToastService.ShowError("Product name is required");
+                return;
+            }
+            
+            if (string.IsNullOrWhiteSpace(product.Sku))
+            {
+                ToastService.ShowError("SKU is required");
+                return;
+            }
+            
+            if (product.CategoryId == 0)
+            {
+                ToastService.ShowError("Category is required");
+                return;
+            }
+            
             // Update the modified date
             product.UpdatedAt = DateTime.UtcNow;
             
@@ -940,8 +961,9 @@
             var updatedProduct = await ProductService.UpdateProductAsync(product);
             if (updatedProduct != null)
             {
-                ToastService.ShowSuccess($"Product '{product.Name}' has been updated successfully.");
                 product = updatedProduct; // Update the local instance
+                ToastService.ShowSuccess($"Product '{product.Name}' has been updated successfully.");
+                StateHasChanged();
             }
             else
             {
@@ -955,6 +977,7 @@
         finally
         {
             saving = false;
+            StateHasChanged();
         }
     }
 
@@ -965,6 +988,19 @@
         saving = true;
         try
         {
+            // Validate required fields
+            if (string.IsNullOrWhiteSpace(product.Name))
+            {
+                ToastService.ShowError("Product name is required");
+                return;
+            }
+            
+            if (string.IsNullOrWhiteSpace(product.Sku))
+            {
+                ToastService.ShowError("SKU is required");
+                return;
+            }
+            
             // Update the modified date
             product.UpdatedAt = DateTime.UtcNow;
             
@@ -980,8 +1016,9 @@
             var updatedProduct = await ProductService.UpdateProductAsync(product);
             if (updatedProduct != null)
             {
-                ToastService.ShowSuccess($"Product '{product.Name}' has been saved as draft.");
                 product = updatedProduct; // Update the local instance
+                ToastService.ShowSuccess($"Product '{product.Name}' has been saved as draft.");
+                StateHasChanged();
             }
             else
             {
@@ -995,6 +1032,7 @@
         finally
         {
             saving = false;
+            StateHasChanged();
         }
     }
 
