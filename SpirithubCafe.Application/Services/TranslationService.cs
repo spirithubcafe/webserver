@@ -10,7 +10,7 @@ public class TranslationService : ITranslationService
     private readonly IApplicationDbContext _context;
     private readonly IMemoryCache _cache;
     private const string CacheKeyPrefix = "Translation_";
-    private const int CacheExpirationMinutes = 60;
+    private const int CacheExpirationMinutes = 1440; // 24 hours - translations rarely change
 
     public TranslationService(IApplicationDbContext context, IMemoryCache cache)
     {

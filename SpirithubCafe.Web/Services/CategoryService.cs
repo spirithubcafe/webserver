@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using SpirithubCafe.Domain.Entities;
 using SpirithubCafe.Web.Data;
 
@@ -10,10 +11,14 @@ namespace SpirithubCafe.Web.Services;
 public class CategoryService
 {
     private readonly ApplicationDbContext _context;
+    private readonly IMemoryCache _cache;
+    private const string CacheKeyPrefix = "Categories_";
+    private const int CacheExpirationHours = 12; // Categories don't change frequently
 
-    public CategoryService(ApplicationDbContext context)
+    public CategoryService(ApplicationDbContext context, IMemoryCache cache)
     {
         _context = context;
+        _cache = cache;
     }
 
     /// <summary>
@@ -32,11 +37,21 @@ public class CategoryService
     /// </summary>
     public async Task<List<Category>> GetActiveCategoriesAsync()
     {
-        return await _context.Categories
+        var cacheKey = $"{CacheKeyPrefix}Active";
+        
+        if (_cache.TryGetValue(cacheKey, out List<Category>? cachedCategories) && cachedCategories != null)
+        {
+            return cachedCategories;
+        }
+
+        var categories = await _context.Categories
             .Where(c => c.IsActive)
             .OrderBy(c => c.DisplayOrder)
             .ThenBy(c => c.Name)
             .ToListAsync();
+            
+        _cache.Set(cacheKey, categories, TimeSpan.FromHours(CacheExpirationHours));
+        return categories;
     }
 
     /// <summary>
@@ -44,11 +59,21 @@ public class CategoryService
     /// </summary>
     public async Task<List<Category>> GetHomepageCategoriesAsync()
     {
-        return await _context.Categories
+        var cacheKey = $"{CacheKeyPrefix}Homepage";
+        
+        if (_cache.TryGetValue(cacheKey, out List<Category>? cachedCategories) && cachedCategories != null)
+        {
+            return cachedCategories;
+        }
+
+        var categories = await _context.Categories
             .Where(c => c.IsActive && c.IsDisplayedOnHomepage)
             .OrderBy(c => c.DisplayOrder)
             .ThenBy(c => c.Name)
             .ToListAsync();
+            
+        _cache.Set(cacheKey, categories, TimeSpan.FromHours(CacheExpirationHours));
+        return categories;
     }
 
     /// <summary>
@@ -90,6 +115,10 @@ public class CategoryService
 
         _context.Categories.Add(category);
         await _context.SaveChangesAsync();
+        
+        // Clear cache after create
+        ClearCategoriesCache();
+        
         return category;
     }
 
@@ -136,6 +165,10 @@ public class CategoryService
         existingCategory.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
+        
+        // Clear cache after update
+        ClearCategoriesCache();
+        
         return existingCategory;
     }
 
@@ -165,6 +198,13 @@ public class CategoryService
 
             _context.Categories.Remove(category);
             var result = await _context.SaveChangesAsync();
+            
+            if (result > 0)
+            {
+                // Clear cache after delete
+                ClearCategoriesCache();
+            }
+            
             return result > 0;
         }
         catch (InvalidOperationException)
@@ -193,6 +233,9 @@ public class CategoryService
         category.IsActive = !category.IsActive;
         category.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
+        
+        // Clear cache after status change
+        ClearCategoriesCache();
         return true;
     }
 
@@ -364,5 +407,17 @@ public class CategoryService
         }
 
         await _context.SaveChangesAsync();
+        
+        // Clear cache after reorder
+        ClearCategoriesCache();
+    }
+
+    /// <summary>
+    /// Clear all categories cache
+    /// </summary>
+    private void ClearCategoriesCache()
+    {
+        _cache.Remove($"{CacheKeyPrefix}Active");
+        _cache.Remove($"{CacheKeyPrefix}Homepage");
     }
 }

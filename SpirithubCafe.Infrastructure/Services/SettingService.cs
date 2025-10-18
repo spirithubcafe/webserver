@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using SpirithubCafe.Application.DTOs;
 using SpirithubCafe.Application.Services;
@@ -11,11 +12,15 @@ public class SettingService : ISettingService
 {
     private readonly IApplicationDbContext _context;
     private readonly ILogger<SettingService> _logger;
+    private readonly IMemoryCache _cache;
+    private const string CacheKeyPrefix = "Setting_";
+    private const int CacheExpirationHours = 24; // Settings rarely change
 
-    public SettingService(IApplicationDbContext context, ILogger<SettingService> logger)
+    public SettingService(IApplicationDbContext context, ILogger<SettingService> logger, IMemoryCache cache)
     {
         _context = context;
         _logger = logger;
+        _cache = cache;
     }
 
     public async Task<IEnumerable<SettingDto>> GetAllAsync()
@@ -48,10 +53,20 @@ public class SettingService : ISettingService
 
     public async Task<string> GetValueAsync(string key, string defaultValue = "")
     {
+        var cacheKey = $"{CacheKeyPrefix}{key}";
+        
+        if (_cache.TryGetValue(cacheKey, out string? cachedValue) && cachedValue != null)
+        {
+            return cachedValue;
+        }
+
         var setting = await _context.Settings
             .FirstOrDefaultAsync(s => s.Key == key);
 
-        return setting?.Value ?? defaultValue;
+        var value = setting?.Value ?? defaultValue;
+        _cache.Set(cacheKey, value, TimeSpan.FromHours(CacheExpirationHours));
+        
+        return value;
     }
 
     public async Task<SettingDto> CreateAsync(CreateSettingDto dto)
@@ -92,6 +107,10 @@ public class SettingService : ISettingService
         setting.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
+        
+        // Clear cache when updated
+        var cacheKey = $"{CacheKeyPrefix}{key}";
+        _cache.Remove(cacheKey);
 
         _logger.LogInformation("Updated setting with key: {Key}", key);
         return MapToDto(setting);
@@ -106,6 +125,11 @@ public class SettingService : ISettingService
         {
             _context.Settings.Remove(setting);
             await _context.SaveChangesAsync();
+            
+            // Clear cache when deleted
+            var cacheKey = $"{CacheKeyPrefix}{key}";
+            _cache.Remove(cacheKey);
+            
             _logger.LogInformation("Deleted setting with key: {Key}", key);
         }
     }
