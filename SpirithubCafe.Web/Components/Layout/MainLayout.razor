@@ -5,6 +5,7 @@
 @inject SpirithubCafe.Application.Services.ISettingService SettingService
 @inject SpirithubCafe.Web.Services.CategoryService CategoryService
 @inject AssetVersioningService AssetVersioning
+@inject ILogger<MainLayout> Logger
 @using System.Globalization
 @using SpirithubCafe.Web.Services
 @using Microsoft.AspNetCore.Components.Authorization
@@ -19,6 +20,7 @@
 @using SpirithubCafe.Web.Components.Layout
 @using SpirithubCafe.Web.Components.Shared
 @using SpirithubCafe.Web.Components
+@using Microsoft.Extensions.Logging
 @inject IJSRuntime JSRuntime
 
 <!DOCTYPE html>
@@ -527,11 +529,25 @@
 
         protected override async Task OnInitializedAsync()
         {
+            var startTime = DateTime.UtcNow;
+            Logger.LogInformation("[{Time:HH:mm:ss.fff}] MainLayout.OnInitializedAsync - START", startTime);
+
+            var step1 = DateTime.UtcNow;
             await LoadLogoSettings();
+            Logger.LogInformation("[{Time:HH:mm:ss.fff}] LoadLogoSettings took {Duration}ms", DateTime.UtcNow, (DateTime.UtcNow - step1).TotalMilliseconds);
+
+            var step2 = DateTime.UtcNow;
             await LoadCategories();
+            Logger.LogInformation("[{Time:HH:mm:ss.fff}] LoadCategories took {Duration}ms", DateTime.UtcNow, (DateTime.UtcNow - step2).TotalMilliseconds);
+
+            var step3 = DateTime.UtcNow;
             await CartService.InitializeAsync();
+            Logger.LogInformation("[{Time:HH:mm:ss.fff}] CartService.InitializeAsync took {Duration}ms", DateTime.UtcNow, (DateTime.UtcNow - step3).TotalMilliseconds);
+
             UpdateCartItemCount();
             CartService.OnCartChanged += UpdateCartItemCount;
+
+            Logger.LogInformation("[{Time:HH:mm:ss.fff}] MainLayout.OnInitializedAsync - COMPLETE (Total: {TotalDuration}ms)", DateTime.UtcNow, (DateTime.UtcNow - startTime).TotalMilliseconds);
         }
         
         protected override async Task OnAfterRenderAsync(bool firstRender)

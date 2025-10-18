@@ -1,8 +1,18 @@
 @using System.Globalization
 @inject NavigationManager Navigation
 @inject ILogger<LanguageSwitcher> Logger
+@inject IJSRuntime JSRuntime
 
-
+<!-- Loading Overlay -->
+@if (_isLoading)
+{
+    <div class="fixed inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm z-[9999] flex items-center justify-center">
+        <div class="text-center">
+            <div class="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#715A5A]"></div>
+            <p class="mt-4 text-gray-700 dark:text-gray-300 font-semibold">@GetLoadingMessage()</p>
+        </div>
+    </div>
+}
 
 <div class="language-switcher">
     <details class="dropdown" data-theme="light">
@@ -23,7 +33,8 @@
         <ul class="menu dropdown-content bg-base-100 rounded-box z-[1] w-52 p-2 shadow-lg border border-gray-200">
             <li>
                 <a @onclick="@(() => ChangeLanguage("en"))" 
-                   class="@GetMenuItemClass("en")">
+                   class="@GetMenuItemClass("en")"
+                   disabled="@_isLoading">
                      English
                     @if (_selectedCulture == "en")
                     {
@@ -35,7 +46,8 @@
             </li>
             <li>
                 <a @onclick="@(() => ChangeLanguage("ar"))" 
-                   class="@GetMenuItemClass("ar")">
+                   class="@GetMenuItemClass("ar")"
+                   disabled="@_isLoading">
                      العربية
                     @if (_selectedCulture == "ar")
                     {
@@ -51,31 +63,73 @@
 
 @code {
     private string _selectedCulture = "en";
+    private bool _isLoading = false;
 
-    private void ChangeLanguage(string culture)
+    private async Task ChangeLanguage(string culture)
     {
-        if (_selectedCulture == culture || string.IsNullOrWhiteSpace(culture)) return;
+        if (_selectedCulture == culture || string.IsNullOrWhiteSpace(culture) || _isLoading) return;
+        
+        _isLoading = true;
+        StateHasChanged();
         
         _selectedCulture = culture;
         Logger.LogInformation("Language changed to: {Culture}", culture);
 
-        var currentUri = new Uri(Navigation.Uri);
-        var returnUrl = currentUri.PathAndQuery;
+        try
+        {
+            // Store in localStorage for faster initial load
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "preferredLanguage", culture);
+            
+            var currentUri = new Uri(Navigation.Uri);
+            var returnUrl = currentUri.PathAndQuery;
 
-        var url = $"/Culture/Set?culture={culture}&returnUrl={Uri.EscapeDataString(returnUrl)}";
-        Navigation.NavigateTo(url, forceLoad: true);
+            var url = $"/Culture/Set?culture={culture}&returnUrl={Uri.EscapeDataString(returnUrl)}";
+            
+            // Small delay to show loading animation
+            await Task.Delay(100);
+            
+            Navigation.NavigateTo(url, forceLoad: true);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error changing language");
+            _isLoading = false;
+            StateHasChanged();
+        }
     }
 
     private string GetMenuItemClass(string culture)
     {
-        return _selectedCulture == culture 
+        var baseClass = _selectedCulture == culture 
             ? "active bg-orange-100 text-orange-700" 
             : "hover:bg-gray-100";
+            
+        return _isLoading ? $"{baseClass} opacity-50 cursor-not-allowed" : baseClass;
     }
 
-    protected override void OnInitialized()
+    private string GetLoadingMessage()
+    {
+        return _selectedCulture == "ar" ? "جاري تحميل..." : "Loading...";
+    }
+
+    protected override async Task OnInitializedAsync()
     {
         var culture = CultureInfo.CurrentUICulture.Name;
         _selectedCulture = culture.StartsWith("ar") ? "ar" : "en";
+        
+        try
+        {
+            // Try to get preferred language from localStorage
+            var storedLang = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "preferredLanguage");
+            if (!string.IsNullOrEmpty(storedLang) && storedLang != _selectedCulture)
+            {
+                Logger.LogInformation("Stored language differs from current: {StoredLang} vs {CurrentLang}", storedLang, _selectedCulture);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Could not access localStorage");
+        }
     }
 }
+
