@@ -8,26 +8,33 @@
 @if (settings != null && settings.ShowFooter)
 {
     <footer class="@GetFooterClasses() footer-modern" style="@GetFooterStyles()">
-        @* Background Video - Enhanced for cross-browser compatibility *@
+        @* Background Video - Enhanced for cross-browser compatibility with forced reload *@
         @if (settings.BgType == "video" && !string.IsNullOrEmpty(settings.BgValue))
         {
             <div class="absolute inset-0 w-full h-full overflow-hidden" 
                  style="z-index: 0; pointer-events: none;">
-                <video id="footer-bg-video" 
+                <video id="footer-bg-video-@Guid.NewGuid().ToString("N").Substring(0, 8)" 
+                       class="footer-bg-video"
                        autoplay 
                        muted 
                        loop 
                        playsinline 
-                       preload="auto"
+                       preload="metadata"
                        disablepictureinpicture
                        webkit-playsinline="true"
-                       class="absolute inset-0 w-full h-full object-cover"
-                       style="min-width: 100%; min-height: 100%; 
+                       data-video-src="@settings.BgValue"
+                       style="position: absolute; 
+                              top: 50%; 
+                              left: 50%; 
+                              min-width: 100%; 
+                              min-height: 100%; 
+                              width: auto; 
+                              height: auto; 
+                              transform: translate(-50%, -50%); 
+                              object-fit: cover;
                               pointer-events: none; 
-                              -webkit-transform: translateZ(0); 
-                              transform: translateZ(0);"
-                       onloadeddata="this.play().catch(e => console.log('Auto-play prevented:', e));"
-                       oncanplaythrough="this.play().catch(e => console.log('Play failed:', e));">
+                              -webkit-transform: translate(-50%, -50%) translateZ(0); 
+                              will-change: transform;">
                     <source src="@settings.BgValue" type="video/mp4">
                     @Localizer["Footer.VideoNotSupported"]
                 </video>
@@ -443,88 +450,131 @@
 }
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        initFooterVideo();
-    });
+    // Modern approach with Intersection Observer for better performance
+    function initAllFooterVideos() {
+        const videos = document.querySelectorAll('.footer-bg-video');
+        
+        videos.forEach(video => {
+            // Ensure video attributes are set
+            video.muted = true;
+            video.loop = true;
+            video.setAttribute('webkit-playsinline', 'true');
+            video.setAttribute('playsinline', 'true');
+            
+            // Get video source from data attribute for reliable loading
+            const videoSrc = video.getAttribute('data-video-src');
+            if (videoSrc && video.querySelector('source')) {
+                video.querySelector('source').src = videoSrc;
+            }
+            
+            // Intersection Observer for lazy loading and auto-play/pause
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Video is visible, reload and play
+                        loadAndPlayVideo(entry.target);
+                    } else {
+                        // Video not visible, pause to save resources
+                        entry.target.pause();
+                    }
+                });
+            }, {
+                threshold: 0.1, // Trigger when 10% visible
+                rootMargin: '50px' // Start loading 50px before visible
+            });
+            
+            observer.observe(video);
+            
+            // Initial load attempt
+            loadAndPlayVideo(video);
+        });
+    }
     
-    function initFooterVideo() {
-        const video = document.getElementById('footer-bg-video');
+    function loadAndPlayVideo(video) {
         if (!video) return;
         
-        // Set video attributes for better compatibility
-        video.setAttribute('webkit-playsinline', 'true');
-        video.setAttribute('playsinline', 'true');
-        video.muted = true;
-        video.loop = true;
-        video.autoplay = true;
+        // Reset video to ensure clean state
+        video.currentTime = 0;
         
-        // Multiple event listeners for different browsers
-        video.addEventListener('loadedmetadata', function() {
-            console.log('Video metadata loaded');
-            tryVideoPlay(this);
-        });
+        // Load video
+        video.load();
         
-        video.addEventListener('loadeddata', function() {
-            console.log('Video data loaded');
-            tryVideoPlay(this);
-        });
-        
-        video.addEventListener('canplay', function() {
-            console.log('Video can play');
-            tryVideoPlay(this);
-        });
-        
-        video.addEventListener('canplaythrough', function() {
-            console.log('Video can play through');
-            tryVideoPlay(this);
-        });
-        
-        video.addEventListener('error', function(e) {
-            console.error('Video error:', e, this.error);
-            handleVideoError(this);
-        });
-        
-        // iOS Safari specific handling
-        if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-            video.addEventListener('touchstart', function() {
-                tryVideoPlay(this);
-            }, { once: true });
-        }
-        
-        // Force load and play
-        setTimeout(() => {
-            video.load();
-            tryVideoPlay(video);
-        }, 500);
-        
-        // Final attempt after delay
-        setTimeout(() => {
-            if (video.paused || video.currentTime === 0) {
-                tryVideoPlay(video);
+        // Multiple event listeners for cross-browser compatibility
+        const playVideo = () => {
+            const playPromise = video.play();
+            if (playPromise !== undefined) {
+                playPromise
+                    .then(() => {
+                        console.log('Footer video playing');
+                        // Ensure video keeps playing
+                        video.addEventListener('pause', () => {
+                            if (!video.ended) {
+                                video.play().catch(e => console.log('Resume failed:', e));
+                            }
+                        }, { once: true });
+                    })
+                    .catch(error => {
+                        console.log('Auto-play prevented:', error);
+                        // Retry on user interaction
+                        const retryPlay = () => {
+                            video.play().catch(e => console.log('Retry failed:', e));
+                        };
+                        document.addEventListener('click', retryPlay, { once: true });
+                        document.addEventListener('touchstart', retryPlay, { once: true });
+                        document.addEventListener('scroll', retryPlay, { once: true });
+                    });
             }
-        }, 2000);
-    }
-    
-    function tryVideoPlay(video) {
-        if (!video || video.readyState < 2) return;
+        };
         
-        const playPromise = video.play();
-        if (playPromise !== undefined) {
-            playPromise.then(() => {
-                console.log('Video playing successfully');
-            }).catch(error => {
-                console.log('Auto-play prevented or failed:', error);
-                // Try to play on user interaction
-                document.addEventListener('click', () => tryVideoPlay(video), { once: true });
-                document.addEventListener('scroll', () => tryVideoPlay(video), { once: true });
-            });
+        // Try to play when video is ready
+        if (video.readyState >= 3) {
+            playVideo();
+        } else {
+            video.addEventListener('canplay', playVideo, { once: true });
+            video.addEventListener('loadeddata', playVideo, { once: true });
         }
+        
+        // Error handling
+        video.addEventListener('error', function(e) {
+            console.error('Footer video error:', e, this.error);
+            if (this.parentElement) {
+                this.parentElement.style.display = 'none';
+            }
+        }, { once: true });
+        
+        // Force play after delay
+        setTimeout(() => {
+            if (video.paused && video.readyState >= 2) {
+                playVideo();
+            }
+        }, 1000);
     }
     
-    function handleVideoError(video) {
-        console.error('Video failed to load, hiding video element');
-        if (video && video.parentElement) {
-            video.parentElement.style.display = 'none';
-        }
+    // Initialize on different events for reliability
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initAllFooterVideos);
+    } else {
+        initAllFooterVideos();
     }
+    
+    // Re-initialize when Blazor updates the page
+    window.addEventListener('load', initAllFooterVideos);
+    
+    // For Blazor re-renders
+    if (window.Blazor) {
+        window.Blazor.addEventListener('enhancedload', initAllFooterVideos);
+    }
+    
+    // Periodic check to ensure video is playing (fallback)
+    setInterval(() => {
+        const videos = document.querySelectorAll('.footer-bg-video');
+        videos.forEach(video => {
+            const rect = video.getBoundingClientRect();
+            const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+            
+            if (isVisible && video.paused && video.readyState >= 2) {
+                video.play().catch(e => console.log('Periodic retry failed:', e));
+            }
+        });
+    }, 5000); // Check every 5 seconds
 </script>
