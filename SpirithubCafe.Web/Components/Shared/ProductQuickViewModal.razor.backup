@@ -1,0 +1,544 @@
+@using SpirithubCafe.Domain.Entities
+@using Microsoft.JSInterop
+@inject TranslationLocalizer Localizer
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+@if (IsVisible)
+{
+    <!-- Modal Overlay -->
+    <div class="fixed inset-0 z-100 overflow-y-auto quick-view-modal" role="dialog" aria-labelledby="quick-view-title" aria-modal="true">
+        <!-- Background overlay -->
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm modal-backdrop" @onclick="CloseModal"></div>
+        
+        <!-- Modal Content -->
+        <div class="flex min-h-full items-center justify-center p-4">
+            <div class="relative transform overflow-hidden rounded-2xl bg-white shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto modal-content">
+                
+                <!-- Close Button -->
+                <button @onclick="CloseModal" 
+                        class="absolute top-4 ltr:right-4 rtl:left-4 z-10 p-2.5 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-110">
+                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+
+                @if (Product != null)
+                {
+                    <div class="flex flex-col lg:flex-row gap-6">
+                        <!-- Product Image Section -->
+                        <div class="lg:w-2/5 p-6">
+                            <div class="aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 shadow-inner relative group">
+                                @if (!string.IsNullOrEmpty(Product.MainImage?.ImagePath))
+                                {
+                                    <img src="@Product.MainImage.ImagePath" 
+                                         alt="@GetLocalizedProductName()" 
+                                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                    
+                                    <!-- Product Badges -->
+                                    <div class="absolute top-3 ltr:left-3 rtl:right-3 flex flex-col gap-2">
+                                        @if (Product.IsOrganic)
+                                        {
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-500/95 backdrop-blur-sm text-white shadow-lg">
+                                                🌱 @Localizer["Organic"]
+                                            </span>
+                                        }
+                                        @if (Product.IsFairTrade)
+                                        {
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500/95 backdrop-blur-sm text-white shadow-lg">
+                                                🤝 @Localizer["FairTrade"]
+                                            </span>
+                                        }
+                                    </div>
+                                    
+                                    @if (Product.IsFeatured)
+                                    {
+                                        <div class="absolute top-3 ltr:right-3 rtl:left-3">
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/95 backdrop-blur-sm text-white shadow-lg">
+                                                ⭐ @Localizer["Featured"]
+                                            </span>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="w-full h-full flex items-center justify-center">
+                                        <svg class="w-24 h-24 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- Gallery Thumbnails -->
+                            @if (Product.GalleryImages != null && Product.GalleryImages.Any())
+                            {
+                                <div class="grid grid-cols-4 gap-2 mt-4">
+                                    @foreach (var image in Product.GalleryImages.Take(4))
+                                    {
+                                        <div class="aspect-square rounded-lg overflow-hidden bg-gray-100 hover:ring-2 hover:ring-amber-500 transition-all cursor-pointer">
+                                            <img src="@image.ImagePath" 
+                                                 alt="@GetLocalizedProductName()" 
+                                                 class="w-full h-full object-cover" />
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Product Details Section -->
+                        <div class="lg:w-3/5 p-6 lg:ltr:pl-0 lg:rtl:pr-0 overflow-y-auto max-h-[calc(90vh-3rem)]">
+                            <!-- Product Header -->
+                            <div class="mb-4">
+                                <!-- Category & SKU -->
+                                <div class="flex items-center gap-2 mb-2">
+                                    @if (!string.IsNullOrEmpty(Product.Category?.Name))
+                                    {
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#715A5A] text-white">
+                                            @GetLocalizedCategoryName()
+                                        </span>
+                                    }
+                                    @if (!string.IsNullOrEmpty(Product.Sku))
+                                    {
+                                        <span class="text-[10px] text-gray-500">SKU: @Product.Sku</span>
+                                    }
+                                </div>
+                                
+                                <h2 id="quick-view-title" class="text-lg font-bold text-gray-900 mb-2">@GetLocalizedProductName()</h2>
+                                
+                                <!-- Rating -->
+                                <div class="flex items-center gap-2 mb-3">
+                                    <div class="flex items-center gap-0.5">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            <svg class="w-3 h-3 @(i <= Product.AverageRating ? "text-amber-400" : "text-gray-300")" 
+                                                 fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                            </svg>
+                                        }
+                                    </div>
+                                    <span class="text-xs text-gray-600 font-medium ltr:ml-1 rtl:mr-1">@Product.AverageRating.ToString("F1")</span>
+                                    <span class="text-xs text-gray-400">(@Product.ReviewCount @Localizer["Reviews"])</span>
+                                </div>
+                            </div>
+
+                            <!-- Price Section -->
+                            <div class="mb-4 p-3 bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl border border-amber-200">
+                                @if (Product.Variants != null && Product.Variants.Any())
+                                {
+                                    var defaultVariant = Product.Variants.FirstOrDefault(v => v.IsDefault) ?? Product.Variants.First();
+                                    
+                                    @if (defaultVariant.HasDiscount)
+                                    {
+                                        <div class="flex items-baseline gap-2 mb-1.5 ltr:flex-row rtl:flex-row-reverse">
+                                            <span class="text-xl font-bold text-red-600">@defaultVariant.EffectivePrice.ToString("F3") OMR</span>
+                                            <span class="text-sm text-gray-400 line-through">@defaultVariant.Price.ToString("F3") OMR</span>
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-700">
+                                                @defaultVariant.DiscountPercentage.ToString("F0")% @Localizer["OFF"]
+                                            </span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-xl font-bold text-[#715A5A]">@defaultVariant.Price.ToString("F3") OMR</span>
+                                    }
+                                    
+                                    <div class="flex items-center gap-2 mt-1.5">
+                                        <span class="text-xs @(defaultVariant.IsInStock ? "text-green-600" : "text-red-600") font-medium">
+                                            @if (defaultVariant.IsInStock)
+                                            {
+                                                <span>✓ @Localizer["InStock"] (@defaultVariant.StockQuantity @Localizer["Available"])</span>
+                                            }
+                                            else
+                                            {
+                                                <span>✗ @Localizer["OutOfStock"]</span>
+                                            }
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- Coffee Information Card -->
+                            <div class="mb-4 bg-gradient-to-br from-[#F8F6F4] to-[#F5F3F0] rounded-lg p-3 border border-[#E5E3E0]">
+                                <div class="flex items-center gap-1.5 mb-2.5">
+                                    <svg class="w-3 h-3 text-[#715A5A]" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/>
+                                    </svg>
+                                    <h3 class="text-xs font-bold text-gray-900">@Localizer["CoffeeInformation"]</h3>
+                                </div>
+                                <div class="grid grid-cols-2 gap-x-3 gap-y-2">
+                                    @if (!string.IsNullOrEmpty(Product.Origin))
+                                    {
+                                        <div class="flex items-start gap-1.5 py-1.5 px-2 bg-white/60 rounded">
+                                            <svg class="w-2.5 h-2.5 text-[#715A5A] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                                            </svg>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="text-[10px] text-gray-500 font-medium">@Localizer["Origin"]</div>
+                                                <div class="text-xs font-semibold text-gray-900 truncate">@Product.Origin</div>
+                                            </div>
+                                        </div>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(GetLocalizedRoastLevel()))
+                                    {
+                                        <div class="flex items-start gap-1.5 py-1.5 px-2 bg-white/60 rounded">
+                                            <svg class="w-2.5 h-2.5 text-[#715A5A] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M17.293 13.293A8 8 0 716.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+                                            </svg>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="text-[10px] text-gray-500 font-medium">@Localizer["RoastLevel"]</div>
+                                                <div class="text-xs font-semibold text-gray-900 truncate">@GetLocalizedRoastLevel()</div>
+                                            </div>
+                                        </div>
+                                    }
+
+                                    @if (Product.Intensity.HasValue)
+                                    {
+                                        <div class="flex items-start gap-1.5 py-1.5 px-2 bg-white/60 rounded">
+                                            <svg class="w-2.5 h-2.5 text-[#715A5A] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"/>
+                                            </svg>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="text-[10px] text-gray-500 font-medium">@Localizer["Intensity"]</div>
+                                                <div class="flex items-center gap-1.5">
+                                                    <div class="flex gap-0.5">
+                                                        @for (int i = 1; i <= 10; i++)
+                                                        {
+                                                            <div class="w-1 h-1 rounded-full @(i <= Product.Intensity ? "bg-[#715A5A]" : "bg-gray-300")"></div>
+                                                        }
+                                                    </div>
+                                                    <span class="text-xs font-semibold text-gray-900">@Product.Intensity</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(GetLocalizedProcess()))
+                                    {
+                                        <div class="flex items-start gap-1.5 py-1.5 px-2 bg-white/60 rounded">
+                                            <svg class="w-2.5 h-2.5 text-[#715A5A] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                                            </svg>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="text-[10px] text-gray-500 font-medium">@Localizer["Process"]</div>
+                                                <div class="text-xs font-semibold text-gray-900 truncate">@GetLocalizedProcess()</div>
+                                            </div>
+                                        </div>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(GetLocalizedVariety()))
+                                    {
+                                        <div class="flex items-start gap-1.5 py-1.5 px-2 bg-white/60 rounded">
+                                            <svg class="w-2.5 h-2.5 text-[#715A5A] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1H8a3 3 0 00-3 3v1.5a1.5 1.5 0 01-3 0V6z" clip-rule="evenodd"/>
+                                                <path d="M6 12a2 2 0 012-2h8a2 2 0 012 2v2a2 2 0 01-2 2H2h2a2 2 0 002-2v-2z"/>
+                                            </svg>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="text-[10px] text-gray-500 font-medium">@Localizer["Variety"]</div>
+                                                <div class="text-xs font-semibold text-gray-900 truncate">@GetLocalizedVariety()</div>
+                                            </div>
+                                        </div>
+                                    }
+
+                                    @if (Product.Altitude.HasValue)
+                                    {
+                                        <div class="flex items-start gap-1.5 py-1.5 px-2 bg-white/60 rounded">
+                                            <svg class="w-2.5 h-2.5 text-[#715A5A] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                                            </svg>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="text-[10px] text-gray-500 font-medium">@Localizer["Altitude"]</div>
+                                                <div class="text-xs font-semibold text-gray-900">@Product.Altitude @Localizer["masl"]</div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+
+            <!-- Tasting Notes -->
+            @if (!string.IsNullOrEmpty(GetLocalizedTastingNotes()))
+            {
+                <div class="mb-4 bg-amber-50 rounded-xl p-4 border border-amber-200">
+                    <h3 class="text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 000 3h.5a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-.5a1.5 1.5 0 00-3 0v.5a1 1 0 01-1 1H6a1 1 0 01-1-1v-3a1 1 0 00-1-1h-.5a1.5 1.5 0 010-3H4a1 1 0 001-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5z"/>
+                        </svg>
+                        @Localizer["TastingNotes"]
+                    </h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">@GetLocalizedTastingNotes()</p>
+                </div>
+            }
+                            <!-- Variants -->
+                            @if (Product.Variants != null && Product.Variants.Any())
+                            {
+                                <div class="mb-5">
+                                    <h3 class="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-[#715A5A]" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM13 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2h-2z"/>
+                                        </svg>
+                                        @Localizer["AvailableSizes"]
+                                    </h3>
+                                    <div class="space-y-2 max-h-40 overflow-y-auto">
+                                        @foreach (var variant in Product.Variants.Take(4))
+                                        {
+                                            <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200 hover:border-amber-300 hover:shadow-sm transition-all">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-amber-50 text-amber-700 font-bold text-sm">
+                                                        @variant.Weight@variant.WeightUnit
+                                                    </div>
+                                                    <div>
+                                                        @if (!string.IsNullOrEmpty(variant.VariantSku))
+                                                        {
+                                                            <div class="text-xs text-gray-500">SKU: @variant.VariantSku</div>
+                                                        }
+                                                        <div class="text-xs @(variant.IsInStock ? "text-green-600" : "text-red-600") font-medium">
+                                                            @if (variant.IsInStock)
+                                                            {
+                                                                <span>✓ @variant.StockQuantity @Localizer["InStock"]</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span>✗ @Localizer["OutOfStock"]</span>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="ltr:text-right rtl:text-left">
+                                                    @if (variant.HasDiscount)
+                                                    {
+                                                        <div class="flex items-center gap-2 ltr:justify-end rtl:justify-start">
+                                                            <span class="text-xs text-gray-400 line-through">@variant.Price.ToString("F3")</span>
+                                                            <span class="text-sm font-bold text-red-600">@variant.EffectivePrice.ToString("F3")</span>
+                                                        </div>
+                                                        <div class="text-xs text-red-600 font-medium">@variant.DiscountPercentage.ToString("F0")% @Localizer["OFF"]</div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="text-sm font-bold text-[#715A5A]">@variant.Price.ToString("F3") OMR</div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                        @if (Product.Variants.Count > 4)
+                                        {
+                                            <div class="text-center py-2">
+                                                <span class="text-xs text-gray-500 font-medium">+@(Product.Variants.Count - 4) @Localizer["MoreSizesAvailable"]</span>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+
+                            <!-- Actions -->
+                            <div class="flex gap-3 pt-5 border-t border-gray-200 sticky bottom-0 bg-white">
+                                @if (!string.IsNullOrEmpty(Product?.Slug))
+                                {
+                                    <a href="/product/@Product.Slug" @onclick="CloseModal"
+                                       class="flex-1 inline-flex justify-center items-center px-6 py-3 border-2 border-[#715A5A] rounded-xl text-sm font-semibold text-[#715A5A] bg-white hover:bg-[#715A5A] hover:text-white transition-all duration-200 no-underline shadow-sm hover:shadow-md">
+                                        <svg class="w-4 h-4 ltr:mr-2 rtl:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        @Localizer["ViewFullDetails"]
+                                    </a>
+                                }
+                                else
+                                {
+                                    <button disabled 
+                                            class="flex-1 inline-flex justify-center items-center px-6 py-3 border-2 border-gray-300 rounded-xl text-sm font-semibold text-gray-400 bg-gray-100 cursor-not-allowed shadow-sm">
+                                        <svg class="w-4 h-4 ltr:mr-2 rtl:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        @Localizer["ViewFullDetails"]
+                                    </button>
+                                }
+                                <button @onclick="CloseModal" 
+                                        class="px-6 py-3 border border-gray-300 rounded-xl text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200 shadow-sm hover:shadow-md">
+                                    @Localizer["Close"]
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public Product? Product { get; set; }
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public bool IsAdminContext { get; set; } = false;
+    
+    [Inject] private IJSRuntime JSRuntime { get; set; } = null!;
+
+    private async Task CloseModal()
+    {
+        IsVisible = false;
+        await RemoveBodyScrollLock();
+        await OnClose.InvokeAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsVisible)
+        {
+            await AddBodyScrollLock();
+        }
+        else
+        {
+            await RemoveBodyScrollLock();
+        }
+    }
+    
+    private async Task AddBodyScrollLock()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("eval", "document.body.classList.add('modal-open')");
+        }
+        catch
+        {
+            // Ignore JS errors during prerendering
+        }
+    }
+    
+    private async Task RemoveBodyScrollLock()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("eval", "document.body.classList.remove('modal-open')");
+        }
+        catch
+        {
+            // Ignore JS errors during prerendering
+        }
+    }
+    
+    private string GetLocalizedProductName()
+    {
+        if (Product == null) return string.Empty;
+        
+        var currentCulture = System.Globalization.CultureInfo.CurrentUICulture.Name;
+        return currentCulture.StartsWith("ar") && !string.IsNullOrEmpty(Product.NameAr) 
+            ? Product.NameAr 
+            : Product.Name ?? string.Empty;
+    }
+    
+    private string GetLocalizedCategoryName()
+    {
+        if (Product?.Category == null) return string.Empty;
+        
+        var currentCulture = System.Globalization.CultureInfo.CurrentUICulture.Name;
+        return currentCulture.StartsWith("ar") && !string.IsNullOrEmpty(Product.Category.NameAr) 
+            ? Product.Category.NameAr 
+            : Product.Category.Name ?? string.Empty;
+    }
+    
+    private string GetLocalizedRoastLevel()
+    {
+        if (Product == null) return string.Empty;
+        
+        var currentCulture = System.Globalization.CultureInfo.CurrentUICulture.Name;
+        return currentCulture.StartsWith("ar") && !string.IsNullOrEmpty(Product.RoastLevelAr) 
+            ? Product.RoastLevelAr 
+            : Product.RoastLevel ?? string.Empty;
+    }
+    
+    private string GetLocalizedProcess()
+    {
+        if (Product == null) return string.Empty;
+        
+        var currentCulture = System.Globalization.CultureInfo.CurrentUICulture.Name;
+        return currentCulture.StartsWith("ar") && !string.IsNullOrEmpty(Product.ProcessAr) 
+            ? Product.ProcessAr 
+            : Product.Process ?? string.Empty;
+    }
+    
+    private string GetLocalizedVariety()
+    {
+        if (Product == null) return string.Empty;
+        
+        var currentCulture = System.Globalization.CultureInfo.CurrentUICulture.Name;
+        return currentCulture.StartsWith("ar") && !string.IsNullOrEmpty(Product.VarietyAr) 
+            ? Product.VarietyAr 
+            : Product.Variety ?? string.Empty;
+    }
+    
+    private string GetLocalizedTastingNotes()
+    {
+        if (Product == null) return string.Empty;
+        
+        var currentCulture = System.Globalization.CultureInfo.CurrentUICulture.Name;
+        return currentCulture.StartsWith("ar") && !string.IsNullOrEmpty(Product.TastingNotesAr) 
+            ? Product.TastingNotesAr 
+            : Product.TastingNotes ?? string.Empty;
+    }
+    
+    private string GetLocalizedAromaticProfile()
+    {
+        if (Product == null) return string.Empty;
+        
+        var currentCulture = System.Globalization.CultureInfo.CurrentUICulture.Name;
+        return currentCulture.StartsWith("ar") && !string.IsNullOrEmpty(Product.AromaticProfileAr) 
+            ? Product.AromaticProfileAr 
+            : Product.AromaticProfile ?? string.Empty;
+    }
+    
+    private string GetLocalizedBrewingInstructions()
+    {
+        if (Product == null) return string.Empty;
+        
+        var currentCulture = System.Globalization.CultureInfo.CurrentUICulture.Name;
+        return currentCulture.StartsWith("ar") && !string.IsNullOrEmpty(Product.BrewingInstructionsAr) 
+            ? Product.BrewingInstructionsAr 
+            : Product.BrewingInstructions ?? string.Empty;
+    }
+}
+
+<style>
+    .modal-enter {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    
+    .modal-enter-active {
+        opacity: 1;
+        transform: scale(1);
+        transition: opacity 300ms ease-out, transform 300ms ease-out;
+    }
+    
+    .modal-exit {
+        opacity: 1;
+        transform: scale(1);
+    }
+    
+    .modal-exit-active {
+        opacity: 0;
+        transform: scale(0.95);
+        transition: opacity 200ms ease-in, transform 200ms ease-in;
+    }
+
+    /* Custom scrollbar for modal content */
+    .modal-content::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .modal-content::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+    
+    .modal-content::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 3px;
+    }
+    
+    .modal-content::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+</style>

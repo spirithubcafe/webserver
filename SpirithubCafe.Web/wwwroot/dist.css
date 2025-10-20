@@ -989,6 +989,9 @@
   .flex-1 {
     flex: 1;
   }
+  .flex-shrink {
+    flex-shrink: 1;
+  }
   .flex-shrink-0 {
     flex-shrink: 0;
   }
@@ -4900,6 +4903,11 @@
       padding: calc(var(--spacing) * 2);
     }
   }
+  .sm\:p-2\.5 {
+    @media (width >= 40rem) {
+      padding: calc(var(--spacing) * 2.5);
+    }
+  }
   .sm\:p-3 {
     @media (width >= 40rem) {
       padding: calc(var(--spacing) * 3);
@@ -5005,6 +5013,11 @@
     @media (width >= 40rem) {
       font-size: var(--text-xs);
       line-height: var(--tw-leading, var(--text-xs--line-height));
+    }
+  }
+  .sm\:text-\[10px\] {
+    @media (width >= 40rem) {
+      font-size: 10px;
     }
   }
   .sm\:shadow-xl {
@@ -5657,6 +5670,11 @@
       margin-left: calc(var(--spacing) * 6);
     }
   }
+  .ltr\:ml-auto {
+    &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
+      margin-left: auto;
+    }
+  }
   .ltr\:-translate-x-full {
     &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
       --tw-translate-x: -100%;
@@ -5828,6 +5846,11 @@
   .rtl\:mr-6 {
     &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
       margin-right: calc(var(--spacing) * 6);
+    }
+  }
+  .rtl\:mr-auto {
+    &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
+      margin-right: auto;
     }
   }
   .rtl\:ml-1 {

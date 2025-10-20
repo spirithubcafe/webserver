@@ -154,6 +154,15 @@ public class ProductService
             _logger.LogInformation("Attempting to delete product '{ProductName}' (ID: {ProductId}) with {ReviewCount} review(s), {VariantCount} variant(s), and {ImageCount} image(s)", 
                 product.Name, product.Id, reviewCount, variantCount, imageCount);
             
+            // First, set MainImageId to null to break the circular dependency
+            // This prevents "circular dependency was detected" error when deleting
+            var mainImageIdProperty = _context.Entry(product).Property("MainImageId");
+            if (mainImageIdProperty.CurrentValue != null)
+            {
+                mainImageIdProperty.CurrentValue = null;
+                await _context.SaveChangesAsync();
+            }
+            
             // This will automatically cascade delete:
             // - All ProductReviews (configured with DeleteBehavior.Cascade)
             // - All ProductVariants (configured with DeleteBehavior.Cascade)
