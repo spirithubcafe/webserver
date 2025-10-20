@@ -36,11 +36,11 @@
         <section class="py-16 @GetCategoriesSectionStyle()" style="@GetCategoriesBackgroundStyle()">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-4">@GetCategoriesTitle()</h2>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">@((MarkupString)GetCategoriesTitle())</h2>
                     @if (!IsEmptySubtitle(GetCategoriesSubtitle()))
                     {
                         <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                            @GetCategoriesSubtitle()
+                            @((MarkupString)GetCategoriesSubtitle())
                         </p>
                     }
                 </div>
@@ -92,18 +92,18 @@
             <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <div class="bg-white bg-opacity-95 backdrop-blur-sm rounded-2xl p-12 shadow-2xl">
                     <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                        @GetMissionTitle()
+                        @((MarkupString)GetMissionTitle())
                     </h2>
                     @if (!IsEmptySubtitle(GetMissionSubtitle()))
                     {
                         <p class="text-xl text-gray-700 mb-8 leading-relaxed">
-                            @GetMissionSubtitle()
+                            @((MarkupString)GetMissionSubtitle())
                         </p>
                     }
                     @if (!string.IsNullOrEmpty(GetMissionText()))
                     {
                         <div class="prose prose-lg mx-auto text-gray-600 leading-relaxed mb-8">
-                            @((MarkupString)GetMissionText().Replace("\n", "<br>"))
+                            @((MarkupString)GetMissionText())
                         </div>
                     }
                     
@@ -131,10 +131,10 @@
         <section class="py-16 @GetLatestProductsSectionStyle()" style="@GetLatestProductsBackgroundStyle()">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-4">@GetLatestProductsTitle()</h2>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">@((MarkupString)GetLatestProductsTitle())</h2>
                     @if (!IsEmptySubtitle(GetLatestProductsSubtitle()))
                     {
-                        <p class="text-lg text-gray-600">@GetLatestProductsSubtitle()</p>
+                        <p class="text-lg text-gray-600">@((MarkupString)GetLatestProductsSubtitle())</p>
                     }
                 </div>
 
@@ -284,11 +284,11 @@
                     
                     <!-- Newsletter Content -->
                     <div class="order-1 lg:order-2 @(string.IsNullOrEmpty(homePageSettings?.NewsletterImage) ? "col-span-2 text-center max-w-4xl mx-auto" : "")">
-                        <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">@GetNewsletterTitle()</h2>
+                        <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">@((MarkupString)GetNewsletterTitle())</h2>
                         @if (!IsEmptySubtitle(GetNewsletterSubtitle()))
                         {
                             <p class="text-xl text-gray-600 mb-8">
-                                @GetNewsletterSubtitle()
+                                @((MarkupString)GetNewsletterSubtitle())
                             </p>
                         }
                         <div class="max-w-md @(string.IsNullOrEmpty(homePageSettings?.NewsletterImage) ? "mx-auto" : "")">
@@ -306,17 +306,17 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <!-- About Us Content -->
                     <div class="@(string.IsNullOrEmpty(homePageSettings?.AboutUsImage) ? "col-span-2 text-center max-w-4xl mx-auto" : "")">
-                        <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">@GetAboutUsTitle()</h2>
+                        <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">@((MarkupString)GetAboutUsTitle())</h2>
                         @if (!IsEmptySubtitle(GetAboutUsSubtitle()))
                         {
                             <p class="text-xl text-gray-600 mb-6">
-                                @GetAboutUsSubtitle()
+                                @((MarkupString)GetAboutUsSubtitle())
                             </p>
                         }
                         @if (!string.IsNullOrEmpty(GetAboutUsText()))
                         {
                             <div class="prose prose-lg max-w-none text-gray-700 mb-6">
-                                @((MarkupString)GetAboutUsText().Replace("\n", "<br>"))
+                                @((MarkupString)GetAboutUsText())
                             </div>
                         }
                         
