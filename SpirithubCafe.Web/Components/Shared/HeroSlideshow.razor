@@ -44,9 +44,6 @@
                                 <div class="slide-actions">
                                     <a href="@slide.ButtonUrl" class="cta-button">
                                         @slide.GetLocalizedButtonText(CultureInfo.CurrentUICulture.Name)
-                                        <svg class="button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                                        </svg>
                                     </a>
                                 </div>
                             }
@@ -93,9 +90,6 @@
                     <div class="slide-actions">
                         <a href="/products" class="cta-button cta-outline">
                             @Localizer["Explore Products"]
-                            <svg class="button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                            </svg>
                         </a>
                     </div>
                 </div>
@@ -244,10 +238,10 @@
         align-items: center;
         gap: 0.75rem;
         padding: 0.875rem 2rem;
-        background: #715A5A;
+        background: #443939ff;
         color: white;
         text-decoration: none;
-        border-radius: 50px;
+        border-radius: 8px;
         font-weight: 600;
         font-size: 1rem;
         text-transform: uppercase;
@@ -275,16 +269,6 @@
         box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
     }
     
-    .button-icon {
-        width: 1.25rem;
-        height: 1.25rem;
-        transition: transform 0.3s ease;
-    }
-    
-    .cta-button:hover .button-icon {
-        transform: translateX(4px);
-    }
-    
     /* Navigation Controls */
     .slideshow-controls {
         position: absolute;
@@ -294,11 +278,15 @@
         transform: translateY(-50%);
         display: flex;
         justify-content: space-between;
-        padding: 0 2rem;
+        padding: 0 1rem;
         z-index: 10;
         pointer-events: none;
-        opacity: 1;
+        opacity: 0.6;
         transition: opacity 0.5s ease;
+    }
+    
+    .slideshow-controls:hover {
+        opacity: 1;
     }
     
     .slideshow-controls.hidden {
@@ -306,30 +294,30 @@
     }
     
     .nav-button {
-        width: 60px;
-        height: 60px;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        background: rgba(255, 255, 255, 0.1);
+        width: 40px;
+        height: 40px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: rgba(0, 0, 0, 0.2);
         color: white;
-        border-radius: 50%;
+        border-radius: 6px;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
         transition: all 0.3s ease;
-        backdrop-filter: blur(10px);
+        backdrop-filter: blur(8px);
         pointer-events: auto;
     }
     
     .nav-button:hover {
-        background: rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.25);
         border-color: rgba(255, 255, 255, 0.6);
-        transform: scale(1.1);
+        transform: scale(1.05);
     }
     
     .nav-button svg {
-        width: 24px;
-        height: 24px;
+        width: 18px;
+        height: 18px;
     }
     
     /* Ensure navigation arrows maintain consistent position in RTL/LTR */
@@ -345,7 +333,7 @@
     
     [dir="rtl"] .nav-button:hover,
     [dir="ltr"] .nav-button:hover {
-        transform: scale(1.1) !important;
+        transform: scale(1.05) !important;
     }
     
     /* Ensure slideshow controls maintain consistent spacing in RTL/LTR */
@@ -353,7 +341,21 @@
     [dir="ltr"] .slideshow-controls {
         display: flex;
         justify-content: space-between;
-        padding: 0 2rem;
+        padding: 0 1rem;
+    }
+    
+    @@media (max-width: 768px) {
+        [dir="rtl"] .slideshow-controls,
+        [dir="ltr"] .slideshow-controls {
+            padding: 0 0.5rem;
+        }
+    }
+    
+    @@media (max-width: 480px) {
+        [dir="rtl"] .slideshow-controls,
+        [dir="ltr"] .slideshow-controls {
+            padding: 0 0.25rem;
+        }
     }
     
     /* Progress Bar */
@@ -392,15 +394,6 @@
     .text-amber-100 { color: #fef3c7; }
     .text-amber-200 { color: #fde68a; }
     
-    /* RTL Support */
-    [dir="rtl"] .cta-button .button-icon {
-        transform: scaleX(-1);
-    }
-    
-    [dir="rtl"] .cta-button:hover .button-icon {
-        transform: scaleX(-1) translateX(4px);
-    }
-    
     /* Mobile Responsive */
     @@media (max-width: 768px) {
         .slide-content {
@@ -409,49 +402,82 @@
         
         .slide-title {
             margin-bottom: 1rem;
+            font-size: clamp(1.25rem, 3.5vw, 2rem);
         }
         
         .slide-subtitle {
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
+            font-size: clamp(0.75rem, 1.2vw, 0.9rem);
         }
         
         .cta-button {
-            padding: 0.875rem 2rem;
-            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.875rem;
         }
         
         .nav-button {
-            width: 50px;
-            height: 50px;
+            width: 35px;
+            height: 35px;
+            background: rgba(0, 0, 0, 0.25);
+            border-width: 1px;
         }
         
         .nav-button svg {
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
         }
         
         .slideshow-controls {
-            padding: 0 1rem;
+            padding: 0 0.5rem;
+            opacity: 0.5;
+        }
+        
+        .slideshow-controls:hover {
+            opacity: 0.8;
         }
     }
     
     @@media (max-width: 480px) {
         .slide-content {
-            padding: 0.75rem;
+            padding: 0.75rem 0.5rem;
+        }
+        
+        .slide-title {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            margin-bottom: 0.75rem;
+        }
+        
+        .slide-subtitle {
+            font-size: clamp(0.7rem, 1vw, 0.8rem);
+            margin-bottom: 1.25rem;
+            line-height: 1.4;
+        }
+        
+        .cta-button {
+            padding: 0.65rem 1.25rem;
+            font-size: 0.75rem;
+            letter-spacing: 0.3px;
         }
         
         .slideshow-controls {
-            padding: 0 0.5rem;
+            padding: 0 0.25rem;
+            opacity: 0.4;
+        }
+        
+        .slideshow-controls:hover {
+            opacity: 0.7;
         }
         
         .nav-button {
-            width: 45px;
-            height: 45px;
+            width: 30px;
+            height: 30px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
         }
         
         .nav-button svg {
-            width: 18px;
-            height: 18px;
+            width: 14px;
+            height: 14px;
         }
     }
 </style>

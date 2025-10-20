@@ -49,25 +49,27 @@
                     <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-4">
                         @foreach (var category in homepageCategories)
                         {
-                            <NavLink href="@($"/products/{category.Slug}")" class="block text-center">
-                                <div class="aspect-square bg-gray-50 rounded-xl shadow-sm border border-gray-100 hover:shadow-md mb-3">
+                            <NavLink href="@($"/products/{category.Slug}")" class="flex flex-col items-center group">
+                                <!-- Fixed Square Image Container -->
+                                <div class="w-full aspect-square bg-gray-50 rounded-xl shadow-sm border border-gray-100 hover:shadow-md mb-3 overflow-hidden transition-all duration-300 group-hover:border-amber-300">
                                     @if (!string.IsNullOrEmpty(category.ImagePath))
                                     {
                                         <img src="@category.ImagePath" 
                                              alt="@GetCategoryName(category)" 
-                                             class="w-full h-full object-cover rounded-xl" />
+                                             class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                                     }
                                     else
                                     {
-                                        <div class="w-full h-full bg-[#D3DAD9] flex items-center justify-center rounded-xl">
-                                            <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <div class="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                                            <svg class="w-10 h-10 md:w-12 md:h-12 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                                                       d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                                             </svg>
                                         </div>
                                     }
                                 </div>
-                                <h3 class="font-medium text-gray-900 text-sm hover:text-amber-600">
+                                <!-- Text Always Below Image -->
+                                <h3 class="font-medium text-gray-900 text-xs md:text-sm hover:text-amber-600 w-full text-center px-1 line-clamp-2 transition-colors duration-200">
                                     @GetCategoryName(category)
                                 </h3>
                             </NavLink>
@@ -138,7 +140,7 @@
 
                 @if (latestProducts.Any())
                 {
-                    <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 md:gap-6">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
                         @foreach (var product in latestProducts)
                         {
                             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md hover:border-stone-200 transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full">
@@ -174,8 +176,8 @@
                                     <!-- Discount Badge (Top Right) -->
                                     @if (badgeHasDiscount)
                                     {
-                                        <div class="absolute top-3 right-3 z-20">
-                                            <div class="bg-red-600 text-white px-2.5 py-1 rounded-lg shadow-lg text-xs sm:text-sm font-bold">
+                                        <div class="absolute top-2 right-2 z-20">
+                                            <div class="bg-red-600 text-white px-1.5 py-0.5 rounded shadow-lg text-[10px] sm:text-xs font-bold">
                                                 @badgeDiscountPercent% OFF
                                             </div>
                                         </div>
@@ -183,8 +185,8 @@
                                 </div>
                                 
                                 <!-- Content area that grows to push button down -->
-                                <div class="p-3 md:p-4 flex flex-col flex-grow">
-                                    <h3 class="text-sm md:text-base font-semibold mb-1 md:mb-2 line-clamp-1 text-gray-900">@GetProductName(product)</h3>
+                                <div class="p-2 md:p-3 flex flex-col flex-grow">
+                                    <h3 class="text-xs md:text-sm font-semibold mb-1 line-clamp-2 text-gray-900 leading-tight">@GetProductName(product)</h3>
                                     
                                     <!-- Tasting Notes -->
                                     @{
@@ -195,7 +197,7 @@
                                     }
                                     @if (!string.IsNullOrEmpty(tastingNotes))
                                     {
-                                        <p class="text-xs text-stone-600 mb-2 line-clamp-2 leading-tight">@tastingNotes</p>
+                                        <p class="text-[10px] md:text-xs text-stone-600 mb-1.5 line-clamp-2 leading-snug">@tastingNotes</p>
                                     }
                                     
                                     <!-- Price -->
@@ -211,36 +213,36 @@
                                         var hasDiscount = discountPrice > 0 && discountPrice < price;
                                     }
                                     
-                                    <div class="mb-3 flex-grow">
+                                    <div class="mb-2 flex-grow">
                                         @if (hasDiscount)
                                         {
-                                            <div class="space-y-1">
-                                                <div class="flex items-baseline gap-2">
-                                                    <span class="text-base sm:text-lg font-bold text-red-600">
-                                                        @discountPrice.ToString("0.000") <span class="text-xs">OMR</span>
+                                            <div class="space-y-0.5">
+                                                <div class="flex items-baseline gap-1.5">
+                                                    <span class="text-sm sm:text-base font-bold text-red-600">
+                                                        @discountPrice.ToString("0.000") <span class="text-[10px]">OMR</span>
                                                     </span>
-                                                    <span class="text-xs sm:text-sm text-gray-400 line-through">
+                                                    <span class="text-[10px] sm:text-xs text-gray-400 line-through">
                                                         @price.ToString("0.000")
                                                     </span>
                                                 </div>
                                                 @{
                                                     var discountPercentage = ((price - discountPrice) / price * 100);
                                                 }
-                                                <span class="inline-block bg-red-100 text-red-700 px-2 py-0.5 rounded text-xs font-semibold">
+                                                <span class="inline-block bg-red-100 text-red-700 px-1.5 py-0.5 rounded text-[10px] font-semibold">
                                                     @discountPercentage.ToString("0")% OFF
                                                 </span>
                                             </div>
                                         }
                                         else
                                         {
-                                            <div class="text-base sm:text-lg font-bold text-gray-900">
-                                                @price.ToString("0.000") <span class="text-xs">OMR</span>
+                                            <div class="text-sm sm:text-base font-bold text-gray-900">
+                                                @price.ToString("0.000") <span class="text-[10px]">OMR</span>
                                             </div>
                                         }
                                     </div>
                                     
                                     <!-- Full width button at bottom -->
-                                    <NavLink href="@($"/product/{product.Slug}")" class="w-full bg-stone-600 hover:bg-stone-700 text-white py-2 px-3 rounded-lg text-xs md:text-sm font-medium transition-colors text-center block mt-auto">
+                                    <NavLink href="@($"/product/{product.Slug}")" class="w-full bg-stone-600 hover:bg-stone-700 text-white py-1.5 px-2 rounded-lg text-[10px] md:text-xs font-medium transition-colors text-center block mt-auto">
                                         @Localizer["ViewProduct"]
                                     </NavLink>
                                 </div>
@@ -261,11 +263,7 @@
                     </div>
                 }
 
-                <div class="text-center mt-8">
-                    <NavLink href="/products" class="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
-                        @Localizer["ViewAllProducts"]
-                    </NavLink>
-                </div>
+
             </div>
         </section>
     }
