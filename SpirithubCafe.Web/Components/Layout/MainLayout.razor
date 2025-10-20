@@ -129,251 +129,146 @@
                             <CartIcon />
                         </div>
 
-                        <!-- Professional Account Menu -->
+                        <!-- Modern Minimal Profile Menu -->
                         <div class="relative">
                             <AuthorizeView>
                                 <Authorized>
-                                    <!-- Enhanced User Avatar with Status Indicator -->
+                                    <!-- Minimal User Avatar -->
                                     <button @onclick="ToggleUserMenu"
-                                            class="relative w-11 h-11 bg-gradient-to-br from-[#715A5A] via-[#8B6B3A] to-[#A0522D] 
-                                                   hover:from-[#5d4a4a] hover:via-[#7A5B2F] hover:to-[#8B4513] 
+                                            class="relative w-10 h-10 bg-gradient-to-br from-amber-600 to-amber-700
+                                                   hover:from-amber-500 hover:to-amber-600
                                                    rounded-full flex items-center justify-center text-white 
-                                                   shadow-lg hover:shadow-2xl transform hover:scale-110 
-                                                   transition-all duration-300 ease-out cursor-pointer 
-                                                   ring-2 ring-white/20 hover:ring-white/40 
-                                                   @(isUserMenuOpen ? "scale-110 shadow-2xl ring-white/40" : "")
-                                                   focus:outline-none focus:ring-4 focus:ring-amber-200">
-                                        <span class="text-base font-bold tracking-wider">@(context.User.Identity?.Name?.Substring(0, 1).ToUpper() ?? "U")</span>
+                                                   shadow-md hover:shadow-lg transform hover:scale-105
+                                                   transition-all duration-200 ease-out cursor-pointer 
+                                                   focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
+                                        <span class="text-sm font-semibold">@(context.User.Identity?.Name?.Substring(0, 1).ToUpper() ?? "U")</span>
                                         
-                                        <!-- Online Status Indicator -->
-                                        <div class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-400 border-2 border-white rounded-full animate-pulse"></div>
-                                        
-                                        <!-- Menu Open Indicator -->
-                                        <div class="absolute inset-0 rounded-full border-2 border-amber-300/50 
-                                                    @(isUserMenuOpen ? "animate-ping" : "opacity-0") transition-opacity duration-200"></div>
+                                        <!-- Online Status -->
+                                        <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
                                     </button>
                                 </Authorized>
                                 <NotAuthorized>
-                                    <!-- Enhanced Guest Icon -->
+                                    <!-- Minimal Guest Icon -->
                                     <button @onclick="ToggleUserMenu" 
-                                            class="relative w-11 h-11 bg-gradient-to-br from-gray-500 via-gray-600 to-gray-700 
-                                                   hover:from-[#715A5A] hover:via-[#8B6B3A] hover:to-[#A0522D] 
-                                                   rounded-full flex items-center justify-center text-white 
-                                                   shadow-lg hover:shadow-2xl transform hover:scale-110 
-                                                   transition-all duration-300 ease-out cursor-pointer 
-                                                   ring-2 ring-white/20 hover:ring-white/40 
-                                                   @(isUserMenuOpen ? "scale-110 shadow-2xl ring-white/40 from-[#715A5A] via-[#8B6B3A] to-[#A0522D]" : "")
-                                                   focus:outline-none focus:ring-4 focus:ring-amber-200">
-                                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                            class="relative w-10 h-10 bg-gray-100 hover:bg-gray-200
+                                                   rounded-full flex items-center justify-center text-gray-700
+                                                   shadow-sm hover:shadow-md transform hover:scale-105
+                                                   transition-all duration-200 ease-out cursor-pointer 
+                                                   focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                         </svg>
-                                        
-                                        <!-- Menu Open Indicator -->
-                                        <div class="absolute inset-0 rounded-full border-2 border-amber-300/50 
-                                                    @(isUserMenuOpen ? "animate-ping" : "opacity-0") transition-opacity duration-200"></div>
                                     </button>
                                 </NotAuthorized>
                             </AuthorizeView>
 
-                            <!-- Professional Dropdown Menu - Only render when open -->
+                            <!-- Minimal Dropdown Menu -->
                             @if (isUserMenuOpen)
                             {
-                                <!-- Enhanced Backdrop -->
-                                <div class="fixed inset-0 z-[55] bg-black/10 backdrop-blur-[1px]" @onclick="CloseUserMenu" aria-hidden="true"></div>
+                                <!-- Subtle Backdrop -->
+                                <div class="fixed inset-0 z-[55]" @onclick="CloseUserMenu" aria-hidden="true"></div>
                                 
-                                <!-- Professional Menu Container -->
-                                <div class="absolute ltr:right-0 rtl:left-0 mt-3 z-[60]" @onclick:stopPropagation="true">
-                                    <div class="relative bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 
-                                                w-72 overflow-hidden transform transition-all duration-300 ease-out
-                                                @(isUserMenuOpen ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate-y-4 scale-95")">
+                                <!-- Menu Container -->
+                                <div class="absolute ltr:right-0 rtl:left-0 mt-2 z-[60]" @onclick:stopPropagation="true">
+                                    <div class="bg-white rounded-xl shadow-xl border border-gray-100
+                                                w-64 overflow-hidden transform transition-all duration-200 ease-out
+                                                @(isUserMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2")">
                                         
-                                        <!-- Menu Header with Gradient -->
-                                        <div class="bg-gradient-to-r from-[#715A5A] via-[#8B6B3A] to-[#A0522D] p-1">
-                                            <div class="bg-white/90 backdrop-blur-sm rounded-xl p-4 m-1">
-                                                <AuthorizeView>
-                                                    <Authorized>
-                                                        <div class="flex items-center space-x-3 rtl:space-x-reverse">
-                                                            <div class="flex-1 min-w-0">
-                                                                <div class="text-base font-semibold text-gray-900 truncate">
-                                                                    @context.User.Identity?.Name
-                                                                </div>
-                                                                <div class="flex items-center text-xs text-gray-600">
-                                                                    <div class="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-                                                                    @Localizer["Online"] · @Localizer["Customer"]
-                                                                </div>
-                                                            </div>
+                                        <!-- User Info Header -->
+                                        <AuthorizeView>
+                                            <Authorized>
+                                                <div class="px-4 py-3 border-b border-gray-100">
+                                                    <div class="flex items-center gap-3">
+                                                        <div class="w-10 h-10 bg-gradient-to-br from-amber-600 to-amber-700 rounded-full flex items-center justify-center text-white shadow-sm">
+                                                            <span class="text-sm font-semibold">@(context.User.Identity?.Name?.Substring(0, 1).ToUpper() ?? "U")</span>
                                                         </div>
-                                                    </Authorized>
-                                                    <NotAuthorized>
-                                                        <div class="text-center">
-                                                            <div class="w-12 h-12 bg-gradient-to-br from-gray-500 to-gray-700 rounded-full 
-                                                                        flex items-center justify-center text-white mx-auto mb-2 shadow-md">
-                                                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                                                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
-                                                                </svg>
-                                                            </div>
-                                                            <div class="text-sm font-medium text-gray-700">@Localizer["WelcomeGuest"]</div>
-                                                            <div class="text-xs text-gray-500">@Localizer["PleaseSignIn"]</div>
+                                                        <div class="flex-1 min-w-0">
+                                                            <p class="text-sm font-medium text-gray-900 truncate">@context.User.Identity?.Name</p>
+                                                            <p class="text-xs text-gray-500">@Localizer["Customer"]</p>
                                                         </div>
-                                                    </NotAuthorized>
-                                                </AuthorizeView>
-                                            </div>
-                                        </div>
+                                                    </div>
+                                                </div>
+                                            </Authorized>
+                                            <NotAuthorized>
+                                                <div class="px-4 py-3 border-b border-gray-100 bg-gray-50">
+                                                    <p class="text-sm font-medium text-gray-700">@Localizer["WelcomeGuest"]</p>
+                                                    <p class="text-xs text-gray-500">@Localizer["PleaseSignIn"]</p>
+                                                </div>
+                                            </NotAuthorized>
+                                        </AuthorizeView>
 
-                                        <!-- Menu Content -->
+                                        <!-- Menu Items -->
                                         <div class="py-2">
                                             <AuthorizeView>
                                                 <Authorized>
-                                                    <!-- User Menu Items -->
-                                                    <div class="px-2 space-y-1">
+                                                    <div class="px-2 space-y-0.5">
                                                         <a href="/Account/Manage" @onclick="CloseUserMenu"
-                                                           class="group flex items-center px-4 py-3 text-sm font-medium text-gray-700 
-                                                                  hover:text-[#715A5A] hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 
-                                                                  rounded-xl transition-all duration-200 transform hover:scale-[1.02]">
-                                                            <div class="w-8 h-8 bg-blue-100 group-hover:bg-blue-200 rounded-lg flex items-center justify-center mr-3 
-                                                                        transition-colors duration-200">
-                                                                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                                                </svg>
-                                                            </div>
-                                                            <div>
-                                                                <div class="font-semibold">@Localizer["MyProfile"]</div>
-                                                                <div class="text-xs text-gray-500 group-hover:text-gray-600">@Localizer["ManageAccount"]</div>
-                                                            </div>
-                                                            <svg class="w-4 h-4 ml-auto text-gray-400 group-hover:text-[#715A5A] transform group-hover:translate-x-1 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                                           class="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors group">
+                                                            <svg class="w-4 h-4 text-gray-400 group-hover:text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                                             </svg>
+                                                            <span class="font-medium">@Localizer["MyProfile"]</span>
                                                         </a>
 
                                                         <a href="/orders" @onclick="CloseUserMenu"
-                                                           class="group flex items-center px-4 py-3 text-sm font-medium text-gray-700 
-                                                                  hover:text-[#8B6B3A] hover:bg-gradient-to-r hover:from-orange-50 hover:to-amber-50 
-                                                                  rounded-xl transition-all duration-200 transform hover:scale-[1.02]">
-                                                            <div class="w-8 h-8 bg-orange-100 group-hover:bg-orange-200 rounded-lg flex items-center justify-center mr-3 
-                                                                        transition-colors duration-200">
-                                                                <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                                                                </svg>
-                                                            </div>
-                                                            <div>
-                                                                <div class="font-semibold">@Localizer["MyOrders"]</div>
-                                                                <div class="text-xs text-gray-500 group-hover:text-gray-600">@Localizer["OrderHistory"]</div>
-                                                            </div>
-                                                            <svg class="w-4 h-4 ml-auto text-gray-400 group-hover:text-[#8B6B3A] transform group-hover:translate-x-1 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                                           class="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors group">
+                                                            <svg class="w-4 h-4 text-gray-400 group-hover:text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
                                                             </svg>
+                                                            <span class="font-medium">@Localizer["MyOrders"]</span>
                                                         </a>
 
                                                         <a href="/favorites" @onclick="CloseUserMenu"
-                                                           class="group flex items-center px-4 py-3 text-sm font-medium text-gray-700 
-                                                                  hover:text-red-600 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 
-                                                                  rounded-xl transition-all duration-200 transform hover:scale-[1.02]">
-                                                            <div class="w-8 h-8 bg-red-100 group-hover:bg-red-200 rounded-lg flex items-center justify-center mr-3 
-                                                                        transition-colors duration-200">
-                                                                <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                                                                </svg>
-                                                            </div>
-                                                            <div>
-                                                                <div class="font-semibold">@Localizer["Favorites"]</div>
-                                                                <div class="text-xs text-gray-500 group-hover:text-gray-600">@Localizer["SavedItems"]</div>
-                                                            </div>
-                                                            <svg class="w-4 h-4 ml-auto text-gray-400 group-hover:text-red-600 transform group-hover:translate-x-1 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                                           class="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors group">
+                                                            <svg class="w-4 h-4 text-gray-400 group-hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                                                             </svg>
+                                                            <span class="font-medium">@Localizer["Favorites"]</span>
                                                         </a>
                                                     </div>
 
                                                     @if (context.User.IsInRole("Admin"))
                                                     {
-                                                        <!-- Admin Section -->
-                                                        <div class="border-t border-gray-200 mt-2 pt-2">
-                                                            <div class="px-2">
-                                                                <a href="/admin/dashboard" @onclick="CloseUserMenu"
-                                                                   class="group flex items-center px-4 py-3 text-sm font-medium text-purple-700 
-                                                                          hover:text-purple-800 hover:bg-gradient-to-r hover:from-purple-50 hover:to-indigo-50 
-                                                                          rounded-xl transition-all duration-200 transform hover:scale-[1.02]">
-                                                                    <div class="w-8 h-8 bg-purple-100 group-hover:bg-purple-200 rounded-lg flex items-center justify-center mr-3 
-                                                                                transition-colors duration-200">
-                                                                        <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                                        </svg>
-                                                                    </div>
-                                                                    <div>
-                                                                        <div class="font-semibold">@Localizer["AdminPanel"]</div>
-                                                                        <div class="text-xs text-gray-500 group-hover:text-gray-600">@Localizer["ManageSystem"]</div>
-                                                                    </div>
-                                                                    <svg class="w-4 h-4 ml-auto text-gray-400 group-hover:text-purple-600 transform group-hover:translate-x-1 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                                                    </svg>
-                                                                </a>
-                                                            </div>
+                                                        <div class="my-2 border-t border-gray-100"></div>
+                                                        <div class="px-2">
+                                                            <a href="/admin/dashboard" @onclick="CloseUserMenu"
+                                                               class="flex items-center gap-3 px-3 py-2.5 text-sm text-purple-700 hover:bg-purple-50 rounded-lg transition-colors group">
+                                                                <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                                </svg>
+                                                                <span class="font-medium">@Localizer["AdminPanel"]</span>
+                                                            </a>
                                                         </div>
                                                     }
 
-                                                    <!-- Sign Out Section -->
-                                                    <div class="border-t border-gray-200 mt-2 pt-2">
-                                                        <div class="px-2">
-                                                            <button @onclick="SignOutAsync" type="button"
-                                                                    class="group flex items-center w-full px-4 py-3 text-sm font-medium text-red-600 
-                                                                           hover:text-red-700 hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 
-                                                                           rounded-xl transition-all duration-200 transform hover:scale-[1.02]">
-                                                                <div class="w-8 h-8 bg-red-100 group-hover:bg-red-200 rounded-lg flex items-center justify-center mr-3 
-                                                                            transition-colors duration-200">
-                                                                    <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                                                                    </svg>
-                                                                </div>
-                                                                <div>
-                                                                    <div class="font-semibold">@Localizer["SignOut"]</div>
-                                                                    <div class="text-xs text-gray-500 group-hover:text-gray-600">@Localizer["EndSession"]</div>
-                                                                </div>
-                                                            </button>
-                                                        </div>
+                                                    <div class="my-2 border-t border-gray-100"></div>
+                                                    <div class="px-2">
+                                                        <button @onclick="SignOutAsync" type="button"
+                                                                class="flex items-center gap-3 px-3 py-2.5 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors group w-full">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                                                            </svg>
+                                                            <span class="font-medium">@Localizer["SignOut"]</span>
+                                                        </button>
                                                     </div>
                                                 </Authorized>
                                                 <NotAuthorized>
-                                                    <!-- Guest Menu -->
-                                                    <div class="px-2 space-y-2">
+                                                    <div class="px-2 space-y-1">
                                                         <a href="/Account/Login" @onclick="@(() => CloseUserMenuWithNavigation("/Account/Login"))"
-                                                           class="group flex items-center px-4 py-3 text-sm font-medium text-gray-700 
-                                                                  hover:text-[#715A5A] hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 
-                                                                  rounded-xl transition-all duration-200 transform hover:scale-[1.02]">
-                                                            <div class="w-8 h-8 bg-green-100 group-hover:bg-green-200 rounded-lg flex items-center justify-center mr-3 
-                                                                        transition-colors duration-200">
-                                                                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
-                                                                </svg>
-                                                            </div>
-                                                            <div>
-                                                                <div class="font-semibold">@Localizer["Login"]</div>
-                                                                <div class="text-xs text-gray-500 group-hover:text-gray-600">@Localizer["AccessAccount"]</div>
-                                                            </div>
-                                                            <svg class="w-4 h-4 ml-auto text-gray-400 group-hover:text-[#715A5A] transform group-hover:translate-x-1 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                                           class="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+                                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
                                                             </svg>
+                                                            <span class="font-medium">@Localizer["Login"]</span>
                                                         </a>
                                                         
                                                         <a href="/Account/Register" @onclick="@(() => CloseUserMenuWithNavigation("/Account/Register"))"
-                                                           class="group flex items-center px-4 py-3 text-sm font-bold text-white 
-                                                                  bg-gradient-to-r from-[#715A5A] via-[#8B6B3A] to-[#A0522D] 
-                                                                  hover:from-[#5d4a4a] hover:via-[#7A5B2F] hover:to-[#8B4513] 
-                                                                  rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] 
-                                                                  transition-all duration-200">
-                                                            <div class="w-8 h-8 bg-white/20 group-hover:bg-white/30 rounded-lg flex items-center justify-center mr-3 
-                                                                        transition-colors duration-200">
-                                                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
-                                                                </svg>
-                                                            </div>
-                                                            <div>
-                                                                <div class="font-bold">@Localizer["Register"]</div>
-                                                                <div class="text-xs text-white/80">@Localizer["CreateAccount"]</div>
-                                                            </div>
-                                                            <svg class="w-4 h-4 ml-auto text-white/80 group-hover:text-white transform group-hover:translate-x-1 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                                           class="flex items-center gap-3 px-3 py-2.5 text-sm text-white bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 rounded-lg transition-colors shadow-sm">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
                                                             </svg>
+                                                            <span class="font-semibold">@Localizer["Register"]</span>
                                                         </a>
                                                     </div>
                                                 </NotAuthorized>
