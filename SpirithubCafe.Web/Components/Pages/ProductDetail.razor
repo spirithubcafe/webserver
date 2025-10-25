@@ -342,7 +342,7 @@ else
                             </div>
                             <div class="text-right">
                                 <div class="text-xs text-gray-600">@Loc["Size"]</div>
-                                <div class="text-sm font-bold text-[#715A5A]">@selectedVariant.Weight @selectedVariant.WeightUnit</div>
+                                <div class="text-sm font-bold text-[#715A5A]">@FormatWeight(selectedVariant.Weight, selectedVariant.WeightUnit)</div>
                             </div>
                         </div>
                     }
@@ -389,7 +389,7 @@ else
                                             </div>
                                             <div class="min-w-0 flex-shrink">
                                                 <div class="text-xs sm:text-sm font-bold text-gray-900 whitespace-nowrap">
-                                                    @variant.Weight @variant.WeightUnit
+                                                    @FormatWeight(variant.Weight, variant.WeightUnit)
                                                 </div>
                                                 @if (variant.StockQuantity <= 0)
                                                 {
@@ -1074,9 +1074,9 @@ else
             StateHasChanged();
 
             // Include variant size information in product name
-            var productNameWithSize = $"{GetLocalizedProductName()} ({selectedVariant.Weight} {selectedVariant.WeightUnit})";
+            var productNameWithSize = $"{GetLocalizedProductName()} ({FormatWeight(selectedVariant.Weight, selectedVariant.WeightUnit)})";
             var effectivePrice = selectedVariant.DiscountPrice ?? selectedVariant.Price;
-            var variantInfo = $"{selectedVariant.Weight} {selectedVariant.WeightUnit}";
+            var variantInfo = FormatWeight(selectedVariant.Weight, selectedVariant.WeightUnit);
 
             await CartService.AddToCartAsync(
                 product.Id,
@@ -1092,8 +1092,7 @@ else
             
             // Show success message with variant info
             var successMessage = string.Format(Loc["AddedToCartWithSizeSuccess"], 
-                selectedVariant.Weight, 
-                selectedVariant.WeightUnit);
+                FormatWeight(selectedVariant.Weight, selectedVariant.WeightUnit));
             ToastService.ShowSuccess(successMessage);
         }
         catch (Exception ex)
@@ -1137,6 +1136,22 @@ else
     private string GetCurrentCulture()
     {
         return System.Globalization.CultureInfo.CurrentUICulture.Name;
+    }
+
+    private string FormatWeight(decimal weight, string weightUnit)
+    {
+        // Convert 1000 grams to 1 kilogram for display
+        if ((weightUnit.ToLower() == "g" || weightUnit.ToLower() == "gram" || weightUnit.ToLower() == "grams") && weight == 1000)
+        {
+            var currentCulture = System.Globalization.CultureInfo.CurrentUICulture.Name;
+            if (currentCulture.StartsWith("ar"))
+            {
+                return "1 كيلوغرام";
+            }
+            return "1 kg";
+        }
+        
+        return $"{weight} {weightUnit}";
     }
 }
 

@@ -145,16 +145,17 @@
                         @foreach (var product in latestProducts)
                         {
                             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md hover:border-stone-200 transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full">
-                                <div class="aspect-square bg-gray-50 relative overflow-hidden">
+                                <div class="w-full relative overflow-hidden" style="padding-bottom: 100%; position: relative;">
                                     @if (product.MainImage?.ImagePath != null)
                                     {
                                         <img src="@product.MainImage.ImagePath" 
                                              alt="@GetProductName(product)" 
-                                             class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                                             class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-300" 
+                                             style="object-fit: cover;" />
                                     }
                                     else
                                     {
-                                        <div class="w-full h-full bg-gradient-to-br from-stone-50 to-stone-100 flex items-center justify-center">
+                                        <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-stone-50 to-stone-100 flex items-center justify-center">
                                             <svg class="w-8 h-8 md:w-10 md:h-10 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                                                       d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
@@ -186,20 +187,25 @@
                                 </div>
                                 
                                 <!-- Content area that grows to push button down -->
-                                <div class="p-2 md:p-3 flex flex-col flex-grow">
-                                    <h3 class="text-xs md:text-sm font-semibold mb-1 line-clamp-2 text-gray-900 leading-tight">@GetProductName(product)</h3>
+                                <div class="p-2 md:p-3 flex flex-col h-full">
+                                    <!-- Title and description -->
+                                    <div class="mb-2">
+                                        <h3 class="text-xs md:text-sm font-semibold mb-1 line-clamp-2 text-gray-900 leading-tight">@GetProductName(product)</h3>
+                                        
+                                        <!-- Tasting Notes -->
+                                        @{
+                                            var currentCulture = System.Globalization.CultureInfo.CurrentUICulture.Name;
+                                            var tastingNotes = currentCulture.StartsWith("ar") && !string.IsNullOrEmpty(product.TastingNotesAr) 
+                                                ? product.TastingNotesAr 
+                                                : product.TastingNotes;
+                                        }
+                                        @if (!string.IsNullOrEmpty(tastingNotes))
+                                        {
+                                            <p class="text-[10px] md:text-xs text-stone-600 line-clamp-2 leading-snug">@tastingNotes</p>
+                                        }
+                                    </div>
                                     
-                                    <!-- Tasting Notes -->
-                                    @{
-                                        var currentCulture = System.Globalization.CultureInfo.CurrentUICulture.Name;
-                                        var tastingNotes = currentCulture.StartsWith("ar") && !string.IsNullOrEmpty(product.TastingNotesAr) 
-                                            ? product.TastingNotesAr 
-                                            : product.TastingNotes;
-                                    }
-                                    @if (!string.IsNullOrEmpty(tastingNotes))
-                                    {
-                                        <p class="text-[10px] md:text-xs text-stone-600 mb-1.5 line-clamp-2 leading-snug">@tastingNotes</p>
-                                    }
+                                    <div class="flex-grow"></div>
                                     
                                     <!-- Price -->
                                     @{
@@ -214,7 +220,7 @@
                                         var hasDiscount = discountPrice > 0 && discountPrice < price;
                                     }
                                     
-                                    <div class="mb-2 flex-grow">
+                                    <div class="mb-2">
                                         @if (hasDiscount)
                                         {
                                             <div class="space-y-0.5">
@@ -243,7 +249,7 @@
                                     </div>
                                     
                                     <!-- Full width button at bottom -->
-                                    <NavLink href="@($"/product/{product.Slug}")" class="w-full bg-stone-600 hover:bg-stone-700 text-white py-1.5 px-2 rounded-lg text-[10px] md:text-xs font-medium transition-colors text-center block mt-auto">
+                                    <NavLink href="@($"/product/{product.Slug}")" class="w-full bg-stone-600 hover:bg-stone-700 text-white py-1.5 px-2 rounded-lg text-[10px] md:text-xs font-medium transition-colors text-center block">
                                         @Localizer["ViewProduct"]
                                     </NavLink>
                                 </div>

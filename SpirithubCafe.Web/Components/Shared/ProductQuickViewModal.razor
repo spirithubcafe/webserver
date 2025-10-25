@@ -286,7 +286,7 @@
                                             <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200 hover:border-amber-300 hover:shadow-sm transition-all">
                                                 <div class="flex items-center gap-3">
                                                     <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-amber-50 text-amber-700 font-bold text-sm">
-                                                        @variant.Weight@variant.WeightUnit
+                                                        @FormatWeight(variant.Weight, variant.WeightUnit)
                                                     </div>
                                                     <div>
                                                         @if (!string.IsNullOrEmpty(variant.VariantSku))
@@ -497,6 +497,22 @@
         return currentCulture.StartsWith("ar") && !string.IsNullOrEmpty(Product.BrewingInstructionsAr) 
             ? Product.BrewingInstructionsAr 
             : Product.BrewingInstructions ?? string.Empty;
+    }
+
+    private string FormatWeight(decimal weight, string weightUnit)
+    {
+        // Convert 1000 grams to 1 kilogram for display
+        if ((weightUnit.ToLower() == "g" || weightUnit.ToLower() == "gram" || weightUnit.ToLower() == "grams") && weight == 1000)
+        {
+            var currentCulture = System.Globalization.CultureInfo.CurrentUICulture.Name;
+            if (currentCulture.StartsWith("ar"))
+            {
+                return "1 كيلوغرام";
+            }
+            return "1 kg";
+        }
+        
+        return $"{weight} {weightUnit}";
     }
 }
 
