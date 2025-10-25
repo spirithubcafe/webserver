@@ -1091,9 +1091,8 @@ else
             );
             
             // Show success message with variant info
-            var successMessage = string.Format(Loc["AddedToCartWithSizeSuccess"], 
-                FormatWeight(selectedVariant.Weight, selectedVariant.WeightUnit));
-            ToastService.ShowSuccess(successMessage);
+            var formattedWeight = FormatWeight(selectedVariant.Weight, selectedVariant.WeightUnit);
+            ToastService.ShowSuccess($"{Loc["AddedToCart"]} - {formattedWeight}");
         }
         catch (Exception ex)
         {
