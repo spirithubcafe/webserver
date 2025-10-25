@@ -31,6 +31,12 @@
         <span class="@GetTextClasses()">@Localizer["Products"]</span>
     </button>
 
+    <!-- Backdrop Overlay -->
+    @if (_isOpen)
+    {
+        <div class="fixed inset-0 z-[99998]" @onclick="CloseDropdown" aria-hidden="true"></div>
+    }
+
     <!-- Dropdown Menu -->
     <div
         class="@GetDropdownClasses()"
@@ -89,7 +95,6 @@
     private List<SpirithubCafe.Domain.Entities.Category> categories = new();
     private bool _isOpen = false;
     private ElementReference dropdownRef;
-    private DotNetObjectReference<ProductsIcon>? _dotNetRef;
 
     private bool IsHomePage()
     {
@@ -143,33 +148,10 @@
         }
     }
 
-    [JSInvokable]
-    public void CloseDropdownFromJs()
-    {
-        CloseDropdown();
-    }
-
     protected override async Task OnInitializedAsync()
     {
         categories = await CategoryService.GetActiveCategoriesAsync();
         Navigation.LocationChanged += OnLocationChanged;
-        
-        _dotNetRef = DotNetObjectReference.Create(this);
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            try
-            {
-                await JS.InvokeVoidAsync("setupClickOutside", _dotNetRef, "CloseDropdownFromJs");
-            }
-            catch (Exception)
-            {
-                // Silent fail - JavaScript not yet loaded
-            }
-        }
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
@@ -181,6 +163,5 @@
     public void Dispose()
     {
         Navigation.LocationChanged -= OnLocationChanged;
-        _dotNetRef?.Dispose();
     }
 }
