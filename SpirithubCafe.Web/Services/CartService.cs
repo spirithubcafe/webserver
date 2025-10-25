@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Microsoft.JSInterop;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace SpirithubCafe.Web.Services;
 
@@ -19,19 +19,24 @@ public class CartItemDto
 public class CartService
 {
     private List<CartItemDto> _cartItems = new();
-    private readonly IJSRuntime _jsRuntime;
+    private readonly ProtectedLocalStorage _localStorage;
     private const string CART_STORAGE_KEY = "spirithub_cart";
+    private bool _isInitialized = false;
     
     public event Action? OnCartChanged;
     
-    public CartService(IJSRuntime jsRuntime)
+    public CartService(ProtectedLocalStorage localStorage)
     {
-        _jsRuntime = jsRuntime;
+        _localStorage = localStorage;
     }
     
     public async Task InitializeAsync()
     {
-        await LoadCartFromStorage();
+        if (!_isInitialized)
+        {
+            await LoadCartFromStorage();
+            _isInitialized = true;
+        }
     }
     
     public IReadOnlyList<CartItemDto> Items => _cartItems.AsReadOnly();
@@ -133,17 +138,14 @@ public class CartService
     {
         try
         {
-            // Skip during prerendering
-            if (_jsRuntime is not IJSInProcessRuntime)
+            var result = await _localStorage.GetAsync<List<CartItemDto>>(CART_STORAGE_KEY);
+            if (result.Success && result.Value != null)
             {
-                return;
+                _cartItems = result.Value;
             }
-            
-            var cartJson = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", CART_STORAGE_KEY);
-            if (!string.IsNullOrEmpty(cartJson))
+            else
             {
-                var items = JsonSerializer.Deserialize<List<CartItemDto>>(cartJson);
-                _cartItems = items ?? new List<CartItemDto>();
+                _cartItems = new List<CartItemDto>();
             }
         }
         catch (Exception ex)
@@ -158,14 +160,7 @@ public class CartService
     {
         try
         {
-            // Skip during prerendering
-            if (_jsRuntime is not IJSInProcessRuntime)
-            {
-                return;
-            }
-            
-            var cartJson = JsonSerializer.Serialize(_cartItems);
-            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", CART_STORAGE_KEY, cartJson);
+            await _localStorage.SetAsync(CART_STORAGE_KEY, _cartItems);
         }
         catch (Exception ex)
         {
