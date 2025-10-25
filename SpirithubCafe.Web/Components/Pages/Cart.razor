@@ -6,6 +6,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IJSRuntime JSRuntime
 @inject TranslationLocalizer Localizer
+@inject ProductService ProductService
 @implements IDisposable
 
 <PageTitle>@Localizer["Cart"] - @Localizer["SiteTitle"]</PageTitle>
@@ -361,6 +362,7 @@ else
 
 @code {
     private bool isLoading = true;
+    private List<SpirithubCafe.Domain.Entities.Product> allProducts = new();
     
     protected override Task OnInitializedAsync()
     {
@@ -376,6 +378,9 @@ else
             {
                 // Load cart from localStorage after first render
                 await CartService.InitializeAsync();
+                
+                // Load all products to access category tax rates
+                allProducts = await ProductService.GetAllProductsAsync();
                 
                 // Set loading to false after cart is loaded
                 isLoading = false;
@@ -435,7 +440,21 @@ else
 
     private decimal GetTax()
     {
-        return CartService.TotalPrice * 0.05m; // 5% tax
+        decimal totalTax = 0;
+        
+        foreach (var item in CartService.Items)
+        {
+            // Get product to access its category
+            var product = allProducts.FirstOrDefault(p => p.Id == item.ProductId);
+            if (product?.Category != null)
+            {
+                var itemSubtotal = item.Price * item.Quantity;
+                var categoryTaxRate = product.Category.TaxPercentage / 100m;
+                totalTax += itemSubtotal * categoryTaxRate;
+            }
+        }
+        
+        return totalTax;
     }
 
     private decimal GetTotal()
