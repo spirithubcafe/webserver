@@ -428,13 +428,12 @@
             var tasks = new List<Task>
             {
                 LoadLogoSettings(),
-                LoadCategories(),
-                CartService.InitializeAsync()
+                LoadCategories()
             };
             
             await Task.WhenAll(tasks);
             
-            UpdateCartItemCount();
+            // Register cart change event handler
             CartService.OnCartChanged += UpdateCartItemCount;
         }
         
@@ -444,6 +443,10 @@
             {
                 try
                 {
+                    // Initialize cart after render when JS is available
+                    await CartService.InitializeAsync();
+                    UpdateCartItemCount();
+                    
                     // Hide loading screen after first render
                     await JSRuntime.InvokeVoidAsync("hideLoadingScreen");
                 }

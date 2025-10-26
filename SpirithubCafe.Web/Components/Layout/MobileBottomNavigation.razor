@@ -388,12 +388,19 @@
     private string? lastClickedNav = null;
     private DateTime lastClickTime = DateTime.MinValue;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        await CartService.InitializeAsync();
-        UpdateCartInfo();
         CartService.OnCartChanged += UpdateCartInfo;
         Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await CartService.InitializeAsync();
+            UpdateCartInfo();
+        }
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)

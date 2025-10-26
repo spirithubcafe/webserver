@@ -1,8 +1,11 @@
 @using SpirithubCafe.Domain.Entities
 @using Microsoft.JSInterop
+@using SpirithubCafe.Web.Services
 @inject TranslationLocalizer Localizer
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
+@inject CartService CartService
+@inject ToastService ToastService
 
 @if (IsVisible)
 {
@@ -278,23 +281,30 @@
                                         <svg class="w-4 h-4 text-[#715A5A]" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM13 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2h-2z"/>
                                         </svg>
-                                        @Localizer["AvailableSizes"]
+                                        @Localizer["SelectSize"]
                                     </h3>
                                     <div class="space-y-2 max-h-40 overflow-y-auto">
-                                        @foreach (var variant in Product.Variants.Take(4))
+                                        @foreach (var variant in Product.Variants)
                                         {
-                                            <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200 hover:border-amber-300 hover:shadow-sm transition-all">
+                                            var isSelected = selectedVariant?.Id == variant.Id;
+                                            var isInStock = variant.IsInStock && variant.StockQuantity > 0;
+                                            
+                                            <button @onclick="() => SelectVariant(variant)"
+                                                    disabled="@(!isInStock)"
+                                                    class="w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all
+                                                           @(isSelected ? "border-[#715A5A] bg-amber-50 shadow-md" : "border-gray-200 bg-white hover:border-amber-300")
+                                                           @(!isInStock ? "opacity-50 cursor-not-allowed" : "hover:shadow-sm cursor-pointer")">
                                                 <div class="flex items-center gap-3">
-                                                    <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-amber-50 text-amber-700 font-bold text-sm">
+                                                    <div class="flex items-center justify-center w-10 h-10 rounded-lg @(isSelected ? "bg-[#715A5A] text-white" : "bg-amber-50 text-amber-700") font-bold text-sm">
                                                         @FormatWeight(variant.Weight, variant.WeightUnit)
                                                     </div>
-                                                    <div>
+                                                    <div class="ltr:text-left rtl:text-right">
                                                         @if (!string.IsNullOrEmpty(variant.VariantSku))
                                                         {
                                                             <div class="text-xs text-gray-500">SKU: @variant.VariantSku</div>
                                                         }
-                                                        <div class="text-xs @(variant.IsInStock ? "text-green-600" : "text-red-600") font-medium">
-                                                            @if (variant.IsInStock)
+                                                        <div class="text-xs @(isInStock ? "text-green-600" : "text-red-600") font-medium">
+                                                            @if (isInStock)
                                                             {
                                                                 <span>✓ @variant.StockQuantity @Localizer["InStock"]</span>
                                                             }
@@ -319,46 +329,99 @@
                                                         <div class="text-sm font-bold text-[#715A5A]">@variant.Price.ToString("F3") OMR</div>
                                                     }
                                                 </div>
-                                            </div>
-                                        }
-                                        @if (Product.Variants.Count > 4)
-                                        {
-                                            <div class="text-center py-2">
-                                                <span class="text-xs text-gray-500 font-medium">+@(Product.Variants.Count - 4) @Localizer["MoreSizesAvailable"]</span>
-                                            </div>
+                                            </button>
                                         }
                                     </div>
                                 </div>
+
+                                <!-- Quantity Selector -->
+                                @if (selectedVariant != null)
+                                {
+                                    <div class="mb-5">
+                                        <h3 class="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+                                            <svg class="w-4 h-4 text-[#715A5A]" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"/>
+                                            </svg>
+                                            @Localizer["Quantity"]
+                                        </h3>
+                                        <div class="flex items-center gap-3">
+                                            <button @onclick="DecreaseQuantity" 
+                                                    disabled="@(quantity <= 1)"
+                                                    class="w-10 h-10 flex items-center justify-center rounded-lg border-2 border-gray-300 bg-white hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                                                <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M20 12H4"></path>
+                                                </svg>
+                                            </button>
+                                            
+                                            <div class="flex-1 flex items-center justify-center bg-gray-50 rounded-lg border-2 border-gray-200 px-4 py-2">
+                                                <span class="text-lg font-bold text-gray-900">@quantity</span>
+                                            </div>
+                                            
+                                            <button @onclick="IncreaseQuantity" 
+                                                    disabled="@(quantity >= selectedVariant.StockQuantity || quantity >= 99)"
+                                                    class="w-10 h-10 flex items-center justify-center rounded-lg border-2 border-gray-300 bg-white hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                                                <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
                             }
 
                             <!-- Actions -->
                             <div class="flex gap-3 pt-5 border-t border-gray-200 sticky bottom-0 bg-white">
-                                @if (!string.IsNullOrEmpty(Product?.Slug))
+                                @if (selectedVariant != null && selectedVariant.IsInStock)
                                 {
-                                    <a href="/product/@Product.Slug" @onclick="CloseModal"
-                                       class="flex-1 inline-flex justify-center items-center px-6 py-3 border-2 border-[#715A5A] rounded-xl text-sm font-semibold text-[#715A5A] bg-white hover:bg-[#715A5A] hover:text-white transition-all duration-200 no-underline shadow-sm hover:shadow-md">
-                                        <svg class="w-4 h-4 ltr:mr-2 rtl:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                        </svg>
-                                        @Localizer["ViewFullDetails"]
-                                    </a>
+                                    <button @onclick="AddToCart" 
+                                            disabled="@isAddingToCart"
+                                            class="flex-1 inline-flex justify-center items-center px-6 py-3 border-2 border-[#715A5A] rounded-xl text-sm font-semibold text-white bg-[#715A5A] hover:bg-[#5d4848] transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                                        @if (isAddingToCart)
+                                        {
+                                            <svg class="animate-spin h-4 w-4 ltr:mr-2 rtl:ml-2" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            <span>@Localizer["Adding"]...</span>
+                                        }
+                                        else
+                                        {
+                                            <svg class="w-4 h-4 ltr:mr-2 rtl:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                            </svg>
+                                            <span>@Localizer["AddToCart"]</span>
+                                        }
+                                    </button>
                                 }
-                                else
+                                else if (Product.Variants != null && Product.Variants.Any())
                                 {
                                     <button disabled 
                                             class="flex-1 inline-flex justify-center items-center px-6 py-3 border-2 border-gray-300 rounded-xl text-sm font-semibold text-gray-400 bg-gray-100 cursor-not-allowed shadow-sm">
                                         <svg class="w-4 h-4 ltr:mr-2 rtl:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                        </svg>
+                                        @if (selectedVariant == null)
+                                        {
+                                            <span>@Localizer["SelectSize"]</span>
+                                        }
+                                        else
+                                        {
+                                            <span>@Localizer["OutOfStock"]</span>
+                                        }
+                                    </button>
+                                }
+                                
+                                @if (!string.IsNullOrEmpty(Product?.Slug))
+                                {
+                                    <a href="/product/@Product.Slug" @onclick="CloseModal"
+                                       class="inline-flex justify-center items-center px-6 py-3 border-2 border-gray-300 rounded-xl text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200 no-underline shadow-sm hover:shadow-md">
+                                        <svg class="w-4 h-4 ltr:mr-2 rtl:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                         </svg>
-                                        @Localizer["ViewFullDetails"]
-                                    </button>
+                                        @Localizer["Details"]
+                                    </a>
                                 }
-                                <button @onclick="CloseModal" 
-                                        class="px-6 py-3 border border-gray-300 rounded-xl text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200 shadow-sm hover:shadow-md">
-                                    @Localizer["Close"]
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -376,6 +439,10 @@
     
     [Inject] private IJSRuntime JSRuntime { get; set; } = null!;
 
+    private ProductVariant? selectedVariant;
+    private int quantity = 1;
+    private bool isAddingToCart = false;
+
     private async Task CloseModal()
     {
         IsVisible = false;
@@ -388,10 +455,102 @@
         if (IsVisible)
         {
             await AddBodyScrollLock();
+            
+            // Reset state when modal opens
+            if (Product != null && Product.Variants != null && Product.Variants.Any())
+            {
+                // Select default variant or first available variant
+                selectedVariant = Product.Variants.FirstOrDefault(v => v.IsDefault && v.IsInStock && v.StockQuantity > 0) 
+                    ?? Product.Variants.FirstOrDefault(v => v.IsInStock && v.StockQuantity > 0);
+            }
+            else
+            {
+                selectedVariant = null;
+            }
+            
+            quantity = 1;
         }
         else
         {
             await RemoveBodyScrollLock();
+        }
+    }
+    
+    private void SelectVariant(ProductVariant variant)
+    {
+        if (variant.IsInStock && variant.StockQuantity > 0)
+        {
+            selectedVariant = variant;
+            // Reset quantity to 1 when changing variant
+            quantity = 1;
+            StateHasChanged();
+        }
+    }
+    
+    private void IncreaseQuantity()
+    {
+        if (selectedVariant != null && quantity < selectedVariant.StockQuantity && quantity < 99)
+        {
+            quantity++;
+            StateHasChanged();
+        }
+    }
+    
+    private void DecreaseQuantity()
+    {
+        if (quantity > 1)
+        {
+            quantity--;
+            StateHasChanged();
+        }
+    }
+    
+    private async Task AddToCart()
+    {
+        if (Product == null || selectedVariant == null || isAddingToCart)
+            return;
+            
+        try
+        {
+            isAddingToCart = true;
+            StateHasChanged();
+            
+            var productName = GetLocalizedProductName();
+            var formattedWeight = FormatWeight(selectedVariant.Weight, selectedVariant.WeightUnit);
+            
+            await CartService.AddToCartAsync(
+                productId: Product.Id,
+                name: productName,
+                price: selectedVariant.EffectivePrice,
+                imageUrl: Product.MainImage?.ImagePath ?? "",
+                quantity: quantity,
+                variantId: selectedVariant.Id,
+                variantInfo: formattedWeight,
+                weight: selectedVariant.Weight,
+                weightUnit: selectedVariant.WeightUnit
+            );
+            
+            // Show success message
+            var currentCulture = System.Globalization.CultureInfo.CurrentUICulture.Name;
+            var message = currentCulture.StartsWith("ar") 
+                ? $"تمت إضافة {quantity} × {productName} ({formattedWeight}) إلى السلة"
+                : $"Added {quantity} × {productName} ({formattedWeight}) to cart";
+            
+            ToastService.ShowSuccess(message);
+            
+            // Close modal after successful add
+            await Task.Delay(500);
+            await CloseModal();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error adding to cart: {ex.Message}");
+            ToastService.ShowError(Localizer["AddToCartError"]);
+        }
+        finally
+        {
+            isAddingToCart = false;
+            StateHasChanged();
         }
     }
     

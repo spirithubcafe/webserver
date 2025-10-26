@@ -629,7 +629,6 @@
     private const string sortNewest = "newest";
     
     // Professional UI State Management
-    private bool isFocusedSearch = false;
     private bool isSearching = false;
     
     private List<Category> categories = new();
@@ -692,9 +691,6 @@
                 }
             });
             searchTimer.AutoReset = false;
-
-            // Initialize CartService
-            await CartService.InitializeAsync();
         }
         finally
         {
@@ -703,8 +699,14 @@
         }
     }
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            // Initialize CartService after render when JS is available
+            await CartService.InitializeAsync();
+        }
+        
         if (firstRender || shouldScrollToTop)
         {
             try
@@ -885,18 +887,6 @@
         // Debounced search with professional feedback
         searchTimer?.Stop();
         searchTimer?.Start();
-        StateHasChanged();
-    }
-    
-    private void OnSearchFocus(FocusEventArgs e)
-    {
-        isFocusedSearch = true;
-        StateHasChanged();
-    }
-    
-    private void OnSearchBlur(FocusEventArgs e)
-    {
-        isFocusedSearch = false;
         StateHasChanged();
     }
     
