@@ -422,12 +422,17 @@
 
         protected override async Task OnInitializedAsync()
         {
-            // Load data in parallel for better performance
-            var logoTask = LoadLogoSettings();
-            var categoriesTask = LoadCategories();
-            var cartTask = CartService.InitializeAsync();
+            // ============================================================
+            // PERFORMANCE OPTIMIZATION: Parallel loading
+            // ============================================================
+            var tasks = new List<Task>
+            {
+                LoadLogoSettings(),
+                LoadCategories(),
+                CartService.InitializeAsync()
+            };
             
-            await Task.WhenAll(logoTask, categoriesTask, cartTask);
+            await Task.WhenAll(tasks);
             
             UpdateCartItemCount();
             CartService.OnCartChanged += UpdateCartItemCount;
@@ -439,6 +444,7 @@
             {
                 try
                 {
+                    // Hide loading screen after first render
                     await JSRuntime.InvokeVoidAsync("hideLoadingScreen");
                 }
                 catch

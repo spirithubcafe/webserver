@@ -41,6 +41,8 @@ public class ProductService
     {
         var query = _context.Products
             .Include(p => p.Category)
+            .Include(p => p.MainImage)
+            .Include(p => p.GalleryImages)
             .Include(p => p.Variants.Where(v => v.IsActive))
             .Include(p => p.Reviews.Where(r => r.IsApproved))
             .AsQueryable();
@@ -68,6 +70,8 @@ public class ProductService
 
         return await _context.Products
             .Include(p => p.Category)
+            .Include(p => p.MainImage)
+            .Include(p => p.GalleryImages)
             .Include(p => p.Variants.Where(v => v.IsActive))
             .Include(p => p.Reviews.Where(r => r.IsApproved))
             .Where(p => p.Name.Contains(searchTerm) || 

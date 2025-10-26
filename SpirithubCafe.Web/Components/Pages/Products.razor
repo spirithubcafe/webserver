@@ -321,10 +321,10 @@
                         <!-- Product Image -->
                         <div class="block relative aspect-square bg-gradient-to-br from-stone-50 to-stone-100">
                             <a href="/product/@product.Slug" class="absolute inset-0 z-0">
-                                @if (product.GalleryImages?.Any() == true)
+                                @if (product.MainImage?.ImagePath != null)
                                 {
                                     <img 
-                                        src="@product.GalleryImages.First().ImagePath" 
+                                        src="@product.MainImage.ImagePath" 
                                         alt="@product.Name"
                                         class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                                     />
@@ -791,7 +791,7 @@
             productId: product.Id,
             name: product.Name,
             price: price,
-            imageUrl: product.GalleryImages?.FirstOrDefault()?.ImagePath ?? "",
+            imageUrl: product.MainImage?.ImagePath ?? "",
             quantity: quantity,
             variantId: variant?.Id,
             variantInfo: variant?.VariantSku ?? "",
@@ -820,7 +820,7 @@
             productId: product.Id,
             name: product.Name,
             price: price,
-            imageUrl: product.GalleryImages?.FirstOrDefault()?.ImagePath ?? "",
+            imageUrl: product.MainImage?.ImagePath ?? "",
             quantity: 1,
             variantId: variant?.Id,
             variantInfo: variant?.VariantSku ?? "",

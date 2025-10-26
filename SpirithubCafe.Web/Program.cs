@@ -24,6 +24,28 @@ using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ============================================================
+// PERFORMANCE OPTIMIZATION: Response Compression
+// ============================================================
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<Microsoft.AspNetCore.ResponseCompression.BrotliCompressionProvider>();
+    options.Providers.Add<Microsoft.AspNetCore.ResponseCompression.GzipCompressionProvider>();
+    options.MimeTypes = Microsoft.AspNetCore.ResponseCompression.ResponseCompressionDefaults.MimeTypes.Concat(
+        new[] { "application/octet-stream", "image/svg+xml" });
+});
+
+builder.Services.Configure<Microsoft.AspNetCore.ResponseCompression.BrotliCompressionProviderOptions>(options =>
+{
+    options.Level = System.IO.Compression.CompressionLevel.Fastest;
+});
+
+builder.Services.Configure<Microsoft.AspNetCore.ResponseCompression.GzipCompressionProviderOptions>(options =>
+{
+    options.Level = System.IO.Compression.CompressionLevel.Fastest;
+});
+
 // Configure Forwarded Headers for reverse proxy (NGINX, IIS, etc.)
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
@@ -65,15 +87,18 @@ builder.Services.Configure<Microsoft.AspNetCore.Components.Server.CircuitOptions
     options.MaxBufferedUnacknowledgedRenderBatches = 10;
 });
 
-// Configure SignalR Hub options for better connection handling and stability
+// ============================================================
+// PERFORMANCE OPTIMIZATION: SignalR & WebSocket Settings
+// ============================================================
 builder.Services.Configure<Microsoft.AspNetCore.SignalR.HubOptions>(options =>
 {
     options.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
     options.KeepAliveInterval = TimeSpan.FromSeconds(15);
     options.HandshakeTimeout = TimeSpan.FromSeconds(15);
-    options.MaximumReceiveMessageSize = 64 * 1024; // 64KB
+    options.MaximumReceiveMessageSize = 128 * 1024; // 128KB - increased for better performance
     options.StreamBufferCapacity = 10;
     options.EnableDetailedErrors = builder.Environment.IsDevelopment();
+    options.MaximumParallelInvocationsPerClient = 1; // Prevent parallel invocations
 });
 
 // Configure Blazor Server options for better performance and stability
@@ -169,8 +194,31 @@ authBuilder.AddGoogle(googleOptions =>
 });
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+// ============================================================
+// PERFORMANCE OPTIMIZATION: DbContext Configuration
+// ============================================================
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connectionString));
+{
+    options.UseSqlite(connectionString);
+    
+    // Disable change tracking for read-only queries (use AsNoTracking explicitly)
+    options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+    
+    // Enable sensitive data logging only in development
+    if (builder.Environment.IsDevelopment())
+    {
+        options.EnableSensitiveDataLogging();
+        options.EnableDetailedErrors();
+    }
+    
+    // Configure connection pooling
+    options.UseSqlite(connectionString, sqliteOptions =>
+    {
+        sqliteOptions.CommandTimeout(30);
+    });
+});
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
@@ -186,8 +234,15 @@ builder.Services.AddScoped<IEmailSender<ApplicationUser>, SpirithubCafe.Web.Serv
 // Add HttpClient for API calls
 builder.Services.AddHttpClient();
 
-// Add memory cache for translation caching
-builder.Services.AddMemoryCache();
+// ============================================================
+// PERFORMANCE OPTIMIZATION: Memory Cache with Size Limit
+// ============================================================
+builder.Services.AddMemoryCache(options =>
+{
+    options.SizeLimit = 1024; // Limit cache size to prevent memory bloat
+    options.CompactionPercentage = 0.25; // Remove 25% when limit reached
+    options.ExpirationScanFrequency = TimeSpan.FromMinutes(5); // Scan every 5 minutes
+});
 
 // Register localization service
 builder.Services.AddScoped<ILocalizationService, LocalizationService>();
@@ -259,6 +314,11 @@ builder.Services.AddScoped<SpirithubCafe.Application.Interfaces.IApplicationDbCo
 // Register Asset Versioning Service for CSS/JS cache busting
 builder.Services.AddSingleton<AssetVersioningService>();
 
+// ============================================================
+// PERFORMANCE OPTIMIZATION: Data Preload Service
+// ============================================================
+builder.Services.AddSingleton<DataPreloadService>();
+
 // Register API services
 builder.Services.AddScoped<IAuthApiService, AuthApiService<ApplicationUser>>();
 builder.Services.AddScoped<ICategoryApiService, CategoryApiService>();
@@ -329,6 +389,11 @@ var app = builder.Build();
 // Use Forwarded Headers middleware (must be before other middleware)
 app.UseForwardedHeaders();
 
+// ============================================================
+// PERFORMANCE OPTIMIZATION: Response Compression
+// ============================================================
+app.UseResponseCompression();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -365,6 +430,20 @@ if (app.Environment.IsDevelopment())
     await seeder.SeedSampleDataAsync();
 }
 
+// ============================================================
+// PERFORMANCE OPTIMIZATION: Preload critical data
+// ============================================================
+{
+    using var scope = app.Services.CreateScope();
+    var preloadService = scope.ServiceProvider.GetRequiredService<DataPreloadService>();
+    // Preload translations and categories into cache on startup
+    _ = Task.Run(async () =>
+    {
+        await Task.Delay(2000); // Wait 2 seconds after startup
+        await preloadService.PreloadCriticalDataAsync();
+    });
+}
+
 // Add localization middleware
 var localizationOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>();
 app.UseRequestLocalization(localizationOptions.Value);
@@ -372,7 +451,18 @@ app.UseRequestLocalization(localizationOptions.Value);
 // Enable WebSockets
 app.UseWebSockets();
 
-app.UseStaticFiles(); // Enable static file serving
+// ============================================================
+// PERFORMANCE OPTIMIZATION: Static File Caching
+// ============================================================
+var cacheMaxAge = app.Environment.IsDevelopment() ? 3600 : 31536000; // 1 hour dev, 1 year prod
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        ctx.Context.Response.Headers.Append("Cache-Control", $"public,max-age={cacheMaxAge}");
+        ctx.Context.Response.Headers.Append("Vary", "Accept-Encoding");
+    }
+});
 
 app.UseRouting();
 

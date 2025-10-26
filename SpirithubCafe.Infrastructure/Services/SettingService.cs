@@ -64,7 +64,13 @@ public class SettingService : ISettingService
             .FirstOrDefaultAsync(s => s.Key == key);
 
         var value = setting?.Value ?? defaultValue;
-        _cache.Set(cacheKey, value, TimeSpan.FromHours(CacheExpirationHours));
+        
+        var cacheOptions = new MemoryCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(CacheExpirationHours),
+            Size = 1 // Each cache entry counts as 1 unit
+        };
+        _cache.Set(cacheKey, value, cacheOptions);
         
         return value;
     }

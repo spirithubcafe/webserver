@@ -13,7 +13,7 @@ public class CategoryService
     private readonly ApplicationDbContext _context;
     private readonly IMemoryCache _cache;
     private const string CacheKeyPrefix = "Categories_";
-    private const int CacheExpirationHours = 12; // Categories don't change frequently
+    private const int CacheExpirationHours = 24; // Categories don't change frequently
 
     public CategoryService(ApplicationDbContext context, IMemoryCache cache)
     {
@@ -27,6 +27,7 @@ public class CategoryService
     public async Task<List<Category>> GetAllCategoriesAsync()
     {
         return await _context.Categories
+            .AsNoTracking()
             .OrderBy(c => c.DisplayOrder)
             .ThenBy(c => c.Name)
             .ToListAsync();
@@ -45,12 +46,19 @@ public class CategoryService
         }
 
         var categories = await _context.Categories
+            .AsNoTracking()
             .Where(c => c.IsActive)
             .OrderBy(c => c.DisplayOrder)
             .ThenBy(c => c.Name)
             .ToListAsync();
             
-        _cache.Set(cacheKey, categories, TimeSpan.FromHours(CacheExpirationHours));
+        _cache.Set(cacheKey, categories, new MemoryCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(CacheExpirationHours),
+            Priority = CacheItemPriority.High,
+            Size = categories.Count
+        });
+        
         return categories;
     }
 
@@ -67,12 +75,19 @@ public class CategoryService
         }
 
         var categories = await _context.Categories
+            .AsNoTracking()
             .Where(c => c.IsActive && c.IsDisplayedOnHomepage)
             .OrderBy(c => c.DisplayOrder)
             .ThenBy(c => c.Name)
             .ToListAsync();
             
-        _cache.Set(cacheKey, categories, TimeSpan.FromHours(CacheExpirationHours));
+        _cache.Set(cacheKey, categories, new MemoryCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(CacheExpirationHours),
+            Priority = CacheItemPriority.High,
+            Size = categories.Count
+        });
+        
         return categories;
     }
 
@@ -82,6 +97,7 @@ public class CategoryService
     public async Task<Category?> GetCategoryByIdAsync(int id)
     {
         return await _context.Categories
+            .AsNoTracking()
             .Include(c => c.Products)
             .FirstOrDefaultAsync(c => c.Id == id);
     }
@@ -92,6 +108,7 @@ public class CategoryService
     public async Task<Category?> GetCategoryBySlugAsync(string slug)
     {
         return await _context.Categories
+            .AsNoTracking()
             .Include(c => c.Products.Where(p => p.IsActive))
             .FirstOrDefaultAsync(c => c.Slug == slug && c.IsActive);
     }
