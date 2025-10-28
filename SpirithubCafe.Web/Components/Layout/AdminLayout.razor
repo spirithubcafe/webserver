@@ -3,6 +3,7 @@
 @inject TranslationLocalizer Localizer
 @inject SpirithubCafe.Web.Services.OrderService OrderService
 @inject AssetVersioningService AssetVersioning
+@inject IJSRuntime JSRuntime
 @using System.Globalization
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Web
@@ -103,6 +104,21 @@
     protected override async Task OnInitializedAsync()
     {
         pendingOrdersCount = await OrderService.GetPendingOrdersCountAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("hideLoadingScreen");
+            }
+            catch (Exception)
+            {
+                // Ignore any JS interop errors during prerendering
+            }
+        }
     }
 
     private void GoToOrders()
