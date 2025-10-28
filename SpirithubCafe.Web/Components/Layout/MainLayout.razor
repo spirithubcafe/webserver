@@ -432,12 +432,23 @@
                     await CartService.InitializeAsync();
                     UpdateCartItemCount();
                     
-                    // Hide loading screen after first render
-                    await JSRuntime.InvokeVoidAsync("hideLoadingScreen");
+                    // Minimal delay for CSS to apply
+                    await Task.Delay(100);
+                    
+                    // Mark Blazor as ready and hide loading screen
+                    await JSRuntime.InvokeVoidAsync("eval", "if(window.markBlazorReady) window.markBlazorReady();");
                 }
                 catch
                 {
-                    // Ignore JS interop errors during first render
+                    // Fallback: try to hide loading screen anyway
+                    try
+                    {
+                        await JSRuntime.InvokeVoidAsync("eval", "if(window.hideLoadingScreen) window.hideLoadingScreen();");
+                    }
+                    catch
+                    {
+                        // Ignore JS interop errors
+                    }
                 }
             }
         }

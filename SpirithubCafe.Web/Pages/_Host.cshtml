@@ -22,12 +22,22 @@
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
     
+    <!-- Preload Critical CSS -->
+    <link rel="preload" href="~/dist.css" as="style" />
+    <link rel="preload" href="~/SpirithubCafe.Web.styles.css" as="style" />
+    
     <!-- Critical CSS - Load first -->
     <link rel="stylesheet" href="~/dist.css" />
     <link rel="stylesheet" href="~/SpirithubCafe.Web.styles.css" />
     
-    <!-- Beautiful Arabic Fonts - Load immediately -->
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&family=Tajawal:wght@200;300;400;500;700;800;900&family=Almarai:wght@300;400;700;800&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Preload Blazor Framework -->
+    <link rel="modulepreload" href="_framework/blazor.server.js" />
+    
+    <!-- Load fonts with display=swap for faster rendering -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&family=Tajawal:wght@200;300;400;500;700;800;900&family=Almarai:wght@300;400;700;800&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;" />
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&family=Tajawal:wght@200;300;400;500;700;800;900&family=Almarai:wght@300;400;700;800&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    </noscript>
     
     <component type="typeof(Microsoft.AspNetCore.Components.Web.HeadOutlet)" render-mode="Server" />
     
@@ -135,6 +145,7 @@
         (function() {
             var loadingScreen = document.getElementById('blazor-loading-screen');
             var isHidden = false;
+            var blazorReady = false;
             
             function hideLoadingScreen() {
                 if (isHidden || !loadingScreen) return;
@@ -153,34 +164,36 @@
             
             // Make globally accessible
             window.hideLoadingScreen = hideLoadingScreen;
+            window.markBlazorReady = function() {
+                blazorReady = true;
+                // Minimal delay to ensure first render is visible
+                setTimeout(hideLoadingScreen, 150);
+            };
             
-            // Hide when page is interactive
-            function checkAndHide() {
-                if (document.readyState === 'interactive' || document.readyState === 'complete') {
-                    setTimeout(hideLoadingScreen, 100);
-                }
-            }
-            
-            if (document.readyState === 'complete') {
+            // Fallback timeout - hide after 10 seconds max (increased for slow connections)
+            setTimeout(function() {
+                console.warn('Loading screen timeout reached');
                 hideLoadingScreen();
-            } else {
-                document.addEventListener('readystatechange', checkAndHide);
-                window.addEventListener('load', function() {
-                    setTimeout(hideLoadingScreen, 150);
-                });
-            }
-            
-            // Fallback timeout - hide after 3 seconds max
-            setTimeout(hideLoadingScreen, 3000);
+            }, 10000);
         })();
     </script>
     <script src="_framework/blazor.server.js" autostart="false"></script>
     <script>
-        // Start Blazor manually after ensuring loading screen is ready
-        Blazor.start().then(function() {
-            // Blazor connected, hide loading screen
-            if (window.hideLoadingScreen) {
-                setTimeout(window.hideLoadingScreen, 200);
+        // Start Blazor with optimized settings
+        Blazor.start({
+            configureSignalR: function (builder) {
+                // Optimize SignalR for faster connection
+                builder.withAutomaticReconnect({
+                    nextRetryDelayInMilliseconds: function (retryContext) {
+                        return Math.min(1000 * Math.pow(2, retryContext.previousRetryCount), 30000);
+                    }
+                });
+            }
+        }).then(function() {
+            console.log('Blazor started successfully');
+            // Wait for the first render to complete
+            if (window.markBlazorReady) {
+                window.markBlazorReady();
             }
         }).catch(function(error) {
             console.error('Blazor failed to start:', error);

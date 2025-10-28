@@ -109,6 +109,16 @@ builder.Services.AddServerSideBlazor(options =>
     options.DisconnectedCircuitMaxRetained = 100;
     options.JSInteropDefaultCallTimeout = TimeSpan.FromMinutes(1);
     options.MaxBufferedUnacknowledgedRenderBatches = 10;
+}).AddHubOptions(options =>
+{
+    // Optimize SignalR Hub for better performance
+    options.MaximumReceiveMessageSize = 32 * 1024; // 32 KB
+    options.StreamBufferCapacity = 10;
+    options.MaximumParallelInvocationsPerClient = 1;
+    options.EnableDetailedErrors = builder.Environment.IsDevelopment();
+    options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
+    options.HandshakeTimeout = TimeSpan.FromSeconds(15);
+    options.KeepAliveInterval = TimeSpan.FromSeconds(15);
 });
 
 // Add Circuit Handler for better error handling
