@@ -518,7 +518,9 @@
             DisplayOrder = category.DisplayOrder,
             TaxPercentage = category.TaxPercentage,
             IsActive = category.IsActive,
-            IsDisplayedOnHomepage = category.IsDisplayedOnHomepage
+            IsDisplayedOnHomepage = category.IsDisplayedOnHomepage,
+            CreatedAt = category.CreatedAt,
+            UpdatedAt = category.UpdatedAt
         };
         showCreateForm = true;
 
@@ -581,9 +583,25 @@
             var category = allCategories.FirstOrDefault(c => c.Id == categoryId);
             if (category != null)
             {
-                category.IsActive = !category.IsActive;
-                category.UpdatedAt = DateTime.UtcNow;
-                await CategoryService.UpdateCategoryAsync(category);
+                // Create a new instance to avoid tracking issues
+                var updatedCategory = new Category
+                {
+                    Id = category.Id,
+                    Name = category.Name,
+                    NameAr = category.NameAr,
+                    Slug = category.Slug,
+                    Description = category.Description,
+                    DescriptionAr = category.DescriptionAr,
+                    ImagePath = category.ImagePath,
+                    DisplayOrder = category.DisplayOrder,
+                    TaxPercentage = category.TaxPercentage,
+                    IsActive = !category.IsActive, // Toggle the status
+                    IsDisplayedOnHomepage = category.IsDisplayedOnHomepage,
+                    CreatedAt = category.CreatedAt,
+                    UpdatedAt = DateTime.UtcNow
+                };
+                
+                await CategoryService.UpdateCategoryAsync(updatedCategory);
                 await LoadCategories();
                 ToastService.ShowSuccess(Localizer["CategoryStatusUpdatedSuccess"]);
             }

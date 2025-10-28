@@ -949,8 +949,8 @@
             // Update the modified date
             product.UpdatedAt = DateTime.UtcNow;
             
-            // Ensure product is active when saving normally
-            product.IsActive = true;
+            // Don't force IsActive to true - respect the checkbox value
+            // product.IsActive = true; // REMOVED
             
             // Generate slug if empty
             if (string.IsNullOrEmpty(product.Slug) && !string.IsNullOrEmpty(product.Name))

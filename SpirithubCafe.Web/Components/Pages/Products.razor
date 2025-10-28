@@ -658,8 +658,8 @@
             // Load shop settings
             await LoadShopSettings();
            
-            // Load categories
-            categories = await CategoryService.GetAllCategoriesAsync();
+            // Load categories (only active categories for public pages)
+            categories = await CategoryService.GetActiveCategoriesAsync();
             
             // Load products
             allProducts = await ProductService.GetAllProductsAsync();

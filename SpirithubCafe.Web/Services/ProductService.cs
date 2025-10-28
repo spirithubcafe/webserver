@@ -19,9 +19,26 @@ public class ProductService
     }
 
     /// <summary>
-    /// Get all products with their categories and variants
+    /// Get all products with their categories and variants (only active products for public pages)
     /// </summary>
     public async Task<List<Product>> GetAllProductsAsync()
+    {
+        return await _context.Products
+            .Where(p => p.IsActive)
+            .Include(p => p.Category)
+            .Include(p => p.MainImage)
+            .Include(p => p.GalleryImages)
+            .Include(p => p.Variants.Where(v => v.IsActive))
+            .Include(p => p.Reviews.Where(r => r.IsApproved))
+            .OrderBy(p => p.Category!.DisplayOrder)
+            .ThenBy(p => p.DisplayOrder)
+            .ToListAsync();
+    }
+
+    /// <summary>
+    /// Get all products for admin (includes both active and inactive products)
+    /// </summary>
+    public async Task<List<Product>> GetAllProductsForAdminAsync()
     {
         return await _context.Products
             .Include(p => p.Category)
@@ -35,11 +52,12 @@ public class ProductService
     }
 
     /// <summary>
-    /// Get products by category
+    /// Get products by category (only active products)
     /// </summary>
     public async Task<List<Product>> GetProductsByCategoryAsync(int? categoryId)
     {
         var query = _context.Products
+            .Where(p => p.IsActive)
             .Include(p => p.Category)
             .Include(p => p.MainImage)
             .Include(p => p.GalleryImages)
@@ -59,7 +77,7 @@ public class ProductService
     }
 
     /// <summary>
-    /// Search products by name or SKU
+    /// Search products by name or SKU (only active products)
     /// </summary>
     public async Task<List<Product>> SearchProductsAsync(string searchTerm)
     {
@@ -69,6 +87,7 @@ public class ProductService
         }
 
         return await _context.Products
+            .Where(p => p.IsActive)
             .Include(p => p.Category)
             .Include(p => p.MainImage)
             .Include(p => p.GalleryImages)
@@ -294,17 +313,34 @@ public class ProductService
         {
             product.UpdatedAt = DateTime.UtcNow;
             
-            // Detach any existing tracked entity with the same ID
-            var existingEntry = _context.ChangeTracker.Entries<Product>()
-                .FirstOrDefault(e => e.Entity.Id == product.Id);
+            // Get the existing product WITHOUT tracking
+            var existingProduct = await _context.Products
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == product.Id);
             
-            if (existingEntry != null && existingEntry.Entity != product)
+            if (existingProduct == null)
             {
-                existingEntry.State = EntityState.Detached;
+                throw new Exception("Product not found");
             }
             
-            // Update the product
-            _context.Products.Update(product);
+            // Clear all tracked entities to avoid conflicts
+            _context.ChangeTracker.Clear();
+            
+            // Now attach and mark ONLY the Product entity as modified (not related entities)
+            var entry = _context.Entry(product);
+            entry.State = EntityState.Modified;
+            
+            // Important: Set navigation properties to unchanged to prevent tracking issues
+            if (product.MainImage != null)
+            {
+                _context.Entry(product.MainImage).State = EntityState.Unchanged;
+            }
+            
+            if (product.Category != null)
+            {
+                _context.Entry(product.Category).State = EntityState.Unchanged;
+            }
+            
             await _context.SaveChangesAsync();
             
             // Reload the product with all relationships

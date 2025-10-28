@@ -459,7 +459,7 @@
         loading = true;
         try
         {
-            allProducts = await ProductService.GetAllProductsAsync();
+            allProducts = await ProductService.GetAllProductsForAdminAsync();
             categories = await CategoryService.GetAllCategoriesAsync();
             await CalculateStatsAsync();
             await ApplyFiltersAsync();
