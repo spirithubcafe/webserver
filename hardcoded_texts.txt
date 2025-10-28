@@ -9,4 +9,8 @@ Adding|Adding|جارٍ الإضافة
 AddToCart|Add to Cart|أضف إلى السلة
 Details|Details|التفاصيل
 AddToCartError|Error adding item to cart|خطأ في إضافة العنصر إلى السلة
+PageNotFound|Page Not Found|الصفحة غير موجودة
+PageNotFoundMessage|The page you're looking for doesn't exist or has been moved.|الصفحة التي تبحث عنها غير موجودة أو تم نقلها
+GoBack|Go Back|العودة
+PopularPages|You might be looking for|قد تبحث عن
 
