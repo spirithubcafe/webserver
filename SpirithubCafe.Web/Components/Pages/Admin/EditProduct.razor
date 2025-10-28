@@ -1296,7 +1296,18 @@
         {
             try
             {
-                product.Variants.Remove(variant);
+                // Check if variant has an ID (exists in database)
+                if (variant.Id > 0)
+                {
+                    // Remove from collection - EF Core will track this as deleted
+                    product.Variants.Remove(variant);
+                }
+                else
+                {
+                    // Just remove from collection if not yet saved to database
+                    product.Variants.Remove(variant);
+                }
+                
                 await ProductService.UpdateProductAsync(product);
                 ToastService.ShowSuccess("Variant deleted successfully");
                 StateHasChanged();

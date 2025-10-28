@@ -30,7 +30,11 @@ namespace SpirithubCafe.Application.Services
 
         public async Task<FooterSettings> UpdateFooterSettingsAsync(FooterSettings settings)
         {
-            var existingSettings = await _context.FooterSettings.FirstOrDefaultAsync();
+            // Use AsTracking() to enable change tracking for this query
+            // since the DbContext is configured with NoTracking by default
+            var existingSettings = await _context.FooterSettings
+                .AsTracking()
+                .FirstOrDefaultAsync();
             
             if (existingSettings == null)
             {
