@@ -153,40 +153,25 @@ public class CategoryService
             throw new InvalidOperationException($"Category with slug '{category.Slug}' already exists.");
         }
 
-        // Detach any existing tracked entities with the same ID to prevent tracking conflicts
-        var trackedEntity = _context.ChangeTracker.Entries<Category>()
-            .FirstOrDefault(e => e.Entity.Id == category.Id);
-        if (trackedEntity != null)
-        {
-            _context.Entry(trackedEntity.Entity).State = EntityState.Detached;
-        }
-
-        // Get the existing entity from the database
-        var existingCategory = await _context.Categories.FindAsync(category.Id);
-        if (existingCategory == null)
+        // Verify category exists
+        var exists = await _context.Categories.AnyAsync(c => c.Id == category.Id);
+        if (!exists)
         {
             throw new InvalidOperationException($"Category with ID {category.Id} not found.");
         }
 
-        // Update the properties of the tracked entity
-        existingCategory.Name = category.Name;
-        existingCategory.NameAr = category.NameAr;
-        existingCategory.Slug = category.Slug;
-        existingCategory.Description = category.Description;
-        existingCategory.DescriptionAr = category.DescriptionAr;
-        existingCategory.TaxPercentage = category.TaxPercentage;
-        existingCategory.ImagePath = category.ImagePath;
-        existingCategory.DisplayOrder = category.DisplayOrder;
-        existingCategory.IsActive = category.IsActive;
-        existingCategory.IsDisplayedOnHomepage = category.IsDisplayedOnHomepage;
-        existingCategory.UpdatedAt = DateTime.UtcNow;
+        // Clear the change tracker to avoid tracking conflicts
+        _context.ChangeTracker.Clear();
 
+        // Update timestamp and update the category
+        category.UpdatedAt = DateTime.UtcNow;
+        _context.Categories.Update(category);
         await _context.SaveChangesAsync();
         
         // Clear cache after update
         ClearCategoriesCache();
         
-        return existingCategory;
+        return category;
     }
 
     /// <summary>
